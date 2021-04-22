@@ -1,0 +1,16 @@
+name: "Statistical Rethinking"
+output_dir: "."
+navbar:
+  title: "Statistical Rethinking"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "1. The Golem of Prague"
+      href: 01_the_golem_of_prague.html
+    - text: "2. Small Worlds and Large Worlds"
+      href: 02_small_worlds_and_large_worlds.html
+    - text: "11. God spiked the integers"
+      href: 11_god_spiked_the_integers.html
+output:
+  html_document:
+    theme: flatly
