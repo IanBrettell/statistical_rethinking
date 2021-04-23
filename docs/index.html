@@ -10,9 +10,9 @@
 
 
 
-<meta name="date" content="2021-04-20" />
+<meta name="date" content="2021-04-23" />
 
-<title>Chapter 11. God spiked the integers</title>
+<title>Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
 
 <script src="site_libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -446,6 +446,12 @@ div.tocify {
   <a href="02_small_worlds_and_large_worlds.html">2. Small Worlds and Large Worlds</a>
 </li>
 <li>
+  <a href="03_sampling_from_the_imaginary.html">3. Sampling from the Imaginary</a>
+</li>
+<li>
+  <a href="04_geocentric_models.html">4. Geocentric models</a>
+</li>
+<li>
   <a href="11_god_spiked_the_integers.html">11. God spiked the integers</a>
 </li>
       </ul>
@@ -460,245 +466,67 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Chapter 11. God spiked the integers</h1>
-<h4 class="date">2021-04-20</h4>
+<h1 class="title toc-ignore">Notes for Statistical Rethinking 2nd ed. by Richard McElreath</h1>
+<h4 class="date">2021-04-23</h4>
 
 </div>
 
 
-<p>Consolidated slides, notes, code and output from the <em>Statistical Rethinking</em> book and course by Richard McElreath.</p>
+<p>Consolidated slides, notes, homework, code and output from the <em>Statistical Rethinking</em> book and course by Richard McElreath.</p>
+<p>Repo with slides and homework here: <a href="https://github.com/rmcelreath/stat_rethinking_2020" class="uri">https://github.com/rmcelreath/stat_rethinking_2020</a></p>
 <p>Buy the book here: <a href="https://xcelab.net/rm/statistical-rethinking/" class="uri">https://xcelab.net/rm/statistical-rethinking/</a></p>
 <p>McElreath’s GitHub here: <a href="https://github.com/rmcelreath" class="uri">https://github.com/rmcelreath</a></p>
-<p>Copy slides over from GitHub page and split into separate directories</p>
-<div id="split-and-convert-slides" class="section level2" number="0.1">
-<h2 number="0.1"><span class="header-section-number">0.1</span> Split and convert slides</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>n_lectures <span class="ot">=</span> <span class="dv">20</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>lectures <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>n_lectures</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>dir_name <span class="ot">=</span> <span class="fu">ifelse</span>(lectures <span class="sc">&lt;</span> <span class="dv">10</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">paste</span>(<span class="st">&quot;0&quot;</span>, lectures, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">as.character</span>(lectures))</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(dir_name, <span class="cf">function</span>(LECTURE){</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides&quot;</span>, <span class="fu">paste</span>(<span class="st">&quot;L&quot;</span>, LECTURE, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>))</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  slides <span class="ot">=</span> magick<span class="sc">::</span><span class="fu">image_read_pdf</span>(<span class="fu">file.path</span>(slides_dir, <span class="fu">paste</span>(<span class="st">&quot;L&quot;</span>, LECTURE, <span class="st">&quot;.pdf&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)))</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  slides_list <span class="ot">=</span> <span class="fu">as.list</span>(slides)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">seq_along</span>(slides_list), <span class="cf">function</span>(i){</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">=</span> <span class="fu">image_convert</span>(slides_list[[i]], <span class="at">format =</span> <span class="st">&quot;png&quot;</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set name</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    out_name <span class="ot">=</span> <span class="fu">ifelse</span>(i <span class="sc">&lt;</span> <span class="dv">10</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste</span>(<span class="st">&quot;0&quot;</span>, i, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>),</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">as.character</span>(i))</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    magick<span class="sc">::</span><span class="fu">image_write</span>(out, <span class="at">path =</span> <span class="fu">file.path</span>(slides_dir, <span class="fu">paste</span>(out_name, <span class="st">&quot;.png&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)))</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
-<p>Template code for creating the markdown code to incorporate the slides</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L02&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>slides <span class="ot">=</span> <span class="fu">list.files</span>(slides_dir) <span class="sc">%&gt;%</span> <span class="fu">str_remove</span>(<span class="st">&quot;.png&quot;</span>) <span class="sc">%&gt;%</span> .[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;.pdf&quot;</span>, .)]</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(slides, <span class="cf">function</span>(x){</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>   out <span class="ot">=</span> <span class="fu">paste</span>(<span class="st">&quot;```{r, echo = F, out.width=&#39;60%&#39;}</span><span class="sc">\n</span><span class="st">knitr::include_graphics(file.path(slides_dir, &#39;&quot;</span>, x, <span class="st">&quot;.png&#39;))</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">write</span>(out, <span class="st">&quot;tmp.txt&quot;</span>, <span class="at">append =</span> T)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
-<pre><code>## [[1]]
-## NULL
-## 
-## [[2]]
-## NULL
-## 
-## [[3]]
-## NULL
-## 
-## [[4]]
-## NULL
-## 
-## [[5]]
-## NULL
-## 
-## [[6]]
-## NULL
-## 
-## [[7]]
-## NULL
-## 
-## [[8]]
-## NULL
-## 
-## [[9]]
-## NULL
-## 
-## [[10]]
-## NULL
-## 
-## [[11]]
-## NULL
-## 
-## [[12]]
-## NULL
-## 
-## [[13]]
-## NULL
-## 
-## [[14]]
-## NULL
-## 
-## [[15]]
-## NULL
-## 
-## [[16]]
-## NULL
-## 
-## [[17]]
-## NULL
-## 
-## [[18]]
-## NULL
-## 
-## [[19]]
-## NULL
-## 
-## [[20]]
-## NULL
-## 
-## [[21]]
-## NULL
-## 
-## [[22]]
-## NULL
-## 
-## [[23]]
-## NULL
-## 
-## [[24]]
-## NULL
-## 
-## [[25]]
-## NULL
-## 
-## [[26]]
-## NULL
-## 
-## [[27]]
-## NULL
-## 
-## [[28]]
-## NULL
-## 
-## [[29]]
-## NULL
-## 
-## [[30]]
-## NULL
-## 
-## [[31]]
-## NULL
-## 
-## [[32]]
-## NULL
-## 
-## [[33]]
-## NULL
-## 
-## [[34]]
-## NULL
-## 
-## [[35]]
-## NULL
-## 
-## [[36]]
-## NULL
-## 
-## [[37]]
-## NULL
-## 
-## [[38]]
-## NULL
-## 
-## [[39]]
-## NULL
-## 
-## [[40]]
-## NULL
-## 
-## [[41]]
-## NULL
-## 
-## [[42]]
-## NULL
-## 
-## [[43]]
-## NULL
-## 
-## [[44]]
-## NULL
-## 
-## [[45]]
-## NULL
-## 
-## [[46]]
-## NULL
-## 
-## [[47]]
-## NULL
-## 
-## [[48]]
-## NULL
-## 
-## [[49]]
-## NULL
-## 
-## [[50]]
-## NULL
-## 
-## [[51]]
-## NULL
-## 
-## [[52]]
-## NULL
-## 
-## [[53]]
-## NULL
-## 
-## [[54]]
-## NULL
-## 
-## [[55]]
-## NULL
-## 
-## [[56]]
-## NULL
-## 
-## [[57]]
-## NULL
-## 
-## [[58]]
-## NULL
-## 
-## [[59]]
-## NULL
-## 
-## [[60]]
-## NULL
-## 
-## [[61]]
-## NULL
-## 
-## [[62]]
-## NULL
-## 
-## [[63]]
-## NULL
-## 
-## [[64]]
-## NULL</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete tmp file</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;tmp.txt&quot;</span>)</span></code></pre></div>
-<pre><code>## [1] TRUE</code></pre>
+<p>Slides downloaded manually via links on GitHub page and split into separate directories.</p>
+<div id="install-packages" class="section level2" number="0.1">
+<h2 number="0.1"><span class="header-section-number">0.1</span> Install packages</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">init</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;stan-dev/cmdstanr&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cmdstanr<span class="sc">::</span><span class="fu">install_cmdstan</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;coda&quot;</span>,<span class="st">&quot;mvtnorm&quot;</span>,<span class="st">&quot;devtools&quot;</span>,<span class="st">&quot;loo&quot;</span>,<span class="st">&quot;dagitty&quot;</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;rmcelreath/rethinking&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set_ulam_cmdstan</span>(<span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="split-and-convert-slides" class="section level2" number="0.2">
+<h2 number="0.2"><span class="header-section-number">0.2</span> Split and convert slides</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>n_lectures <span class="ot">=</span> <span class="dv">20</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>lectures <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>n_lectures</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>dir_name <span class="ot">=</span> <span class="fu">ifelse</span>(lectures <span class="sc">&lt;</span> <span class="dv">10</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">paste</span>(<span class="st">&quot;0&quot;</span>, lectures, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">as.character</span>(lectures))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(dir_name, <span class="cf">function</span>(LECTURE){</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides&quot;</span>, <span class="fu">paste</span>(<span class="st">&quot;L&quot;</span>, LECTURE, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  slides <span class="ot">=</span> magick<span class="sc">::</span><span class="fu">image_read_pdf</span>(<span class="fu">file.path</span>(slides_dir, <span class="fu">paste</span>(<span class="st">&quot;L&quot;</span>, LECTURE, <span class="st">&quot;.pdf&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)))</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  slides_list <span class="ot">=</span> <span class="fu">as.list</span>(slides)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(<span class="fu">seq_along</span>(slides_list), <span class="cf">function</span>(i){</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    out <span class="ot">=</span> <span class="fu">image_convert</span>(slides_list[[i]], <span class="at">format =</span> <span class="st">&quot;png&quot;</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set name</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    out_name <span class="ot">=</span> <span class="fu">ifelse</span>(i <span class="sc">&lt;</span> <span class="dv">10</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste</span>(<span class="st">&quot;0&quot;</span>, i, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>),</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">as.character</span>(i))</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    magick<span class="sc">::</span><span class="fu">image_write</span>(out, <span class="at">path =</span> <span class="fu">file.path</span>(slides_dir, <span class="fu">paste</span>(out_name, <span class="st">&quot;.png&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)))</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+</div>
+<div id="create-markdown-code-to-incorporate-slides" class="section level2" number="0.3">
+<h2 number="0.3"><span class="header-section-number">0.3</span> Create markdown code to incorporate slides</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L03&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>slides <span class="ot">=</span> <span class="fu">list.files</span>(slides_dir) <span class="sc">%&gt;%</span> <span class="fu">str_remove</span>(<span class="st">&quot;.png&quot;</span>) <span class="sc">%&gt;%</span> .[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;.pdf&quot;</span>, .)]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(slides, <span class="cf">function</span>(x){</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>   out <span class="ot">=</span> <span class="fu">paste</span>(<span class="st">&quot;```{r, echo = F, out.width=&#39;60%&#39;}</span><span class="sc">\n</span><span class="st">knitr::include_graphics(file.path(slides_dir, &#39;&quot;</span>, x, <span class="st">&quot;.png&#39;))</span><span class="sc">\n</span><span class="st">```</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">write</span>(out, <span class="st">&quot;tmp.txt&quot;</span>, <span class="at">append =</span> T)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete tmp file</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;tmp.txt&quot;</span>)</span></code></pre></div>
 </div>
 
 
