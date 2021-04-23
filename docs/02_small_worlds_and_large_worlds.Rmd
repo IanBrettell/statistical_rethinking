@@ -363,7 +363,6 @@ knitr::include_graphics(file.path(slides_dir, '39.png'))
 
 Here's the code. 
 
-
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
@@ -439,5 +438,78 @@ lapply(c(5, 100, 1000, 1e5), function(grid_size){
        ylab = "posterior probability")
   mtext(grid_size)  
 })
+```
+
+# Homework: week 1
+
+## 1.
+
+Supppose the globe tossing data (Chapter 2) had turned out ot be 4 water in 15 tosses. Construct the posterior distrubtuion, using grid approximation. Use the same flat prior as in the book.
+
+```{r}
+grid_size = 1000
+n_water = 4
+
+p_grid = seq(from = 0, to = 1, length.out = grid_size)
+
+# define prior
+prior = rep(1, grid_size)
+
+# compute likelihood at each value in grid
+likelihood = dbinom(n_water, size = 9, prob = p_grid)
+
+# compute product of likelihood and prior
+unstd.posterior = likelihood * prior
+
+# standardise the posterior, so it susms to 1
+posterior = unstd.posterior / sum(unstd.posterior)
+
+# plot
+plot(p_grid, posterior, type = "b",
+     xlab = "probability of water",
+     ylab = "posterior probability")
+mtext(grid_size)  
+```
+## 2.
+
+Start over in 1, but now use a prior that is zero below $p$ = 0.5 and a constant above $p$ = 0.5. This corresponds to prior inforamtion that a majority of the Earth's surface is water. What difference does the better prior make? 
+
+```{r}
+grid_size = 1000
+n_water = 4
+
+p_grid = seq(from = 0, to = 1, length.out = grid_size)
+
+# define prior
+prior = c(rep(0, grid_size / 2), rep(1, grid_size / 2))
+
+# compute likelihood at each value in grid
+likelihood = dbinom(n_water, size = 9, prob = p_grid)
+
+# compute product of likelihood and prior
+unstd.posterior = likelihood * prior
+
+# standardise the posterior, so it susms to 1
+posterior = unstd.posterior / sum(unstd.posterior)
+
+# plot
+plot(p_grid, posterior, type = "b",
+     xlab = "probability of water",
+     ylab = "posterior probability")
+mtext(grid_size)  
+```
+
+## 3.
+
+For the posterior distribution from **2**, compute 89% percentile and HPDI intervals. Compare the widths of these intervals. Which is wider? Why? If you had only the information in the interval, what might you misunderstand about the shape of the posterior distribution? 
+
+```{r}
+samples = sample(p_grid, prob = posterior, size = 1e4, replace = T)
+
+rethinking::PI(samples)
+
+rethinking::HPDI(samples)
+
+# PI is wider, but it doesn't tell you that the highest point is just after 50%.
 ```
 

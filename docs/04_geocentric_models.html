@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2021-04-23" />
+
+<title>Chapter 4. Geocentric Models</title>
+
+<script src="site_libs/header-attrs-2.5/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Statistical Rethinking</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="01_the_golem_of_prague.html">1. The Golem of Prague</a>
+</li>
+<li>
+  <a href="02_small_worlds_and_large_worlds.html">2. Small Worlds and Large Worlds</a>
+</li>
+<li>
+  <a href="03_sampling_from_the_imaginary.html">3. Sampling from the Imaginary</a>
+</li>
+<li>
+  <a href="04_geocentric_models.html">4. Geocentric models</a>
+</li>
+<li>
+  <a href="11_god_spiked_the_integers.html">11. God spiked the integers</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Chapter 4. Geocentric Models</h1>
+<h4 class="date">2021-04-23</h4>
+
+</div>
+
+
+<div id="setup" class="section level1">
+<h1>Setup</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L03&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L03/01.png" width="60%" /></p>
+<p>Introduction into regression models.</p>
+<p><img src="slides/L03/02.png" width="60%" /></p>
+<p>As scientists, we’re always dealing with questions that have higher dimensions and more complexity than what we can measure. Above is the path of Mars, called <em>retrograde motion</em>. It’s an illusion caused by the joint movement of ourselves and Mars. The relative velocities create the illusion.</p>
+<p><img src="slides/L03/03.png" width="60%" /></p>
+<p>A lot of people published models, but this one is very accurate. They’re full-blown mathematical models. But they’re also wrong. You can’t use them to send a probe to Mars. This is like a regression model. They’re incredibly accurate for specific purposes, but they’re also deeply wrong. Keep in mind the small world / large world distinction.</p>
+<p>You could say scientists are geocentric people. The reason Ptolemy’s model works so well is that they used Fourier series - circles in circles (“epicircles”). You can use this for anything with periodic cycles. And this model still works.</p>
+<p><img src="slides/L03/04.png" width="60%" /></p>
+<p>We’re here to build models of many diverse things. We don’t usually use Fourier models; instead we tend to use regression. Linear regression models are incredibly useful. But if you use them without wisdom, all they do is describe things without wisdom.</p>
+<p><img src="slides/L03/05.png" width="60%" /></p>
+<p>Statistical golems which measure how the mean of some measure changes when you learn other things. The mean is always modeled as some additive weighted measure of variables.</p>
+<p><img src="slides/L03/06.png" width="60%" /></p>
+<p>Gauss developed regression, but he did it using a Bayesian argument. He used it to predict when a comet would return.</p>
+<p><img src="slides/L03/07.png" width="60%" /></p>
+<p>These appear all throughout nature. Why are they so normal? They arise from all over the place.</p>
+<p>One of the things that are nice about them is that they are additive. So easy to work with. Second is that they’re very common.</p>
+<p><img src="slides/L03/08.png" width="60%" /> Imagine a football pitch. We all line up on the midfield line. Take a coin out of your pocket and flip it. One step left for heads, right for tails. Do it a few hundred times.</p>
+<p><img src="slides/L03/09.png" width="60%" /></p>
+<p><img src="slides/L03/10.png" width="60%" /></p>
+<p><img src="slides/L03/11.png" width="60%" /></p>
+<p><img src="slides/L03/12.png" width="60%" /></p>
+<p>The frequency distribution will be Gaussian.</p>
+<p><img src="slides/L03/13.png" width="60%" /></p>
+<p>This is a simulation of the soccer field experiment. After four flips (steps). Black follows one particular student. A pattern forms in the aggregation. This isn’t very Gaussian yet.</p>
+<p><img src="slides/L03/14.png" width="60%" /></p>
+<p>After 8 it’s pretty Gaussian. <img src="slides/L03/15.png" width="60%" /></p>
+<p>And after 16 it’s very Gaussian. It’ll get wider and wider over time. Why does this happen? Lot’s of mathematical theorems. But the intuition is that each coin flip is a fluctuation. And in the long run, fluctuations tend to cancel. If you get a string of lefts, eventually you’ll get a string of rights, so the average student will end up near the middle. A very large number of them exactly cancel each other. There are more paths that will give you 0 than any other path. Then there are a few less that give you +1 or -1. And so forth.</p>
+<p><img src="slides/L03/16.png" width="60%" /></p>
+<p>That’s why a bunch of natural systems are normally distributed. We don’t need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you’re left with are particular shapes, called <em>maximum entropy distributions</em>. For the Gaussian, <strong>addition</strong> is our friend.</p>
+<p>One of the things about it is that products of deviations are actually addition. So lots of multiplicative interactions also produce Gaussian distributions.</p>
+<p>You can measure things on logarithmic scales.</p>
+<p><img src="slides/L03/18.png" width="60%" /></p>
+<p>This is the ontological perspective on distributions. When fluctuations tend to dampen one another, you end up with a symmetric curve. What neat and also frustrating is that you lose a lot of information about the generative processes. When you see heights are normally distributed, you learn basically nothing about it. This is cool because all that’s preserved from the underlying process is the mean and the variance. What’s terrible is that you can’t figure out the process from the distribution.</p>
+<p>All the maximum entropy distributions have the same feature. Power laws arise through lots of processes, and it tells you nothing other than it has high variance.</p>
+<p>The other perspective is epistemological. If you’re building a model and you want to be as conservative as possible, you should use the Gaussian distribution. Because any other distribution will be narrower. So it’s a very good assumption to use when you don’t have additional information.</p>
+<p>The Gaussian is the one where all you’re willing to say is there’s a mean and a variance, you should use the Gaussian. It assumes the least.</p>
+<p><img src="slides/L03/19.png" width="60%" /></p>
+<p>All of those things are linear models. Just learn the linear modeling strategies instead of the specific procedures. We’ll build up linear models from the ground up. You can build the model you need.</p>
+<p><img src="slides/L03/20.png" width="60%" /></p>
+<p>We’re going to write out all the models in the same standard notation. We’re going to write this in our code so that it’s reinforced.</p>
+<p><img src="slides/L03/21.png" width="60%" /></p>
+<p>Same applies for more complex models. Some of these things you can observe (water tosses), and some you can’t (regression slopes). We need to list these variables and then define them.</p>
+<p><img src="slides/L03/22.png" width="60%" /></p>
+<p>The motor of these linear regression models. There’s some mean of the normal distribution that is explained by <span class="math inline">\(x\)</span>. But <span class="math inline">\(x\)</span> also has a distribution.</p>
+<p><img src="slides/L03/23.png" width="60%" /></p>
+<p>These height data come from Nancy Howell’s data. <code>Howell1</code> is a simplified dataset. We’ll focus just on adult heights at the moment.</p>
+<p><img src="slides/L03/24.png" width="60%" /></p>
+<p>Here’s the distribution of height data. <span class="math inline">\(h\)</span> is distributed normally. <img src="slides/L03/25.png" width="60%" /></p>
+<p>There’s nothing special about the particular letters used. But it’s important to be able to read this. Now we have three variables. One is observed, and two have not. We have to infrer them from <span class="math inline">\(h\)</span>.</p>
+<p><img src="slides/L03/26.png" width="60%" /></p>
+<p>Because this is Bayesian, they have prior distributions. Using 187 cm (height of Richard) as the prior. Standard deviation is on the mean. 20 is very generous. Then for sigma, uniform 50.</p>
+<p><img src="slides/L03/27.png" width="60%" /></p>
+<p>Before your model has seen the data. This is not p-hacking, because we’re not using the data. We’re using scientific information. All you have to sample values.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sample_mu <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, <span class="dv">178</span>, <span class="dv">20</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sample_sigma <span class="ot">=</span> <span class="fu">runif</span>(<span class="fl">1e4</span>, <span class="dv">0</span>, <span class="dv">50</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>prior_h <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, sample_mu, sample_sigma)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dens</span>(prior_h)</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-29-1.svg" width="672" /> This is not a normal distribution. It’s a t-distribution because you have uncertainty about variance, which gives it fat tails. There are some really really tall individuals in this prior. But at least we don’t have any negative heights.</p>
+<p>Let’s use a different prior.</p>
+<p><img src="slides/L03/28.png" width="60%" /></p>
+<p>Typical linear regression priors are flat. They’re bad new because they create impossible outcomes before you even see the data.</p>
+<p><img src="slides/L03/29.png" width="60%" /></p>
+<p>Once you start working with mixed models, the priors have a greater effect, so it’s good to get used to prior predictive simulation now.</p>
+<p>We’ll calculate the grid and the posterior probability. How? Multiply the observed height conditional on the mu and sigma at that point. Times the prior probability of that mu and sigma. They code to do this is some loops.</p>
+<p><img src="slides/L03/30.png" width="60%" /></p>
+<p>100x100 you start to see the Gaussian hill. Gradually the values become increasingly implausible. What we do here is draw samples.</p>
+<p><img src="slides/L03/31.png" width="60%" /></p>
+<p>Once you have the samples, you just work with the data frame. You can look at cross-sections of this.</p>
+<p>Note that this isn’t perfectly symmetrical for sigma - the right tail is longer. This is almost always true for SD parameters. Why? Because you know something about the SD before you see the data: you know it’s positive. So you always have more uncertainty on the higher end.</p>
+<p><img src="slides/L03/32.png" width="60%" /></p>
+<p>Grid approximation is useful for teaching, but now we’ll do a fancy approximation of it so we can go to higher dimensions. THat approximation asserts that the distribution is normal for every parameter. But once you get to generalised linear models it’s a bad approximation. How does this work? You need two numbers: mean and SD. For multi-dimensional Gaussians, you also need a covariance matrix for the parameters. How do you do it? You climb the hill. It doesn’t know what the hill is, but it knows what is up and down. So it tries to find the peak. When it gets to the peak, it needs to measure the curvature of the peak. And that’s all it needs to approxi ate the curve. Often called the LaPlace approximation.</p>
+<p><img src="slides/L03/33.png" width="60%" /></p>
+<p><code>quap</code> works by making the formula lists. Typically there’s some abbreviated forms. You’ll have to write how every parameter multiplies every variable.</p>
+<p>Plug in the parameters and plug it into <code>quap</code>.</p>
+<p><img src="slides/L03/34.png" width="60%" /></p>
+<p><code>quap</code> translates it into a statement about a log probability of the combinations of data, then passes it to the hill-finding algorithm built into R called <code>optim</code>, which passes it back as a list of means and a covariance matrix, which is sufficient to create a posterior distribution.</p>
+<p><img src="slides/L03/35.png" width="60%" /></p>
+<p><code>precis</code> is minimalistic compared to <code>summary</code>. Provides the 89% compatibility intervals.</p>
+<p><img src="slides/L03/36.png" width="60%" /></p>
+<p>Compare <code>quap</code> to grid approximation. The values in the rows go together. But plot the columns by themselves. Sigma still has a skew.</p>
+<p><img src="slides/L03/37.png" width="60%" /></p>
+<p>To find out what it means, you draw some lines. I think of this tool as a scaffold so you can learn how to do modelling. But after you can use packages that use abbreviations. But it’s important to learn how to build them. You’ll come to appreciate how explicit it is.</p>
+<p>You want to graduate beyong <code>quap</code> because for generalised linear modelling it becomes dangerous.</p>
+<p><img src="slides/L03/38.png" width="60%" /> So now let’s add a line. When we learn the predictions, we can learn the statistical association between weight and height. The question is how would you statistically describe this relationship?</p>
+<p><img src="slides/L03/39.png" width="60%" /></p>
+<p>So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there’s an <span class="math inline">\(i\)</span> on <span class="math inline">\(mu\)</span>. That means it’s different for each person. <span class="math inline">\(alpha\)</span> is out population mean. <span class="math inline">\(beta\)</span> describes the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</p>
+<p><img src="slides/L03/40.png" width="60%" /></p>
+<p>The equals sign mean that it’s deterministically defined. <span class="math inline">\(beta\)</span> is what you’d call a slope, or the rate of change in <span class="math inline">\(mu\)</span> for a unit change in <span class="math inline">\(x\)</span>. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour.</p>
+<p><img src="slides/L03/41.png" width="60%" /></p>
+<p>It’s now predicting lines. So what does the prior predictive distribution look like? A whole lot of lines.</p>
+<p><img src="slides/L03/42.png" width="60%" /></p>
+<p>Simulate 100 lines as before.</p>
+<p><img src="slides/L03/43.png" width="60%" /></p>
+<p>Getting the scatter right is important, because you can see these impossibly steep lines. Some of them take you from impossibly short individuals to twice the tallest. Want to dampen these expectations. Practise on these safe examples.</p>
+<p><img src="slides/L03/44.png" width="60%" /></p>
+<p>We know that <span class="math inline">\(beta\)</span> is positive, so let’s make it positive. A log normal distribution is a normal distribution logged. What’s nice is that they’re all positive. We want to assume the relationship between weight and height is positive.</p>
+<p><img src="slides/L03/45.png" width="60%" /></p>
+<p>Still a lot of scatter, but still one crazy line. Now at least we’re in the possible range.</p>
+<p><img src="slides/L03/46.png" width="60%" /></p>
+<p>Measure xbar. Then define the <code>quap</code> model. Focus on the <span class="math inline">\(mu\)</span> line.</p>
+<p><img src="slides/L03/47.png" width="60%" /></p>
+<p>We managed to get this posterior distribution, and we can take from the precis values the <code>a</code> and <code>b</code>b values and draw a line with those, where <code>a</code> is the expected value of height (155) when weight is at its average value. And the expected change in height is nearly 1. But the posterior distribution is not a single line, it’s an infinite number of lines each with a probability. So let’s get more lines on the graph to show the uncertainty in inference.</p>
+<p><img src="slides/L03/48.png" width="60%" /></p>
+<p>Here’s the basic idea. We’re going to sample from the posterior distribution. But what’s great is that you can use this process for any model you ever want to fit. You can sample from the posterior, then push the samples back through the model itself to plot the uncertainty.</p>
+<p><img src="slides/L03/49.png" width="60%" /> You’re doing calculus here, but just doesn’t feel like it. Each row is a line. Lines that are more plausible have more ways to happen, so they’re overlap more in the areas that are more plausible.</p>
+<p><img src="slides/L03/50.png" width="60%" /></p>
+<p>To see this wor, and reinforce how Bayesian updating works, let’s start with a reduced dataset of 10 randomly sampled adults. We fit our linear regression model, and get a quadratic approximation of the posterior distribution. You’ll see they’re very different from the prior. Now they’re very concentrated around the data. You can see there’s a lot of scatter because the model isn’t sure where it should be.</p>
+<p><img src="slides/L03/51.png" width="60%" /> Now add 50, and you’ll see they get more concentrated. Note the uncertainty at the ends are more uncertain. They pivot around the means in the centre.</p>
+<p><img src="slides/L03/52.png" width="60%" /></p>
+<p><img src="slides/L03/53.png" width="60%" /></p>
+<p>With the whole dataset, it gets quite narrow. You constrained the model to pick a line, and these are the lines that it likes. Doesn’t mean that it’s right.</p>
+<hr />
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L04&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L04/01.png" width="60%" /></p>
+<p><img src="slides/L04/09.png" width="60%" /></p>
+<p>The basic idea that any particular value of the <span class="math inline">\(x\)</span> variables, <span class="math inline">\(mu\)</span> has some density. It’s confident of the values on the inside, less of the values on the outside. As an example, what does the model expect the height of the individual is if weight is 50? <span class="math inline">\(mu\)</span> at 50 is now goingt o create a distribution.</p>
+<p><img src="slides/L04/10.png" width="60%" /></p>
+<p>It’s not sure how tall an individual is, but it thinks it’s in this region. But we want to do this for every x-axis value. This is what produces the smooth bowtie.</p>
+<p><img src="slides/L04/11.png" width="60%" /></p>
+<p>You need to make a sequence of x-axis values (<code>weight.seq</code>). You could make it extraplote further if you like. Then you send these in to the funciton via <code>link</code>. There’s a box in the chapter that shows you how link works. It just loops, but saves you time.</p>
+<p>What you end up with in <span class="math inline">\(m\)</span> is 1000 rows, where each column is a value of weight. Then you can plot these up.</p>
+<p><img src="slides/L04/12.png" width="60%" /></p>
+<p>This is like rolling your own <code>link</code> here.</p>
+<p><img src="slides/L04/13.png" width="60%" /></p>
+<p>Think what’s going on with the distribution. Fuzzy bowtie. There’s a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie.</p>
+<p><img src="slides/L04/14.png" width="60%" /></p>
+<p>Again, there’s a correspondence between the spaghetti lines, and the bowtie form… <img src="slides/L04/15.png" width="60%" /> Same information, just a different visual style.</p>
+<p>One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space.</p>
+<p><img src="slides/L04/16.png" width="60%" /></p>
+<p>We can do the same thing for sigma. There’s an envelope we expect heights to be in.</p>
+<p>Helper function called <code>sim</code> that shows conceptually what’s happening.</p>
+<p><img src="slides/L04/17.png" width="60%" /> That’s linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for <span class="math inline">\(mu\)</span> which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw “lines” i.e. curves from lines. Why? There’s no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship.</p>
+<p>There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it’s used irresponsibly.</p>
+<p>The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don’t exhibit the common pathologies of polynomials. But remember that they’re geocentric models. So when you receive the information from the model, there’s nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data.</p>
+<p><img src="slides/L04/18.png" width="60%" /> This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity.</p>
+<p><img src="slides/L04/19.png" width="60%" /> The data we’re going to use is the total sample. Now we’ll use the kids. Looking at this you can appreciate this isn’t a line. Instead, let’s fit a parabola.</p>
+<p><img src="slides/L04/20.png" width="60%" /> We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new <span class="math inline">\(\beta\)</span> coefficient. Setting priors for this is really hard, because <span class="math inline">\(\beta_2\)</span> has no meaning. But the curve depends on <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span>, and they don’t work in isolation. The individual parameters don’t have meaning. It’s a horrible problem in interpretation. Otherwise it’s the same model. It’s a linear regression in the sense that it’s additive.</p>
+<p><img src="slides/L04/21.png" width="60%" /></p>
+<p>To get the machine to work, very useful to standardise the predictor variables. Center then divide by SD. Take weight, subtract the average weight from each weight value, then divide each of those 0-centered values by the standard deviation of weight. Takes weight and creates a set of z-scores. The fitting software works better on standardise values because it doesn’t have to guess the scale.</p>
+<p><img src="slides/L04/22.png" width="60%" /></p>
+<p>There’s a function in R called <code>scale</code>. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight.</p>
+<p><img src="slides/L04/23.png" width="60%" /> Cooked spaghetti. Now it has an infinite number of parabolas. Now we sample from the posterior, and we got a sample of the high-probability parabolas, a tiny slice of the whole space. And we draw them up, to start with, just 10 individuals. Over the full range, we get parabolas that vary wildly outside of the weights, but straight within the range of the data. This is a phenomenon that’s always present. THe uncertainty intervals always fan out outside of the data range. This is a problem for prediction. Not true for splines. This is because every parameter acts globally on the shape. You can’t tune a specfic region.</p>
+<p><img src="slides/L04/24.png" width="60%" /></p>
+<p>Now we add the next 10, including some children, and the flailing stops. Now we get curves in a much smaller region of the parameter space.</p>
+<p><img src="slides/L04/25.png" width="60%" /> Now it’s getting more concentrated. <img src="slides/L04/26.png" width="60%" /></p>
+<p><img src="slides/L04/27.png" width="60%" /></p>
+<p><img src="slides/L04/28.png" width="60%" /></p>
+<p>Now a thick dark line. Conditional on wanting a parabola to describe the relationship, here are the parabolas. Doesn’t mean the parabola is correct. <img src="slides/L04/29.png" width="60%" /></p>
+<p>It’s very sure, conditional on the shape, that that’s the parameter you want. Those lines don’t fit the data very well, but there’s almost no uncertainty about where they are.</p>
+<p>I’ve extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can’t be <em>monotonic</em>.</p>
+<p>For the cubic, we add our cubic term <span class="math inline">\(\beta_3\)</span>. Fits even better, but now it’s extrapolating upwards.</p>
+<p><img src="slides/L04/30.png" width="60%" /></p>
+<p>In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it’ll do silly things in between.</p>
+<p>The bigger problem is that the parameters all jointly determine the shape, so the model can’t tune them independently to create local fits. That’s why you get silly predictions. Polynomials aren’t that flexible, because the <em>must</em> turn, a certain number of times.</p>
+<p><img src="slides/L04/31.png" width="60%" /></p>
+<p>A common alternative is another geocentric model, which is also satisfying because it’s born from a physical system used to do the same thing. A spline is this metal bar on the draftsman’s table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, <em>knots</em>.</p>
+<p><img src="slides/L04/32.png" width="60%" /> You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they’re geocentric, so you have to understand how they work.</p>
+<p>The basis function is a local function, and the spline is made up of interpolating basis functions. Basis = “component”. Big wiggly function made up of less wiggly functions.</p>
+<p>The “P” stands for “penalised”.</p>
+<p><img src="slides/L04/33.png" width="60%" /></p>
+<p>Again, it’s a linear model, an additive equation for <span class="math inline">\(\mu\)</span>. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you’ll get a fantastic predictor of the relationship between the variables.</p>
+<p>There will be one weight for each of the basis functions. And the weights affect the range defined by the <span class="math inline">\(\beta\)</span> variables.</p>
+<p><img src="slides/L04/34.png" width="60%" /> New example. Let’s find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there’s a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data.</p>
+<p><img src="slides/L04/35.png" width="60%" /></p>
+<p>1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there’s overlap. You’ll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations.</p>
+<p><img src="slides/L04/36.png" width="60%" /> Let’s start with a terrible approximation, and work forwards.</p>
+<p>Here’s the recipe. First choose the location of the knots. Here they are points where the basis spline pivots. Choose a degree of the basis function. Then choose degree of local spline. Then find the posterior distribution of weights. Run this just like any old linear regression.</p>
+<p><img src="slides/L04/37.png" width="60%" /> Start with just 5 knots at equal quantiles. Large literature on this. Nice because it gives you more knots where there’s more data. One at the median, then one at each extreme, and one in between.</p>
+<p><img src="slides/L04/38.png" width="60%" /> Let’s think about construction of these synthetic variables. Think of year. We’ll never use them again. The knots are anchored at year, but then they’re gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It’s weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they’re own precious parameter value.</p>
+<p>When you get to higher degress, they’ll be curves. At any particular point (except at a knot), two of these basis functions will determine the value.</p>
+<p><img src="slides/L04/39.png" width="60%" /></p>
+<p>The only new trick here is to use linear algebra. You can imagine writing 5 terms.</p>
+<p>We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that’s why they call it a penalty. You want one so that you don’t <em>overfit</em>.</p>
+<p><img src="slides/L04/40.png" width="60%" /></p>
+<p>Repeating the equation for <span class="math inline">\(\mu\)</span>. Showing you the posterior mean weights multiplied by those basis functions. That’s what the predictor up top is. Focusing on the posteriro mean. There’s uncertainty here. What happens now is you’re adding those values together. Two lines get added together, and that determines prediction of temperature.</p>
+<p><img src="slides/L04/41.png" width="60%" /></p>
+<p>Resulting spline isn’t super wiggly. Depends on what you want to de-trend.</p>
+<p><img src="slides/L04/42.png" width="60%" /></p>
+<p>Let’s do cubic splines. Most popular because they’re flexible but not crazy. Play around with the number of knots. What you’ll see is you can have too few knots, but at some point you’ll have enough that it won’t make much of a difference. This is what the basis functions look like, and now they’re wigglier, but they also overlap more, so now at a particular point you can have up to four basis curves overlapping.</p>
+<p><img src="slides/L04/43.png" width="60%" /> Here’s with 50 samples from the posterior distribution. There’s all this wiggle, and you add them together and get the spline. Some of these regions have substantial uncertainty about the weight. The uncertainty will collapse. At the parameter level, there’s more uncertainty than there is at the prediction level. This is because the parameters combine to make a prediction. You can be uncertain about the values of the parameters, but you can be very certain about they’re sum. Because if you make <span class="math inline">\(w_3\)</span> bigger, you have to make something else smaller. So when you plot the parameters, you’ll see a lot more uncertainty than the predictions.</p>
+<p><img src="slides/L04/44.png" width="60%" /></p>
+<p>Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest.</p>
+<p>Play around with the knots and degree and priors.</p>
+<p><img src="slides/L04/45.png" width="60%" /> Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year.</p>
+<p><img src="slides/L04/46.png" width="60%" /></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

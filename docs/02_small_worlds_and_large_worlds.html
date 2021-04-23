@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2021-04-20" />
+<meta name="date" content="2021-04-23" />
 
 <title>Chapter 2. Small Worlds and Large Worlds</title>
 
@@ -446,6 +446,12 @@ div.tocify {
   <a href="02_small_worlds_and_large_worlds.html">2. Small Worlds and Large Worlds</a>
 </li>
 <li>
+  <a href="03_sampling_from_the_imaginary.html">3. Sampling from the Imaginary</a>
+</li>
+<li>
+  <a href="04_geocentric_models.html">4. Geocentric models</a>
+</li>
+<li>
   <a href="11_god_spiked_the_integers.html">11. God spiked the integers</a>
 </li>
       </ul>
@@ -461,7 +467,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Chapter 2. Small Worlds and Large Worlds</h1>
-<h4 class="date">2021-04-20</h4>
+<h4 class="date">2021-04-23</h4>
 
 </div>
 
@@ -476,6 +482,8 @@ div.tocify {
 <p><img src="slides/L01/27.png" width="60%" /></p>
 <p>Consider this analogy. When you make a model, you’re Colombus planning with the Austrian globe. Your responsibility is to think you might be wrong, and that the Earth is bigger than that. Study and reconsider the effects. In the real world, there are no optimal procedures. No guarantee that it will guide our behaviour optimally. We should use both of these worlds, and bounce back and forth between them.</p>
 <p><img src="slides/L01/28.png" width="60%" /></p>
+<div id="the-garden-of-forking-data" class="section level2">
+<h2>2.1 The garden of forking data</h2>
 <p><img src="slides/L01/29.png" width="60%" /></p>
 <p><img src="slides/L01/30.png" width="60%" /></p>
 <p>Consider a garden of forking data. Bag with 4 marbles in 2 colours - blue and white. Your job is to tell from a few draws from the bag, how many blue marbles and how many white marbles.</p>
@@ -497,11 +505,17 @@ div.tocify {
 <p><img src="slides/L01/44.png" width="60%" /></p>
 <p>The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with.</p>
 <p><img src="slides/L01/45.png" width="60%" /></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">0</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ways<span class="sc">/</span><span class="fu">sum</span>(ways)</span></code></pre></div>
+<pre><code>## [1] 0.00 0.15 0.40 0.45 0.00</code></pre>
+</div>
+<div id="building-a-model" class="section level2">
+<h2>2.2. Building a model</h2>
 <p><img src="slides/L01/47.png" width="60%" /></p>
 <p>We need some procedure by which we build a model. In every modelling exercise, there’s this recursive process. What do we know about the process before we collect the data? Then we update with the data and count the ways. Then we step out from the small world to the large world. What could be messing with our inference?</p>
 <p><img src="slides/L01/48.png" width="60%" /></p>
 <hr />
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L02&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L02&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L02/01.png" width="60%" /></p>
 <p><img src="slides/L02/02.png" width="60%" /></p>
 <p>The assumptions you build into the model also explain how it learns. It structures experience. No learning without assumptions.</p>
@@ -526,6 +540,9 @@ div.tocify {
 <p>The sample size makes it more and more peaked.</p>
 <p><img src="slides/L02/14.png" width="60%" /></p>
 <p>We want to make an inference about the large world. We need to be critical about. Are there biased throws? We’ll do a lot of posterior prediction checks.</p>
+</div>
+<div id="components-of-the-model" class="section level2">
+<h2>2.3. Components of the model</h2>
 <p><img src="slides/L02/15.png" width="60%" /></p>
 <p><img src="slides/L02/16.png" width="60%" /></p>
 <p>Here we have three variables. <span class="math inline">\(N\)</span> = number of tosses. <span class="math inline">\(p\)</span> = true proportion of water <span class="math inline">\(W\)</span> = observed water catches.</p>
@@ -543,6 +560,8 @@ div.tocify {
 <p><img src="slides/L02/22.png" width="60%" /></p>
 <p>It’s just a compressed mathematical formula for the garden of forking data.</p>
 <p><img src="slides/L02/23.png" width="60%" /></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> .<span class="dv">5</span>)</span></code></pre></div>
+<pre><code>## [1] 0.1640625</code></pre>
 <p><img src="slides/L02/24.png" width="60%" /></p>
 <p>These probabilities describe the prior predictive distribution. In later chapters, this will be a very interesting object.</p>
 <p><img src="slides/L02/25.png" width="60%" /></p>
@@ -550,6 +569,9 @@ div.tocify {
 <p>There’s a stereotyped way to write models.</p>
 <p>“W is distributed binomially with <span class="math inline">\(N\)</span> trials and probability <span class="math inline">\(p\)</span>, and <span class="math inline">\(p\)</span> is distributed uniformly with a mean of 0 and a standard distribution of 1.”</p>
 <p>Simplest possible Bayesian model I can imagine. Actually LaPlace’s model - the law of succession.</p>
+</div>
+<div id="making-the-model-go" class="section level2">
+<h2>2.4. Making the model go</h2>
 <p><img src="slides/L02/27.png" width="60%" /></p>
 <p>The code looks a little different. What you must do mechanically is compute the posterior. Your target is always a posterior distribution. Nice not to have a choice.</p>
 <p>You use Bayes theorem. We’re multiplying the prior by the number of ways the data could have arisen, then standardising. Normalise by summing up the numerators. Its job is to count up the relative number of ways that you could see the data.</p>
@@ -579,35 +601,128 @@ div.tocify {
 <p>Now the probability of the data. We put the whole <code>p_grid</code> in.</p>
 <p><img src="slides/L02/44.png" width="60%" /></p>
 <p>Then finally standardise it. Here nothing happens. The important thing is the multiplication step.</p>
-<p><img src="slides/L02/45.png" width="60%" /></p>
-<p>When I work with Bayesian models, we work with random numbers drawn from the posterior distribution. That’s nice, because you can easily summarise the sample. And you can make inferences from the sample. Cognitively a prosthetic because it helps us transform hard calculus problems into easy data summary problems.</p>
-<p><img src="slides/L02/46.png" width="60%" /></p>
-<p><img src="slides/L02/47.png" width="60%" /></p>
-<p><img src="slides/L02/48.png" width="60%" /></p>
-<p>One line in R is sufficient to do the sampling. <code>p</code> are the possibilities of our grid. We’ll get a big bag of numbers, and they’ll be in the same distribution as our posterior. When you use Markov chains, they only spit out samples.</p>
-<p><img src="slides/L02/49.png" width="60%" /></p>
-<p>What might you want to compute?</p>
-<p>Commonly people want to construct intervals.</p>
-<p><img src="slides/L02/50.png" width="60%" /></p>
-<p>Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there’s an infinite number of 80% intervals.</p>
-<p><img src="slides/L02/51.png" width="60%" /></p>
-<p>Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They’re not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries.</p>
-<p><img src="slides/L02/52.png" width="60%" /> <img src="slides/L02/53.png" width="60%" /></p>
-<p>We care about uncertainty, and we want to summarise that. To use a point estimate, you need to provide a cost-benefit analysis. e.g. conservation or forecasting.</p>
-<p><img src="slides/L02/54.png" width="60%" /></p>
-<p>You can’t have confidence in an interval. It’s doublespeak. <em>Compatibility</em> emphasises the uncertainty. Credibility is the next conversation.</p>
-<p><img src="slides/L02/55.png" width="60%" /></p>
-<p>We’ve got the model and now we want to know what it expects. So we get it to simulate predictions.</p>
-<p><img src="slides/L02/56.png" width="60%" /></p>
-<p>Let’s consider three values from it. If we took the true value A and simlulated a bunch of globe tosses, what would the sampling distribution look like?</p>
-<p><img src="slides/L02/57.png" width="60%" /></p>
-<p><img src="slides/L02/58.png" width="60%" /></p>
-<p>If it were B instead, it would centre around 6.</p>
-<p><img src="slides/L02/59.png" width="60%" /></p>
-<p>We want a posterior predictive distribution which mixes all these together in proportion to the posterior probability of each value of <span class="math inline">\(p\)</span>. We want the actual predictions of the model are not any one of these sampling distributions, they’re all of them mixed together in the proper weights to the improbable weights of <span class="math inline">\(p\)</span> are given little weight and vice versa. <img src="slides/L02/60.png" width="60%" /></p>
-<p><img src="slides/L02/61.png" width="60%" /></p>
-<p>The probabilities come from the samples from the posterior distribution. <img src="slides/L02/62.png" width="60%" /> <img src="slides/L02/63.png" width="60%" /></p>
-<p><img src="slides/L02/64.png" width="60%" /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define grid</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">20</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">20</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">&quot;20 points&quot;</span>)</span></code></pre></div>
+<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-65-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="fl">1e5</span>), <span class="cf">function</span>(grid_size){</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># define prior</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, grid_size)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(grid_size)  </span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-66-1.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-66-2.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-66-3.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-66-4.svg" width="672" /></p>
+<pre><code>## [[1]]
+## NULL
+## 
+## [[2]]
+## NULL
+## 
+## [[3]]
+## NULL
+## 
+## [[4]]
+## NULL</code></pre>
+</div>
+</div>
+<div id="homework-week-1" class="section level1">
+<h1>Homework: week 1</h1>
+<div id="section" class="section level2">
+<h2>1.</h2>
+<p>Supppose the globe tossing data (Chapter 2) had turned out ot be 4 water in 15 tosses. Construct the posterior distrubtuion, using grid approximation. Use the same flat prior as in the book.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>grid_size <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>n_water <span class="ot">=</span> <span class="dv">4</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, grid_size)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(n_water, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(grid_size)  </span></code></pre></div>
+<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-67-1.svg" width="672" /> ## 2.</p>
+<p>Start over in 1, but now use a prior that is zero below <span class="math inline">\(p\)</span> = 0.5 and a constant above <span class="math inline">\(p\)</span> = 0.5. This corresponds to prior inforamtion that a majority of the Earth’s surface is water. What difference does the better prior make?</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>grid_size <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>n_water <span class="ot">=</span> <span class="dv">4</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, grid_size <span class="sc">/</span> <span class="dv">2</span>), <span class="fu">rep</span>(<span class="dv">1</span>, grid_size <span class="sc">/</span> <span class="dv">2</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(n_water, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(grid_size)  </span></code></pre></div>
+<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-68-1.svg" width="672" /></p>
+</div>
+<div id="section-1" class="section level2">
+<h2>3.</h2>
+<p>For the posterior distribution from <strong>2</strong>, compute 89% percentile and HPDI intervals. Compare the widths of these intervals. Which is wider? Why? If you had only the information in the interval, what might you misunderstand about the shape of the posterior distribution?</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">=</span> <span class="fu">sample</span>(p_grid, <span class="at">prob =</span> posterior, <span class="at">size =</span> <span class="fl">1e4</span>, <span class="at">replace =</span> T)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(samples)</span></code></pre></div>
+<pre><code>##        5%       94% 
+## 0.5085085 0.7467467</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples)</span></code></pre></div>
+<pre><code>##     |0.89     0.89| 
+## 0.5005005 0.7107107</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PI is wider, but it doesn&#39;t tell you that the highest point is just after 50%.</span></span></code></pre></div>
+</div>
 </div>
 
 
