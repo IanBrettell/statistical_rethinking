@@ -1,0 +1,134 @@
+---
+title: "Chapter 3. Sampling from the Imaginary"
+date: '`r format(Sys.Date())`'
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    dev: 'svg'
+    number_sections: false
+    pandoc_args: --lua-filter=color-text.lua
+    highlight: pygments
+#output: html_notebook
+#editor_options: 
+#  chunk_output_type: inline
+---
+
+# Setup
+
+```{r, message = F, warning=F}
+library(here)
+source(here::here("code/scripts/source.R"))
+```
+
+```{r}
+slides_dir = here::here("docs/slides/L02")
+```
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '45.png'))
+```
+
+When I work with Bayesian models, we work with random numbers drawn from the posterior distribution. That's nice, because you can easily summarise the sample. And you can make inferences from the sample. Cognitively a prosthetic because it helps us transform hard calculus problems into easy data summary problems. 
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '46.png'))
+```
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '47.png'))
+```
+
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '48.png'))
+```
+
+One line in R is sufficient to do the sampling. `p` are the possibilities of our grid. We'll get a big bag of numbers, and they'll be in the same distribution as our posterior. When you use Markov chains, they only spit out samples.
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '49.png'))
+```
+
+What might you want to compute? 
+
+Commonly people want to construct intervals. 
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '50.png'))
+```
+
+Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals.
+
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '51.png'))
+```
+
+Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They're not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries. 
+
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
+```
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
+```
+
+We care about uncertainty, and we want to summarise that. To use a point estimate, you need to provide a cost-benefit analysis. e.g. conservation or forecasting. 
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
+You can't have confidence in an interval. It's doublespeak. *Compatibility* emphasises the uncertainty. Credibility is the next conversation. 
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '55.png'))
+```
+
+We've got the model and now we want to know what it expects. So we get it to simulate predictions. 
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '56.png'))
+```
+
+Let's consider three values from it. If we took the true value A and simlulated a bunch of globe tosses, what would the sampling distribution look like? 
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '57.png'))
+```
+
+
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '58.png'))
+```
+
+If it were B instead, it would centre around 6. 
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '59.png'))
+```
+
+We want a posterior predictive distribution which mixes all these together in proportion to the posterior probability of each value of $p$. We want the actual predictions of the model are not any one of these sampling distributions, they're all of them mixed together in the proper weights to the improbable weights of $p$ are given little weight and vice versa. 
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '60.png'))
+```
+
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '61.png'))
+```
+
+The probabilities come from the samples from the posterior distribution. 
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '62.png'))
+```
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '63.png'))
+```
+
+```{r, echo = F, out.width='60%'}
+knitr::include_graphics(file.path(slides_dir, '64.png'))
+```

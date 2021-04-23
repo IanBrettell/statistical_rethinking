@@ -1,5 +1,5 @@
 ---
-title: "Chapter 11. God spiked the integers"
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
 output:
   html_document:
@@ -14,13 +14,27 @@ output:
 #  chunk_output_type: inline
 ---
 
-Consolidated slides, notes, code and output from the *Statistical Rethinking* book and course by Richard McElreath.
+Consolidated slides, notes, homework, code and output from the *Statistical Rethinking* book and course by Richard McElreath.
+
+Repo with slides and homework here: <https://github.com/rmcelreath/stat_rethinking_2020>
 
 Buy the book here: <https://xcelab.net/rm/statistical-rethinking/>
 
 McElreath's GitHub here: <https://github.com/rmcelreath>
 
-Copy slides over from GitHub page and split into separate directories
+Slides downloaded manually via links on GitHub page and split into separate directories.
+
+## Install packages
+
+```{r, eval = F}
+renv::init()
+devtools::install_github("stan-dev/cmdstanr")
+cmdstanr::install_cmdstan()
+install.packages(c("coda","mvtnorm","devtools","loo","dagitty"))
+devtools::install_github("rmcelreath/rethinking")
+
+set_ulam_cmdstan(TRUE)
+```
 
 ## Split and convert slides
 
@@ -52,10 +66,10 @@ lapply(dir_name, function(LECTURE){
 })
 ```
 
-Template code for creating the markdown code to incorporate the slides
+## Create markdown code to incorporate slides
 
-```{r}
-slides_dir = here::here("docs/slides/L02")
+```{r, eval = F}
+slides_dir = here::here("docs/slides/L03")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){
