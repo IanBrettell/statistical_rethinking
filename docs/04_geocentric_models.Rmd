@@ -509,93 +509,101 @@ The bigger problem is that the parameters all jointly determine the shape, so th
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-A common alternative is another geocentric model, whcih is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. 
+A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*. 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
+You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they're geocentric, so you have to understand how they work. 
+
+The basis function is a local function, and the spline is made up of interpolating basis functions. Basis = "component". Big wiggly function made up of less wiggly functions. 
+
+The "P" stands for "penalised". 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
+Again, it's a linear model, an additive equation for $\mu$. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you'll get a fantastic predictor of the relationship between the variables. 
+
+There will be one weight for each of the basis functions. And the weights affect the range defined by the $\beta$ variables. 
+
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
+New example. Let's find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there's a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data. 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
+1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there's overlap. You'll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations. 
+
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
+Let's start with a terrible approximation, and work forwards.
+
+Here's the recipe. First choose the location of the knots. Here they are points where the basis spline pivots. Choose a degree of the basis function. Then choose degree of local spline. Then find the posterior distribution of weights. Run this just like any old linear regression.
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
+Start with just 5 knots at equal quantiles. Large literature on this. Nice because it gives you more knots where there's more data. One at the median, then one at each extreme, and one in between. 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
+Let's think about construction of these synthetic variables. Think of year. We'll never use them again. The knots are anchored at year, but then they're gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It's weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they're own precious parameter value. 
+
+When you get to higher degress, they'll be curves. At any particular point (except at a knot), two of these basis functions will determine the value. 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
+The only new trick here is to use linear algebra. You can imagine writing 5 terms. 
+
+We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. 
+
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
+
+Repeating the equation for $\mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature. 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
+Resulting spline isn't super wiggly. Depends on what you want to de-trend. 
+
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
+Let's do cubic splines. Most popular because they're flexible but not crazy. Play around with the number of knots. What you'll see is you can have too few knots, but at some point you'll have enough that it won't make much of a difference. This is what the basis functions look like, and now they're wigglier, but they also overlap more, so now at a particular point you can have up to four basis curves overlapping. 
+
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
+Here's with 50 samples from the posterior distribution. There's all this wiggle, and you add them together and get the spline. Some of these regions have substantial uncertainty about the weight. The uncertainty will collapse. At the parameter level, there's more uncertainty than there is at the prediction level. This is because the parameters combine to make a prediction. You can be uncertain about the values of the parameters, but you can be very certain about they're sum. Because if you make $w_3$ bigger, you have to make something else smaller. So when you plot the parameters, you'll see a lot more uncertainty than the predictions.
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
+Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest. 
+
+Play around with the knots and degree and priors.
+
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```
+Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year. 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '47.png'))
-```
-
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '48.png'))
-```
-
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '49.png'))
-```
-
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '50.png'))
-```
-
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '51.png'))
-```
-
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '52.png'))
-```
-
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '53.png'))
-```
 
