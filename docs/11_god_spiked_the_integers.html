@@ -585,11 +585,8 @@ div.tocify {
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    a[actor] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">1.5</span> ),</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    b[treatment] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> )</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>dat_list , <span class="at">chains=</span><span class="dv">4</span> , <span class="at">log_lik=</span><span class="cn">TRUE</span> )</span></code></pre></div>
-<pre><code>## This is cmdstanr version 0.4.0.9000</code></pre>
-<pre><code>## - Online documentation and vignettes at mc-stan.org/cmdstanr</code></pre>
-<pre><code>## - CmdStan path set to: /Users/brettell/.cmdstanr/cmdstan-2.26.1</code></pre>
-<pre><code>## - Use set_cmdstan_path() to change the path</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m11<span class="fl">.4</span> , <span class="at">depth=</span><span class="dv">2</span> )</span></code></pre></div>
+<pre><code>## Compiling Stan program...</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m11<span class="fl">.4</span> , <span class="at">depth=</span><span class="dv">2</span> )</span></code></pre></div>
 <p><img src="slides/L12/L12_07_chimps.png" width="800" /></p>
 <p>We ran four chains here and here’s the summary. 7 chimp parameters and 4 treatment parameters. Each posterior mean is on the logit scale for handedness preference. Above 0 = left lever pulled more. Below is pulled left.</p>
 <p><img src="slides/L12/L12_08.png" width="800" /></p>
