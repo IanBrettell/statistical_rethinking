@@ -69,7 +69,7 @@ lapply(dir_name, function(LECTURE){
 ## Create markdown code to incorporate slides
 
 ```{r, eval = F}
-slides_dir = here::here("docs/slides/L03")
+slides_dir = here::here("docs/slides/L05")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){
