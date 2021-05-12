@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="2.2 Building a model | Chapter 4. Geocentric Models" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-05-12" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="2.2 Building a model | Chapter 4. Geocentric Models">
+
+<title>2.2 Building a model | Chapter 4. Geocentric Models</title>
+
+<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="preface.html#preface">Preface</a>
+<ul>
+<li><a href="0-1-install-packages.html#install-packages"><span class="toc-section-number">0.1</span> Install packages</a></li>
+<li><a href="0-2-split-and-convert-slides.html#split-and-convert-slides"><span class="toc-section-number">0.2</span> Split and convert slides</a></li>
+<li><a href="0-3-create-markdown-code-to-incorporate-slides.html#create-markdown-code-to-incorporate-slides"><span class="toc-section-number">0.3</span> Create markdown code to incorporate slides</a></li>
+</ul></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a>
+<ul>
+<li><a href="3-2-sampling-to-summarize.html#intervals-of-defined-boundaries"><span class="toc-section-number">3.2.1</span> Intervals of defined boundaries</a></li>
+<li><a href="3-2-sampling-to-summarize.html#intervals-of-defined-mass"><span class="toc-section-number">3.2.2</span> Intervals of defined mass</a></li>
+<li><a href="3-2-sampling-to-summarize.html#point-estimates"><span class="toc-section-number">3.2.3</span> Point estimates</a></li>
+</ul></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a>
+<ul>
+<li><a href="3-3-sampling-to-simulate-prediction.html#dummy-data"><span class="toc-section-number">3.3.1</span> Dummy data</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#model-checking"><span class="toc-section-number">3.3.2</span> Model checking</a></li>
+</ul></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-setup.html#setup"><span class="toc-section-number">4</span> Setup</a></li>
+<li><a href="5-text.html#text"><span class="toc-section-number">5</span> Text</a>
+<ul>
+<li><a href="5-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">5.1</span> Why normal distributions are normal</a>
+<ul>
+<li><a href="5-1-why-normal-distributions-are-normal.html#normal-by-addition"><span class="toc-section-number">5.1.1</span> Normal by addition</a></li>
+<li><a href="5-1-why-normal-distributions-are-normal.html#normal-by-multiplication"><span class="toc-section-number">5.1.2</span> Normal by multiplication</a></li>
+<li><a href="5-1-why-normal-distributions-are-normal.html#normal-by-log-multiplication"><span class="toc-section-number">5.1.3</span> Normal by log-multiplication</a></li>
+<li><a href="5-1-why-normal-distributions-are-normal.html#using-gaussian-distributions"><span class="toc-section-number">5.1.4</span> Using Gaussian distributions</a></li>
+</ul></li>
+<li><a href="5-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">5.2</span> A language for describing models</a>
+<ul>
+<li><a href="5-2-a-language-for-describing-models.html#re-describing-the-glob-tossing-model"><span class="toc-section-number">5.2.1</span> Re-describing the glob tossing model</a></li>
+</ul></li>
+<li><a href="5-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">5.3</span> Gaussian model of height</a>
+<ul>
+<li><a href="5-3-gaussian-model-of-height.html#the-data"><span class="toc-section-number">5.3.1</span> The data</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#the-model"><span class="toc-section-number">5.3.2</span> The model</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#grid-approximation-of-the-posterior-distribution"><span class="toc-section-number">5.3.3</span> Grid approximation of the posterior distribution</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#sampling-from-the-posterior"><span class="toc-section-number">5.3.4</span> Sampling from the posterior</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#finding-the-posterior-distribution-with-quap"><span class="toc-section-number">5.3.5</span> Finding the posterior distribution with <code>quap</code></a></li>
+<li><a href="5-3-gaussian-model-of-height.html#sampling-from-a-quap"><span class="toc-section-number">5.3.6</span> 4.3.6. Sampling from a <code>quap</code></a></li>
+</ul></li>
+<li><a href="5-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">5.4</span> 4.4. Linear prediction</a>
+<ul>
+<li><a href="5-4-linear-prediction.html#the-linear-model-strategy"><span class="toc-section-number">5.4.1</span> 4.14.1. The linear model strategy</a></li>
+<li><a href="5-4-linear-prediction.html#finding-the-posterior-distribution"><span class="toc-section-number">5.4.2</span> 4.4.2. Finding the posterior distribution</a></li>
+<li><a href="5-4-linear-prediction.html#interpreting-the-posterior-distribution"><span class="toc-section-number">5.4.3</span> 4.4.3. Interpreting the posterior distribution</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="building-a-model" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Building a model</h2>
+<div class="figure"><span id="fig:unnamed-chunk-48"></span>
+<p class="caption marginnote shownote">
+Figure 2.10: We need some procedure by which we build a model. In every modelling exercise, there’s this recursive process. What do we know about the process before we collect the data? Then we update with the data and count the ways. Then we step out from the small world to the large world. What could be messing with our inference?
+</p>
+<img src="slides/L01/47.png" alt="We need some procedure by which we build a model. In every modelling exercise, there's this recursive process. What do we know about the process before we collect the data? Then we update with the data and count the ways. Then we step out from the small world to the large world. What could be messing with our inference?" width="80%"  />
+</div>
+<p><img src="slides/L01/48.png" width="80%"  /></p>
+<hr />
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="2-2-building-a-model.html#cb10-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L02&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L02/01.png" width="80%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-52"></span>
+<p class="caption marginnote shownote">
+Figure 2.11: The assumptions you build into the model also explain how it learns. It structures experience. No learning without assumptions.
+</p>
+<img src="slides/L02/02.png" alt="The assumptions you build into the model also explain how it learns. It structures experience. No learning without assumptions." width="80%"  />
+</div>
+<p><label for="tufte-mn-2" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-2" class="margin-toggle"><span class="marginnote"><span style="display: block;">Design the model using the scientific background of the data. Add the data and update, then get critical. Never relinquish control to the golem.</span></span></p>
+<div class="figure"><span id="fig:unnamed-chunk-54"></span>
+<p class="caption marginnote shownote">
+Figure 2.12: Let’s go through an example. We would continue this sampling process. Here we can see exactly how the data is generated. We’re throwing the small world around in order to estimate something about the large world.
+</p>
+<img src="slides/L02/03.png" alt="Let's go through an example. We would continue this sampling process. Here we can see exactly how the data is generated. We're throwing the small world around in order to estimate something about the large world." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-55"></span>
+<p class="caption marginnote shownote">
+Figure 2.13: What’s the data story? What do you know about how the data has arisen? We know a lot. We saw it generated. We think there’s no way you can rig the throw. So each throw is random, and the probability your hand lands on water should be proportional to the amount of water on earth.
+</p>
+<img src="slides/L02/04.png" alt="What's the data story? What do you know about how the data has arisen? We know a lot. We saw it generated. We think there's no way you can rig the throw. So each throw is random, and the probability your hand lands on water should be proportional to the amount of water on earth." width="80%"  />
+</div>
+<p><label for="tufte-mn-3" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-3" class="margin-toggle"><span class="marginnote"><span style="display: block;">It’s a chaotic system. It’s a deterministic physical system, but tiny differences in the initial conditions result in effectively random outcomes.</span></span></p>
+<p><label for="tufte-mn-4" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-4" class="margin-toggle"><span class="marginnote"><span style="display: block;">All the tosses are independent - but this is an assumption, so we should test that.</span></span></p>
+<div class="figure"><span id="fig:unnamed-chunk-58"></span>
+<p class="caption marginnote shownote">
+Figure 2.14: Give you model some initial plausibility about the values of <span class="math inline">\(p\)</span>. Conditioning means slicing off possibilities.
+</p>
+<img src="slides/L02/05.png" alt="Give you model some initial plausibility about the values of $p$. Conditioning means slicing off possibilities." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-59"></span>
+<p class="caption marginnote shownote">
+Figure 2.15: The prior sets all the possible states it could be in. Then the first data point arrives, and the model will update this. The prior is then transformed into a new distribution. If there’s any relevant information, the model figures it out. Now higer values are more likely, and now that you’ve observed water, “no water” is impossible.
+</p>
+<img src="slides/L02/07.png" alt="The prior sets all the possible states it could be in. Then the first data point arrives, and the model will update this. The prior is then transformed into a new distribution. If there's any relevant information, the model figures it out. Now higer values are more likely, and now that you've observed water, &quot;no water&quot; is impossible." width="80%"  />
+</div>
+<p><img src="slides/L02/08.png" width="80%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-61"></span>
+<p class="caption marginnote shownote">
+Figure 2.16: Now the second plot includes the second sample. Every posterior is the prior for the next plot. When n = 2, you got land, so “all water” also become impossible.
+</p>
+<img src="slides/L02/09.png" alt="Now the second plot includes the second sample. Every posterior is the prior for the next plot. When n = 2, you got land, so &quot;all water&quot; also become impossible." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-62"></span>
+<p class="caption marginnote shownote">
+Figure 2.17: Note it’s shifting less and less, so each additional data point contributes less marginal information.
+</p>
+<img src="slides/L02/12.png" alt="Note it's shifting less and less, so each additional data point contributes less marginal information." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-63"></span>
+<p class="caption marginnote shownote">
+Figure 2.18: So this is the conditioning step. We did this one data point at a time, but usually we just throw the whole sample in. But we get the same answer. Like a cat, you can give it all the treats at once, and it’ll get just as fat. For this model, the sequence doesn’t matter, but sometimes it does so you should pay attention to that.
+</p>
+<img src="slides/L02/13.png" alt="So this is the conditioning step. We did this one data point at a time, but usually we just throw the whole sample in. But we get the same answer. Like a cat, you can give it all the treats at once, and it'll get just as fat. For this model, the sequence doesn't matter, but sometimes it does so you should pay attention to that." width="80%"  />
+</div>
+<p><label for="tufte-mn-5" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-5" class="margin-toggle"><span class="marginnote"><span style="display: block;">The sample size makes it more and more peaked.</span></span></p>
+<div class="figure"><span id="fig:unnamed-chunk-65"></span>
+<p class="caption marginnote shownote">
+Figure 2.19: We want to make an inference about the large world. We need to be critical about. Are there biased throws? We’ll do a lot of posterior prediction checks.
+</p>
+<img src="slides/L02/14.png" alt="We want to make an inference about the large world. We need to be critical about. Are there biased throws? We'll do a lot of posterior prediction checks." width="80%"  />
+</div>
+</div>
+<p style="text-align: center;">
+<a href="2-1-the-garden-of-forking-data.html"><button class="btn btn-default">Previous</button></a>
+<a href="2-3-components-of-the-model.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

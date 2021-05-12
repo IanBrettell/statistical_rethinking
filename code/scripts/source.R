@@ -13,6 +13,7 @@ library(dagitty)
 library(magick)
 library(tidyverse)
 library(MASS)
+library(tufte)
 
 ##########################
 # Parameters

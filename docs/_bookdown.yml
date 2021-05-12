@@ -1,0 +1,14 @@
+book_filename: "Statistical Rethinking notes"
+language:
+  ui:
+    chapter_name: "Chapter "
+delete_merged_file: true
+rmd_files: ["test.Rmd",
+            "01_the_golem_of_prague.Rmd",
+            "02_small_worlds_and_large_worlds.Rmd",
+            "03_sampling_from_the_imaginary.Rmd",
+            "04_geocentric_models.Rmd",
+#            "05_the_many_variables_and_the_spurious_waffles.Rmd"
+            ]
+
+

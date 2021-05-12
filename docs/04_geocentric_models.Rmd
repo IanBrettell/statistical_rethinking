@@ -1,20 +1,27 @@
 ---
 title: "Chapter 4. Geocentric Models"
 date: '`r format(Sys.Date())`'
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    dev: 'svg'
-    number_sections: false
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
+#output:
+#  html_document:
+#    toc: true
+#    toc_float: true
+#    dev: 'svg'
+#    number_sections: false
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
 #output: html_notebook
 #editor_options: 
 #  chunk_output_type: inline
+output:
+  bookdown::tufte_html_book:
+    toc: yes
+    css: toc.css
+    pandoc_args: --lua-filter=color-text.lua
+    highlight: pygments
+    link-citations: yes
 ---
 
-# Setup
+# Geocentric Models
 
 ```{r, message = F, warning=F}
 library(here)
@@ -25,131 +32,108 @@ source(here::here("code/scripts/source.R"))
 slides_dir = here::here("docs/slides/L03")
 ```
 
-# Text
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '01.png'))
 ```
 
 Introduction into regression models.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "As scientists, we're always dealing with questions that have higher dimensions and more complexity than what we can measure. Above is the path of Mars, called *retrograde motion*. It's an illusion caused by the joint movement of ourselves and Mars. The relative velocities create the illusion."}
 knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
 
-As scientists, we're always dealing with questions that have higher dimensions and more complexity than what we can measure. 
-Above is the path of Mars, called *retrograde motion*. It's an illusion caused by the joint movement of ourselves and Mars. The relative velocities create the illusion.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "A lot of people published models, but this one is very accurate. They're full-blown mathematical models. But they're also wrong. You can't use them to send a probe to Mars. This is like a regression model. They're incredibly accurate for specific purposes, but they're also deeply wrong. Keep in mind the small world / large world distinction. "}
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
 
-A lot of people published models, but this one is very accurate. They're full-blown mathematical models. But they're also wrong. You can't use them to send a probe to Mars. This is like a regression model. They're incredibly accurate for specific purposes, but they're also deeply wrong. Keep in mind the small world / large world distinction. 
-
+```{marginfigure}
 You could say scientists are geocentric people. The reason Ptolemy's model works so well is that they used Fourier series - circles in circles ("epicircles"). You can use this for anything with periodic cycles. And this model still works. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We're here to build models of many diverse things. We don't usually use Fourier models; instead we tend to use regression. Linear regression models are incredibly useful. But if you use them without wisdom, all they do is describe things without wisdom."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
-We're here to build models of many diverse things. We don't usually use Fourier models; instead we tend to use regression. Linear regression models are incredibly useful. But if you use them without wisdom, all they do is describe things without wisdom.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Statistical golems which measure how the mean of some measure changes when you learn other things. The mean is always modeled as some additive weighted measure of variables."}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
 
-Statistical golems which measure how the mean of some measure changes when you learn other things. The mean is always modeled as some additive weighted measure of variables.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Gauss developed regression, but he did it using a Bayesian argument. He used it to predict when a comet would return."}
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
-Gauss developed regression, but he did it using a Bayesian argument. He used it to predict when a comet would return. 
+## Why normal distributions are normal
 
-## 4.1. Why normal distributions are normal
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "These appear all throughout nature. Why are they so normal? They arise from all over the place."}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
-These appear all throughout nature. Why are they so normal? They arise from all over the place. 
-
-### 4.1.1. Normal by addition
+### Normal by addition
 
 One of the things that are nice about them is that they are additive. So easy to work with. 
 Second is that they're very common.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Imagine a football pitch. We all line up on the midfield line. Take a coin out of your pocket and flip it. One step left for heads, right for tails. Do it a few hundred times."}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
-Imagine a football pitch. We all line up on the midfield line. Take a coin out of your pocket and flip it. One step left for heads, right for tails. Do it a few hundred times.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The frequency distribution will be Gaussian."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
-The frequency distribution will be Gaussian. 
-
-```{r 4.1}
+```{r 4.1, fig.margin = T}
 pos = replicate(1000, sum(runif(16, -1, 1)))
 plot(density(pos))
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "This is a simulation of the soccer field experiment. After four flips (steps). Black follows one particular student. A pattern forms in the aggregation. This isn't very Gaussian yet. "}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
-This is a simulation of the soccer field experiment. After four flips (steps). Black follows one particular student. A pattern forms in the aggregation. This isn't very Gaussian yet. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "After 8 it's pretty Gaussian."}
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
-After 8 it's pretty Gaussian.
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "And after 16 it's very Gaussian. It'll get wider and wider over time. Why does this happen? Lot's of mathematical theorems. But the intuition is that each coin flip is a fluctuation. And in the long run, fluctuations tend to cancel. If you get a string of lefts, eventually you'll get a string of rights, so the average student will end up near the middle. A very large number of them exactly cancel each other. There are more paths that will give you 0 than any other path. Then there are a few less that give you +1 or -1. And so forth."}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
-And after 16 it's very Gaussian. It'll get wider and wider over time. Why does this happen? Lot's of mathematical theorems. But the intuition is that each coin flip is a fluctuation. And in the long run, fluctuations tend to cancel. If you get a string of lefts, eventually you'll get a string of rights, so the average student will end up near the middle. A very large number of them exactly cancel each other. There are more paths that will give you 0 than any other path. Then there are a few less that give you +1 or -1. And so forth.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "That's why a bunch of natural systems are normally distributed. We don't need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you're left with are particular shapes, called *maximum entropy distributions*. For the Gaussian, **addition** is our friend. "}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
-That's why a bunch of natural systems are normally distributed. We don't need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you're left with are particular shapes, called *maximum entropy distributions*. For the Gaussian, **addition** is our friend. 
-
+```{marginfigure}
 One of the things about it is that products of deviations are actually addition. So lots of multiplicative interactions also produce Gaussian distributions. 
 
 You can measure things on logarithmic scales.
+```
 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "This is the ontological perspective on distributions. When fluctuations tend to dampen one another, you end up with a symmetric curve. What neat and also frustrating is that you lose a lot of information about the generative processes. When you see heights are normally distributed, you learn basically nothing about it. This is cool because all that's preserved from the underlying process is the mean and the variance. What's terrible is that you can't figure out the process from the distribution. "}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
 
-This is the ontological perspective on distributions. When fluctuations tend to dampen one another, you end up with a symmetric curve. What neat and also frustrating is that you lose a lot of information about the generative processes. When you see heights are normally distributed, you learn basically nothing about it. This is cool because all that's preserved from the underlying process is the mean and the variance. What's terrible is that you can't figure out the process from the distribution. 
-
+```{marginfigure}
 All the maximum entropy distributions have the same feature. Power laws arise through lots of processes, and it tells you nothing other than it has high variance. 
 
 The other perspective is epistemological. If you're building a model and you want to be as conservative as possible, you should use the Gaussian distribution. Because any other distribution will be narrower. So it's a very good assumption to use when you don't have additional information. 
 
 The Gaussian is the one where all you're willing to say is there's a mean and a variance, you should use the Gaussian. It assumes the least.
+```
 
-### 4.1.2 Normal by multiplication
+### Normal by multiplication
 
 This code just samples 12 random numbers between 1.0 and 1.1, each representing a proportional increase in growth. Thus 1.0 means no additional growth and 1.1 means a 10% increase.
 
@@ -159,66 +143,61 @@ prod(1 + runif(12, 0, .1))
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
 
-```{r 4.3}
+```{r 4.3, fig.margin = T}
 growth = replicate(1e4, prod(1 + runif(12, 0, 0.1)))
 rethinking::dens(growth, norm.comp = T)
 ```
+
 Multiplying small numbers if approximately the same as addition.
 
 The smaller the effect of each locus, the better this additive approximation will be. In this way, small effects that multiply together are approximately additive, and so they also tend to stabilize on Gaussian distributions. 
 
 Verify by comparing:
 
-```{r 4.4}
+```{r 4.4, fig.margin = T}
 big = replicate(1e4, prod(1 + runif(12, 0, .5)))
 small = replicate(1e4, prod(1 + runif(12, 0, 0.01)))
 
 rethinking::dens(big, norm.comp = T)
 rethinking::dens(small, norm.comp = T)
 ```
-### 4.1.3. Normal by log-multiplication
+
+### Normal by log-multiplication
 
 Large deviates that are multiplied together do not produce Gaussian distributions, but they do tend to produce Gaussian distributions on the log scale. e.g.:
 
-```{r 4.5}
+```{r 4.5, fig.margin = T}
 log.big = replicate(1000, log(prod(1 + runif(12, 0, .5))))
 rethinking::dens(log.big, norm.comp = T)
 ```
+
 Adding logs is equivalent to multiplying the original numbers. 
 
-### 4.1.4. Using Gaussian distributions
+### Using Gaussian distributions
 
 **Caution**: Many natural (and unnatural) processes have much heavier tails - much higher probabilities of producing extreme events.
 
-## 4.2. A language for describing models
+## A language for describing models
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "All of those things are linear models. Just learn the linear modeling strategies instead of the specific procedures. We'll build up linear models from the ground up. You can build the model you need."}
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
-All of those things are linear models. Just learn the linear modeling strategies instead of the specific procedures. We'll build up linear models from the ground up. You can build the model you need.
+### Re-describing the glob tossing model
 
-### 4.2.1. Re-describing the glob tossing model
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We're going to write out all the models in the same standard notation. We're going to write this in our code so that it's reinforced."}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
-We're going to write out all the models in the same standard notation. We're going to write this in our code so that it's reinforced. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Same applies for more complex models. Some of these things you can observe (water tosses), and some you can't (regression slopes). We need to list these variables and then define them."}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-Same applies for more complex models. Some of these things you can observe (water tosses), and some you can't (regression slopes). We need to list these variables and then define them. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The motor of these linear regression models. There's some mean of the normal distribution that is explained by $x$. But $x$ also has a distribution. "}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-The motor of these linear regression models. There's some mean of the normal distribution that is explained by $x$. But $x$ also has a distribution. 
-
-```{r 4.6}
+```{r 4.6, fig.margin = T}
 w = 6; n = 9
 p_grid = seq(from = 0, to = 1, length.out = 100)
 posterior = dbinom(w, n, p_grid) * dunif(p_grid, 0, 1)
@@ -227,17 +206,16 @@ posterior = posterior / sum(posterior)
 samples = sample(p_grid, 1e5, prob = posterior, replace = T)
 rethinking::dens(samples)
 ```
-## 4.3. Gaussian model of height
+
+## Gaussian model of height
 
 Before we add a predictor variable, we want to model the outcome variable as a Gaussian distribution. There are an infinite number of possible Gaussian distributions based on infinite combinations of $\mu$ and $\sigma$. We want our Bayesian machine to consider every possible distribution, and rank them by posterior plausibility. 
 
-### 4.3.1. The data
+### The data
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "These height data come from Nancy Howell's data. `Howell1` is a simplified dataset. We'll focus just on adult heights at the moment. "}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
-
-These height data come from Nancy Howell's data. `Howell1` is a simplified dataset. We'll focus just on adult heights at the moment. 
 
 ```{r 4.7}
 data(Howell1)
@@ -251,6 +229,7 @@ str(d)
 ```{r 4.9}
 rethinking::precis(d)
 ```
+
 ```{r 4.10}
 d$height
 ```
@@ -260,55 +239,50 @@ Filter for adults:
 d2 = d[d$age >= 18, ]
 ```
 
-### 4.3.2. The model
+### The model
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Here's the distribution of height data. $h$ is distributed normally."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
-Here's the distribution of height data. $h$ is distributed normally. 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "There's nothing special about the particular letters used. But it's important to be able to read this. Now we have three variables. One is observed, and two have not. We have to infrer them from $h$."}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-There's nothing special about the particular letters used. But it's important to be able to read this. Now we have three variables. One is observed, and two have not. We have to infrer them from $h$. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Because this is Bayesian, they have prior distributions. Using 187 cm (height of Richard) as the prior. Standard deviation is on the mean. 20 is very generous. Then for sigma, uniform 50. "}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
-Because this is Bayesian, they have prior distributions. Using 187 cm (height of Richard) as the prior. Standard deviation is on the mean. 20 is very generous. Then for sigma, uniform 50. 
-
 Whatever the prior, it's a very good idea to plot your priors:
 
-```{r 4.12}
+```{r 4.12, fig.margin = T}
 curve(dnorm(x, 178, 20), from = 100, to = 250)
 ```
 
 The $\sigma$ prior is a truly flat prior.
 
-```{r 4.13}
+```{r 4.13, fig.margin = T}
 curve(dunif(x, 0, 50), from = -10, to = 60)
 ```
+
 A standard deviation like $\sigma$ must be positive, so bounding it at zero makes sense.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Before your model has seen the data. This is not p-hacking, because we're not using the data. We're using scientific information. All you have to sample values."}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-Before your model has seen the data. This is not p-hacking, because we're not using the data. We're using scientific information. All you have to sample values.
-
-```{r 4.14}
+```{r 4.14, fig.margin = T}
 sample_mu = rnorm(1e4, 178, 20)
 sample_sigma = runif(1e4, 0, 50)
 prior_h = rnorm(1e4, sample_mu, sample_sigma)
 rethinking::dens(prior_h)
 ```
+
 This is not a normal distribution. It's a t-distribution because you have uncertainty about variance, which gives it fat tails. There are some really really tall individuals in this prior. But at least we don't have any negative heights. 
 
 Let's see the implied heights:
 
-```{r 4.15}
+```{r 4.15, fig.margin = T}
 sample_mu = rnorm(1e4, 178, 100)
 prior_h = rnorm(1e4, sample_mu, sample_sigma)
 rethinking::dens(prior_h)
@@ -318,28 +292,23 @@ Before it even sees the data, it expects 4% of people to have negative height, a
 
 Let's use a different prior.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Typical linear regression priors are flat. They're bad new because they create impossible outcomes before you even see the data."}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-Typical linear regression priors are flat. They're bad new because they create impossible outcomes before you even see the data.
+### Grid approximation of the posterior distribution
 
-### 4.3.3. Grid approximation of the posterior distribution
-
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Once you start working with mixed models, the priors have a greater effect, so it's good to get used to prior predictive simulation now."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-Once you start working with mixed models, the priors have a greater effect, so it's good to get used to prior predictive simulation now. 
-
+```{marginfigure}
 We'll calculate the grid and the posterior probability. How? Multiply the observed height conditional on the mu and sigma at that point. Times the prior probability of that mu and sigma. They code to do this is some loops. 
-
-```{r, echo = F, out.width='60%'}
-knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-100x100 you start to see the Gaussian hill. Gradually the values become increasingly implausible. What we do here is draw samples.
+```{r, echo = F, out.width='80%', fig.cap = "100x100 you start to see the Gaussian hill. Gradually the values become increasingly implausible. What we do here is draw samples."}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
 
 Here are the guts of the golem:
 
@@ -356,13 +325,15 @@ post$prob <- exp( post$prod - max(post$prod) )
 
 Inspect the posterior distribution
 
-```{r 4.17}
+```{r 4.17, fig.margin = T}
 rethinking::contour_xyz(post$mu, post$sigma, post$prob)
 ```
-```{r 4.18}
+
+```{r 4.18, fig.margin = T}
 rethinking::image_xyz(post$mu, post$sigma, post$prob)
 ```
-### 4.3.4. Sampling from the posterior
+
+### Sampling from the posterior
 
 
 ```{r 4.19}
@@ -371,29 +342,29 @@ sample.mu <- post$mu[ sample.rows ]
 sample.sigma <- post$sigma[ sample.rows ]
 ```
 
-```{r 4.20}
+```{r 4.20, fig.margin = T}
 plot( sample.mu , sample.sigma , cex=0.5 , pch=16 , col=rethinking::col.alpha(rangi2,0.1) )
 ```
-```{r 4.21}
+
+```{r 4.21, fig.margin = T}
 rethinking::dens(sample.mu)
 rethinking::dens(sample.sigma)
 ```
+
 Summarise the widths:
-```{r 4.22}
+
+```{r 4.22, fig.margin = T}
 rethinking::PI(sample.mu)
 rethinking::PI(sample.sigma)
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Once you have the samples, you just work with the data frame. You can look at cross-sections of this."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-Once you have the samples, you just work with the data frame. You can look at cross-sections of this. 
-
 Note that this isn't perfectly symmetrical for sigma - the right tail is longer. This is almost always true for SD parameters. Why? Because you know something about the SD before you see the data: you know it's positive. So you always have more uncertainty on the higher end. 
 
-Let's analyze only 20 of the heights from teh height data to reveal this issue.
+Let's analyze only 20 of the heights from the height data to reveal this issue.
 
 ```{r 4.23}
 d3 = sample(d2$height, size = 20)
@@ -422,26 +393,25 @@ plot( sample2.mu , sample2.sigma , cex=0.5 ,
 ```{r 4.25}
 rethinking::dens(sample2.sigma, norm.comp = T)
 ```
+
 Now you can see the posterior for $\sigma$ is not Gaussian, but as a long tail towards higher values. 
 
-### 4.3.5. Finding the posterior distribution with `quap`
+### Finding the posterior distribution with `quap`
 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Grid approximation is useful for teaching, but now we'll do a fancy approximation of it so we can go to higher dimensions. THat approximation asserts that the distribution is normal for every parameter. But once you get to generalised linear models it's a bad approximation. How does this work? You need two numbers: mean and SD. For multi-dimensional Gaussians, you also need a covariance matrix for the parameters. How do you do it? You climb the hill. It doesn't know what the hill is, but it knows what is up and down. So it tries to find the peak. When it gets to the peak, it needs to measure the curvature of the peak. And that's all it needs to approxi ate the curve. Often called the LaPlace approximation."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-Grid approximation is useful for teaching, but now we'll do a fancy approximation of it so we can go to higher dimensions. THat approximation asserts that the distribution is normal for every parameter. But once you get to generalised linear models it's a bad approximation. How does this work? You need two numbers: mean and SD. For multi-dimensional Gaussians, you also need a covariance matrix for the parameters. How do you do it? You climb the hill. It doesn't know what the hill is, but it knows what is up and down. So it tries to find the peak. When it gets to the peak, it needs to measure the curvature of the peak. And that's all it needs to approxi ate the curve. Often called the LaPlace approximation. 
-
 Repeat the code to load the data and select the adults:
+
 ```{r 4.26}
 data(Howell1)
 d <- Howell1
 d2 <- d[ d$age >= 18 , ]
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
@@ -455,10 +425,9 @@ flist = alist(
 )
 ```
 
-
 Plug in the parameters and plug it into `quap`.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
@@ -466,19 +435,16 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 m4.1 = rethinking::quap(flist, data = d2)
 ```
 
-
-
 `quap` translates it into a statement about a log probability of the combinations of data, then passes it to the hill-finding algorithm built into R called `optim`, which passes it back as a list of means and a covariance matrix, which is sufficient to create a posterior distribution.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "`precis` is minimalistic compared to `summary`. Provides the 89% compatibility intervals."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-`precis` is minimalistic compared to `summary`. Provides the 89% compatibility intervals. 
-
-```{r 4.29}
+```{r 4.29, fig.margin = T}
 rethinking::precis(m4.1)
 ```
+
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
 
 `quap` estimates the posterior by climbing it like a hill. To do this, it has to start climbing someplace, at some combination of parameter values. But it's possible to specify a starting value
@@ -503,23 +469,22 @@ m4.2 <- quap(
 precis( m4.2 )
 ```
 
-### 4.3.6. Sampling from a `quap`
+### Sampling from a `quap`
 
 To this the matrix of variances and covariances among all paris of parameters:
 
-```{r 4.32}
+```{r 4.32, fig.margin = T}
 rethinking::vcov(m4.1)
 ```
 
 This is a **Variant-covariance Matrix**. It is the multi-dimensional glue of a quadratic approximation, because it tells us how each parameter relates to every other parameter in the posterior distribution.
 
-```{r 4.33}
+```{r 4.33, fig.margin = T}
 diag(rethinking::vcov( m4.1 ))
 cov2cor(rethinking::vcov( m4.1 ) )
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
@@ -529,30 +494,29 @@ Compare `quap` to grid approximation. The values in the rows go together. But pl
 post = rethinking::extract.samples(m4.1, n = 1e4)
 head(post)
 ```
+
 ```{r 4.35}
 precis(post)
 ```
 
 Here's a peak under the motor of `extract.samples`:
+
 ```{r 4.36}
 post = MASS::mvrnorm(n = 1e4, mu = coef(m4.1), Sigma = vcov(m4.1))
 ```
 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "To find out what it means, you draw some lines. I think of this tool as a scaffold so you can learn how to do modelling. But after you can use packages that use abbreviations. But it's important to learn how to build them. You'll come to appreciate how explicit it is. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
-
-To find out what it means, you draw some lines. I think of this tool as a scaffold so you can learn how to do modelling. But after you can use packages that use abbreviations. But it's important to learn how to build them. You'll come to appreciate how explicit it is. 
-
 You want to graduate beyond `quap` because for generalised linear modelling it becomes dangerous.
 
-## 4.4. Linear prediction
+## Linear prediction
 
 Let's look at how height in these Kalahari foragers covaries with weight. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
@@ -561,30 +525,23 @@ data(Howell1); d <- Howell1; d2 <- d[ d$age >= 18 , ]
 plot( d2$height ~ d2$weight )
 ```
 
-
 So now let's add a line. When we learn the predictions, we can learn the statistical association between weight and height. The question is how would you statistically describe this relationship?
 
-### 4.14.1. The linear model strategy
+### The linear model strategy
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $mu$. That means it's different for each person. $alpha$ is out population mean. $beta$ describes the relationship between $x$ and $y$."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
-So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $mu$. That means it's different for each person. $alpha$ is out population mean. $beta$ describes the relationship between $x$ and $y$. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The equals sign mean that it's deterministically defined. $beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
-The equals sign mean that it's deterministically defined. $beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "It's now predicting lines. So what does the prior predictive distribution look like? A whole lot of lines."}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
-It's now predicting lines. So what does the prior predictive distribution look like? A whole lot of lines. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
@@ -597,14 +554,13 @@ b = rnorm(N, 0, 10)
 
 Now we have 100 paris of $\alpha$ and $\beta$ values.
 
-
 Simulate 100 lines as before. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
 
-```{r 4.39}
+```{r 4.39, fig.margin = T}
 plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400), xlab="weight" , ylab="height" )
 abline( h=0 , lty=2 )
 abline( h=272 , lty=1 , lwd=0.5 )
@@ -616,22 +572,18 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
                         col=col.alpha("black",0.2) )
 ```
 
-
 Getting the scatter right is important, because you can see these impossibly steep lines. Some of them take you from impossibly short individuals to twice the tallest. Want to dampen these expectations. Practise on these safe examples. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We know that $beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive."}
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
-We know that $beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive. 
-
-```{r 4.40}
+```{r 4.40, fig.margin = T}
 b = rlnorm(1e4, 0, 1)
 rethinking::dens(b, xlim = c(0,5), adj = 0.1)
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```
 
@@ -653,15 +605,19 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
                         to=max(d2$weight) , add=TRUE ,
                         col=col.alpha("black",0.2) )
 ```
+
 > How to choose a prior? The procedure we've performed in this chapter is to choose priors conditional on pre-data knowledge of the variables - their constraints, ranges, and theoretical relationships. 
 
-### 4.4.2. Finding the posterior distribution
+### Finding the posterior distribution
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
-Measure xbar. Then define the `quap` model. Focus on the $mu$ line. 
+```{marginfigure}
+"Measure xbar. Then define the `quap` model. Focus on the $\mu$ line. "
+```
+
 
 ```{r 4.42}
 # load data again, since it's a long way back
@@ -692,13 +648,14 @@ m4.3b <- quap(
 ```
 
 
-### 4.4.3. Interpreting the posterior distribution
+### Interpreting the posterior distribution
 
 ```{r 4.44}
 precis(m4.3)
 ```
 
-See the covariances
+See the covariances:
+
 ```{r 4.45}
 round(rethinking::vcov(m4.3), 3)
 ```
@@ -713,7 +670,7 @@ In the practice problems at the end of the chapter, you'll see that the lack of 
 
 Plot the data with the posterior mean values for `a` and `b`:
 
-```{r 4.46}
+```{r 4.46, fig.margin = T}
 plot( height ~ weight , data=d2 , col=rangi2 )
 post <- extract.samples( m4.3 )
 a_map <- mean(post$a)
@@ -721,36 +678,26 @@ b_map <- mean(post$b)
 curve( a_map + b_map*(x - xbar) , add=TRUE )
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We managed to get this posterior distribution, and we can take from the precis values the `a` and `b`b values and draw a line with those, where `a` is the expected value of height (155) when weight is at its average value. And the expected change in height is nearly 1. But the posterior distribution is not a single line, it's an infinite number of lines each with a probability. So let's get more lines on the graph to show the uncertainty in inference. "}
 knitr::include_graphics(file.path(slides_dir, '47.png'))
 ```
 
-We managed to get this posterior distribution, and we can take from the precis values the `a` and `b`b values and draw a line with those, where `a` is the expected value of height (155) when weight is at its average value. And the expected change in height is nearly 1. But the posterior distribution is not a single line, it's an infinite number of lines each with a probability. So let's get more lines on the graph to show the uncertainty in inference. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Here's the basic idea. We're going to sample from the posterior distribution. But what's great is that you can use this process for any model you ever want to fit. You can sample from the posterior, then push the samples back through the model itself to plot the uncertainty."}
 knitr::include_graphics(file.path(slides_dir, '48.png'))
 ```
 
-Here's the basic idea. We're going to sample from the posterior distribution. But what's great is that you can use this process for any model you ever want to fit. You can sample from the posterior, then push the samples back through the model itself to plot the uncertainty.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "You're doing calculus here, but just doesn't feel like it. Each row is a line. Lines that are more plausible have more ways to happen, so they're overlap more in the areas that are more plausible."}
 knitr::include_graphics(file.path(slides_dir, '49.png'))
 ```
-You're doing calculus here, but just doesn't feel like it. Each row is a line. Lines that are more plausible have more ways to happen, so they're overlap more in the areas that are more plausible. 
 
 ```{r 4.47}
 post = rethinking::extract.samples(m4.3)
 post[1:5, ]
 ```
 
-
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "To see this work, and reinforce how Bayesian updating works, let's start with a reduced dataset of 10 randomly sampled adults. We fit our linear regression model, and get a quadratic approximation of the posterior distribution. You'll see they're very different from the prior. Now they're very concentrated around the data. You can see there's a lot of scatter because the model isn't sure where it should be."}
 knitr::include_graphics(file.path(slides_dir, '50.png'))
 ```
-
-To see this work, and reinforce how Bayesian updating works, let's start with a reduced dataset of 10 randomly sampled adults. We fit our linear regression model, and get a quadratic approximation of the posterior distribution. You'll see they're very different from the prior. Now they're very concentrated around the data. You can see there's a lot of scatter because the model isn't sure where it should be.
 
 ```{r 4.48}
 N <- 10
@@ -767,7 +714,7 @@ mN <- quap(
 
 Now plot 20 of these lines:
 
-```{r 4.49}
+```{r 4.49, fig.margin = T}
 # extract 20 samples from the posterior
 post <- extract.samples( mN , n=20 )
 
@@ -783,22 +730,19 @@ for ( i in 1:20 )
          col=col.alpha("black",0.3) , add=TRUE )
 ```
 
-
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Now add 50, and you'll see they get more concentrated. Note the uncertainty at the ends are more uncertain. They pivot around the means in the centre."}
 knitr::include_graphics(file.path(slides_dir, '51.png'))
 ```
-Now add 50, and you'll see they get more concentrated. Note the uncertainty at the ends are more uncertain. They pivot around the means in the centre. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '52.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "With the whole dataset, it gets quite narrow. You constrained the model to pick a line, and these are the lines that it likes. Doesn't mean that it's right."}
 knitr::include_graphics(file.path(slides_dir, '53.png'))
 ```
 
-With the whole dataset, it gets quite narrow. You constrained the model to pick a line, and these are the lines that it likes. Doesn't mean that it's right. 
+ 
 
 --------------------
 
@@ -806,15 +750,15 @@ With the whole dataset, it gets quite narrow. You constrained the model to pick 
 slides_dir = here::here("docs/slides/L04")
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '01.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
 
-The basic idea that any particular value of the $x$ variables, $mu$ has some density. It's confident of the values on the inside, less of the values on the outside. As an example, what does the model expect the height of the individual is if weight is 50? $mu$ at 50 is now going to create a distribution.
+The basic idea that any particular value of the $x$ variables, $\mu$ has some density. It's confident of the values on the inside, less of the values on the outside. As an example, what does the model expect the height of the individual is if weight is 50? $\mu$ at 50 is now going to create a distribution.
 
 ```{r 4.50}
 post = rethinking::extract.samples(m4.3)
@@ -824,32 +768,31 @@ head(mu_at_50)
 
 `mu_at_50` is a vector of predicted means, one for each random sample from the posterior. 
 
-```{r, 4.51}
+```{r, 4.51, fig.margin = T}
 rethinking::dens(mu_at_50, col = rangi2, lwd = 2, xlab = "mu|weight = 50")
 ```
 Find the 89% compatibility interval
 
-```{r 4.52}
+```{r 4.52, fig.margin = T}
 rethinking::PI(mu_at_50, prob = .89)
 ```
 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
 It's not sure how tall an individual is, but it thinks it's in this region. But we want to do this for every x-axis value. This is what produces the smooth bowtie.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
-```{r 4.53}
+```{r 4.53, fig.margin = T}
 mu = rethinking::link(m4.3)
 str(mu)
 rethinking::dens(mu)
 ```
-
 
 You need to make a sequence of x-axis values (`weight.seq`). You could make it extraplote further if you like. Then you send these in to the funciton via `link`. There's a box in the chapter that shows you how link works. It just loops, but saves you time. 
 
@@ -871,7 +814,7 @@ str(mu)
 
 And now there are only 46 columns in `mu`, because we fed it 46 different values for `weight`. Let's plot the distribution:
 
-```{r 4.55}
+```{r 4.55, fig.margin = T}
 # use type="n" to hide raw data
 plot(height ~ weight, d2, type = "n")
 
@@ -879,6 +822,7 @@ plot(height ~ weight, d2, type = "n")
 for (i in 1:100)
   points(weight.seq, mu[i,] , pch = 16, col = col.alpha(rangi2, .1))
 ```
+
 ```{r 4.56}
 # summarize the distribution of mu
 mu.mean = apply(mu, 2, mean)
@@ -886,219 +830,203 @@ mu.PI =  apply(mu, 2, PI, prob = .89)
 ```
 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "This is like rolling your own `link` here."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
-
-This is like rolling your own `link` here. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Think what's going on with the distribution. Fuzzy bowtie. There's a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
-Think what's going on with the distribution. Fuzzy bowtie. There's a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Again, there's a correspondence between the spaghetti lines, and the bowtie form..."}
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
-Again, there's a correspondence between the spaghetti lines, and the bowtie form...
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Same information, just a different visual style."}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
-Same information, just a different visual style. 
 
-One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space."}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
+```{marginfigure}
 We can do the same thing for sigma. There's an envelope we expect heights to be in.
 
 Helper function called `sim` that shows conceptually what's happening. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
-That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw "lines" i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship.
+
+```{marginfigure}
+That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw "lines" i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship.
 
 There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly. 
 
 The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity."}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
-This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity. 
+ 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The data we're going to use is the total sample. Now we'll use the kids. Looking at this you can appreciate this isn't a line. Instead, let's fit a parabola."}
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
-The data we're going to use is the total sample. Now we'll use the kids. Looking at this you can appreciate this isn't a line. Instead, let's fit a parabola. 
+ 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = ""}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
-We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new $\beta$ coefficient. Setting priors for this is really hard, because $\beta_2$ has no meaning. But the curve depends on $\beta_1$ and $\beta_2$, and they don't work in isolation. The individual parameters don't have meaning. It's a horrible problem in interpretation. Otherwise it's the same model. It's a linear regression in the sense that it's additive. 
 
-```{r, echo = F, out.width='60%'}
+```{marginfigure}
+We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new $\beta$ coefficient. Setting priors for this is really hard, because $\beta_2$ has no meaning. But the curve depends on $\beta_1$ and $\beta_2$, and they don't work in isolation. The individual parameters don't have meaning. It's a horrible problem in interpretation. Otherwise it's the same model. It's a linear regression in the sense that it's additive.
+```
+
+
+```{r, echo = F, out.width='80%', fig.cap = "To get the machine to work, very useful to standardise the predictor variables. Center then divide by SD. Take weight, subtract the average weight from each weight value, then divide each of those 0-centered values by the standard deviation of weight. Takes weight and creates a set of z-scores. The fitting software works better on standardise values because it doesn't have to guess the scale."}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-To get the machine to work, very useful to standardise the predictor variables. Center then divide by SD. Take weight, subtract the average weight from each weight value, then divide each of those 0-centered values by the standard deviation of weight. Takes weight and creates a set of z-scores. The fitting software works better on standardise values because it doesn't have to guess the scale. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "There's a function in R called `scale`. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight."}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-There's a function in R called `scale`. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Cooked spaghetti. Now it has an infinite number of parabolas. Now we sample from the posterior, and we got a sample of the high-probability parabolas, a tiny slice of the whole space. And we draw them up, to start with, just 10 individuals. Over the full range, we get parabolas that vary wildly outside of the weights, but straight within the range of the data. This is a phenomenon that's always present. THe uncertainty intervals always fan out outside of the data range. This is a problem for prediction. Not true for splines. This is because every parameter acts globally on the shape. You can't tune a specfic region."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
-Cooked spaghetti. Now it has an infinite number of parabolas. Now we sample from the posterior, and we got a sample of the high-probability parabolas, a tiny slice of the whole space. And we draw them up, to start with, just 10 individuals. Over the full range, we get parabolas that vary wildly outside of the weights, but straight within the range of the data. This is a phenomenon that's always present. THe uncertainty intervals always fan out outside of the data range. This is a problem for prediction. Not true for splines. This is because every parameter acts globally on the shape. You can't tune a specfic region. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Now we add the next 10, including some children, and the flailing stops. Now we get curves in a much smaller region of the parameter space."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
-Now we add the next 10, including some children, and the flailing stops. Now we get curves in a much smaller region of the parameter space. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Now it's getting more concentrated. "}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
-Now it's getting more concentrated. 
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Now a thick dark line. Conditional on wanting a parabola to describe the relationship, here are the parabolas. Doesn't mean the parabola is correct."}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-Now a thick dark line. Conditional on wanting a parabola to describe the relationship, here are the parabolas. Doesn't mean the parabola is correct.
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. 
-
+```{marginfigure}
 I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. 
 
 For the cubic, we add our cubic term $\beta_3$. Fits even better, but now it's extrapolating upwards. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between. 
-
+```{marginfigure}
 The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times.
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they're geocentric, so you have to understand how they work."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
-You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they're geocentric, so you have to understand how they work. 
 
+```{marginfigure}
 The basis function is a local function, and the spline is made up of interpolating basis functions. Basis = "component". Big wiggly function made up of less wiggly functions. 
 
 The "P" stands for "penalised". 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
-Again, it's a linear model, an additive equation for $\mu$. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you'll get a fantastic predictor of the relationship between the variables. 
+```{marginfigure}
+Again, it's a linear model, an additive equation for $\mu$. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you'll get a fantastic predictor of the relationship between the variables.
 
 There will be one weight for each of the basis functions. And the weights affect the range defined by the $\beta$ variables. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "New example. Let's find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there's a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data. "}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
-New example. Let's find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there's a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data. 
 
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%', fig.cap = "1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there's overlap. You'll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations. "}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there's overlap. You'll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Let's start with a terrible approximation, and work forwards."}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
-Let's start with a terrible approximation, and work forwards.
 
+```{marginfigure}
 Here's the recipe. First choose the location of the knots. Here they are points where the basis spline pivots. Choose a degree of the basis function. Then choose degree of local spline. Then find the posterior distribution of weights. Run this just like any old linear regression.
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Start with just 5 knots at equal quantiles. Large literature on this. Nice because it gives you more knots where there's more data. One at the median, then one at each extreme, and one in between."}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
-Start with just 5 knots at equal quantiles. Large literature on this. Nice because it gives you more knots where there's more data. One at the median, then one at each extreme, and one in between. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Let's think about construction of these synthetic variables. Think of year. We'll never use them again. The knots are anchored at year, but then they're gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It's weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they're own precious parameter value. "}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
-Let's think about construction of these synthetic variables. Think of year. We'll never use them again. The knots are anchored at year, but then they're gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It's weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they're own precious parameter value. 
 
-When you get to higher degress, they'll be curves. At any particular point (except at a knot), two of these basis functions will determine the value. 
+```{marginfigure}
+When you get to higher degress, they'll be curves. At any particular point (except at a knot), two of these basis functions will determine the value.
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The only new trick here is to use linear algebra. You can imagine writing 5 terms."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
-The only new trick here is to use linear algebra. You can imagine writing 5 terms. 
-
+```{marginfigure}
 We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Repeating the equation for $mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
-Repeating the equation for $\mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Resulting spline isn't super wiggly. Depends on what you want to de-trend."}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
-Resulting spline isn't super wiggly. Depends on what you want to de-trend. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Let's do cubic splines. Most popular because they're flexible but not crazy. Play around with the number of knots. What you'll see is you can have too few knots, but at some point you'll have enough that it won't make much of a difference. This is what the basis functions look like, and now they're wigglier, but they also overlap more, so now at a particular point you can have up to four basis curves overlapping. "}
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
-Let's do cubic splines. Most popular because they're flexible but not crazy. Play around with the number of knots. What you'll see is you can have too few knots, but at some point you'll have enough that it won't make much of a difference. This is what the basis functions look like, and now they're wigglier, but they also overlap more, so now at a particular point you can have up to four basis curves overlapping. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Here's with 50 samples from the posterior distribution. There's all this wiggle, and you add them together and get the spline. Some of these regions have substantial uncertainty about the weight. The uncertainty will collapse. At the parameter level, there's more uncertainty than there is at the prediction level. This is because the parameters combine to make a prediction. You can be uncertain about the values of the parameters, but you can be very certain about they're sum. Because if you make $w_3$ bigger, you have to make something else smaller. So when you plot the parameters, you'll see a lot more uncertainty than the predictions."}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
-Here's with 50 samples from the posterior distribution. There's all this wiggle, and you add them together and get the spline. Some of these regions have substantial uncertainty about the weight. The uncertainty will collapse. At the parameter level, there's more uncertainty than there is at the prediction level. This is because the parameters combine to make a prediction. You can be uncertain about the values of the parameters, but you can be very certain about they're sum. Because if you make $w_3$ bigger, you have to make something else smaller. So when you plot the parameters, you'll see a lot more uncertainty than the predictions.
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest."}
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
-Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest. 
-
+```{marginfigure}
 Play around with the knots and degree and priors.
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year."}
 knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```
-Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 

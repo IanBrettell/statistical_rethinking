@@ -14,7 +14,7 @@ output:
 #  chunk_output_type: inline
 ---
 
-# Setup
+# Small Worlds and Large Worlds
 
 ```{r, message = F, warning=F}
 library(here)
@@ -25,90 +25,74 @@ source(here::here("code/scripts/source.R"))
 slides_dir = here::here("docs/slides/L01")
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Keep in mind that inside the model, there's this perfectly logical world. But that's the small world. Colombo rediscovered the Americas. The most interesting thing is that he charted his course using a globe that makes the earth much smaller than it is. Ironic because the ancient Greeks knew how big it was. But Colombo listened to an Austrian called Behaim who decided to make it smaller. So the Atlantic and Pacific oceans were joined. You can imagine sailing from Spain."}
 knitr::include_graphics(file.path(slides_dir, "26.png"))
 ```
 
-Keep in mind that inside the model, there's this perfectly logical world. But that's the small world. Colombo rediscovered the Americas. The most interesting thing is that he charted his course using a globe that makes the earth much smaller than it is. Ironic because the ancient Greeks knew how big it was. But Colombo listened to an Austrian called Behaim who decided to make it smaller. So the Atlantic and Pacific oceans were joined. You can imagine sailing from Spain.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Consider this analogy. When you make a model, you're Colombus planning with the Austrian globe. Your responsibility is to think you might be wrong, and that the Earth is bigger than that. Study and reconsider the effects. In the real world, there are no optimal procedures. No guarantee that it will guide our behaviour optimally. We should use both of these worlds, and bounce back and forth between them."}
 knitr::include_graphics(file.path(slides_dir, "27.png"))
 ```
 
-Consider this analogy. When you make a model, you're Colombus planning with the Austrian globe. Your responsibility is to think you might be wrong, and that the Earth is bigger than that. Study and reconsider the effects. In the real world, there are no optimal procedures. No guarantee that it will guide our behaviour optimally. We should use both of these worlds, and bounce back and forth between them. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "28.png"))
 ```
 
-## 2.1 The garden of forking data
+## The garden of forking data
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "29.png"))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Consider a garden of forking data. Bag with 4 marbles in 2 colours - blue and white. Your job is to tell from a few draws from the bag, how many blue marbles and how many white marbles. List all the possibilities. 5 possibilities. Always step 1 in Bayesian analysis. Now draw, with replacement, three marbles. So what's in the bag?"}
 knitr::include_graphics(file.path(slides_dir, "30.png"))
 ```
 
-Consider a garden of forking data. Bag with 4 marbles in 2 colours - blue and white. Your job is to tell from a few draws from the bag, how many blue marbles and how many white marbles. 
-
-List all the possibilities. 5 possibilities. Always step 1 in Bayesian analysis. Now draw, with replacement, three marbles. So what's in the bag? 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Let's take a conjecture one at a time. Count all the ways you could see the data if that was the truth. Garden of forking data. Four paths based on this conjecture. On the second draw, there are again four things that could have happened. Do it a third time. Now prune it down and count the paths that are consistent with the data. Only three ways that we could have seen the data. Is three large or small? Need to compare it with another model; another conjecture."}
 knitr::include_graphics(file.path(slides_dir, "34.png"))
 ```
 
-Let's take a conjecture one at a time. Count all the ways you could see the data if that was the truth. Garden of forking data. Four paths based on this conjecture. On the second draw, there are again four things that could have happened. Do it a third time. Now prune it down and count the paths that are consistent with the data. Only three ways that we could have seen the data. Is three large or small? Need to compare it with another model; another conjecture.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "35.png"))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "36.png"))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "37.png"))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "38.png"))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "No matter how complicated, Bayesian analysis is just counting."}
 knitr::include_graphics(file.path(slides_dir, "39.png"))
 ```
 
-No matter how complicated, Bayesian analysis is just counting. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap= "Computers are good at counting. Computers are bad at being ethical. So you need to bring the responsibility to these counts. These are the relative plausibilities. Probably either 2 blue marbles or three. Say we draw another marble..."}
 knitr::include_graphics(file.path(slides_dir, "40.png"))
 ```
 
-Computers are good at counting. Computers are bad at being ethical. So you need to bring the responsibility to these counts. These are the relative plausibilities. Probably either 2 blue marbles or three. Say we draw another marble...
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "You can just update your previous count by mulitplying your previous counts, because that's the way addition works. Multiplication is just compressed counting. Looks implausible that there's only one blue marble. Keep drawing marbles until you reach a certain level of confidence."}
 knitr::include_graphics(file.path(slides_dir, "41.png"))
 ```
 
-You can just update your previous count by mulitplying your previous counts, because that's the way addition works. Multiplication is just compressed counting. Looks implausible that there's only one blue marble. Keep drawing marbles until you reach a certain level of confidence. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply."}
 knitr::include_graphics(file.path(slides_dir, "43.png"))
 ```
-You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific rations. How to use this? Multiply. 
 
-The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability. 
+```{marginfigure}
+The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability.
+```
 
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%', fig.cap = "The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with."}
 knitr::include_graphics(file.path(slides_dir, "44.png"))
 ```
 
-The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "45.png"))
 ```
 ```{r}
@@ -116,15 +100,15 @@ ways = c(0, 3, 8, 9, 0)
 ways/sum(ways)
 ```
 
-## 2.2. Building a model
+## Building a model
 
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%', fig.cap = "We need some procedure by which we build a model. In every modelling exercise, there's this recursive process. What do we know about the process before we collect the data? Then we update with the data and count the ways. Then we step out from the small world to the large world. What could be messing with our inference?"}
 knitr::include_graphics(file.path(slides_dir, "47.png"))
 ```
 
-We need some procedure by which we build a model. In every modelling exercise, there's this recursive process. What do we know about the process before we collect the data? Then we update with the data and count the ways. Then we step out from the small world to the large world. What could be messing with our inference? 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "48.png"))
 ```
 
@@ -134,266 +118,217 @@ knitr::include_graphics(file.path(slides_dir, "48.png"))
 slides_dir = here::here("docs/slides/L02")
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "01.png"))
 ```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The assumptions you build into the model also explain how it learns. It structures experience. No learning without assumptions."}
 knitr::include_graphics(file.path(slides_dir, "02.png"))
 ```
 
-The assumptions you build into the model also explain how it learns. It structures experience. No learning without assumptions.
-
+```{marginfigure}
 Design the model using the scientific background of the data. Add the data and update, then get critical. Never relinquish control to the golem. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Let's go through an example. We would continue this sampling process. Here we can see exactly how the data is generated. We're throwing the small world around in order to estimate something about the large world."}
 knitr::include_graphics(file.path(slides_dir, "03.png"))
 ```
 
-Let's go through an example. We would continue this sampling process. Here we can see exactly how the data is generated. We're throwing the small world around in order to estimate something about the large world. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "What's the data story? What do you know about how the data has arisen? We know a lot. We saw it generated. We think there's no way you can rig the throw. So each throw is random, and the probability your hand lands on water should be proportional to the amount of water on earth."}
 knitr::include_graphics(file.path(slides_dir, "04.png"))
 ```
 
-What's the data story? What do you know about how the data has arisen? We know a lot. We saw it generated. We think there's no way you can rig the throw. So each throw is random, and the probability your hand lands on water should be proportional to the amount of water on earth. 
-
+```{marginfigure}
 It's a chaotic system. It's a deterministic physical system, but tiny differences in the initial conditions result in effectively random outcomes.
+```
 
+```{marginfigure}
 All the tosses are independent - but this is an assumption, so we should test that. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Give you model some initial plausibility about the values of $p$. Conditioning means slicing off possibilities."}
 knitr::include_graphics(file.path(slides_dir, "05.png"))
 ```
 
-Give you model some initial plausibility about the values of $p$. Conditioning means slicing off possibilities. 
-
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The prior sets all the possible states it could be in. Then the first data point arrives, and the model will update this. The prior is then transformed into a new distribution. If there's any relevant information, the model figures it out. Now higer values are more likely, and now that you've observed water, \"no water\" is impossible."}
 knitr::include_graphics(file.path(slides_dir, "07.png"))
 ```
 
-The prior sets all the possible states it could be in. Then the first data point arrives, and the model will update this. The prior is then transformed into a new distribution. If there's any relevant information, the model figures it out. Now higer values are more likely, and now that you've observed water, "no water" is impossible. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "08.png"))
 ```
 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Now the second plot includes the second sample. Every posterior is the prior for the next plot. When n = 2, you got land, so \"all water\" also become impossible."}
 knitr::include_graphics(file.path(slides_dir, "09.png"))
 ```
 
-Now the second plot includes the second sample. Every posterior is the prior for the next plot. When n = 2, you got land, so "all water" also become impossible. 
- 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Note it's shifting less and less, so each additional data point contributes less marginal information."}
 knitr::include_graphics(file.path(slides_dir, "12.png"))
 ```
 
-Note it's shifting less and less, so each additional data point contributes less marginal information. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "So this is the conditioning step. We did this one data point at a time, but usually we just throw the whole sample in. But we get the same answer. Like a cat, you can give it all the treats at once, and it'll get just as fat. For this model, the sequence doesn't matter, but sometimes it does so you should pay attention to that."}
 knitr::include_graphics(file.path(slides_dir, "13.png"))
 ```
 
-So this is the conditioning step. We did this one data point at a time, but usually we just throw the whole sample in. But we get the same answer. Like a cat, you can give it all the treats at once, and it'll get just as fat. For this model, the sequence doesn't matter, but sometimes it does so you should pay attention to that. 
-
+```{marginfigure}
 The sample size makes it more and more peaked. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We want to make an inference about the large world. We need to be critical about. Are there biased throws? We'll do a lot of posterior prediction checks."}
 knitr::include_graphics(file.path(slides_dir, "14.png"))
 ```
 
-We want to make an inference about the large world. We need to be critical about. Are there biased throws? We'll do a lot of posterior prediction checks. 
+## Components of the model
 
-## 2.3. Components of the model
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, "15.png"))
 ```
 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Here we have three variables."}
 knitr::include_graphics(file.path(slides_dir, "16.png"))
 ```
 
-Here we have three variables. 
-$N$ = number of tosses. 
+```{marginfigure}
+$N$ = number of tosses.
 $p$ = true proportion of water
 $W$ = observed water catches.
-
 The arrows show that generatively, $N$ and $p$ cause $W$. The values of $N$ and $p$ don't depend on $W$. But they do *inferentially*. Bayesian inference works backwards.
+```
 
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%', fig.cap = "Two of these variables have been observed. But one of them has not, so we have to infer it from the other two. "}
 knitr::include_graphics(file.path(slides_dir, "17.png"))
 ```
 
-Two of these variables have been observed. But one of them has not, so we have to infer it from the other two. 
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We want a mathematical function so that we don't have to draw the garden. It's called a probability distribution."}
 knitr::include_graphics(file.path(slides_dir, "18.png"))
 ```
 
-We want a mathematical function so that we don't have to draw the garden. It's called a probability distribution. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "This is a famous probability distribution that's very easy to build up from first principles."}
 knitr::include_graphics(file.path(slides_dir, "19.png"))
 ```
 
-This is a famous probability distribution that's very easy to build up from first principles. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We also have to count for the orderings - what are all the ways that can happen?"}
 knitr::include_graphics(file.path(slides_dir, "20.png"))
 ```
 
-We also have to count for the orderings - what are all the ways that can happen?
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "In this particular case, it's the above formula. Together, this gives you the binomial distribution."}
 knitr::include_graphics(file.path(slides_dir, "21.png"))
 ```
 
-In this particular case, it's the above formula. Together, this gives you the binomial distribution. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "It's just a compressed mathematical formula for the garden of forking data. "}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-It's just a compressed mathematical formula for the garden of forking data. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
 ```{r}
 dbinom(6, size = 9, prob = .5)
 ```
 
-
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "These probabilities describe the prior predictive distribution. In later chapters, this will be a very interesting object."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
-These probabilities describe the prior predictive distribution. In later chapters, this will be a very interesting object. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "There's a stereotyped way to write models."}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
-There's a stereotyped way to write models. 
-
+```{marginfigure}
 "W is distributed binomially with $N$ trials and probability $p$, and $p$ is distributed uniformly with a mean of 0 and a standard distribution of 1."
 
 Simplest possible Bayesian model I can imagine. Actually LaPlace's model - the law of succession.
+```
 
-## 2.4. Making the model go
+## Making the model go
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The code looks a little different. What you must do mechanically is compute the posterior. Your target is always a posterior distribution. Nice not to have a choice."}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-The code looks a little different. What you must do mechanically is compute the posterior. Your target is always a posterior distribution. Nice not to have a choice. 
-
+```{marginfigure}
 You use Bayes theorem. We're multiplying the prior by the number of ways the data could have arisen, then standardising. Normalise by summing up the numerators. Its job is to count up the relative number of ways that you could see the data. 
+```
 
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "The model we just updated looks like this. I want to emphasise the multiplication. You take each value, a vertical slice, through each point. In the model we just did, the data are running the show. The prior is not doing any work. We could do better."}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-The model we just updated looks like this. I want to emphasise the multiplication. You take each value, a vertical slice, through each point. In the model we just did, the data are running the show. The prior is not doing any work. We could do better.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We could use our knowledge that more than half of the Earth is covered by water. YOu can embody that in the prior and that lets you get to the answer faster."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-We could use our knowledge that more than half of the Earth is covered by water. YOu can embody that in the prior and that lets you get to the answer faster.
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Posterior distributions are always: the relative number of ways each value you have could be true, given the data and the prior probability."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-Posterior distributions are always: the relative number of ways each value you have could be true, given the data and the prior probability. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "You have a choice about how to approximate that posterior. Today we'll use grid approximation, because it forces you to see we're just counting up. Markov chains solve a whole lot of important problems."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-You have a choice about how to approximate that posterior. Today we'll use grid approximation, because it forces you to see we're just counting up. Markov chains solve a whole lot of important problems. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Instead of considering every infinitesimal possibility and integrating over them, we're only going to consider a finite number. Grid approximation works well here, but not with more than a few variables."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-Instead of considering every infinitesimal possibility and integrating over them, we're only going to consider a finite number. Grid approximation works well here, but not with more than a few variables. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "We immediately rule of 0 and 1. If your grid is only 3, we already have some information. Let's consider 5."}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-We immediately rule of 0 and 1. If your grid is only 3, we already have some information. Let's consider 5. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
-```{r, echo = F, out.width='60%'}
+
+```{r, echo = F, out.width='80%', fig.cap = "This is still a finite grid. But this is just an approximation, but it's a very good one."}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
-This is still a finite grid. But this is just an approximation, but it's a very good one. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Here's the code."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
-Here's the code. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Step one: define the grid."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
-Step one: define the grid. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
-
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Then define the prior probability $p$. "}
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
-Then define the prior probability $p$. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Now the probability of the data. We put the whole `p_grid` in."}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
 
-Now the probability of the data. We put the whole `p_grid` in. 
-
-```{r, echo = F, out.width='60%'}
+```{r, echo = F, out.width='80%', fig.cap = "Then finally standardise it. Here nothing happens. The important thing is the multiplication step."}
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
-Then finally standardise it. Here nothing happens. The important thing is the multiplication step. 
 
-```{r}
+```{r, fig.margin = T}
 # define grid
 p_grid = seq(from = 0, to = 1, length.out = 20)
 
@@ -416,7 +351,9 @@ plot(p_grid, posterior, type = "b",
 mtext("20 points")
 ```
 
-```{r}
+With four different grid sizes.
+
+```{r, fig.margin = T}
 lapply(c(5, 100, 1000, 1e5), function(grid_size){
   p_grid = seq(from = 0, to = 1, length.out = grid_size)
   

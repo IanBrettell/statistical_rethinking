@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="2.1 The garden of forking data | Chapter 4. Geocentric Models" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-05-12" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="2.1 The garden of forking data | Chapter 4. Geocentric Models">
+
+<title>2.1 The garden of forking data | Chapter 4. Geocentric Models</title>
+
+<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="preface.html#preface">Preface</a>
+<ul>
+<li><a href="0-1-install-packages.html#install-packages"><span class="toc-section-number">0.1</span> Install packages</a></li>
+<li><a href="0-2-split-and-convert-slides.html#split-and-convert-slides"><span class="toc-section-number">0.2</span> Split and convert slides</a></li>
+<li><a href="0-3-create-markdown-code-to-incorporate-slides.html#create-markdown-code-to-incorporate-slides"><span class="toc-section-number">0.3</span> Create markdown code to incorporate slides</a></li>
+</ul></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a>
+<ul>
+<li><a href="3-2-sampling-to-summarize.html#intervals-of-defined-boundaries"><span class="toc-section-number">3.2.1</span> Intervals of defined boundaries</a></li>
+<li><a href="3-2-sampling-to-summarize.html#intervals-of-defined-mass"><span class="toc-section-number">3.2.2</span> Intervals of defined mass</a></li>
+<li><a href="3-2-sampling-to-summarize.html#point-estimates"><span class="toc-section-number">3.2.3</span> Point estimates</a></li>
+</ul></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a>
+<ul>
+<li><a href="3-3-sampling-to-simulate-prediction.html#dummy-data"><span class="toc-section-number">3.3.1</span> Dummy data</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#model-checking"><span class="toc-section-number">3.3.2</span> Model checking</a></li>
+</ul></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-setup.html#setup"><span class="toc-section-number">4</span> Setup</a></li>
+<li><a href="5-text.html#text"><span class="toc-section-number">5</span> Text</a>
+<ul>
+<li><a href="5-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">5.1</span> Why normal distributions are normal</a>
+<ul>
+<li><a href="5-1-why-normal-distributions-are-normal.html#normal-by-addition"><span class="toc-section-number">5.1.1</span> Normal by addition</a></li>
+<li><a href="5-1-why-normal-distributions-are-normal.html#normal-by-multiplication"><span class="toc-section-number">5.1.2</span> Normal by multiplication</a></li>
+<li><a href="5-1-why-normal-distributions-are-normal.html#normal-by-log-multiplication"><span class="toc-section-number">5.1.3</span> Normal by log-multiplication</a></li>
+<li><a href="5-1-why-normal-distributions-are-normal.html#using-gaussian-distributions"><span class="toc-section-number">5.1.4</span> Using Gaussian distributions</a></li>
+</ul></li>
+<li><a href="5-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">5.2</span> A language for describing models</a>
+<ul>
+<li><a href="5-2-a-language-for-describing-models.html#re-describing-the-glob-tossing-model"><span class="toc-section-number">5.2.1</span> Re-describing the glob tossing model</a></li>
+</ul></li>
+<li><a href="5-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">5.3</span> Gaussian model of height</a>
+<ul>
+<li><a href="5-3-gaussian-model-of-height.html#the-data"><span class="toc-section-number">5.3.1</span> The data</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#the-model"><span class="toc-section-number">5.3.2</span> The model</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#grid-approximation-of-the-posterior-distribution"><span class="toc-section-number">5.3.3</span> Grid approximation of the posterior distribution</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#sampling-from-the-posterior"><span class="toc-section-number">5.3.4</span> Sampling from the posterior</a></li>
+<li><a href="5-3-gaussian-model-of-height.html#finding-the-posterior-distribution-with-quap"><span class="toc-section-number">5.3.5</span> Finding the posterior distribution with <code>quap</code></a></li>
+<li><a href="5-3-gaussian-model-of-height.html#sampling-from-a-quap"><span class="toc-section-number">5.3.6</span> 4.3.6. Sampling from a <code>quap</code></a></li>
+</ul></li>
+<li><a href="5-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">5.4</span> 4.4. Linear prediction</a>
+<ul>
+<li><a href="5-4-linear-prediction.html#the-linear-model-strategy"><span class="toc-section-number">5.4.1</span> 4.14.1. The linear model strategy</a></li>
+<li><a href="5-4-linear-prediction.html#finding-the-posterior-distribution"><span class="toc-section-number">5.4.2</span> 4.4.2. Finding the posterior distribution</a></li>
+<li><a href="5-4-linear-prediction.html#interpreting-the-posterior-distribution"><span class="toc-section-number">5.4.3</span> 4.4.3. Interpreting the posterior distribution</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="the-garden-of-forking-data" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> The garden of forking data</h2>
+<p><img src="slides/L01/29.png" width="80%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-34"></span>
+<p class="caption marginnote shownote">
+Figure 2.3: Consider a garden of forking data. Bag with 4 marbles in 2 colours - blue and white. Your job is to tell from a few draws from the bag, how many blue marbles and how many white marbles. List all the possibilities. 5 possibilities. Always step 1 in Bayesian analysis. Now draw, with replacement, three marbles. So what’s in the bag?
+</p>
+<img src="slides/L01/30.png" alt="Consider a garden of forking data. Bag with 4 marbles in 2 colours - blue and white. Your job is to tell from a few draws from the bag, how many blue marbles and how many white marbles. List all the possibilities. 5 possibilities. Always step 1 in Bayesian analysis. Now draw, with replacement, three marbles. So what's in the bag?" width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-35"></span>
+<p class="caption marginnote shownote">
+Figure 2.4: Let’s take a conjecture one at a time. Count all the ways you could see the data if that was the truth. Garden of forking data. Four paths based on this conjecture. On the second draw, there are again four things that could have happened. Do it a third time. Now prune it down and count the paths that are consistent with the data. Only three ways that we could have seen the data. Is three large or small? Need to compare it with another model; another conjecture.
+</p>
+<img src="slides/L01/34.png" alt="Let's take a conjecture one at a time. Count all the ways you could see the data if that was the truth. Garden of forking data. Four paths based on this conjecture. On the second draw, there are again four things that could have happened. Do it a third time. Now prune it down and count the paths that are consistent with the data. Only three ways that we could have seen the data. Is three large or small? Need to compare it with another model; another conjecture." width="80%"  />
+</div>
+<p><img src="slides/L01/35.png" width="80%"  /></p>
+<p><img src="slides/L01/36.png" width="80%"  /></p>
+<p><img src="slides/L01/37.png" width="80%"  /></p>
+<p><img src="slides/L01/38.png" width="80%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-40"></span>
+<p class="caption marginnote shownote">
+Figure 2.5: No matter how complicated, Bayesian analysis is just counting.
+</p>
+<img src="slides/L01/39.png" alt="No matter how complicated, Bayesian analysis is just counting." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-41"></span>
+<p class="caption marginnote shownote">
+Figure 2.6: Computers are good at counting. Computers are bad at being ethical. So you need to bring the responsibility to these counts. These are the relative plausibilities. Probably either 2 blue marbles or three. Say we draw another marble…
+</p>
+<img src="slides/L01/40.png" alt="Computers are good at counting. Computers are bad at being ethical. So you need to bring the responsibility to these counts. These are the relative plausibilities. Probably either 2 blue marbles or three. Say we draw another marble..." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-42"></span>
+<p class="caption marginnote shownote">
+Figure 2.7: You can just update your previous count by mulitplying your previous counts, because that’s the way addition works. Multiplication is just compressed counting. Looks implausible that there’s only one blue marble. Keep drawing marbles until you reach a certain level of confidence.
+</p>
+<img src="slides/L01/41.png" alt="You can just update your previous count by mulitplying your previous counts, because that's the way addition works. Multiplication is just compressed counting. Looks implausible that there's only one blue marble. Keep drawing marbles until you reach a certain level of confidence." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-43"></span>
+<p class="caption marginnote shownote">
+Figure 2.8: You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply.
+</p>
+<img src="slides/L01/43.png" alt="You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply." width="80%"  />
+</div>
+<p><label for="tufte-mn-1" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-1" class="margin-toggle"><span class="marginnote"><span style="display: block;">The goal is to understand what’s happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability.</span></span></p>
+<div class="figure"><span id="fig:unnamed-chunk-45"></span>
+<p class="caption marginnote shownote">
+Figure 2.9: The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with.
+</p>
+<img src="slides/L01/44.png" alt="The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with." width="80%"  />
+</div>
+<p><img src="slides/L01/45.png" width="80%"  /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="2-1-the-garden-of-forking-data.html#cb8-1" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">0</span>)</span>
+<span id="cb8-2"><a href="2-1-the-garden-of-forking-data.html#cb8-2" aria-hidden="true" tabindex="-1"></a>ways<span class="sc">/</span><span class="fu">sum</span>(ways)</span></code></pre></div>
+<pre><code>## [1] 0.00 0.15 0.40 0.45 0.00</code></pre>
+</div>
+<p style="text-align: center;">
+<a href="2-small-worlds-and-large-worlds.html"><button class="btn btn-default">Previous</button></a>
+<a href="2-2-building-a-model.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
