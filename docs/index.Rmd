@@ -5,18 +5,12 @@ output:
   bookdown::tufte_html_book:
     toc: yes
     css: toc.css
-#    toc_float: true
-    dev: 'svg'
-#    number_sections: true
     pandoc_args: --lua-filter=color-text.lua
     highlight: pygments
     link-citations: yes
-#output: html_notebook
-#editor_options: 
-#  chunk_output_type: inline
 ---
 
-# Preface {-}
+# Index {-}
 
 Consolidated slides, notes, homework, code and output from the *Statistical Rethinking* book and course by Richard McElreath.
 
@@ -28,7 +22,7 @@ McElreath's GitHub here: <https://github.com/rmcelreath>
 
 Slides downloaded manually via links on GitHub page and split into separate directories.
 
-## Install packages
+**Install packages**
 
 ```{r, eval = F}
 renv::init()
@@ -40,7 +34,7 @@ devtools::install_github("rmcelreath/rethinking")
 set_ulam_cmdstan(TRUE)
 ```
 
-## Split and convert slides
+**Split and convert slides**
 
 ```{r, eval = F}
 n_lectures = 20
@@ -70,10 +64,10 @@ lapply(dir_name, function(LECTURE){
 })
 ```
 
-## Create markdown code to incorporate slides
+**Create markdown code to incorporate slides**
 
 ```{r, eval = F}
-slides_dir = here::here("docs/slides/L07")
+slides_dir = here::here("docs/slides/L08")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){
@@ -84,19 +78,4 @@ lapply(slides, function(x){
 # Delete tmp file
 file.remove("tmp.txt")
 ```
-
-## Test slide
-
-```{r}
-slides_dir = here::here("docs/slides/L07")
-
-```
-
-```{r, echo = F, fig.margin = TRUE}
-knitr::include_graphics(file.path(slides_dir, '06.png'))
-```
-
-Text text text.
-
-
 

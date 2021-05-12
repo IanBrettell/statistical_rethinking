@@ -1,27 +1,27 @@
 ---
-title: "Chapter 5. The Many Variables & The Spurious Waffles"
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
-#output:
-#  html_document:
-#    toc: true
-#    toc_float: true
-#    dev: 'svg'
-#    number_sections: false
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    dev: 'svg'
+    number_sections: false
+    pandoc_args: --lua-filter=color-text.lua
+    highlight: pygments
 #output: html_notebook
 #editor_options: 
 #  chunk_output_type: inline
-output:
-  bookdown::tufte_html_book:
-    toc: yes
-    css: toc.css
-#    toc_float: true
-    dev: 'svg'
-#    number_sections: true
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-    link-citations: yes
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+##    toc_float: true
+#    dev: 'svg'
+##    number_sections: true
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
 ---
 
 # The Many Variables & The Spurious Waffles

@@ -10,6 +10,8 @@ output:
     link-citations: yes
 ---
 
+Test
+
 # Index {-}
 
 Consolidated slides, notes, homework, code and output from the *Statistical Rethinking* book and course by Richard McElreath.
@@ -22,7 +24,7 @@ McElreath's GitHub here: <https://github.com/rmcelreath>
 
 Slides downloaded manually via links on GitHub page and split into separate directories.
 
-## Install packages
+**Install packages**
 
 
 ```r
@@ -35,7 +37,7 @@ devtools::install_github("rmcelreath/rethinking")
 set_ulam_cmdstan(TRUE)
 ```
 
-## Split and convert slides
+**Split and convert slides**
 
 
 ```r
@@ -66,11 +68,11 @@ lapply(dir_name, function(LECTURE){
 })
 ```
 
-## Create markdown code to incorporate slides
+**Create markdown code to incorporate slides**
 
 
 ```r
-slides_dir = here::here("docs/slides/L07")
+slides_dir = here::here("docs/slides/L08")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){

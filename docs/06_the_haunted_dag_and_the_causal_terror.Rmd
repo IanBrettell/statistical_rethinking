@@ -1,24 +1,24 @@
 ---
-title: "Chapter 6. The Haunted DAG & The Causal Terror"
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
-#output:
-#  html_document:
-#    toc: true
-#    toc_float: true
-#    dev: 'svg'
-#    number_sections: false
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    dev: 'svg'
+    number_sections: false
+    pandoc_args: --lua-filter=color-text.lua
+    highlight: pygments
 #output: html_notebook
 #editor_options: 
 #  chunk_output_type: inline
-output:
-  bookdown::tufte_html_book:
-    toc: yes
-    css: toc.css
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-    link-citations: yes
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
 ---
 
 # The Haunted DAG & The Causal Terror
@@ -217,22 +217,18 @@ knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
 
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "We want to know the causal effect of $X$ on $Y$. We have an unobserved cause of $X$, then three covariates. What do you need to condition on, and what should you absolutely not condition on? The backdoor criterion is sufficient to figure it out. Find each backdoor path, and figure out which ones to open and close. Just three paths."}
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "What should we prefer between A or C? Just pick the one that's measured better. By the way, you need both good estimation, and a causal framework. Both are necessary."}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
-
-
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "Statistical assocation between Waffle Houses and divorce rate. What do we need to control for to remove spurious causation? Same elemental confounds as before. Backdoor into Waffle Houses through South. What do we have to do to estimate the causal impact of Waffles? Come out the backdoor of Waffle House, and find all the paths to get to D. It's sufficient to condition on A and M too. But it's sufficient to just condition on S."}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
-
-
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
@@ -240,211 +236,27 @@ knitr::include_graphics(file.path(slides_dir, '09.png'))
 
 
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "Good news. There are a number of packages where you give them the DAG, and then you can get it to algorithmically tell you things about the DAG. You can test your DAG, bu inspecting the implied conditional dependencies. The causal structure implies that some things are independent on others. A and W should have no correlation after conditioning on S. It's a fork from S. Parts of the DAG may be wrong. It's a good lesson that the answers require the data, but aren't in the data."}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
 
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "Hume did more to sort out causal inference than any other thinker. The whole approach of causal inference is Humian. We ahven't solved the problem, but he'd be proud of what we've built. It shows that experiments aren't necessary. We don't need them if we can close the backdoor paths. Often experiments in the human sciences are either impractical or unethical or both. Lots of progress can come from observational studies. Also, interventions influence many variables at once. e.g. experimentally manipulate obsesity. Choosing exercise or diet will affect what you're observing. Huge advantage of observational studies."}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
 
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "The first alternative uses the existence of a mediator to remove a cofound between an exposure and an outcome. The second is used a lot in behavioural genetics and economics. We'll learn how to use these."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
 
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "Shouldn't get cocky. DAGs are heuristic models. Still a lot of residual confounding. You can put measurement error into a DAG. We'll get there near the end. This is important if you're say an anthropologist, half your measurements are error. Phylogenetic trees: big nest of error. Last is that you shouldn't let DAGs stop you from making a real causal model. Physicists don't need DAGs because they have real models, with causal implications. That's what you want to drive towards."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '14.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '15.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '16.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '17.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '18.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '19.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '20.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '21.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '22.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '23.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '24.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '25.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '26.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '27.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '28.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '29.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '30.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '31.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '32.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '33.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '34.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '35.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '36.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '37.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '38.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '39.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '40.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '41.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '42.png'))
-```
-
-
-
-```{r, echo = F, out.width='80%'}
-knitr::include_graphics(file.path(slides_dir, '43.png'))
-```
-
-
-
-
 
 
 
