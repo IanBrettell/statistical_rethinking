@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-05-12" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="1-geocentric-models.html#geocentric-models"><span class="toc-section-number">1</span> Geocentric Models</a>
+<ul>
+<li><a href="1-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">1.1</span> Why normal distributions are normal</a></li>
+<li><a href="1-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">1.2</span> A language for describing models</a></li>
+<li><a href="1-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">1.3</span> Gaussian model of height</a></li>
+<li><a href="1-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">1.4</span> Linear prediction</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="header">
+<h1 class="title">Notes for Statistical Rethinking 2nd ed. by Richard McElreath</h1>
+<h4 class="date"><em>2021-05-12</em></h4>
+</div>
+<div id="geocentric-models" class="section level1" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Geocentric Models</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="1-geocentric-models.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-2"><a href="1-geocentric-models.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="1-geocentric-models.html#cb2-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L03&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L03/01.png" width="80%"  /></p>
+<p>Introduction into regression models.</p>
+<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<p class="caption marginnote shownote">
+Figure 1.1: As scientists, we’re always dealing with questions that have higher dimensions and more complexity than what we can measure. Above is the path of Mars, called <em>retrograde motion</em>. It’s an illusion caused by the joint movement of ourselves and Mars. The relative velocities create the illusion.
+</p>
+<img src="slides/L03/02.png" alt="As scientists, we're always dealing with questions that have higher dimensions and more complexity than what we can measure. Above is the path of Mars, called *retrograde motion*. It's an illusion caused by the joint movement of ourselves and Mars. The relative velocities create the illusion." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<p class="caption marginnote shownote">
+Figure 1.2: A lot of people published models, but this one is very accurate. They’re full-blown mathematical models. But they’re also wrong. You can’t use them to send a probe to Mars. This is like a regression model. They’re incredibly accurate for specific purposes, but they’re also deeply wrong. Keep in mind the small world / large world distinction. You could say scientists are geocentric people. The reason Ptolemy’s model works so well is that they used Fourier series - circles in circles (“epicircles”). You can use this for anything with periodic cycles. And this model still works.
+</p>
+<img src="slides/L03/03.png" alt="A lot of people published models, but this one is very accurate. They're full-blown mathematical models. But they're also wrong. You can't use them to send a probe to Mars. This is like a regression model. They're incredibly accurate for specific purposes, but they're also deeply wrong. Keep in mind the small world / large world distinction. You could say scientists are geocentric people. The reason Ptolemy's model works so well is that they used Fourier series - circles in circles (&quot;epicircles&quot;). You can use this for anything with periodic cycles. And this model still works. " width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<p class="caption marginnote shownote">
+Figure 1.3: We’re here to build models of many diverse things. We don’t usually use Fourier models; instead we tend to use regression. Linear regression models are incredibly useful. But if you use them without wisdom, all they do is describe things without wisdom.
+</p>
+<img src="slides/L03/04.png" alt="We're here to build models of many diverse things. We don't usually use Fourier models; instead we tend to use regression. Linear regression models are incredibly useful. But if you use them without wisdom, all they do is describe things without wisdom." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<p class="caption marginnote shownote">
+Figure 1.4: Statistical golems which measure how the mean of some measure changes when you learn other things. The mean is always modeled as some additive weighted measure of variables.
+</p>
+<img src="slides/L03/05.png" alt="Statistical golems which measure how the mean of some measure changes when you learn other things. The mean is always modeled as some additive weighted measure of variables." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<p class="caption marginnote shownote">
+Figure 1.5: Gauss developed regression, but he did it using a Bayesian argument. He used it to predict when a comet would return.
+</p>
+<img src="slides/L03/06.png" alt="Gauss developed regression, but he did it using a Bayesian argument. He used it to predict when a comet would return." width="80%"  />
+</div>
+</div>
+<p style="text-align: center;">
+<a href="1-1-why-normal-distributions-are-normal.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

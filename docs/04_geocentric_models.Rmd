@@ -1,24 +1,24 @@
 ---
-title: "Chapter 4. Geocentric Models"
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
-#output:
-#  html_document:
-#    toc: true
-#    toc_float: true
-#    dev: 'svg'
-#    number_sections: false
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    dev: 'svg'
+    number_sections: false
+    pandoc_args: --lua-filter=color-text.lua
+    highlight: pygments
 #output: html_notebook
 #editor_options: 
 #  chunk_output_type: inline
-output:
-  bookdown::tufte_html_book:
-    toc: yes
-    css: toc.css
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-    link-citations: yes
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
 ---
 
 # Geocentric Models
@@ -42,12 +42,8 @@ Introduction into regression models.
 knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "A lot of people published models, but this one is very accurate. They're full-blown mathematical models. But they're also wrong. You can't use them to send a probe to Mars. This is like a regression model. They're incredibly accurate for specific purposes, but they're also deeply wrong. Keep in mind the small world / large world distinction. "}
+```{r, echo = F, out.width='80%', fig.cap = "A lot of people published models, but this one is very accurate. They're full-blown mathematical models. But they're also wrong. You can't use them to send a probe to Mars. This is like a regression model. They're incredibly accurate for specific purposes, but they're also deeply wrong. Keep in mind the small world / large world distinction. You could say scientists are geocentric people. The reason Ptolemy's model works so well is that they used Fourier series - circles in circles (\"epicircles\"). You can use this for anything with periodic cycles. And this model still works. "}
 knitr::include_graphics(file.path(slides_dir, '03.png'))
-```
-
-```{marginfigure}
-You could say scientists are geocentric people. The reason Ptolemy's model works so well is that they used Fourier series - circles in circles ("epicircles"). You can use this for anything with periodic cycles. And this model still works. 
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "We're here to build models of many diverse things. We don't usually use Fourier models; instead we tend to use regression. Linear regression models are incredibly useful. But if you use them without wisdom, all they do is describe things without wisdom."}
@@ -68,7 +64,7 @@ knitr::include_graphics(file.path(slides_dir, '06.png'))
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
-### Normal by addition
+***4.1.1 Normal by addition***
 
 One of the things that are nice about them is that they are additive. So easy to work with. 
 Second is that they're very common.
@@ -110,30 +106,17 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "That's why a bunch of natural systems are normally distributed. We don't need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you're left with are particular shapes, called *maximum entropy distributions*. For the Gaussian, **addition** is our friend. "}
+```{r, echo = F, out.width='80%', fig.cap = "That's why a bunch of natural systems are normally distributed. We don't need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you're left with are particular shapes, called *maximum entropy distributions*. For the Gaussian, **addition** is our friend. One of the things about it is that products of deviations are actually addition. So lots of multiplicative interactions also produce Gaussian distributions. You can measure things on logarithmic scales."}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
-```{marginfigure}
-One of the things about it is that products of deviations are actually addition. So lots of multiplicative interactions also produce Gaussian distributions. 
-
-You can measure things on logarithmic scales.
-```
 
 
-```{r, echo = F, out.width='80%', fig.cap = "This is the ontological perspective on distributions. When fluctuations tend to dampen one another, you end up with a symmetric curve. What neat and also frustrating is that you lose a lot of information about the generative processes. When you see heights are normally distributed, you learn basically nothing about it. This is cool because all that's preserved from the underlying process is the mean and the variance. What's terrible is that you can't figure out the process from the distribution. "}
+```{r, echo = F, out.width='80%', fig.cap = "This is the ontological perspective on distributions. When fluctuations tend to dampen one another, you end up with a symmetric curve. What neat and also frustrating is that you lose a lot of information about the generative processes. When you see heights are normally distributed, you learn basically nothing about it. This is cool because all that's preserved from the underlying process is the mean and the variance. What's terrible is that you can't figure out the process from the distribution. All the maximum entropy distributions have the same feature. Power laws arise through lots of processes, and it tells you nothing other than it has high variance. The other perspective is epistemological. If you're building a model and you want to be as conservative as possible, you should use the Gaussian distribution. Because any other distribution will be narrower. So it's a very good assumption to use when you don't have additional information. The Gaussian is the one where all you're willing to say is there's a mean and a variance, you should use the Gaussian. It assumes the least."}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
 
-```{marginfigure}
-All the maximum entropy distributions have the same feature. Power laws arise through lots of processes, and it tells you nothing other than it has high variance. 
-
-The other perspective is epistemological. If you're building a model and you want to be as conservative as possible, you should use the Gaussian distribution. Because any other distribution will be narrower. So it's a very good assumption to use when you don't have additional information. 
-
-The Gaussian is the one where all you're willing to say is there's a mean and a variance, you should use the Gaussian. It assumes the least.
-```
-
-### Normal by multiplication
+***4.1.2 Normal by multiplication***
 
 This code just samples 12 random numbers between 1.0 and 1.1, each representing a proportional increase in growth. Thus 1.0 means no additional growth and 1.1 means a 10% increase.
 
@@ -162,7 +145,7 @@ rethinking::dens(big, norm.comp = T)
 rethinking::dens(small, norm.comp = T)
 ```
 
-### Normal by log-multiplication
+***4.1.3 Normal by log-multiplication***
 
 Large deviates that are multiplied together do not produce Gaussian distributions, but they do tend to produce Gaussian distributions on the log scale. e.g.:
 
@@ -173,7 +156,7 @@ rethinking::dens(log.big, norm.comp = T)
 
 Adding logs is equivalent to multiplying the original numbers. 
 
-### Using Gaussian distributions
+***4.1.4 Using Gaussian distributions***
 
 **Caution**: Many natural (and unnatural) processes have much heavier tails - much higher probabilities of producing extreme events.
 
@@ -183,7 +166,7 @@ Adding logs is equivalent to multiplying the original numbers.
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
-### Re-describing the glob tossing model
+***4.2.1 Re-describing the glob tossing model***
 
 ```{r, echo = F, out.width='80%', fig.cap = "We're going to write out all the models in the same standard notation. We're going to write this in our code so that it's reinforced."}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
@@ -211,7 +194,7 @@ rethinking::dens(samples)
 
 Before we add a predictor variable, we want to model the outcome variable as a Gaussian distribution. There are an infinite number of possible Gaussian distributions based on infinite combinations of $\mu$ and $\sigma$. We want our Bayesian machine to consider every possible distribution, and rank them by posterior plausibility. 
 
-### The data
+***4.3.1 The data***
 
 ```{r, echo = F, out.width='80%', fig.cap = "These height data come from Nancy Howell's data. `Howell1` is a simplified dataset. We'll focus just on adult heights at the moment. "}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
@@ -239,7 +222,7 @@ Filter for adults:
 d2 = d[d$age >= 18, ]
 ```
 
-### The model
+***4.3.2 The model***
 
 ```{r, echo = F, out.width='80%', fig.cap = "Here's the distribution of height data. $h$ is distributed normally."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
@@ -296,15 +279,12 @@ Let's use a different prior.
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-### Grid approximation of the posterior distribution
+***4.3.3 Grid approximation of the posterior distribution***
 
-```{r, echo = F, out.width='80%', fig.cap = "Once you start working with mixed models, the priors have a greater effect, so it's good to get used to prior predictive simulation now."}
+```{r, echo = F, out.width='80%', fig.cap = "Once you start working with mixed models, the priors have a greater effect, so it's good to get used to prior predictive simulation now. We'll calculate the grid and the posterior probability. How? Multiply the observed height conditional on the mu and sigma at that point. Times the prior probability of that mu and sigma. They code to do this is some loops. "}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-```{marginfigure}
-We'll calculate the grid and the posterior probability. How? Multiply the observed height conditional on the mu and sigma at that point. Times the prior probability of that mu and sigma. They code to do this is some loops. 
-```
 
 ```{r, echo = F, out.width='80%', fig.cap = "100x100 you start to see the Gaussian hill. Gradually the values become increasingly implausible. What we do here is draw samples."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
@@ -333,7 +313,7 @@ rethinking::contour_xyz(post$mu, post$sigma, post$prob)
 rethinking::image_xyz(post$mu, post$sigma, post$prob)
 ```
 
-### Sampling from the posterior
+***4.3.4 Sampling from the posterior***
 
 
 ```{r 4.19}
@@ -396,7 +376,7 @@ rethinking::dens(sample2.sigma, norm.comp = T)
 
 Now you can see the posterior for $\sigma$ is not Gaussian, but as a long tail towards higher values. 
 
-### Finding the posterior distribution with `quap`
+***4.3.5 Finding the posterior distribution with `quap`***
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Grid approximation is useful for teaching, but now we'll do a fancy approximation of it so we can go to higher dimensions. THat approximation asserts that the distribution is normal for every parameter. But once you get to generalised linear models it's a bad approximation. How does this work? You need two numbers: mean and SD. For multi-dimensional Gaussians, you also need a covariance matrix for the parameters. How do you do it? You climb the hill. It doesn't know what the hill is, but it knows what is up and down. So it tries to find the peak. When it gets to the peak, it needs to measure the curvature of the peak. And that's all it needs to approxi ate the curve. Often called the LaPlace approximation."}
@@ -469,7 +449,7 @@ m4.2 <- quap(
 precis( m4.2 )
 ```
 
-### Sampling from a `quap`
+***4.3.6 Sampling from a `quap`***
 
 To this the matrix of variances and covariances among all paris of parameters:
 
@@ -527,7 +507,7 @@ plot( d2$height ~ d2$weight )
 
 So now let's add a line. When we learn the predictions, we can learn the statistical association between weight and height. The question is how would you statistically describe this relationship?
 
-### The linear model strategy
+***4.4.1 The linear model strategy***
 
 ```{r, echo = F, out.width='80%', fig.cap = "So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $mu$. That means it's different for each person. $alpha$ is out population mean. $beta$ describes the relationship between $x$ and $y$."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
@@ -608,15 +588,12 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
 
 > How to choose a prior? The procedure we've performed in this chapter is to choose priors conditional on pre-data knowledge of the variables - their constraints, ranges, and theoretical relationships. 
 
-### Finding the posterior distribution
+***4.4.2 Finding the posterior distribution***
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "Measure xbar. Then define the `quap` model. Focus on the $\\mu$ line. "}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
-```{marginfigure}
-"Measure xbar. Then define the `quap` model. Focus on the $\mu$ line. "
-```
 
 
 ```{r 4.42}
@@ -648,7 +625,7 @@ m4.3b <- quap(
 ```
 
 
-### Interpreting the posterior distribution
+***4.4.3 Interpreting the posterior distribution***
 
 ```{r 4.44}
 precis(m4.3)
@@ -846,26 +823,12 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space."}
+```{r, echo = F, out.width='80%', fig.cap = "One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space. We can do the same thing for sigma. There's an envelope we expect heights to be in. Helper function called `sim` that shows conceptually what's happening. "}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
-```{marginfigure}
-We can do the same thing for sigma. There's an envelope we expect heights to be in.
-
-Helper function called `sim` that shows conceptually what's happening. 
-```
-
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw \"lines\" i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. "}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
-```
-
-```{marginfigure}
-That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw "lines" i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship.
-
-There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly. 
-
-The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. 
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity."}
@@ -878,12 +841,8 @@ knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
  
 
-```{r, echo = F, out.width='80%', fig.cap = ""}
+```{r, echo = F, out.width='80%', fig.cap = "We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new $\\beta$ coefficient. Setting priors for this is really hard, because $\\beta_2$ has no meaning. But the curve depends on $\\beta_1$ and $\\beta_2$, and they don't work in isolation. The individual parameters don't have meaning. It's a horrible problem in interpretation. Otherwise it's the same model. It's a linear regression in the sense that it's additive."}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
-```
-
-```{marginfigure}
-We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new $\beta$ coefficient. Setting priors for this is really hard, because $\beta_2$ has no meaning. But the curve depends on $\beta_1$ and $\beta_2$, and they don't work in isolation. The individual parameters don't have meaning. It's a horrible problem in interpretation. Otherwise it's the same model. It's a linear regression in the sense that it's additive.
 ```
 
 
@@ -919,47 +878,27 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are."}
+```{r, echo = F, out.width='80%', fig.cap = "It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. For the cubic, we add our cubic term $\\beta_3$. Fits even better, but now it's extrapolating upwards. "}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-```{marginfigure}
-I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. 
 
-For the cubic, we add our cubic term $\beta_3$. Fits even better, but now it's extrapolating upwards. 
-```
-
-```{r, echo = F, out.width='80%', fig.cap = "In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between."}
+```{r, echo = F, out.width='80%', fig.cap = "In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between. The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
-```
-
-```{marginfigure}
-The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times.
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they're geocentric, so you have to understand how they work."}
+```{r, echo = F, out.width='80%', fig.cap = "You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they're geocentric, so you have to understand how they work. The basis function is a local function, and the spline is made up of interpolating basis functions. Basis = \"component\". Big wiggly function made up of less wiggly functions. The \"P\" stands for \"penalised\". "}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-```{marginfigure}
-The basis function is a local function, and the spline is made up of interpolating basis functions. Basis = "component". Big wiggly function made up of less wiggly functions. 
-
-The "P" stands for "penalised". 
-```
-
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "Again, it's a linear model, an additive equation for $\\mu$. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you'll get a fantastic predictor of the relationship between the variables. There will be one weight for each of the basis functions. And the weights affect the range defined by the $\\beta$ variables. "}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
-```{marginfigure}
-Again, it's a linear model, an additive equation for $\mu$. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you'll get a fantastic predictor of the relationship between the variables.
-
-There will be one weight for each of the basis functions. And the weights affect the range defined by the $\beta$ variables. 
-```
 
 ```{r, echo = F, out.width='80%', fig.cap = "New example. Let's find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there's a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data. "}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
@@ -970,32 +909,22 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "Let's start with a terrible approximation, and work forwards."}
+```{r, echo = F, out.width='80%', fig.cap = "Let's start with a terrible approximation, and work forwards. Here's the recipe. First choose the location of the knots. Here they are points where the basis spline pivots. Choose a degree of the basis function. Then choose degree of local spline. Then find the posterior distribution of weights. Run this just like any old linear regression."}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
-```{marginfigure}
-Here's the recipe. First choose the location of the knots. Here they are points where the basis spline pivots. Choose a degree of the basis function. Then choose degree of local spline. Then find the posterior distribution of weights. Run this just like any old linear regression.
-```
 
 ```{r, echo = F, out.width='80%', fig.cap = "Start with just 5 knots at equal quantiles. Large literature on this. Nice because it gives you more knots where there's more data. One at the median, then one at each extreme, and one in between."}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "Let's think about construction of these synthetic variables. Think of year. We'll never use them again. The knots are anchored at year, but then they're gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It's weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they're own precious parameter value. "}
+```{r, echo = F, out.width='80%', fig.cap = "Let's think about construction of these synthetic variables. Think of year. We'll never use them again. The knots are anchored at year, but then they're gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It's weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they're own precious parameter value. When you get to higher degress, they'll be curves. At any particular point (except at a knot), two of these basis functions will determine the value."}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
-```{marginfigure}
-When you get to higher degress, they'll be curves. At any particular point (except at a knot), two of these basis functions will determine the value.
-```
 
-```{r, echo = F, out.width='80%', fig.cap = "The only new trick here is to use linear algebra. You can imagine writing 5 terms."}
+```{r, echo = F, out.width='80%', fig.cap = "The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. "}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
-```
-
-```{marginfigure}
-We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. 
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "Repeating the equation for $mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature."}
@@ -1014,13 +943,10 @@ knitr::include_graphics(file.path(slides_dir, '42.png'))
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest."}
+```{r, echo = F, out.width='80%', fig.cap = "Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest. Play around with the knots and degree and priors."}
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
-```{marginfigure}
-Play around with the knots and degree and priors.
-```
 
 ```{r, echo = F, out.width='80%', fig.cap = "Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year."}
 knitr::include_graphics(file.path(slides_dir, '45.png'))

@@ -1,5 +1,5 @@
 ---
-title: "Chapter 3. Sampling from the Imaginary"
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
 output:
   html_document:
@@ -76,7 +76,7 @@ dens(samples)
 knitr::include_graphics(file.path(slides_dir, '49.png'))
 ```
 
-### Intervals of defined boundaries
+***3.2.1 Intervals of defined boudaries***
 
 What's the posterior probability that the proportion of water is less than 0.5?
 
@@ -106,7 +106,7 @@ sum(samples > 0.5 & samples < 0.75) / 1e4
 
 This is shown in the upper right of Figure 3.2.
 
-### Intervals of defined mass
+***3.2.2 Intervals of defined mass***
 
 What a compatibility interval indicates is a range of parameter values compatible with the model and data. 
 
@@ -162,7 +162,7 @@ Here the HPDI has an advantage over the PI, but in most cases, the two are very 
 
 > Often, all compatibility intervals do is communicate the shape of a distribution.
 
-### Point estimates
+***3.2.3 Point estimates***
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '53.png'))
@@ -226,7 +226,7 @@ knitr::include_graphics(file.path(slides_dir, '55.png'))
 
 We've got the model and now we want to know what it expects. So we get it to simulate predictions. 
 
-### Dummy data
+***3.3.1 Dummy data***
 
 Suppose $N$ = 2, two tosses, then there are only three possible observations: 0, 1 and 2 water. You can compute the probability of each for any given value of $p$. Let's use $p$ = 0.7, about the true proportion of water on the Earth.
 
@@ -260,7 +260,7 @@ dummy_w = rbinom(1e5, size = 9, prob = .7)
 simplehist(dummy_w, xlab = "dummy water count")
 ```
 
-### Model checking
+***3.3.2 ### Model checking***
 
 Means:
 1. Ensuring the model fitting worked correctly; and

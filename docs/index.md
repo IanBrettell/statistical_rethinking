@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
+date: '2021-05-12'
 output:
   bookdown::tufte_html_book:
     toc: yes
@@ -22,9 +22,10 @@ McElreath's GitHub here: <https://github.com/rmcelreath>
 
 Slides downloaded manually via links on GitHub page and split into separate directories.
 
-## Install packages
+**Install packages**
 
-```{r, eval = F}
+
+```r
 renv::init()
 devtools::install_github("stan-dev/cmdstanr")
 cmdstanr::install_cmdstan()
@@ -34,9 +35,10 @@ devtools::install_github("rmcelreath/rethinking")
 set_ulam_cmdstan(TRUE)
 ```
 
-## Split and convert slides
+**Split and convert slides**
 
-```{r, eval = F}
+
+```r
 n_lectures = 20
 
 lectures = 1:n_lectures
@@ -64,10 +66,11 @@ lapply(dir_name, function(LECTURE){
 })
 ```
 
-## Create markdown code to incorporate slides
+**Create markdown code to incorporate slides**
 
-```{r, eval = F}
-slides_dir = here::here("docs/slides/L07")
+
+```r
+slides_dir = here::here("docs/slides/L08")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){

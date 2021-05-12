@@ -1,5 +1,5 @@
 ---
-title: "Chapter 2. Small Worlds and Large Worlds"
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
 output:
   html_document:
@@ -250,6 +250,7 @@ Simplest possible Bayesian model I can imagine. Actually LaPlace's model - the l
 ```
 
 ## Making the model go
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "The code looks a little different. What you must do mechanically is compute the posterior. Your target is always a posterior distribution. Nice not to have a choice."}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
