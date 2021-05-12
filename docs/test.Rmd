@@ -10,7 +10,7 @@ output:
     link-citations: yes
 ---
 
-# Preface {-}
+# Index {-}
 
 Consolidated slides, notes, homework, code and output from the *Statistical Rethinking* book and course by Richard McElreath.
 
