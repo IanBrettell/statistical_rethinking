@@ -1,4 +1,4 @@
-book_filename: "Statistical Rethinking notes"
+book_filename: _main
 language:
   ui:
     chapter_name: "Chapter "
