@@ -214,7 +214,7 @@ rethinking::precis(d)
 ```
 
 ```{r 4.10}
-d$height
+head(d$height)
 ```
 
 Filter for adults:
@@ -263,7 +263,7 @@ rethinking::dens(prior_h)
 
 This is not a normal distribution. It's a t-distribution because you have uncertainty about variance, which gives it fat tails. There are some really really tall individuals in this prior. But at least we don't have any negative heights. 
 
-Let's see the implied heights:
+Let's see the implied heights with a flatter and less informative prior for $\mu$.:
 
 ```{r 4.15, fig.margin = T}
 sample_mu = rnorm(1e4, 178, 100)
@@ -509,11 +509,11 @@ So now let's add a line. When we learn the predictions, we can learn the statist
 
 ***4.4.1 The linear model strategy***
 
-```{r, echo = F, out.width='80%', fig.cap = "So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $mu$. That means it's different for each person. $alpha$ is out population mean. $beta$ describes the relationship between $x$ and $y$."}
+```{r, echo = F, out.width='80%', fig.cap = "So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $\\mu$. That means it's different for each person. $\\alpha$ is out population mean. $\\beta$ describes the relationship between $x$ and $y$."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "The equals sign mean that it's deterministically defined. $beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour."}
+```{r, echo = F, out.width='80%', fig.cap = "The equals sign mean that it's deterministically defined. $\\beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
@@ -554,7 +554,7 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
 
 Getting the scatter right is important, because you can see these impossibly steep lines. Some of them take you from impossibly short individuals to twice the tallest. Want to dampen these expectations. Practise on these safe examples. 
 
-```{r, echo = F, out.width='80%', fig.cap = "We know that $beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive."}
+```{r, echo = F, out.width='80%', fig.cap = "We know that $\\beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive."}
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
@@ -590,7 +590,7 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
 
 ***4.4.2 Finding the posterior distribution***
 
-```{r, echo = F, out.width='80%', fig.cap = "Measure xbar. Then define the `quap` model. Focus on the $\\mu$ line. "}
+```{r, echo = F, out.width='80%', fig.cap = "Measure $\\bar{x}$ Then define the `quap` model. Focus on the $\\mu$ line. "}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
@@ -806,10 +806,38 @@ mu.mean = apply(mu, 2, mean)
 mu.PI =  apply(mu, 2, PI, prob = .89)
 ```
 
+```{r 4.57}
+# Plot raw data
+## Fading out points to make line and interval more visible
+plot(height ~ weight, data = d2, col = col.alpha(rangi2, 0.5))
+
+## Plot the MAP line, aka the mean mu for each weight
+lines(weight.seq, mu.mean)
+
+## Plot a shaded region for 89% PI
+shade(mu.PI, weight.seq)
+```
+
+Here's the recipe for generating predictions and intervals from the posterior of a fit model:
+1. Use `link` to generate distributions of posteriro values for $\mu$. The default behaviour os `link` is to use the original data, so you have to pass it a list of new horizontal axis values you want to plot posterior predictions across.
+1. Use summary functions like `mean` or `PI` to find averages and lower and upper bounds of $\mu$ for each value of the predictor variable.
+1. Finally, use plotting functions like `lines` and `shade` to draw the lines and intervals. Or you might plot the distributions of the predictions, or do further numerical calculations with them. It's really up to you.
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is like rolling your own `link` here."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
+```{r 4.58}
+post = extract.samples(m4.3)
+mu.link = function(weight) post$a + post$b*( weight - xbar )
+weight.seq = seq(from = 25, to = 70, by = 1)
+mu = sapply(weight.seq, mu.link)
+mu.mean = apply(mu, 2, mean)
+mu.CI = apply(mu, 2, PI, prob = 0.89)
+mu.HPDI = apply(mu, 2, HPDI, prob = 0.89)
+```
+
+Whatever model you find yourself with, this approach can be used to generate posterior predictions for any component of it. 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Think what's going on with the distribution. Fuzzy bowtie. There's a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
@@ -827,9 +855,64 @@ knitr::include_graphics(file.path(slides_dir, '15.png'))
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
+```{r 4.59}
+sim.height = sim(m4.3, data = list(weight = weight.seq))
+str(sim.height)
+```
+
+This matrix is like the earlier one, `mu`, but contains simulated heights, not distributions of plausible average height, $\mu$. 
+
+Summarise these simmulated heights in the same way:
+
+```{r 4.60}
+height.PI = apply(sim.height, 2, PI, prob = 0.89)
+```
+
+Now `height.PI` contains the 89% posterior prediction interval of observable (according to the model) heights, across the values of weight in `weight.seq`.
+
+```{r 4.61}
+# Plot raw data
+plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
+
+# draw MAP line
+lines( weight.seq , mu.mean )
+
+# draw HPDI region for line
+shade( mu.HPDI , weight.seq )
+
+# draw PI region for simulated heights
+shade( height.PI , weight.seq )
+```
+
+If the rough shaded interval bothers you, increase the number of samples from the posterior distribution.
+```{r 4.62}
+sim.height <- sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
+height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
+```
+
+```{r}
+# Plot raw data
+plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
+
+# draw MAP line
+lines( weight.seq , mu.mean )
+
+# draw HPDI region for line
+shade( mu.HPDI , weight.seq )
+
+# draw PI region for simulated heights
+shade( height.PI , weight.seq )
+```
+
+## 4.5 Curves from lines
+
 ```{r, echo = F, out.width='80%', fig.cap = "That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw \"lines\" i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. "}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
+
+***4.5.1 Polynomial regression***
+
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity."}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
@@ -840,6 +923,16 @@ knitr::include_graphics(file.path(slides_dir, '18.png'))
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
  
+```{r 4.64}
+library(rethinking)
+data(Howell1)
+d <- Howell1
+```
+
+```{r}
+plot( height ~ weight , d )
+```
+The relationship is visibly curved now that we've included the non-adult individuals.
 
 ```{r, echo = F, out.width='80%', fig.cap = "We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new $\\beta$ coefficient. Setting priors for this is really hard, because $\\beta_2$ has no meaning. But the curve depends on $\\beta_1$ and $\\beta_2$, and they don't work in isolation. The individual parameters don't have meaning. It's a horrible problem in interpretation. Otherwise it's the same model. It's a linear regression in the sense that it's additive."}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
@@ -853,6 +946,26 @@ knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "There's a function in R called `scale`. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight."}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
+
+```{r 4.65}
+d$weight_s <- ( d$weight - mean(d$weight) )/sd(d$weight)
+d$weight_s2 <- d$weight_s^2
+m4.5 <- rethinking::quap(
+alist(
+  height ~ dnorm( mu , sigma ) ,
+  mu <- a + b1*weight_s + b2*weight_s2 ,
+  a ~ dnorm( 178 , 20 ) ,
+  b1 ~ dlnorm( 0 , 1) ,
+  b2 ~ dnorm( 0 , 1 ) ,
+  sigma ~ dunif( 0 , 50 )
+) , data=d )
+```
+
+```{r 4.66}
+precis(m4.5)
+```
+
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "Cooked spaghetti. Now it has an infinite number of parabolas. Now we sample from the posterior, and we got a sample of the high-probability parabolas, a tiny slice of the whole space. And we draw them up, to start with, just 10 individuals. Over the full range, we get parabolas that vary wildly outside of the weights, but straight within the range of the data. This is a phenomenon that's always present. THe uncertainty intervals always fan out outside of the data range. This is a problem for prediction. Not true for splines. This is because every parameter acts globally on the shape. You can't tune a specfic region."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
@@ -878,6 +991,41 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
+```{r 4.67}
+weight.seq <- seq( from=-2.2 , to=2 , length.out=30 )
+pred_dat <- list( weight_s=weight.seq , weight_s2=weight.seq^2 )
+mu <- link( m4.5 , data=pred_dat )
+mu.mean <- apply( mu , 2 , mean )
+mu.PI <- apply( mu , 2 , PI , prob=0.89 )
+sim.height <- sim( m4.5 , data=pred_dat )
+height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
+```
+
+```{r 4.68}
+plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) )
+lines( weight.seq , mu.mean )
+shade( mu.PI , weight.seq )
+shade( height.PI , weight.seq )
+```
+
+> When you have expert knoweldge, it is often easy to do better than a linear model. These models are geocentric devices for describing partial correlations. We should feel embarrassed to use them, just so we don't become satisfied with the phenomenologicla explanations they provide.
+
+Convert back to natural scale:
+
+```{r 4.70}
+# Remove the horizontal axis
+plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) , xaxt="n" )
+```
+
+```{r 4.71}
+# Then explicitly construct the axis
+plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) , xaxt="n" )
+at <- c(-2,-1,0,1,2)
+labels <- at*sd(d$weight) + mean(d$weight)
+axis( side=1 , at=at , labels=round(labels,1) )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap = "It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. For the cubic, we add our cubic term $\\beta_3$. Fits even better, but now it's extrapolating upwards. "}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
@@ -886,6 +1034,16 @@ knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between. The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
+
+***4.5.2 Splines***
+
+```{r 4.72}
+library(rethinking)
+data(cherry_blossoms)
+d <- cherry_blossoms
+precis(d)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))

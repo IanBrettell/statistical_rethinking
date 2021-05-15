@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-12" />
+<meta name="date" content="2021-05-15" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,9 +137,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a></li>
 <li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
 </ul>
 </div>
 </div>
@@ -148,9 +150,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="col-sm-12">
 <div id="the-many-variables-the-spurious-waffles" class="section level1" number="5">
 <h1><span class="header-section-number">Chapter 5</span> The Many Variables &amp; The Spurious Waffles</h1>
-<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb175-2"><a href="5-the-many-variables-the-spurious-waffles.html#cb175-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
-<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb176-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L05&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb194-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb194-2"><a href="5-the-many-variables-the-spurious-waffles.html#cb194-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb195-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L05&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L05/01.png" width="80%" /></p>
 <div class="figure">
 <img src="slides/L05/02.png" alt="Went to College in Atlanta. Has Waffle Houses. Always open. Sometimes there are two Waffle Houses. Other things in the South include Hurricanes." width="80%" />
@@ -419,7 +421,7 @@ This is the better option.
 </p>
 </div>
 <hr />
-<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb187-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb187-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L06&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb206-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L06&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L06/01.png" width="80%" /></p>
 <div class="figure">
 <img src="slides/L06/02.png" alt="Pick up where we left off. How to include un-ordered categorical data in a regression? A lot of downsides for using dummy variables. Index variables have a lot of advantages, including that you can assign the same priors to each of the categories. Another reason is that when you get more and more categories, you don't have to change anything other than include more numbers in the index. Grows really nicely, and is the foundation of multi-level models." width="80%" />
@@ -442,7 +444,7 @@ If you want the posterior distribution for the sexes, you extract samples from t
 
 </div>
 <p style="text-align: center;">
-<a href="4-4-linear-prediction.html"><button class="btn btn-default">Previous</button></a>
+<a href="4-5-curves-from-lines.html"><button class="btn btn-default">Previous</button></a>
 <a href="6-the-haunted-dag-the-causal-terror.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
