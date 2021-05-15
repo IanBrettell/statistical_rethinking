@@ -12,7 +12,7 @@ rmd_files: ["index.Rmd",
             "03_sampling_from_the_imaginary.Rmd",
             "04_geocentric_models.Rmd",
             "05_the_many_variables_and_the_spurious_waffles.Rmd",
-            "06_the_haunted_dag_and_the_causal_terror.Rmd"
-            ]
+            "06_the_haunted_dag_and_the_causal_terror.Rmd",
+            "07_ulysses_compass.Rmd"]
 
 

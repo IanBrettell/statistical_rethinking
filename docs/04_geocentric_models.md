@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-12'
+date: '2021-05-15'
 output:
   html_document:
     toc: true
@@ -136,7 +136,7 @@ prod(1 + runif(12, 0, .1))
 ```
 
 ```
-## [1] 1.658359
+## [1] 1.73573
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
@@ -271,78 +271,11 @@ rethinking::precis(d)
 
 
 ```r
-d$height
+head(d$height)
 ```
 
 ```
-##   [1] 151.7650 139.7000 136.5250 156.8450 145.4150 163.8300 149.2250 168.9100
-##   [9] 147.9550 165.1000 154.3050 151.1300 144.7800 149.9000 150.4950 163.1950
-##  [17] 157.4800 143.9418 121.9200 105.4100  86.3600 161.2900 156.2100 129.5400
-##  [25] 109.2200 146.4000 148.5900 147.3200 137.1600 125.7300 114.3000 147.9550
-##  [33] 161.9250 146.0500 146.0500 152.7048 142.8750 142.8750 147.9550 160.6550
-##  [41] 151.7650 162.8648 171.4500 147.3200 147.9550 144.7800 121.9200 128.9050
-##  [49]  97.7900 154.3050 143.5100 146.7000 157.4800 127.0000 110.4900  97.7900
-##  [57] 165.7350 152.4000 141.6050 158.8000 155.5750 164.4650 151.7650 161.2900
-##  [65] 154.3050 145.4150 145.4150 152.4000 163.8300 144.1450 129.5400 129.5400
-##  [73] 153.6700 142.8750 146.0500 167.0050 158.4198  91.4400 165.7350 149.8600
-##  [81] 147.9550 137.7950 154.9400 160.9598 161.9250 147.9550 113.6650 159.3850
-##  [89] 148.5900 136.5250 158.1150 144.7800 156.8450 179.0700 118.7450 170.1800
-##  [97] 146.0500 147.3200 113.0300 162.5600 133.9850 152.4000 160.0200 149.8600
-## [105] 142.8750 167.0050 159.3850 154.9400 148.5900 111.1250 111.7600 162.5600
-## [113] 152.4000 124.4600 111.7600  86.3600 170.1800 146.0500 159.3850 151.1300
-## [121] 160.6550 169.5450 158.7500  74.2950 149.8600 153.0350  96.5200 161.9250
-## [129] 162.5600 149.2250 116.8400 100.0760 163.1950 161.9250 145.4150 163.1950
-## [137] 151.1300 150.4950 141.6050 170.8150  91.4400 157.4800 152.4000 149.2250
-## [145] 129.5400 147.3200 145.4150 121.9200 113.6650 157.4800 154.3050 120.6500
-## [153] 115.6000 167.0050 142.8750 152.4000  96.5200 160.0000 159.3850 149.8600
-## [161] 160.6550 160.6550 149.2250 125.0950 140.9700 154.9400 141.6050 160.0200
-## [169] 150.1648 155.5750 103.5050  94.6150 156.2100 153.0350 167.0050 149.8600
-## [177] 147.9550 159.3850 161.9250 155.5750 159.3850 146.6850 172.7200 166.3700
-## [185] 141.6050 142.8750 133.3500 127.6350 119.3800 151.7650 156.8450 148.5900
-## [193] 157.4800 149.8600 147.9550 102.2350 153.0350 160.6550 149.2250 114.3000
-## [201] 100.9650 138.4300  91.4400 162.5600 149.2250 158.7500 149.8600 158.1150
-## [209] 156.2100 148.5900 143.5100 154.3050 131.4450 157.4800 157.4800 154.3050
-## [217] 107.9500 168.2750 145.4150 147.9550 100.9650 113.0300 149.2250 154.9400
-## [225] 162.5600 156.8450 123.1900 161.0106 144.7800 143.5100 149.2250 110.4900
-## [233] 149.8600 165.7350 144.1450 157.4800 154.3050 163.8300 156.2100 153.6700
-## [241] 134.6200 144.1450 114.3000 162.5600 146.0500 120.6500 154.9400 144.7800
-## [249] 106.6800 146.6850 152.4000 163.8300 165.7350 156.2100 152.4000 140.3350
-## [257] 158.1150 163.1950 151.1300 171.1198 149.8600 163.8300 141.6050  93.9800
-## [265] 149.2250 105.4100 146.0500 161.2900 162.5600 145.4150 145.4150 170.8150
-## [273] 127.0000 159.3850 159.4000 153.6700 160.0200 150.4950 149.2250 127.0000
-## [281] 142.8750 142.1130 147.3200 162.5600 164.4650 160.0200 153.6700 167.0050
-## [289] 151.1300 147.9550 125.3998 111.1250 153.0350 139.0650 152.4000 154.9400
-## [297] 147.9550 143.5100 117.9830 144.1450  92.7100 147.9550 155.5750 150.4950
-## [305] 155.5750 154.3050 130.6068 101.6000 157.4800 168.9100 150.4950 111.7600
-## [313] 160.0200 167.6400 144.1450 145.4150 160.0200 147.3200 164.4650 153.0350
-## [321] 149.2250 160.0200 149.2250  85.0900  84.4550  59.6138  92.7100 111.1250
-## [329]  90.8050 153.6700  99.6950  62.4840  81.9150  96.5200  80.0100 150.4950
-## [337] 151.7650 140.6398  88.2650 158.1150 149.2250 151.7650 154.9400 123.8250
-## [345] 104.1400 161.2900 148.5900  97.1550  93.3450 160.6550 157.4800 167.0050
-## [353] 157.4800  91.4400  60.4520 137.1600 152.4000 152.4000  81.2800 109.2200
-## [361]  71.1200  89.2048  67.3100  85.0900  69.8500 161.9250 152.4000  88.9000
-## [369]  90.1700  71.7550  83.8200 159.3850 142.2400 142.2400 168.9100 123.1900
-## [377]  74.9300  74.2950  90.8050 160.0200  67.9450 135.8900 158.1150  85.0900
-## [385]  93.3450 152.4000 155.5750 154.3050 156.8450 120.0150 114.3000  83.8200
-## [393] 156.2100 137.1600 114.3000  93.9800 168.2750 147.9550 139.7000 157.4800
-## [401]  76.2000  66.0400 160.7000 114.3000 146.0500 161.2900  69.8500 133.9850
-## [409]  67.9450 150.4950 163.1950 148.5900 148.5900 161.9250 153.6700  68.5800
-## [417] 151.1300 163.8300 153.0350 151.7650 132.0800 156.2100 140.3350 158.7500
-## [425] 142.8750  84.4550 151.9428 161.2900 127.9906 160.9852 144.7800 132.0800
-## [433] 117.9830 160.0200 154.9400 160.9852 165.9890 157.9880 154.9400  97.9932
-## [441]  64.1350 160.6550 147.3200 146.7000 147.3200 172.9994 158.1150 147.3200
-## [449] 124.9934 106.0450 165.9890 149.8600  76.2000 161.9250 140.0048  66.6750
-## [457]  62.8650 163.8300 147.9550 160.0200 154.9400 152.4000  62.2300 146.0500
-## [465] 151.9936 157.4800  55.8800  60.9600 151.7650 144.7800 118.1100  78.1050
-## [473] 160.6550 151.1300 121.9200  92.7100 153.6700 147.3200 139.7000 157.4800
-## [481]  91.4400 154.9400 143.5100  83.1850 158.1150 147.3200 123.8250  88.9000
-## [489] 160.0200 137.1600 165.1000 154.9400 111.1250 153.6700 145.4150 141.6050
-## [497] 144.7800 163.8300 161.2900 154.9000 161.3000 170.1800 149.8600 123.8250
-## [505]  85.0900 160.6550 154.9400 106.0450 126.3650 166.3700 148.2852 124.4600
-## [513]  89.5350 101.6000 151.7650 148.5900 153.6700  53.9750 146.6850  56.5150
-## [521] 100.9650 121.9200  81.5848 154.9400 156.2100 132.7150 125.0950 101.6000
-## [529] 160.6550 146.0500 132.7150  87.6300 156.2100 152.4000 162.5600 114.9350
-## [537]  67.9450 142.8750  76.8350 145.4150 162.5600 156.2100  71.1200 158.7500
+## [1] 151.765 139.700 136.525 156.845 145.415 163.830
 ```
 
 Filter for adults:
@@ -405,7 +338,7 @@ rethinking::dens(prior_h)
 
 This is not a normal distribution. It's a t-distribution because you have uncertainty about variance, which gives it fat tails. There are some really really tall individuals in this prior. But at least we don't have any negative heights. 
 
-Let's see the implied heights:
+Let's see the implied heights with a flatter and less informative prior for $\mu$.:
 
 
 ```r
@@ -617,9 +550,9 @@ rethinking::precis(m4.1)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%
-## mu    154.607024 0.4119947 153.948577 155.265471
-## sigma   7.731333 0.2913860   7.265642   8.197024
+##            mean        sd       5.5%      94.5%
+## mu    154.60699 0.4119961 153.948541 155.265440
+## sigma   7.73136 0.2913886   7.265665   8.197055
 ```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
@@ -650,8 +583,8 @@ precis( m4.2 )
 
 ```
 ##            mean        sd      5.5%     94.5%
-## mu    177.86376 0.1002354 177.70356 178.02395
-## sigma  24.51755 0.9289217  23.03295  26.00214
+## mu    177.86375 0.1002354 177.70356 178.02395
+## sigma  24.51756 0.9289233  23.03296  26.00216
 ```
 
 ***4.3.6 Sampling from a `quap`***
@@ -703,12 +636,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 154.8164 7.066154
-## 2 154.1428 7.903066
-## 3 154.3550 7.900221
-## 4 154.8782 7.798171
-## 5 155.0409 8.092479
-## 6 154.0206 7.597417
+## 1 154.6455 7.605080
+## 2 154.7809 7.733258
+## 3 154.8998 7.414985
+## 4 155.2177 7.624417
+## 5 153.4681 7.343153
+## 6 154.1538 7.727733
 ```
 
 
@@ -717,9 +650,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%    histogram
-## mu    154.601098 0.4099556 153.942058 155.250560      ▁▁▅▇▂▁▁
-## sigma   7.735382 0.2921538   7.264821   8.205283 ▁▁▁▂▅▇▇▃▁▁▁▁
+##             mean        sd       5.5%      94.5%     histogram
+## mu    154.607094 0.4152618 153.937473 155.272450      ▁▁▁▅▇▂▁▁
+## sigma   7.731445 0.2889114   7.272382   8.189212 ▁▁▁▂▅▇▇▃▁▁▁▁▁
 ```
 
 Here's a peak under the motor of `extract.samples`:
@@ -756,13 +689,13 @@ So now let's add a line. When we learn the predictions, we can learn the statist
 ***4.4.1 The linear model strategy***
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/39.png" alt="So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $mu$. That means it's different for each person. $alpha$ is out population mean. $beta$ describes the relationship between $x$ and $y$." width="80%" />
-<p class="caption">So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $mu$. That means it's different for each person. $alpha$ is out population mean. $beta$ describes the relationship between $x$ and $y$.</p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/39.png" alt="So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $\mu$. That means it's different for each person. $\alpha$ is out population mean. $\beta$ describes the relationship between $x$ and $y$." width="80%" />
+<p class="caption">So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $\mu$. That means it's different for each person. $\alpha$ is out population mean. $\beta$ describes the relationship between $x$ and $y$.</p>
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/40.png" alt="The equals sign mean that it's deterministically defined. $beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour." width="80%" />
-<p class="caption">The equals sign mean that it's deterministically defined. $beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour.</p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/40.png" alt="The equals sign mean that it's deterministically defined. $\beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour." width="80%" />
+<p class="caption">The equals sign mean that it's deterministically defined. $\beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour.</p>
 </div>
 
 <div class="figure">
@@ -804,8 +737,8 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
 Getting the scatter right is important, because you can see these impossibly steep lines. Some of them take you from impossibly short individuals to twice the tallest. Want to dampen these expectations. Practise on these safe examples. 
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/44.png" alt="We know that $beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive." width="80%" />
-<p class="caption">We know that $beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive.</p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/44.png" alt="We know that $\beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive." width="80%" />
+<p class="caption">We know that $\beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive.</p>
 </div>
 
 
@@ -845,8 +778,8 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
 ***4.4.2 Finding the posterior distribution***
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/46.png" alt="Measure xbar. Then define the `quap` model. Focus on the $\mu$ line. " width="80%" />
-<p class="caption">Measure xbar. Then define the `quap` model. Focus on the $\mu$ line. </p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L03/46.png" alt="Measure $\bar{x}$ Then define the `quap` model. Focus on the $\mu$ line. " width="80%" />
+<p class="caption">Measure $\bar{x}$ Then define the `quap` model. Focus on the $\mu$ line. </p>
 </div>
 
 
@@ -1130,10 +1063,42 @@ mu.PI =  apply(mu, 2, PI, prob = .89)
 ```
 
 
+```r
+# Plot raw data
+## Fading out points to make line and interval more visible
+plot(height ~ weight, data = d2, col = col.alpha(rangi2, 0.5))
+
+## Plot the MAP line, aka the mean mu for each weight
+lines(weight.seq, mu.mean)
+
+## Plot a shaded region for 89% PI
+shade(mu.PI, weight.seq)
+```
+
+<img src="04_geocentric_models_files/figure-html/4.57-1.svg" width="672" />
+
+Here's the recipe for generating predictions and intervals from the posterior of a fit model:
+1. Use `link` to generate distributions of posteriro values for $\mu$. The default behaviour os `link` is to use the original data, so you have to pass it a list of new horizontal axis values you want to plot posterior predictions across.
+1. Use summary functions like `mean` or `PI` to find averages and lower and upper bounds of $\mu$ for each value of the predictor variable.
+1. Finally, use plotting functions like `lines` and `shade` to draw the lines and intervals. Or you might plot the distributions of the predictions, or do further numerical calculations with them. It's really up to you.
+
+
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/12.png" alt="This is like rolling your own `link` here." width="80%" />
 <p class="caption">This is like rolling your own `link` here.</p>
 </div>
+
+```r
+post = extract.samples(m4.3)
+mu.link = function(weight) post$a + post$b*( weight - xbar )
+weight.seq = seq(from = 25, to = 70, by = 1)
+mu = sapply(weight.seq, mu.link)
+mu.mean = apply(mu, 2, mean)
+mu.CI = apply(mu, 2, PI, prob = 0.89)
+mu.HPDI = apply(mu, 2, HPDI, prob = 0.89)
+```
+
+Whatever model you find yourself with, this approach can be used to generate posterior predictions for any component of it. 
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/13.png" alt="Think what's going on with the distribution. Fuzzy bowtie. There's a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie." width="80%" />
@@ -1155,10 +1120,78 @@ mu.PI =  apply(mu, 2, PI, prob = .89)
 <p class="caption">One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space. We can do the same thing for sigma. There's an envelope we expect heights to be in. Helper function called `sim` that shows conceptually what's happening. </p>
 </div>
 
+
+```r
+sim.height = sim(m4.3, data = list(weight = weight.seq))
+str(sim.height)
+```
+
+```
+##  num [1:1000, 1:46] 133 140 132 139 136 ...
+```
+
+This matrix is like the earlier one, `mu`, but contains simulated heights, not distributions of plausible average height, $\mu$. 
+
+Summarise these simmulated heights in the same way:
+
+
+```r
+height.PI = apply(sim.height, 2, PI, prob = 0.89)
+```
+
+Now `height.PI` contains the 89% posterior prediction interval of observable (according to the model) heights, across the values of weight in `weight.seq`.
+
+
+```r
+# Plot raw data
+plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
+
+# draw MAP line
+lines( weight.seq , mu.mean )
+
+# draw HPDI region for line
+shade( mu.HPDI , weight.seq )
+
+# draw PI region for simulated heights
+shade( height.PI , weight.seq )
+```
+
+<img src="04_geocentric_models_files/figure-html/4.61-1.svg" width="672" />
+
+If the rough shaded interval bothers you, increase the number of samples from the posterior distribution.
+
+```r
+sim.height <- sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
+height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
+```
+
+
+```r
+# Plot raw data
+plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
+
+# draw MAP line
+lines( weight.seq , mu.mean )
+
+# draw HPDI region for line
+shade( mu.HPDI , weight.seq )
+
+# draw PI region for simulated heights
+shade( height.PI , weight.seq )
+```
+
+<img src="04_geocentric_models_files/figure-html/unnamed-chunk-66-1.svg" width="672" />
+
+## 4.5 Curves from lines
+
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/17.png" alt="That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw &quot;lines&quot; i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. " width="80%" />
 <p class="caption">That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw "lines" i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. </p>
 </div>
+
+***4.5.1 Polynomial regression***
+
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/18.png" alt="This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity." width="80%" />
@@ -1171,6 +1204,20 @@ mu.PI =  apply(mu, 2, PI, prob = .89)
 <p class="caption">The data we're going to use is the total sample. Now we'll use the kids. Looking at this you can appreciate this isn't a line. Instead, let's fit a parabola.</p>
 </div>
  
+
+```r
+library(rethinking)
+data(Howell1)
+d <- Howell1
+```
+
+
+```r
+plot( height ~ weight , d )
+```
+
+<img src="04_geocentric_models_files/figure-html/unnamed-chunk-70-1.svg" width="672" />
+The relationship is visibly curved now that we've included the non-adult individuals.
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/20.png" alt="We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new $\beta$ coefficient. Setting priors for this is really hard, because $\beta_2$ has no meaning. But the curve depends on $\beta_1$ and $\beta_2$, and they don't work in isolation. The individual parameters don't have meaning. It's a horrible problem in interpretation. Otherwise it's the same model. It's a linear regression in the sense that it's additive." width="80%" />
@@ -1187,6 +1234,36 @@ mu.PI =  apply(mu, 2, PI, prob = .89)
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/22.png" alt="There's a function in R called `scale`. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight." width="80%" />
 <p class="caption">There's a function in R called `scale`. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight.</p>
 </div>
+
+
+```r
+d$weight_s <- ( d$weight - mean(d$weight) )/sd(d$weight)
+d$weight_s2 <- d$weight_s^2
+m4.5 <- rethinking::quap(
+alist(
+  height ~ dnorm( mu , sigma ) ,
+  mu <- a + b1*weight_s + b2*weight_s2 ,
+  a ~ dnorm( 178 , 20 ) ,
+  b1 ~ dlnorm( 0 , 1) ,
+  b2 ~ dnorm( 0 , 1 ) ,
+  sigma ~ dunif( 0 , 50 )
+) , data=d )
+```
+
+
+```r
+precis(m4.5)
+```
+
+```
+##             mean        sd       5.5%      94.5%
+## a     146.057376 0.3689762 145.467681 146.647072
+## b1     21.733061 0.2888893  21.271360  22.194762
+## b2     -7.803236 0.2741844  -8.241436  -7.365036
+## sigma   5.774481 0.1764657   5.492455   6.056507
+```
+
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/23.png" alt="Cooked spaghetti. Now it has an infinite number of parabolas. Now we sample from the posterior, and we got a sample of the high-probability parabolas, a tiny slice of the whole space. And we draw them up, to start with, just 10 individuals. Over the full range, we get parabolas that vary wildly outside of the weights, but straight within the range of the data. This is a phenomenon that's always present. THe uncertainty intervals always fan out outside of the data range. This is a problem for prediction. Not true for splines. This is because every parameter acts globally on the shape. You can't tune a specfic region." width="80%" />
@@ -1212,6 +1289,51 @@ mu.PI =  apply(mu, 2, PI, prob = .89)
 <p class="caption">Now a thick dark line. Conditional on wanting a parabola to describe the relationship, here are the parabolas. Doesn't mean the parabola is correct.</p>
 </div>
 
+
+```r
+weight.seq <- seq( from=-2.2 , to=2 , length.out=30 )
+pred_dat <- list( weight_s=weight.seq , weight_s2=weight.seq^2 )
+mu <- link( m4.5 , data=pred_dat )
+mu.mean <- apply( mu , 2 , mean )
+mu.PI <- apply( mu , 2 , PI , prob=0.89 )
+sim.height <- sim( m4.5 , data=pred_dat )
+height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
+```
+
+
+```r
+plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) )
+lines( weight.seq , mu.mean )
+shade( mu.PI , weight.seq )
+shade( height.PI , weight.seq )
+```
+
+<img src="04_geocentric_models_files/figure-html/4.68-1.svg" width="672" />
+
+> When you have expert knoweldge, it is often easy to do better than a linear model. These models are geocentric devices for describing partial correlations. We should feel embarrassed to use them, just so we don't become satisfied with the phenomenologicla explanations they provide.
+
+Convert back to natural scale:
+
+
+```r
+# Remove the horizontal axis
+plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) , xaxt="n" )
+```
+
+<img src="04_geocentric_models_files/figure-html/4.70-1.svg" width="672" />
+
+
+```r
+# Then explicitly construct the axis
+plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) , xaxt="n" )
+at <- c(-2,-1,0,1,2)
+labels <- at*sd(d$weight) + mean(d$weight)
+axis( side=1 , at=at , labels=round(labels,1) )
+```
+
+<img src="04_geocentric_models_files/figure-html/4.71-1.svg" width="672" />
+
+
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/29.png" alt="It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. For the cubic, we add our cubic term $\beta_3$. Fits even better, but now it's extrapolating upwards. " width="80%" />
 <p class="caption">It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. For the cubic, we add our cubic term $\beta_3$. Fits even better, but now it's extrapolating upwards. </p>
@@ -1222,6 +1344,26 @@ mu.PI =  apply(mu, 2, PI, prob = .89)
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/30.png" alt="In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between. The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times." width="80%" />
 <p class="caption">In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between. The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times.</p>
 </div>
+
+***4.5.2 Splines***
+
+
+```r
+library(rethinking)
+data(cherry_blossoms)
+d <- cherry_blossoms
+precis(d)
+```
+
+```
+##                   mean          sd      5.5%      94.5%       histogram
+## year       1408.000000 350.8845964 867.77000 1948.23000   ▇▇▇▇▇▇▇▇▇▇▇▇▁
+## doy         104.540508   6.4070362  94.43000  115.00000        ▁▂▅▇▇▃▁▁
+## temp          6.141886   0.6636479   5.15000    7.29470        ▁▃▅▇▃▂▁▁
+## temp_upper    7.185151   0.9929206   5.89765    8.90235 ▁▂▅▇▇▅▂▂▁▁▁▁▁▁▁
+## temp_lower    5.098941   0.8503496   3.78765    6.37000 ▁▁▁▁▁▁▁▃▅▇▃▂▁▁▁
+```
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/31.png" alt="A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*." width="80%" />

@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-12" />
+<meta name="date" content="2021-05-15" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,9 +137,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a></li>
 <li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
 </ul>
 </div>
 </div>
@@ -156,15 +158,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>So now let’s add a line. When we learn the predictions, we can learn the statistical association between weight and height. The question is how would you statistically describe this relationship?</p>
 <p><strong><em>4.4.1 The linear model strategy</em></strong></p>
 <div class="figure">
-<img src="slides/L03/39.png" alt="So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $mu$. That means it's different for each person. $alpha$ is out population mean. $beta$ describes the relationship between $x$ and $y$." width="80%" />
+<img src="slides/L03/39.png" alt="So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $\mu$. That means it's different for each person. $\alpha$ is out population mean. $\beta$ describes the relationship between $x$ and $y$." width="80%" />
 <p class="caption marginnote shownote">
-So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there’s an <span class="math inline">\(i\)</span> on <span class="math inline">\(mu\)</span>. That means it’s different for each person. <span class="math inline">\(alpha\)</span> is out population mean. <span class="math inline">\(beta\)</span> describes the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.
+So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there’s an <span class="math inline">\(i\)</span> on <span class="math inline">\(\mu\)</span>. That means it’s different for each person. <span class="math inline">\(\alpha\)</span> is out population mean. <span class="math inline">\(\beta\)</span> describes the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.
 </p>
 </div>
 <div class="figure">
-<img src="slides/L03/40.png" alt="The equals sign mean that it's deterministically defined. $beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour." width="80%" />
+<img src="slides/L03/40.png" alt="The equals sign mean that it's deterministically defined. $\beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour." width="80%" />
 <p class="caption marginnote shownote">
-The equals sign mean that it’s deterministically defined. <span class="math inline">\(beta\)</span> is what you’d call a slope, or the rate of change in <span class="math inline">\(mu\)</span> for a unit change in <span class="math inline">\(x\)</span>. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour.
+The equals sign mean that it’s deterministically defined. <span class="math inline">\(\beta\)</span> is what you’d call a slope, or the rate of change in <span class="math inline">\(mu\)</span> for a unit change in <span class="math inline">\(x\)</span>. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour.
 </p>
 </div>
 <div class="figure">
@@ -193,9 +195,9 @@ It’s now predicting lines. So what does the prior predictive distribution look
 <p><img src="04_geocentric_models_files/figure-html/4.39-1.svg" width="672" /></p>
 <p>Getting the scatter right is important, because you can see these impossibly steep lines. Some of them take you from impossibly short individuals to twice the tallest. Want to dampen these expectations. Practise on these safe examples.</p>
 <div class="figure">
-<img src="slides/L03/44.png" alt="We know that $beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive." width="80%" />
+<img src="slides/L03/44.png" alt="We know that $\beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive." width="80%" />
 <p class="caption marginnote shownote">
-We know that <span class="math inline">\(beta\)</span> is positive, so let’s make it positive. A log normal distribution is a normal distribution logged. What’s nice is that they’re all positive. We want to assume the relationship between weight and height is positive.
+We know that <span class="math inline">\(\beta\)</span> is positive, so let’s make it positive. A log normal distribution is a normal distribution logged. What’s nice is that they’re all positive. We want to assume the relationship between weight and height is positive.
 </p>
 </div>
 <div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="4-4-linear-prediction.html#cb148-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">=</span> <span class="fu">rlnorm</span>(<span class="fl">1e4</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
@@ -223,9 +225,9 @@ We know that <span class="math inline">\(beta\)</span> is positive, so let’s m
 </blockquote>
 <p><strong><em>4.4.2 Finding the posterior distribution</em></strong></p>
 <div class="figure">
-<img src="slides/L03/46.png" alt="Measure xbar. Then define the `quap` model. Focus on the $\mu$ line. " width="80%" />
+<img src="slides/L03/46.png" alt="Measure $\bar{x}$ Then define the `quap` model. Focus on the $\mu$ line. " width="80%" />
 <p class="caption marginnote shownote">
-Measure xbar. Then define the <code>quap</code> model. Focus on the <span class="math inline">\(\mu\)</span> line.
+Measure <span class="math inline">\(\bar{x}\)</span> Then define the <code>quap</code> model. Focus on the <span class="math inline">\(\mu\)</span> line.
 </p>
 </div>
 <div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="4-4-linear-prediction.html#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data again, since it&#39;s a long way back</span></span>
@@ -391,12 +393,34 @@ Find the 89% compatibility interval</p>
 <div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb174-1"><a href="4-4-linear-prediction.html#cb174-1" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize the distribution of mu</span></span>
 <span id="cb174-2"><a href="4-4-linear-prediction.html#cb174-2" aria-hidden="true" tabindex="-1"></a>mu.mean <span class="ot">=</span> <span class="fu">apply</span>(mu, <span class="dv">2</span>, mean)</span>
 <span id="cb174-3"><a href="4-4-linear-prediction.html#cb174-3" aria-hidden="true" tabindex="-1"></a>mu.PI <span class="ot">=</span>  <span class="fu">apply</span>(mu, <span class="dv">2</span>, PI, <span class="at">prob =</span> .<span class="dv">89</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="4-4-linear-prediction.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot raw data</span></span>
+<span id="cb175-2"><a href="4-4-linear-prediction.html#cb175-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Fading out points to make line and interval more visible</span></span>
+<span id="cb175-3"><a href="4-4-linear-prediction.html#cb175-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(height <span class="sc">~</span> weight, <span class="at">data =</span> d2, <span class="at">col =</span> <span class="fu">col.alpha</span>(rangi2, <span class="fl">0.5</span>))</span>
+<span id="cb175-4"><a href="4-4-linear-prediction.html#cb175-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-5"><a href="4-4-linear-prediction.html#cb175-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Plot the MAP line, aka the mean mu for each weight</span></span>
+<span id="cb175-6"><a href="4-4-linear-prediction.html#cb175-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(weight.seq, mu.mean)</span>
+<span id="cb175-7"><a href="4-4-linear-prediction.html#cb175-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-8"><a href="4-4-linear-prediction.html#cb175-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Plot a shaded region for 89% PI</span></span>
+<span id="cb175-9"><a href="4-4-linear-prediction.html#cb175-9" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>(mu.PI, weight.seq)</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.57-1.svg" width="672" /></p>
+<p>Here’s the recipe for generating predictions and intervals from the posterior of a fit model:
+1. Use <code>link</code> to generate distributions of posteriro values for <span class="math inline">\(\mu\)</span>. The default behaviour os <code>link</code> is to use the original data, so you have to pass it a list of new horizontal axis values you want to plot posterior predictions across.
+1. Use summary functions like <code>mean</code> or <code>PI</code> to find averages and lower and upper bounds of <span class="math inline">\(\mu\)</span> for each value of the predictor variable.
+1. Finally, use plotting functions like <code>lines</code> and <code>shade</code> to draw the lines and intervals. Or you might plot the distributions of the predictions, or do further numerical calculations with them. It’s really up to you.</p>
 <div class="figure">
 <img src="slides/L04/12.png" alt="This is like rolling your own `link` here." width="80%" />
 <p class="caption marginnote shownote">
 This is like rolling your own <code>link</code> here.
 </p>
 </div>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="4-4-linear-prediction.html#cb176-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> <span class="fu">extract.samples</span>(m4<span class="fl">.3</span>)</span>
+<span id="cb176-2"><a href="4-4-linear-prediction.html#cb176-2" aria-hidden="true" tabindex="-1"></a>mu.link <span class="ot">=</span> <span class="cf">function</span>(weight) post<span class="sc">$</span>a <span class="sc">+</span> post<span class="sc">$</span>b<span class="sc">*</span>( weight <span class="sc">-</span> xbar )</span>
+<span id="cb176-3"><a href="4-4-linear-prediction.html#cb176-3" aria-hidden="true" tabindex="-1"></a>weight.seq <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">25</span>, <span class="at">to =</span> <span class="dv">70</span>, <span class="at">by =</span> <span class="dv">1</span>)</span>
+<span id="cb176-4"><a href="4-4-linear-prediction.html#cb176-4" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">=</span> <span class="fu">sapply</span>(weight.seq, mu.link)</span>
+<span id="cb176-5"><a href="4-4-linear-prediction.html#cb176-5" aria-hidden="true" tabindex="-1"></a>mu.mean <span class="ot">=</span> <span class="fu">apply</span>(mu, <span class="dv">2</span>, mean)</span>
+<span id="cb176-6"><a href="4-4-linear-prediction.html#cb176-6" aria-hidden="true" tabindex="-1"></a>mu.CI <span class="ot">=</span> <span class="fu">apply</span>(mu, <span class="dv">2</span>, PI, <span class="at">prob =</span> <span class="fl">0.89</span>)</span>
+<span id="cb176-7"><a href="4-4-linear-prediction.html#cb176-7" aria-hidden="true" tabindex="-1"></a>mu.HPDI <span class="ot">=</span> <span class="fu">apply</span>(mu, <span class="dv">2</span>, HPDI, <span class="at">prob =</span> <span class="fl">0.89</span>)</span></code></pre></div>
+<p>Whatever model you find yourself with, this approach can be used to generate posterior predictions for any component of it.</p>
 <div class="figure">
 <img src="slides/L04/13.png" alt="Think what's going on with the distribution. Fuzzy bowtie. There's a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie." width="80%" />
 <p class="caption marginnote shownote">
@@ -421,177 +445,44 @@ Same information, just a different visual style.
 One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space. We can do the same thing for sigma. There’s an envelope we expect heights to be in. Helper function called <code>sim</code> that shows conceptually what’s happening.
 </p>
 </div>
-<div class="figure">
-<img src="slides/L04/17.png" alt="That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw &quot;lines&quot; i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. " width="80%" />
-<p class="caption marginnote shownote">
-That’s linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for <span class="math inline">\(\mu\)</span> which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw “lines” i.e. curves from lines. Why? There’s no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it’s used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don’t exhibit the common pathologies of polynomials. But remember that they’re geocentric models. So when you receive the information from the model, there’s nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data.
-</p>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="4-4-linear-prediction.html#cb177-1" aria-hidden="true" tabindex="-1"></a>sim.height <span class="ot">=</span> <span class="fu">sim</span>(m4<span class="fl">.3</span>, <span class="at">data =</span> <span class="fu">list</span>(<span class="at">weight =</span> weight.seq))</span>
+<span id="cb177-2"><a href="4-4-linear-prediction.html#cb177-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(sim.height)</span></code></pre></div>
+<pre><code>##  num [1:1000, 1:46] 133 140 132 139 136 ...</code></pre>
+<p>This matrix is like the earlier one, <code>mu</code>, but contains simulated heights, not distributions of plausible average height, <span class="math inline">\(\mu\)</span>.</p>
+<p>Summarise these simmulated heights in the same way:</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="4-4-linear-prediction.html#cb179-1" aria-hidden="true" tabindex="-1"></a>height.PI <span class="ot">=</span> <span class="fu">apply</span>(sim.height, <span class="dv">2</span>, PI, <span class="at">prob =</span> <span class="fl">0.89</span>)</span></code></pre></div>
+<p>Now <code>height.PI</code> contains the 89% posterior prediction interval of observable (according to the model) heights, across the values of weight in <code>weight.seq</code>.</p>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb180-1"><a href="4-4-linear-prediction.html#cb180-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot raw data</span></span>
+<span id="cb180-2"><a href="4-4-linear-prediction.html#cb180-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight , d2 , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) )</span>
+<span id="cb180-3"><a href="4-4-linear-prediction.html#cb180-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-4"><a href="4-4-linear-prediction.html#cb180-4" aria-hidden="true" tabindex="-1"></a><span class="co"># draw MAP line</span></span>
+<span id="cb180-5"><a href="4-4-linear-prediction.html#cb180-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( weight.seq , mu.mean )</span>
+<span id="cb180-6"><a href="4-4-linear-prediction.html#cb180-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-7"><a href="4-4-linear-prediction.html#cb180-7" aria-hidden="true" tabindex="-1"></a><span class="co"># draw HPDI region for line</span></span>
+<span id="cb180-8"><a href="4-4-linear-prediction.html#cb180-8" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu.HPDI , weight.seq )</span>
+<span id="cb180-9"><a href="4-4-linear-prediction.html#cb180-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-10"><a href="4-4-linear-prediction.html#cb180-10" aria-hidden="true" tabindex="-1"></a><span class="co"># draw PI region for simulated heights</span></span>
+<span id="cb180-11"><a href="4-4-linear-prediction.html#cb180-11" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( height.PI , weight.seq )</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.61-1.svg" width="672" /></p>
+<p>If the rough shaded interval bothers you, increase the number of samples from the posterior distribution.</p>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="4-4-linear-prediction.html#cb181-1" aria-hidden="true" tabindex="-1"></a>sim.height <span class="ot">&lt;-</span> <span class="fu">sim</span>( m4<span class="fl">.3</span> , <span class="at">data=</span><span class="fu">list</span>(<span class="at">weight=</span>weight.seq) , <span class="at">n=</span><span class="fl">1e4</span> )</span>
+<span id="cb181-2"><a href="4-4-linear-prediction.html#cb181-2" aria-hidden="true" tabindex="-1"></a>height.PI <span class="ot">&lt;-</span> <span class="fu">apply</span>( sim.height , <span class="dv">2</span> , PI , <span class="at">prob=</span><span class="fl">0.89</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="4-4-linear-prediction.html#cb182-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot raw data</span></span>
+<span id="cb182-2"><a href="4-4-linear-prediction.html#cb182-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight , d2 , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) )</span>
+<span id="cb182-3"><a href="4-4-linear-prediction.html#cb182-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb182-4"><a href="4-4-linear-prediction.html#cb182-4" aria-hidden="true" tabindex="-1"></a><span class="co"># draw MAP line</span></span>
+<span id="cb182-5"><a href="4-4-linear-prediction.html#cb182-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( weight.seq , mu.mean )</span>
+<span id="cb182-6"><a href="4-4-linear-prediction.html#cb182-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb182-7"><a href="4-4-linear-prediction.html#cb182-7" aria-hidden="true" tabindex="-1"></a><span class="co"># draw HPDI region for line</span></span>
+<span id="cb182-8"><a href="4-4-linear-prediction.html#cb182-8" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu.HPDI , weight.seq )</span>
+<span id="cb182-9"><a href="4-4-linear-prediction.html#cb182-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb182-10"><a href="4-4-linear-prediction.html#cb182-10" aria-hidden="true" tabindex="-1"></a><span class="co"># draw PI region for simulated heights</span></span>
+<span id="cb182-11"><a href="4-4-linear-prediction.html#cb182-11" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( height.PI , weight.seq )</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-66-1.svg" width="672" /></p>
 </div>
-<div class="figure">
-<img src="slides/L04/18.png" alt="This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity." width="80%" />
-<p class="caption marginnote shownote">
-This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/19.png" alt="The data we're going to use is the total sample. Now we'll use the kids. Looking at this you can appreciate this isn't a line. Instead, let's fit a parabola." width="80%" />
-<p class="caption marginnote shownote">
-The data we’re going to use is the total sample. Now we’ll use the kids. Looking at this you can appreciate this isn’t a line. Instead, let’s fit a parabola.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/20.png" alt="We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new $\beta$ coefficient. Setting priors for this is really hard, because $\beta_2$ has no meaning. But the curve depends on $\beta_1$ and $\beta_2$, and they don't work in isolation. The individual parameters don't have meaning. It's a horrible problem in interpretation. Otherwise it's the same model. It's a linear regression in the sense that it's additive." width="80%" />
-<p class="caption marginnote shownote">
-We can just glue on an epicycle here and square it. Why? So alpha can be the mean. Then you need to give it a new <span class="math inline">\(\beta\)</span> coefficient. Setting priors for this is really hard, because <span class="math inline">\(\beta_2\)</span> has no meaning. But the curve depends on <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span>, and they don’t work in isolation. The individual parameters don’t have meaning. It’s a horrible problem in interpretation. Otherwise it’s the same model. It’s a linear regression in the sense that it’s additive.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/21.png" alt="To get the machine to work, very useful to standardise the predictor variables. Center then divide by SD. Take weight, subtract the average weight from each weight value, then divide each of those 0-centered values by the standard deviation of weight. Takes weight and creates a set of z-scores. The fitting software works better on standardise values because it doesn't have to guess the scale." width="80%" />
-<p class="caption marginnote shownote">
-To get the machine to work, very useful to standardise the predictor variables. Center then divide by SD. Take weight, subtract the average weight from each weight value, then divide each of those 0-centered values by the standard deviation of weight. Takes weight and creates a set of z-scores. The fitting software works better on standardise values because it doesn’t have to guess the scale.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/22.png" alt="There's a function in R called `scale`. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight." width="80%" />
-<p class="caption marginnote shownote">
-There’s a function in R called <code>scale</code>. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/23.png" alt="Cooked spaghetti. Now it has an infinite number of parabolas. Now we sample from the posterior, and we got a sample of the high-probability parabolas, a tiny slice of the whole space. And we draw them up, to start with, just 10 individuals. Over the full range, we get parabolas that vary wildly outside of the weights, but straight within the range of the data. This is a phenomenon that's always present. THe uncertainty intervals always fan out outside of the data range. This is a problem for prediction. Not true for splines. This is because every parameter acts globally on the shape. You can't tune a specfic region." width="80%" />
-<p class="caption marginnote shownote">
-Cooked spaghetti. Now it has an infinite number of parabolas. Now we sample from the posterior, and we got a sample of the high-probability parabolas, a tiny slice of the whole space. And we draw them up, to start with, just 10 individuals. Over the full range, we get parabolas that vary wildly outside of the weights, but straight within the range of the data. This is a phenomenon that’s always present. THe uncertainty intervals always fan out outside of the data range. This is a problem for prediction. Not true for splines. This is because every parameter acts globally on the shape. You can’t tune a specfic region.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/24.png" alt="Now we add the next 10, including some children, and the flailing stops. Now we get curves in a much smaller region of the parameter space." width="80%" />
-<p class="caption marginnote shownote">
-Now we add the next 10, including some children, and the flailing stops. Now we get curves in a much smaller region of the parameter space.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/25.png" alt="Now it's getting more concentrated. " width="80%" />
-<p class="caption marginnote shownote">
-Now it’s getting more concentrated.
-</p>
-</div>
-<p><img src="slides/L04/26.png" width="80%" /></p>
-<p><img src="slides/L04/27.png" width="80%" /></p>
-<div class="figure">
-<img src="slides/L04/28.png" alt="Now a thick dark line. Conditional on wanting a parabola to describe the relationship, here are the parabolas. Doesn't mean the parabola is correct." width="80%" />
-<p class="caption marginnote shownote">
-Now a thick dark line. Conditional on wanting a parabola to describe the relationship, here are the parabolas. Doesn’t mean the parabola is correct.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/29.png" alt="It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. For the cubic, we add our cubic term $\beta_3$. Fits even better, but now it's extrapolating upwards. " width="80%" />
-<p class="caption marginnote shownote">
-It’s very sure, conditional on the shape, that that’s the parameter you want. Those lines don’t fit the data very well, but there’s almost no uncertainty about where they are. I’ve extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can’t be <em>monotonic</em>. For the cubic, we add our cubic term <span class="math inline">\(\beta_3\)</span>. Fits even better, but now it’s extrapolating upwards.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/30.png" alt="In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between. The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times." width="80%" />
-<p class="caption marginnote shownote">
-In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it’ll do silly things in between. The bigger problem is that the parameters all jointly determine the shape, so the model can’t tune them independently to create local fits. That’s why you get silly predictions. Polynomials aren’t that flexible, because the <em>must</em> turn, a certain number of times.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/31.png" alt="A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*." width="80%" />
-<p class="caption marginnote shownote">
-A common alternative is another geocentric model, which is also satisfying because it’s born from a physical system used to do the same thing. A spline is this metal bar on the draftsman’s table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, <em>knots</em>.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/32.png" alt="You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they're geocentric, so you have to understand how they work. The basis function is a local function, and the spline is made up of interpolating basis functions. Basis = &quot;component&quot;. Big wiggly function made up of less wiggly functions. The &quot;P&quot; stands for &quot;penalised&quot;. " width="80%" />
-<p class="caption marginnote shownote">
-You can get a globally very wiggly function, with a bunch of local wiggly functions by putting them together. Very good for extrapolating. But remember they’re geocentric, so you have to understand how they work. The basis function is a local function, and the spline is made up of interpolating basis functions. Basis = “component”. Big wiggly function made up of less wiggly functions. The “P” stands for “penalised”.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/33.png" alt="Again, it's a linear model, an additive equation for $\mu$. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you'll get a fantastic predictor of the relationship between the variables. There will be one weight for each of the basis functions. And the weights affect the range defined by the $\beta$ variables. " width="80%" />
-<p class="caption marginnote shownote">
-Again, it’s a linear model, an additive equation for <span class="math inline">\(\mu\)</span>. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you’ll get a fantastic predictor of the relationship between the variables. There will be one weight for each of the basis functions. And the weights affect the range defined by the <span class="math inline">\(\beta\)</span> variables.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/34.png" alt="New example. Let's find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there's a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data. " width="80%" />
-<p class="caption marginnote shownote">
-New example. Let’s find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there’s a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/35.png" alt="1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there's overlap. You'll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations. " width="80%" />
-<p class="caption marginnote shownote">
-1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there’s overlap. You’ll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/36.png" alt="Let's start with a terrible approximation, and work forwards. Here's the recipe. First choose the location of the knots. Here they are points where the basis spline pivots. Choose a degree of the basis function. Then choose degree of local spline. Then find the posterior distribution of weights. Run this just like any old linear regression." width="80%" />
-<p class="caption marginnote shownote">
-Let’s start with a terrible approximation, and work forwards. Here’s the recipe. First choose the location of the knots. Here they are points where the basis spline pivots. Choose a degree of the basis function. Then choose degree of local spline. Then find the posterior distribution of weights. Run this just like any old linear regression.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/37.png" alt="Start with just 5 knots at equal quantiles. Large literature on this. Nice because it gives you more knots where there's more data. One at the median, then one at each extreme, and one in between." width="80%" />
-<p class="caption marginnote shownote">
-Start with just 5 knots at equal quantiles. Large literature on this. Nice because it gives you more knots where there’s more data. One at the median, then one at each extreme, and one in between.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/38.png" alt="Let's think about construction of these synthetic variables. Think of year. We'll never use them again. The knots are anchored at year, but then they're gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It's weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they're own precious parameter value. When you get to higher degress, they'll be curves. At any particular point (except at a knot), two of these basis functions will determine the value." width="80%" />
-<p class="caption marginnote shownote">
-Let’s think about construction of these synthetic variables. Think of year. We’ll never use them again. The knots are anchored at year, but then they’re gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It’s weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they’re own precious parameter value. When you get to higher degress, they’ll be curves. At any particular point (except at a knot), two of these basis functions will determine the value.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/39.png" alt="The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. " width="80%" />
-<p class="caption marginnote shownote">
-The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that’s why they call it a penalty. You want one so that you don’t <em>overfit</em>.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/40.png" alt="Repeating the equation for $mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature." width="80%" />
-<p class="caption marginnote shownote">
-Repeating the equation for <span class="math inline">\(mu\)</span>. Showing you the posterior mean weights multiplied by those basis functions. That’s what the predictor up top is. Focusing on the posteriro mean. There’s uncertainty here. What happens now is you’re adding those values together. Two lines get added together, and that determines prediction of temperature.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/41.png" alt="Resulting spline isn't super wiggly. Depends on what you want to de-trend." width="80%" />
-<p class="caption marginnote shownote">
-Resulting spline isn’t super wiggly. Depends on what you want to de-trend.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/42.png" alt="Let's do cubic splines. Most popular because they're flexible but not crazy. Play around with the number of knots. What you'll see is you can have too few knots, but at some point you'll have enough that it won't make much of a difference. This is what the basis functions look like, and now they're wigglier, but they also overlap more, so now at a particular point you can have up to four basis curves overlapping. " width="80%" />
-<p class="caption marginnote shownote">
-Let’s do cubic splines. Most popular because they’re flexible but not crazy. Play around with the number of knots. What you’ll see is you can have too few knots, but at some point you’ll have enough that it won’t make much of a difference. This is what the basis functions look like, and now they’re wigglier, but they also overlap more, so now at a particular point you can have up to four basis curves overlapping.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/43.png" alt="Here's with 50 samples from the posterior distribution. There's all this wiggle, and you add them together and get the spline. Some of these regions have substantial uncertainty about the weight. The uncertainty will collapse. At the parameter level, there's more uncertainty than there is at the prediction level. This is because the parameters combine to make a prediction. You can be uncertain about the values of the parameters, but you can be very certain about they're sum. Because if you make $w_3$ bigger, you have to make something else smaller. So when you plot the parameters, you'll see a lot more uncertainty than the predictions." width="80%" />
-<p class="caption marginnote shownote">
-Here’s with 50 samples from the posterior distribution. There’s all this wiggle, and you add them together and get the spline. Some of these regions have substantial uncertainty about the weight. The uncertainty will collapse. At the parameter level, there’s more uncertainty than there is at the prediction level. This is because the parameters combine to make a prediction. You can be uncertain about the values of the parameters, but you can be very certain about they’re sum. Because if you make <span class="math inline">\(w_3\)</span> bigger, you have to make something else smaller. So when you plot the parameters, you’ll see a lot more uncertainty than the predictions.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/44.png" alt="Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest. Play around with the knots and degree and priors." width="80%" />
-<p class="caption marginnote shownote">
-Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest. Play around with the knots and degree and priors.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L04/45.png" alt="Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year." width="80%" />
-<p class="caption marginnote shownote">
-Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year.
-</p>
-</div>
-<p><img src="slides/L04/46.png" width="80%" /></p>
-
-</div>
-<!-- </div> -->
 <p style="text-align: center;">
 <a href="4-3-gaussian-model-of-height.html"><button class="btn btn-default">Previous</button></a>
-<a href="5-the-many-variables-the-spurious-waffles.html"><button class="btn btn-default">Next</button></a>
+<a href="4-5-curves-from-lines.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>

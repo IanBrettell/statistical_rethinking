@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Chapter 7 Ulysses’ Compass | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-05-15" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="Chapter 7 Ulysses’ Compass | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>Chapter 7 Ulysses’ Compass | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="ulysses-compass" class="section level1" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Ulysses’ Compass</h1>
+<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="7-ulysses-compass.html#cb211-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb211-2"><a href="7-ulysses-compass.html#cb211-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="7-ulysses-compass.html#cb212-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L07&quot;</span>)</span></code></pre></div>
+<div class="figure"><span id="fig:unnamed-chunk-3"></span>
+<p class="caption marginnote shownote">
+Figure 7.1: Polish astronomer and ecclesiastical lawyer. Famous for arguing about the heliocentric model. What’s missing is that Copernicus’s model was terrible. No better than the Ptolemaic model.
+</p>
+<img src="slides/L07/14.png" alt="Polish astronomer and ecclesiastical lawyer. Famous for arguing about the heliocentric model. What's missing is that Copernicus's model was terrible. No better than the Ptolemaic model." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-4"></span>
+<p class="caption marginnote shownote">
+Figure 7.2: Keppler later figured out that orbits were ellipses. If you’re committed to circles, you can’t make it work unless you stack circles on circles. Was an equivalent model. Copernican needed fewer epicricles.. it’s simpler, and therefore more beautiful.
+</p>
+<img src="slides/L07/15.png" alt="Keppler later figured out that orbits were ellipses. If you're committed to circles, you can't make it work unless you stack circles on circles. Was an equivalent model. Copernican needed fewer epicricles.. it's simpler, and therefore more beautiful. " width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-5"></span>
+<p class="caption marginnote shownote">
+Figure 7.3: Not a fully-developed research program. Need something more substantial if we wantto chose between models based on complexity.
+</p>
+<img src="slides/L07/16.png" alt="Not a fully-developed research program. Need something more substantial if we wantto chose between models based on complexity." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-6"></span>
+<p class="caption marginnote shownote">
+Figure 7.4: Often we have to make trade-offs between complexity and accuracy. Usually what we’re trading off. So Ockham’s Razor is one-sided. Let’s think of <em>The Odyssey</em>. He gets near Sicily, and there are two monsters, Scylla and Charybdis, who eat most of his crew.
+</p>
+<img src="slides/L07/17.png" alt="Often we have to make trade-offs between complexity and accuracy. Usually what we're trading off. So Ockham's Razor is one-sided. Let's think of _The Odyssey_. He gets near Sicily, and there are two monsters, Scylla and Charybdis, who eat most of his crew." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-7"></span>
+<p class="caption marginnote shownote">
+Figure 7.5: Metaphor for how complexity and accuracy trade off. There are monsters on both sides, with different characteristics.
+</p>
+<img src="slides/L07/18.png" alt="Metaphor for how complexity and accuracy trade off. There are monsters on both sides, with different characteristics. " width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-8"></span>
+<p class="caption marginnote shownote">
+Figure 7.6: In the wilds of the sciences, the standard method is “star-gazing”, because you run a regression and you keep the asterisks. There’s nothing about p-values, but whether you use them or not, they’re not designed for this, so they do a bad job at it. Statistical significance is not a criterion about predictive accuracy, but rather Type 1 error rate.
+</p>
+<img src="slides/L07/19.png" alt="In the wilds of the sciences, the standard method is &quot;star-gazing&quot;, because you run a regression and you keep the asterisks. There's nothing about p-values, but whether you use them or not, they're not designed for this, so they do a bad job at it. Statistical significance is not a criterion about predictive accuracy, but rather Type 1 error rate." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-9"></span>
+<p class="caption marginnote shownote">
+Figure 7.7: Scylla and Charybdis. Regularization teaches statistical models to expect overfitting and guard against it. CV and information cirteria are tools to cope with it, by not solving it, but measuiring it. Want to emphasise that finding a model that makes good predictions is different from causal inference. Netflix predicts your viewing habits. No one understands how those systems work. But in the basic sciences we intend to intervene.
+</p>
+<img src="slides/L07/20.png" alt="Scylla and Charybdis. Regularization teaches statistical models to expect overfitting and guard against it. CV and information cirteria are tools to cope with it,  by not solving it, but measuiring it. Want to emphasise that finding a model that makes good predictions is different from causal inference. Netflix predicts your viewing habits. No one understands how those systems work. But in the basic sciences we intend to intervene. " width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-10"></span>
+<p class="caption marginnote shownote">
+Figure 7.8: Think about a contest between different models. In a given race (sample), one horse will win (fit it the best). The distance between the horses gives us information about the relative performance on average across tracks. You want to make a bet on the <em>next</em> race. The quantiative differences between the finishing times is what you want to use. The finishing times won’t be exactly the same. What you shouldn’t do is alwasy choose the horse that runs the fastest.
+</p>
+<img src="slides/L07/21.png" alt="Think about a contest between different models. In a given race (sample), one horse will win (fit it the best). The distance between the horses gives us information about the relative performance on average across tracks. You want to make a bet on the _next_ race. The quantiative differences between the finishing times is what you want to use. The finishing times won't be exactly the same. What you shouldn't do is alwasy choose the horse that runs the fastest." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-11"></span>
+<p class="caption marginnote shownote">
+Figure 7.9: The basic problem is that models that are too simple don’t know enough; and models that are too complex learn too much. On the extrmee, you can encrypt every data point as a parameter, but it will make terrible predictions. Want to learn the “regular features” of the sample. Multilevel models don’t work like this because they’re less liekly to overfit. I have a model with 27K parameters, and it overfits very little because of this hierarchical structure.
+</p>
+<img src="slides/L07/22.png" alt="The basic problem is that models that are too simple don't know enough; and models that are too complex learn too much. On the extrmee, you can encrypt every data point as a parameter, but it will make terrible predictions. Want to learn the &quot;regular features&quot; of the sample. Multilevel models don't work like this because they're less liekly to overfit. I have a model with 27K parameters, and it overfits very little because of this hierarchical structure." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-12"></span>
+<p class="caption marginnote shownote">
+Figure 7.10: Humans have big brains. If we look at body mass v brain volume, there is some association. What’s the statistical relationship?
+</p>
+<img src="slides/L07/23.png" alt="Humans have big brains. If we look at body mass v brain volume, there is some association. What's the statistical relationship?" width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-13"></span>
+<p class="caption marginnote shownote">
+Figure 7.11: <span class="math inline">\(R^2\)</span> is one of the most over-used measures. If there’s no variance in the residuals, <span class="math inline">\(R^2\)</span> = 1. It’s trivial to get there. A bit of a joke, but I’ve seen it in <em>Nature</em>.
+</p>
+<img src="slides/L07/24.png" alt="$R^2$ is one of the most over-used measures. If there's no variance in the residuals, $R^2$ = 1. It's trivial to get there. A bit of a joke, but I've seen it in _Nature_." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-14"></span>
+<p class="caption marginnote shownote">
+Figure 7.12: This isn’t a bad model. <span class="math inline">\(R^2\)</span> is 0.5 - that’s pretty good. But can you do better?
+</p>
+<img src="slides/L07/25.png" alt="This isn't a bad model. $R^2$ is 0.5 - that's pretty good. But can you do better?" width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-15"></span>
+<p class="caption marginnote shownote">
+Figure 7.13: Sure, make it a parabola. Does a little better. Why stop there?
+</p>
+<img src="slides/L07/26.png" alt="Sure, make it a parabola. Does a little better. Why stop there?" width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-16"></span>
+<p class="caption marginnote shownote">
+Figure 7.14: We can make it all the way to 6 parameters, then we run out of data points.
+</p>
+<img src="slides/L07/27.png" alt="We can make it all the way to 6 parameters, then we run out of data points." width="80%"  />
+</div>
+<p><img src="slides/L07/28.png" width="80%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-18"></span>
+<p class="caption marginnote shownote">
+Figure 7.15: Maybe brain evolution is cubic.
+</p>
+<img src="slides/L07/29.png" alt="Maybe brain evolution is cubic." width="80%"  />
+</div>
+<p><img src="slides/L07/30.png" width="80%"  /></p>
+<p><img src="slides/L07/31.png" width="80%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-21"></span>
+<p class="caption marginnote shownote">
+Figure 7.16: Finally, we’ve reached nirvana - the singularity. If all you do basing your model on <span class="math inline">\(R^2\)</span>, this is the danger. In multiple regression, it’s less obvious that it’s happening.
+</p>
+<img src="slides/L07/32.png" alt="Finally, we've reached nirvana - the singularity. If all you do basing your model on $R^2$, this is the danger. In multiple regression, it's less obvious that it's happening." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-22"></span>
+<p class="caption marginnote shownote">
+Figure 7.17: The model is overly sensitive. We can repeat the linear regression, removing one data point at a time. The lines don’t move very much. Drops a lot when we drop <em>homo sapiens</em>.
+</p>
+<img src="slides/L07/33.png" alt="The model is overly sensitive. We can repeat the linear regression, removing one data point at a time. The lines don't move very much. Drops a lot when we drop _homo sapiens_." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-23"></span>
+<p class="caption marginnote shownote">
+Figure 7.18: This fifth-order polynomial.
+</p>
+<img src="slides/L07/34.png" alt="This fifth-order polynomial." width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-24"></span>
+<p class="caption marginnote shownote">
+Figure 7.19: Multiple strategies. In Bayesian statistics, we regularise. Can be even omre aggressive. In non-Bayesian, it’s mathematically identical to using a prior. Why do machine leanring people regularise? Because it makes better predictions.
+</p>
+<img src="slides/L07/35.png" alt="Multiple strategies. In Bayesian statistics, we regularise. Can be even omre aggressive. In non-Bayesian, it's mathematically identical to using a prior. Why do machine leanring people regularise? Because it makes better predictions. " width="80%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-25"></span>
+<p class="caption marginnote shownote">
+Figure 7.20: We want to get to CV and WAIC, which replaced AIC. The jounrey to these appraoches requires some setups. First thing to answer is how to measure accuracy. Many bad ways to measure it. There’s an actual gold standard. And once we’ve got it, we want to measure distance from the target. How do we decide how close the models are getting to it? Then we learn how to develop these instruments.
+</p>
+<img src="slides/L07/36.png" alt="We want to get to CV and WAIC, which replaced AIC. The jounrey to these appraoches requires some setups. First thing to answer is how to measure accuracy. Many bad ways to measure it. There's an actual gold standard. And once we've got it, we want to measure distance from the target. How do we decide how close the models are getting to it? Then we learn how to develop these instruments." width="80%"  />
+</div>
+<p><img src="slides/L07/37.png" width="80%"  /></p>
+<hr />
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="7-ulysses-compass.html#cb213-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L08&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L08/01.png" width="60%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-29"></span>
+<p class="caption marginnote shownote">
+Figure 7.21: We need to appeal to information theory because machine prediction works by following the laws of information theory. We’ll drive the single gold-standard way to score a model’s accuracy. Here’s the basic problem information theory sets out to address. When we have some unknown event, there is uncertainty. When we know more, we become less uncertain. IC is a principle for saying when something is more uncertain than something else. There’s uncertainty about the weather tomorrow. We may use cues from today to predict tomorrow.
+</p>
+<img src="slides/L08/02.png" alt="We need to appeal to information theory because machine prediction works by following the laws of information theory. We'll drive the single gold-standard way to score a model's accuracy. Here's the basic problem information theory sets out to address. When we have some unknown event, there is uncertainty. When we know more, we become less uncertain. IC is a principle for saying when something is more uncertain than something else. There's uncertainty about the weather tomorrow. We may use cues from today to predict tomorrow." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-30"></span>
+<p class="caption marginnote shownote">
+Figure 7.22: Presume you know that LA has no weather. Always sunny. 15-20 degrees. Little uncertainty. If it does rain, you’ll be shocked. Contrast this with Glasgow, where it rains a lot. More rain than not. NY has highly-variable weather. There’s great uncertainty about what the weather would be like, unlike the other two. This uncertainty arises from the frequency distributions of these microclimates.
+</p>
+<img src="slides/L08/03.png" alt="Presume you know that LA has no weather. Always sunny. 15-20 degrees. Little uncertainty. If it does rain, you'll be shocked. Contrast this with Glasgow, where it rains a lot. More rain than not. NY has highly-variable weather. There's great uncertainty about what the weather would be like, unlike the other two. This uncertainty arises from the frequency distributions of these microclimates." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-31"></span>
+<p class="caption marginnote shownote">
+Figure 7.23: Uncertainty <span class="math inline">\(H\)</span> of <span class="math inline">\(p\)</span>, which is a vector of probability, is just the average log-probability of the event. This is a unique criterion. If you want a reasonable measure of surprise, you have to adopt something that is this or something proportional to this. Your mobile phones (3G and above) work because of this.
+</p>
+<img src="slides/L08/04.png" alt="Uncertainty $H$ of $p$, which is a vector of probability, is just the average log-probability of the event. This is a unique criterion. If you want a reasonable measure of surprise, you have to adopt something that is this or something proportional to this. Your mobile phones (3G and above) work because of this." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-32"></span>
+<p class="caption marginnote shownote">
+Figure 7.24: What’s the <strong>potential for surprise</strong>?. We are interested in this. Want to calculate the entropy of our model, and then there’s the entropy of the true distribution, of nature. And we want to minimise the difference between them. This is called the <span class="math inline">\(D_{KL}\)</span> divergence. Two probabilities <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>. <span class="math inline">\(p\)</span> is nature, say the frequencies of weather events, and <span class="math inline">\(q\)</span> is our forecast. If we want to score <span class="math inline">\(q\)</span>, we look at the divergence. K is for Kulbak. The distance from <span class="math inline">\(p\)</span> to <span class="math inline">\(q\)</span> is the sum (averaging) between <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>. It’s a distance, but it’s not symmetric.
+</p>
+<img src="slides/L08/05.png" alt="What's the **potential for surprise**?. We are interested in this. Want to calculate the entropy of our model, and then there's the entropy of the true distribution, of nature. And we want to minimise the difference between them. This is called the $D_{KL}$ divergence. Two probabilities $p$ and $q$. $p$ is nature, say the frequencies of weather events, and $q$ is our forecast. If we want to score $q$, we look at the divergence. K is for Kulbak. The distance from $p$ to $q$ is the sum (averaging) between $p$ and $q$. It's a distance, but it's not symmetric. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-33"></span>
+<p class="caption marginnote shownote">
+Figure 7.25: Easy to code. Take the vector <code>p</code>. Sum <code>p</code> time the difference between <code>log(p)</code> and <code>log(q)</code>. It’s only 0 where <code>q = p</code>.
+</p>
+<img src="slides/L08/06.png" alt="Easy to code. Take the vector `p`. Sum `p` time the difference between `log(p)` and `log(q)`. It's only 0 where `q = p`. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-34"></span>
+<p class="caption marginnote shownote">
+Figure 7.26: Here’s a cartoon version. You’re heading to Mars, or a Mars-like planet, but you don’t know much about it. You can’t control your rocket and you want to predict whether you’ll land on water or land. You’ll use Earth as your only model. Earth is a high-entropy planet because it has a lot of water and land. So you won’t be surprised whether you get land or water.
+</p>
+<img src="slides/L08/07.png" alt="Here's a cartoon version. You're heading to Mars, or a Mars-like planet, but you don't know much about it. You can't control your rocket and you want to predict whether you'll land on water or land. You'll use Earth as your only model. Earth is a high-entropy planet because it has a lot of water and land. So you won't be surprised whether you get land or water. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-35"></span>
+<p class="caption marginnote shownote">
+Figure 7.27: But say you’re going in the other direction. Your potential for surprise is now very high. When you get to Earth and discover all this blue liquid, you’ll be surprised. Mars is the LA of planets. And as a consequence, the information distance from Earth to Mars is smaller than the information distance from Mars to Earth. Because if your model is the Earth, it expects all sorts of events, which means that it’s less surprised, which means that its prediction error is lower, on average, across a huge number of potential planets across the universe, than if you came from Mars, where you’ll be surprised by water all the time. <strong>This is why simpler models work better - because they have higher entropy.</strong> The distance between a simpler model and other things are on average lower, because it expects many things. Gneeralized linear models have higher entropy. All machine learning works this way.
+</p>
+<img src="slides/L08/08.png" alt="But say you're going in the other direction. Your potential for surprise is now very high. When you get to Earth and discover all this blue liquid, you'll be surprised. Mars is the LA of planets. And as a consequence, the information distance from Earth to Mars is smaller than the information distance from Mars to Earth. Because if your model is the Earth, it expects all sorts of events, which means that it's less surprised, which means that its prediction error is lower, on average, across a huge number of potential planets across the universe, than if you came from Mars, where you'll be surprised by water all the time. **This is why simpler models work better - because they have higher entropy.** The distance between a simpler model and other things are on average lower, because it expects many things. Gneeralized linear models have higher entropy. All machine learning works this way." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-36"></span>
+<p class="caption marginnote shownote">
+Figure 7.28: How to estimate this in practice: we want the gold standard way to score, but the problem is we can’t score the truth. Turns out we don’t need the truth part because it’s just an additive term, so you can get the relative scores of the models without knowning the truth. THe log score is the gold standard, whether you’re Bayesian or not. In practice, there’s not a single log score, but a distribution of log scores. So we want the average log score, which unfortunately is called the <em>log-pointwise-predictive-density</em>. For each point <code>i</code>, we’re taking the average probability of that observation conditional on the samples, and we average over the samples, and find the average probabiltiy that the model expects, then we take the log and sum across all observations in the model.
+</p>
+<img src="slides/L08/09.png" alt="How to estimate this in practice: we want the gold standard way to score, but the problem is we can't score the truth. Turns out we don't need the truth part because it's just an additive term, so you can get the relative scores of the models without knowning the truth. THe log score is the gold standard, whether you're Bayesian or not. In practice, there's not a single log score, but a distribution of log scores. So we want the average log score, which unfortunately is called the *log-pointwise-predictive-density*. For each point `i`, we're taking the average probability of that observation conditional on the samples, and we average over the samples, and find the average probabiltiy that the model expects, then we take the log and sum across all observations in the model." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-37"></span>
+<p class="caption marginnote shownote">
+Figure 7.29: Why does this all matter in a practical sense? We can measure overfitting. Look at the difference between in- and out-of-sample. Smaller is better. The more negative it is, the better it is. Two samples from the same generative process. Training and testing set. Fit our model to the training sample, and get the deviance of train. Then we force it to predict the out-of-sample. The difference between them are our measure of overfitting.
+</p>
+<img src="slides/L08/10.png" alt="Why does this all matter in a practical sense? We can measure overfitting. Look at the difference between in- and out-of-sample. Smaller is better. The more negative it is, the better it is. Two samples from the same generative process. Training and testing set. Fit our model to the training sample, and get the deviance of train. Then we force it to predict the out-of-sample. The difference between them are our measure of overfitting." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-38"></span>
+<p class="caption marginnote shownote">
+Figure 7.30: We’ll generate some samples based on a known “truth”. The first is our intercept model.
+</p>
+<img src="slides/L08/11.png" alt="We'll generate some samples based on a known &quot;truth&quot;. The first is our intercept model. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-39"></span>
+<p class="caption marginnote shownote">
+Figure 7.31: This is what happens in-sample. Lower deviance is better. The point is the average across all simulations, with one standard deviation on either side. Note the more complicated models do better. They’re always going to fit in-sample better. Note there’s a big jump at 3, then very little after 3.
+</p>
+<img src="slides/L08/12.png" alt="This is what happens in-sample. Lower deviance is better. The point is the average across all simulations, with one standard deviation on either side. Note the more complicated models do better. They're always going to fit in-sample better. Note there's a big jump at 3, then very little after 3. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-40"></span>
+<p class="caption marginnote shownote">
+Figure 7.32: Here’s out-of-sample. Unsurprisingly, everything does worse out-of-sample. There’s a pattern to the amount of overfitting. You can see that model 3 is best on average. Models 4 and 5 get progressively worse, because they’re fitting noise.
+</p>
+<img src="slides/L08/13.png" alt="Here's out-of-sample. Unsurprisingly, everything does worse out-of-sample. There's a pattern to the amount of overfitting. You can see that model 3 is best on average. Models 4 and 5 get progressively worse, because they're fitting noise. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-41"></span>
+<p class="caption marginnote shownote">
+Figure 7.33: In anthropology we’re happy with 20. But with N = 100, you can more precisely estimate when a data point doesn’t matter. So 4 and 5 are only slightly worse. Because you can get a really good posterior distribution. But they pattern is the same. There’s a very special pattern in the distances between these points. On the left, you can see the distances are growing, and approximately twice the number of parameters in each case. Hold that in your mind.
+</p>
+<img src="slides/L08/14.png" alt="In anthropology we're happy with 20. But with N = 100, you can more precisely estimate when a data point doesn't matter. So 4 and 5 are only slightly worse. Because you can get a really good posterior distribution. But they pattern is the same. There's a very special pattern in the distances between these points. On the left, you can see the distances are growing, and approximately twice the number of parameters in each case. Hold that in your mind." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-42"></span>
+<p class="caption marginnote shownote">
+Figure 7.34: The first thing to do is regularize. We don’t want to use flat priors. We have to be skeptical. We have to build scepticiism into the models. Choose priors that only give us possible outcomes. That helps to regularise - to reduce overfitting.
+</p>
+<img src="slides/L08/15.png" alt="The first thing to do is regularize. We don't want to use flat priors. We have to be skeptical. We have to build scepticiism into the models. Choose priors that only give us possible outcomes. That helps to regularise - to reduce overfitting. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-43"></span>
+<p class="caption marginnote shownote">
+Figure 7.35: The model on the left is the linear regression model. We’re going to use different standard deviations to deduce different amounts of skeptisism to large effects. SD of 0.2 is the very peaked one. Which of these will be best?
+</p>
+<img src="slides/L08/16.png" alt="The model on the left is the linear regression model. We're going to use different standard deviations to deduce different amounts of skeptisism to large effects. SD of 0.2 is the very peaked one. Which of these will be best?" width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-44"></span>
+<p class="caption marginnote shownote">
+Figure 7.36: On average, how did they do in-sample? The more sceptical prior does worse.
+</p>
+<img src="slides/L08/17.png" alt="On average, how did they do in-sample? The more sceptical prior does worse." width="60%"  />
+</div>
+<p><img src="slides/L08/18.png" width="60%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-46"></span>
+<p class="caption marginnote shownote">
+Figure 7.37: But out of sample, it’s the opposite. Why? Because it learns less from the sample. It’s skeptical. Out of sample, it predicts best because it ignored irregular distractions. Now in any particular problem the pattern might be different. Too skeptical and you can overshoot. But some scepticism helps you make good predictions. That’s why you should never use flat priors. Even slightly curved and you’ll do better. The order is the same, but the differences are tiny. Because if you have enough data, the regularisation isnt’ doing any heavy work for you. But for a small sample, regularization does a lot. With multi-level models, we have to revisit, because even in really big smaple sizes there are some parameters with not big datasets.
+</p>
+<img src="slides/L08/19.png" alt="But out of sample, it's the opposite. Why? Because it learns less from the sample. It's skeptical. Out of sample, it predicts best because it ignored irregular distractions. Now in any particular problem the pattern might be different. Too skeptical and you can overshoot. But some scepticism helps you make good predictions. That's why you should never use flat priors. Even slightly curved and you'll do better. The order is the same, but the differences are tiny. Because if you have enough data, the regularisation isnt' doing any heavy work for you. But for a small sample, regularization does a lot. With multi-level models, we have to revisit, because even in really big smaple sizes there are some parameters with not big datasets." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-47"></span>
+<p class="caption marginnote shownote">
+Figure 7.38: In industry, there’s a lot of regularisation, because they’re scored on it. But they do care about predictive accuracy. Why do scientists care less? Maybe because we’re not taught to. Functionally, it makes getting significant results harder. Maybe the biggest thing is that we’re not judged on the accuracy of future predictions. We don’t have a strong philosophy on how it’s connected to inference.
+</p>
+<img src="slides/L08/20.png" alt="In industry, there's a lot of regularisation, because they're scored on it. But they do care about predictive accuracy. Why do scientists care less? Maybe because we're not taught to. Functionally, it makes getting significant results harder. Maybe the biggest thing is that we're not judged on the accuracy of future predictions. We don't have a strong philosophy on how it's connected to inference." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-48"></span>
+<p class="caption marginnote shownote">
+Figure 7.39: If we regularize correctly, we’ll do better out-of-sample. We can actually predict the amount of overfitting, even when you don’t have the out-of-sample. This is all small-world stuff, so be sceptical, but it gives us a principled way of talking about a model in terms of its overfitting risk.
+</p>
+<img src="slides/L08/21.png" alt="If we regularize correctly, we'll do better out-of-sample. We can actually predict the amount of overfitting, even when you don't have the out-of-sample. This is all small-world stuff, so be sceptical, but it gives us a principled way of talking about a model in terms of its overfitting risk. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-49"></span>
+<p class="caption marginnote shownote">
+Figure 7.40: If you do this across lots of left-out bits from your sample, that turns out to be a really good approximation of your model. These prediction contests in industry. Motivated this on Monday talking about under- vs over-fitted model. There’s a LOOCV function for <code>quap</code>. Huge literature about how many to leave out. But the general idea is to use this.
+</p>
+<img src="slides/L08/22.png" alt="If you do this across lots of left-out bits from your sample, that turns out to be a really good approximation of your model. These prediction contests in industry. Motivated this on Monday talking about under- vs over-fitted model. There's a LOOCV function for `quap`. Huge literature about how many to leave out. But the general idea is to use this. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-50"></span>
+<p class="caption marginnote shownote">
+Figure 7.41: These days you have too many data points. Really good analytical approximations, like Pareto-smoothed. Incredibly accurate. Pareto-smoothed is useful because you get a lot of diagnostic information.
+</p>
+<img src="slides/L08/23.png" alt="These days you have too many data points. Really good analytical approximations, like Pareto-smoothed. Incredibly accurate. Pareto-smoothed is useful because you get a lot of diagnostic information." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-51"></span>
+<p class="caption marginnote shownote">
+Figure 7.42: Other approach, stemming from Akaike. To get an analytical approximation, a lot of assumptions are made, including that you need a Gaussian distribution. If that’s true, you can get a really nice approxiatmion of the performance of the log score out-of-sample. Just the training deviance time twice th enumber of parameters. Incredible acheivement.
+</p>
+<img src="slides/L08/24.png" alt="Other approach, stemming from Akaike. To get an analytical approximation, a lot of assumptions are made, including that you need a Gaussian distribution. If that's true, you can get a really nice approxiatmion of the performance of the log score out-of-sample. Just the training deviance time twice th enumber of parameters. Incredible acheivement." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-52"></span>
+<p class="caption marginnote shownote">
+Figure 7.43: It has since been eclipsed. Another theoretical statistician has developed this new, more capable version. This thing looks complicated, but lppd is the Bayesian distance, and the penalty term on the right is the point-wise variance of the log probability of each observation. That’s the generalised parameter count you want. This works for anything. Turns out in general the parameter count isn’t what matters, rather the variance in the posterior distribution. And for models with flat priors and Gaussian distributions, it gives you the same value as AIC. But in general we won’t use flat priors, and it often has interesting information.
+</p>
+<img src="slides/L08/25.png" alt="It has since been eclipsed. Another theoretical statistician has developed this new, more capable version. This thing looks complicated, but lppd is the Bayesian distance, and the penalty term on the right is the point-wise variance of the log probability of each observation. That's the generalised parameter count you want. This works for anything. Turns out in general the parameter count isn't what matters, rather the variance in the posterior distribution. And for models with flat priors and Gaussian distributions, it gives you the same value as AIC. But in general we won't use flat priors, and it often has interesting information." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-53"></span>
+<p class="caption marginnote shownote">
+Figure 7.44: Now we’ll score them on their error. All are trying to estimate the prediction error. So how close do they get? Top are flat priors. Open circles and the actual generalisation errors. Each trend line is a different metric for calculating it. WAIC is getting closer, but the differences are really small. LOOIC is a really good approximation. At the bottom we have regularising priors. Everything does better, but the differences are about the same. Unit difference on the vertical is tiny.
+</p>
+<img src="slides/L08/26.png" alt="Now we'll score them on their error. All are trying to estimate the prediction error. So how close do they get? Top are flat priors. Open circles and the actual generalisation errors. Each trend line is a different metric for calculating it. WAIC is getting closer, but the differences are really small. LOOIC is a really good approximation. At the bottom we have regularising priors. Everything does better, but the differences are about the same. Unit difference on the vertical is tiny." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-54"></span>
+<p class="caption marginnote shownote">
+Figure 7.45: Target we’re trying to get is the out-of-sample error. These differences are tiny. All of these things work amazingly well.
+</p>
+<img src="slides/L08/27.png" alt="Target we're trying to get is the out-of-sample error. These differences are tiny. All of these things work amazingly well." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-55"></span>
+<p class="caption marginnote shownote">
+Figure 7.46: When samples are large, they all work identically.
+</p>
+<img src="slides/L08/28.png" alt="When samples are large, they all work identically." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-56"></span>
+<p class="caption marginnote shownote">
+Figure 7.47: Avoid model selection. We want to score the expected overfitting models to understand their properties. In the sciences we usually have an inferential objective, rather than a predictive one. But if you intend to intervene in the world, then we don’t want to use these criteria to select a model, but rather to compare them.
+</p>
+<img src="slides/L08/29.png" alt="Avoid model selection. We want to score the expected overfitting models to understand their properties. In the sciences we usually have an inferential objective, rather than a predictive one. But if you intend to intervene in the world, then we don't want to use these criteria to select a model, but rather to compare them." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-57"></span>
+<p class="caption marginnote shownote">
+Figure 7.48: Smaller numbers are better, so the top model is 6.7 that includes the fungus. Can probably see the difference here. The fungus is what’s causal. Inference about cause and finding a predictive model aren’t the same thing. So you need to do both, but keep in mind that they’re different. Because you haven’t necessarily inferred a cause if you have good prediction error, because you might have blocked a pipe. Even spurious correlations are useful. The confounding really matters when you want to intervene. The highest preditive model won’t necessary predict what will happen when you intervene.
+</p>
+<img src="slides/L08/30.png" alt="Smaller numbers are better, so the top model is 6.7 that includes the fungus. Can probably see the difference here. The fungus is what's causal. Inference about cause and finding a predictive model aren't the same thing. So you need to do both, but keep in mind that they're different. Because you haven't necessarily inferred a cause if you have good prediction error, because you might have blocked a pipe. Even spurious correlations are useful. The confounding really matters when you want to intervene. The highest preditive model won't necessary predict what will happen when you intervene. " width="60%"  />
+</div>
+<p><img src="slides/L08/31.png" width="60%"  /></p>
+<p><img src="slides/L08/32.png" width="60%"  /></p>
+<div class="figure"><span id="fig:unnamed-chunk-60"></span>
+<p class="caption marginnote shownote">
+Figure 7.49: Incredibly clever and diabolical. Interested in life history evolution. Something to understand by looking at the whole field. Here’s a dataset to consider. Why does lifespan vary so much? A typcial kind of conceptual model is this idea that body mass = fewer things kill you = living longer. And brain size = smart = avoiding danger. Should also season your DAG with some unobserved confounds.
+</p>
+<img src="slides/L08/33.png" alt="Incredibly clever and diabolical. Interested in life history evolution. Something to understand by looking at the whole field. Here's a dataset to consider. Why does lifespan vary so much? A typcial kind of conceptual model is this idea that body mass = fewer things kill you = living longer. And brain size = smart = avoiding danger. Should also season your DAG with some unobserved confounds." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-61"></span>
+<p class="caption marginnote shownote">
+Figure 7.50: After you remove all the missing values, you get three models. The first is the industry standard m7.8 everyone expects to be the right prediction model. WIf we wnat ot figure out the infleucne of brainsize on lifespan, we need to block the backdoor path on body mass. Black dots are the in-sample, and open are the WAIC scores. Bars are standard errors. 7.8 and 7.9 are basically equivalent in their out-of-sample predictions. When you see something like this, you should see this as an invitiation to poke inside them. You can use IC to do that poiking.
+</p>
+<img src="slides/L08/34.png" alt="After you remove all the missing values, you get three models. The first is the industry standard m7.8 everyone expects to be the right prediction model. WIf we wnat ot figure out the infleucne of brainsize on lifespan, we need to block the backdoor path on body mass. Black dots are the in-sample, and open are the WAIC scores. Bars are standard errors. 7.8 and 7.9 are basically equivalent in their out-of-sample predictions. When you see something like this, you should see this as an invitiation to poke inside them. You can use IC to do that poiking." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-62"></span>
+<p class="caption marginnote shownote">
+Figure 7.51: bM is the slope for body mass, and bB is the slope for brain size. 7.9 only has bM, and says there’s a positive correlation. The model with both has this catastrophic flipping. Now bM is negative? What’s going on here?
+</p>
+<img src="slides/L08/35.png" alt="bM is the slope for body mass, and bB is the slope for brain size. 7.9 only has bM, and says there's a positive correlation. The model with both has this catastrophic flipping. Now bM is negative? What's going on here? " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-63"></span>
+<p class="caption marginnote shownote">
+Figure 7.52: The thing to do here is to do WAIC point-wise. For each species in the sample, say the Capuchin monkey which has those life history characteristics, which model expects to do the best out-of-sample on organisms with those same covariates? Or you could think about it as entropy scores, or divergence scores, to say how surprised is this model by a Capuchin monkey? The relative surprise between these models is plotted.
+</p>
+<img src="slides/L08/36.png" alt="The thing to do here is to do WAIC point-wise. For each species in the sample, say the Capuchin monkey which has those life history characteristics, which model expects to do the best out-of-sample on organisms with those same covariates? Or you could think about it as entropy scores, or divergence scores, to say how surprised is this model by a Capuchin monkey? The relative surprise between these models is plotted. " width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-64"></span>
+<p class="caption marginnote shownote">
+Figure 7.53: The model with brain + mass does better with Capuchins because they have small brains, but they’re really big for their body size. So if you don’t control for body size, you can’t explain their longevity. So the model without body size is really surprised by Cebus. Lepilemur on the other extreme with small brains and extremely short lifespans, where you’d be surprised if you ignore body size.
+</p>
+<img src="slides/L08/37.png" alt="The model with brain + mass does better with Capuchins because they have small brains, but they're really big for their body size. So if you don't control for body size, you can't explain their longevity. So the model without body size is really surprised by Cebus. Lepilemur on the other extreme with small brains and extremely short lifespans, where you'd be surprised if you ignore body size." width="60%"  />
+</div>
+<div class="figure"><span id="fig:unnamed-chunk-65"></span>
+<p class="caption marginnote shownote">
+Figure 7.54: On the other hand, for these you can make fine predictions by knowing body size. So you can understand how they perform if you look point-wise. This is a principled way to inspect and understand your golem. Also a way to find your high-leverage points.
+</p>
+<img src="slides/L08/38.png" alt="On the other hand, for these you can make fine predictions by knowing body size. So you can understand how they perform if you look point-wise. This is a principled way to inspect and understand your golem. Also a way to find your high-leverage points." width="60%"  />
+</div>
+<p><img src="slides/L08/39.png" width="80%"  /></p>
+<p><img src="slides/L08/40.png" width="80%"  /></p>
+<p><img src="slides/L08/41.png" width="80%"  /></p>
+<p><img src="slides/L08/42.png" width="80%"  /></p>
+
+</div>
+<p style="text-align: center;">
+<a href="6-the-haunted-dag-the-causal-terror.html"><button class="btn btn-default">Previous</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
