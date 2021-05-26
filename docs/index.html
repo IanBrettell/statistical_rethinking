@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-15" />
+<meta name="date" content="2021-05-26" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -138,10 +138,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
 <li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
-<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+</ul></li>
 <li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
 </ul>
 </div>
 </div>
@@ -150,7 +156,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="col-sm-12">
 <div id="header">
 <h1 class="title">Notes for Statistical Rethinking 2nd ed. by Richard McElreath</h1>
-<h4 class="date"><em>2021-05-15</em></h4>
+<h4 class="date"><em>2021-05-26</em></h4>
 </div>
 <div id="index" class="section level1 unnumbered">
 <h1>Index</h1>
@@ -197,7 +203,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete existing tmp file</span></span>
 <span id="cb3-2"><a href="index.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;tmp.txt&quot;</span>)</span>
 <span id="cb3-3"><a href="index.html#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="index.html#cb3-4" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L09&quot;</span>)</span>
+<span id="cb3-4"><a href="index.html#cb3-4" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L11&quot;</span>)</span>
 <span id="cb3-5"><a href="index.html#cb3-5" aria-hidden="true" tabindex="-1"></a>slides <span class="ot">=</span> <span class="fu">list.files</span>(slides_dir) <span class="sc">%&gt;%</span> <span class="fu">str_remove</span>(<span class="st">&quot;.png&quot;</span>) <span class="sc">%&gt;%</span> .[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;.pdf&quot;</span>, .)]</span>
 <span id="cb3-6"><a href="index.html#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="index.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(slides, <span class="cf">function</span>(x){</span>

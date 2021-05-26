@@ -1,0 +1,343 @@
+---
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
+date: '`r format(Sys.Date())`'
+#output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
+---
+
+# Markov Chain Monte Carlo
+
+```{r, message = F, warning=F}
+library(here)
+source(here::here("code/scripts/source.R"))
+```
+
+```{r}
+slides_dir = here::here("docs/slides/L10")
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Major transition point where we switch over algorithms for estimating the posterior."}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="As a reminder, Bayesian inference is not about how to get the posterior, it's just about the posterior distribution. There are a lot of ways to get it. In this case, you can calculate it a huge number of ways and they're all valid. In biology, Bayesian is thought of as synonymous with Markov Chains. But you can use Markov chains for lots of things. There's a bunch of additional machinery you need to fool around with when you play with Markov chains."}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We'll discuss for ways to compute the posterior. The analytical approach was used to create the previous slide. Interesting models, but almost always impossible. So you need another way to do the numerical differentiation. Grid I showed you earlier. You've been using `quap` for months now. Unreasonably effective for lots of models. If you're doing maximum likelihood estimation, you're doing the same steps. There's a connection there between lots of standard tools. But now we're going to get into things that make the connection a lot blurrier."}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="King Markov rules a bunch of islands."}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are 10, with different population sizes and densities."}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="They'll let you tax them as long as you visit them. You must visit them in proportion to their population density. So you need some simple algorithm."}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You start on a particular island. Now you're ready to move to another one. You flip a coin to decide on which island."}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then you send a servant across to the proposed island and they take a survey of how many people are on the island. You do the same for the island you're on. We'll call that $p_5$, and the current island $p_4$."}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You want to compare these two numbers in a particular way."}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You want to take the ratio of them, and that will be the probability of accepting the proposal of moving from island 4 to 5. If it's greater than 1, you'll move. "}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So you move to the proposal island with that probability."}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is a valid way to fill the contract. It guarantees that in the long run, you will visit each island in proportion to its relative populations size. This is an example of Markov Chain Monte Carlo."}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="It's the most famous, and the most primitive. The huge advantage is if you don't know the distribution of population sizes, you actually don't need to actually visit each of the islands in proportion to their population sizes. We don't know the posterior distribution, but we can visit each part of it in proportion to its relative probability. That's the magic: we can sample from the distribution that we don't know. Also going to introduce you to Stan. `ulam` is a simplified input that will make a custom Markov chain for you."}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here is the R script version of King Monty's royal tour. Metropolis was also a person. Let's walk through each line to get a sense of how simple it is. Positions is an empty vector. We'll store the islands the King is on here. Then we'll just put him on island 10 (`current`). Then we loop over the weeks, and record where the king is now. Then we'll flip a coin to generate the proposal. Finally there's the action. We've got the ratio, where we're asserting the relative popn size is the same as their number. "}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Run that code and plot it out, and you'll get this. You can see the King zig-zagging around. You can see he gets stuck on densely populated islands. In the long run, it's in the right proportions."}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Chain is more obvious here."}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Starting to emerge that he's visiting 10 more. After 2000 weeks, we're almost there. Guaranteed to work in the long run. What the 'long run' means is controversial."}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Summary slide. Not sensitive to initial conditions. In this algorithm you need symmetric proposals... there are other algorithms without this condition, which improves them. "}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The population size is the posterior probability. This works no matter how many parameters you have, in the long run. The long run is really long if you have a lot of parameters. That's the snag."}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's the famous paper where they first implemented it. Some famous people here. Rosenbluth did most of the programming, and Teller figured out the memory. The fed the tape in with a bicycle wheel. This was all part of the Manhattan project - for making fusion bombs post-war. "}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Metropolis in the foreground. MANIAC in the background. Currently a laptop can do billions of multiplications per second."}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What are Markov Chains? The Metropolis is the simplest verison. Named after Markov. What makes something a Markov chain only depends on where you are now, not where you've been. What matters is the current state. Great for computing because you don't need to store a bunch of numbers."}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Sometimes you get a model that is to hard to integrate. Often with integrals you're guessing. Not like derivatives. Going in the other direction is much harder. Integrating is sometimes not practical. MCMC is just one of the methods of estimating it. Optimisation (like quap) often targets the wrong area of the distribution ('concentration of measure'). This is why everyone gives up on optimisation once you have more than 100 parameters. This is bread and butter sort of stuff in applied statistics. "}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are a bunch of different MCMC strategies. Hastings showed that you don't need symmetric proposals, which made them more efficient. Gibbs sampling is extremely efficient, but basically Metropolis. What they have in common is they guess and check. They make a proposal to move somewhere, check the posterior probability at that location, then decide to move. If you make dumb proposals, you won't move. The goal is to constantly move by making really smart proposals. Guess and checking gives you dumb proposals, so you need a completely different strategy: Hamiltonian. Really efficient and can make models with tens of thousands of parameters. Hamiltonians use a gradient. "}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Simulation of the MC run. Red it stays, green is moves. It stacks the distribution as it moves. Metropolis works really well. The problem comes when the distribution is not as nice as a Gaussian hill."}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="... like a donut. In high-dimensional spaces, it gets concentrated into thin shells. Picture a hyper-donut. We must sample from it. And the Metropolialogrithm is really bad like that, because it makes a lot of proposals into dead space. You can see it's a donut, but it doesn't. Now the long run is very long indeed. It gets stuck in narrow regions. The basic problem is that the proposals don't know the shape of the distribution."}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You can tune it, but there's a really tight trade-off. On the left we start with the Markov chain. Filled circles are accepted. If you only consider points near you, you'll get more valid proposals, but you'll move really slow. If we lengthen, then we reject more. This is the fundamental trade-off. Really you can't win. Gibbs can do a little better. Butas soon as the dimensions increase, the problem eventually appears. The issue is guess and check."}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So what do we do instead? This is a different process entirely. No guess and check. Instead, it runs a physics simulation. We'll represent our parameter state as a coordinate in some high-dimensional space. In more dimensions, you have some hyperspace. You're a particle in this space in some position. Then we'll flick you, and it'll cruise on some surface - the posterior distribution - and record where you stop, then do it again. Because it follows the curvature, it always makes good proposals because it doesn't go into bad areas. So there's no more guessing and checking, all proposals are good proposals."}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Continuous urban smear. More living in the bottom. How to use this? Hamiltonian."}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In the book, here's a simulation. Time on the horizontal. It's Gaussian. You take the log of a Gaussian and it's a parabola. So you start in the middle. But you need to know the contour."}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Roll the marble and periodically stop and record the position. Over time you get position samples that are proportional to the shape, as if there is more probability in the bottom."}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Again, 2D Gaussian hill. It's a bowl now. Flick the simulation and do the pass. Always ends up inside the bowl. What stops you from getting into the silly spots. Better living through physics."}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Because each proposal is accepted, you need many many fewer. So a lot of efficiency. Using the code in the chapter, we get tours. Start with x on the left, and it rolls down the valley. Eventually we stop, then flick it again. High acceptance rate, but the sequential auto-correlation is very low. "}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '40.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Hamiltonian MC does really well with the donut. It knows the curvature. Tours the whole thing, and you don't get stuck. If you have 27K parameters, that's really handy. "}
+knitr::include_graphics(file.path(slides_dir, '41.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You need to put in momentum variables now. You need to choose the mass. The system has energy, which is how to check that it's working. If energy is not conserved, the simulation stops working. With Metropolis, you won't know. But this breaks dramatically. Also need gradients - the log posterior at a particular point."}
+knitr::include_graphics(file.path(slides_dir, '42.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Not that complicated, so tour through it. "}
+knitr::include_graphics(file.path(slides_dir, '43.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Problem is that there's stuff to pick, namely the step size (the length of time we run a segment). You want basically the biggest step size, but if you make it too big, you can overshoot the shape. THen you need to choose the number of steps you'll take in each trajectory. If you choose bad values for those, you'll have a bad time. In general it's not as bad as it gets in a 2D Gaussian. Since it's a parabolic bowl, you can get these parabolic loops. In the long run it'll still work, but it's super inefficient. How do you fix it? Choose good values for the tuning parameters, which is annoying."}
+knitr::include_graphics(file.path(slides_dir, '44.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '45.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's the simulation where it resembles an Ouroboros. Since you don't know the distribution, it's hard to say what the best tuning parameters are."}
+knitr::include_graphics(file.path(slides_dir, '46.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Stan does two things: 1) Warm up phase, then maximises the step size. 2) Runs the NUTS2 algorithm. "}
+knitr::include_graphics(file.path(slides_dir, '47.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '48.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's NUTS. It runs the simulation in both directions in time. It imagines a simulation that loops back on itself, and runs it backwards from teh starting point, and goes backdwards at the same time, but when it sees itself turning around, it stops. This means it figures out a good number of leapfrog steps for each trajectory. So you don't need to make a bunch of decisions."}
+knitr::include_graphics(file.path(slides_dir, '49.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="One of the mathematicians working with Metropolis. Built mechnical MCMC simulators. Also did important work in biology. Could run Stan on anything you like. "}
+knitr::include_graphics(file.path(slides_dir, '50.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '51.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are still problems. If you have multiple separated hills, like in factored analytical models, the wait between hills can be long indeed. In my experience you handle this by changing the geometry of the model. We get these with item-response theory models."}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="SWant you to recognise a bad chain when you see it."}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Run quap as before. Now let's do this with a MC."}
+knitr::include_graphics(file.path(slides_dir, '55.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Same formula, but slim dataset with just the variables of interest. 4 chains on separate cores."}
+knitr::include_graphics(file.path(slides_dir, '56.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="`ulam` translates this into raw Stan code. A bunch of formal variable definitions. "}
+knitr::include_graphics(file.path(slides_dir, '57.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What happens here is it reports each chain. Warmup figures out the step size. Total samples is the length of each chain minus the warmup. You won't need more than a couple of thousand samples to get a good estimate."}
+knitr::include_graphics(file.path(slides_dir, '58.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=" `n_eff` is the number of effective samples. Note that it's greater than the number of samples from the MC. True because it takes dispersed samples. The number of samples you would get if there was no auto-correlation between sequential samples. `Rhat` is the Gelman-Ruben diagnostic. You want it to converge across chains. They should all look the same and be exchangeable."}
+knitr::include_graphics(file.path(slides_dir, '59.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '60.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '61.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '62.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What you want to see are these hairy caterpillars."}
+knitr::include_graphics(file.path(slides_dir, '63.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '64.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '65.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '66.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '67.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '68.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You might get something like this instead. Not good."}
+knitr::include_graphics(file.path(slides_dir, '69.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '70.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '71.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '72.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '73.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Typically when you're having trouble getting your chain to work, it's because there's something wrong with your model definition. So first check the model. "}
+knitr::include_graphics(file.path(slides_dir, '74.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '75.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '76.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '77.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '78.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '79.png'))
+```
+
+

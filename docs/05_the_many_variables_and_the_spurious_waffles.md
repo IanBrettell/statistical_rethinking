@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-15'
+date: '2021-05-26'
 output:
   html_document:
     toc: true
@@ -81,10 +81,27 @@ Making decisions between good and bad will mean forming a framework to make them
 <p class="caption">Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. </p>
 </div>
 
+## Spurious association
+
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/09.png" alt="Another variable - median age at marriage, could also be causal. Which could it be? We want to now put both in the same model, which reveals that one of these is an imposter." width="80%" />
 <p class="caption">Another variable - median age at marriage, could also be causal. Which could it be? We want to now put both in the same model, which reveals that one of these is an imposter.</p>
 </div>
+
+
+```r
+# load data
+data("WaffleDivorce")
+d = WaffleDivorce
+
+# Standardise variables
+d$D = rethinking::standardize( d$Divorce )
+d$M = rethinking::standardize( d$Marriage)
+d$A = rethinking::standardize( d$MedianAgeMarriage)
+```
+
+
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/10.png" alt="This is what multiple regression is for. We've got two questions in a model that has both questions. Do you get any predictive information from the second variable? " width="80%" />
@@ -110,10 +127,7 @@ Making decisions between good and bad will mean forming a framework to make them
 <p class="caption">We want to tell the difference between these two things. Something causes waffle house, and something causes divorce. That thing is the South, and so they end up being correlated even though there's no causal relationship.</p>
 </div>
 
-
-```marginfigure
 `|` means "conditional on".
-```
 
 
 <div class="figure">
@@ -138,6 +152,31 @@ Slopes are a little harder. You don't want to use flat priors because you don't 
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/16.png" alt="You can fit your model. You can run that model. `extract.prior` samples from the prior to simulate. Then pass it to `link` to create predictions based on the prior. Then you can plot the regression lines. " width="80%" />
 <p class="caption">You can fit your model. You can run that model. `extract.prior` samples from the prior to simulate. Then pass it to `link` to create predictions based on the prior. Then you can plot the regression lines. </p>
 </div>
+If $\beta_A = 1$, that would imply that a change of one standard deviation in age at marriage is assocatied with a change of one standard deviation in divorce.
+
+To know if that's strong, how big is a standard deviation of age at marriage?
+
+
+```r
+sd( d$MedianAgeMarriage )
+```
+
+```
+## [1] 1.24363
+```
+
+
+
+```r
+m5.1 = rethinking::quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bA * A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+```
 
 
 <div class="figure">
@@ -145,24 +184,129 @@ Slopes are a little harder. You don't want to use flat priors because you don't 
 <p class="caption">This is 50 regression lines from the prior. Standardised deviation of marriage. 2 SD is almost all. If your model thinks a possible divorce rate is outside the observable range of divorce rates, then they're bad. This prior allows really strong relationships. Allows it to govern nearly all the variation in divorce rate. But we'll move forward with this. This is the flattest prior you could justify scientifically. Priors by frequentists consider even crazier priors, just as vertical lines.</p>
 </div>
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/18.png" width="80%" />
 
+```r
+set.seed(10)
+prior = rethinking::extract.prior( m5.1 )
+mu <- rethinking::link( m5.1 , 
+            post=prior , 
+            data=list( A=c(-2,2) ) )
 
-```marginfigure
-Linear means additive, so the model makes a plane. You keep adding them together. There are four parameters. $\alpha$, two slopes $\beta_1$ and $\beta_2$, adn the standard deviation $\sigma$.
+plot( NULL , xlim=c(-2,2) , ylim=c(-2,2) )
+for ( i in 1:50 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
 ```
+
+<img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.4-1.svg" width="672" />
+
+Now for the posterior predictions:
+
+
+```r
+# compute percentile interval of mean
+A_seq = seq( from=-3 , to=3.2 , length.out=30 )
+mu = link( m5.1 , data=list(A=A_seq) )
+mu.mean = apply( mu , 2, mean )
+mu.PI = apply( mu , 2 , PI )
+
+# plot it all
+plot( D ~ A , data=d , col=rangi2 )
+lines( A_seq , mu.mean , lwd=2 )
+shade( mu.PI , A_seq )
+```
+
+<img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.5-1.svg" width="672" />
+$\beta_A$ is reliably negative. You can fit a similar regression for the relationship in the left-hand plot:
+
+
+```r
+m5.2 <- rethinking::quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bM * M ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+```
+
+Drawing a DAG
+
+
+```r
+dag5.1 <- dagitty::dagitty( "dag{ A -> D; A -> M; M -> D }" )
+dagitty::coordinates(dag5.1) <- list( x=c(A=0,D=1,M=2) , y=c(A=0,D=1,M=0) )
+rethinking::drawdag( dag5.1 )
+```
+
+<img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.7-1.svg" width="672" />
+
+***5.1.2 Testable implications***
+
+
+```r
+DMA_dag2 <- dagitty('dag{ D <- A -> M }')
+impliedConditionalIndependencies( DMA_dag2 )
+```
+
+```
+## D _||_ M | A
+```
+
+
+```r
+DMA_dag1 <- dagitty('dag{ D <- A -> M -> D }')
+impliedConditionalIndependencies( DMA_dag1 )
+```
+
+No conditional independencies, so no output.
+
+***5.1.3 Multiple regression notation***
+
+<div class="figure">
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/18.png" alt="Linear means additive, so the model makes a plane. You keep adding them together. There are four parameters. $\alpha$, two slopes $\beta_1$ and $\beta_2$, and the standard deviation $\sigma$." width="80%" />
+<p class="caption">Linear means additive, so the model makes a plane. You keep adding them together. There are four parameters. $\alpha$, two slopes $\beta_1$ and $\beta_2$, and the standard deviation $\sigma$.</p>
+</div>
+
+***5.1.4 Approximating the posterior***
+
+
+```r
+m5.3 <- quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bM*M + bA*A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+precis( m5.3 )
+```
+
+```
+##                mean         sd       5.5%      94.5%
+## a     -2.828642e-05 0.09707123 -0.1551669  0.1551103
+## bM    -6.553086e-02 0.15076312 -0.3064794  0.1754177
+## bA    -6.136370e-01 0.15097351 -0.8549218 -0.3723521
+## sigma  7.850672e-01 0.07783076  0.6606786  0.9094558
+```
+
+
 
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/19.png" width="80%" />
-
-
-```marginfigure
 Here's the quap code, and we get a table of coefficients. Look for the mean, and as I promised, $\alpha$ is 0. ``bM` is about twice the size of the posterior value itself. No consistent relationship. Age of marriage however, is -.6, but now the posterior mass is entirely below 0. What's the lesson here? There's probably no causal relationship between marriage rate and divorce, and that's because it was confounded by age of marriage. 
-```
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/20.png" alt="This shows all three models. Bottom is age of marriage only. The one with marriage rates in the middle. Then marriage rate and and age of marriage in the bottom." width="80%" />
 <p class="caption">This shows all three models. Bottom is age of marriage only. The one with marriage rates in the middle. Then marriage rate and and age of marriage in the bottom.</p>
 </div>
+
+
+```r
+# Faulty code
+#plot( rethinking::coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )
+```
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/21.png" alt="This is the graph. Once you know the median age of marriage, you get little extra information in marriage. But when you ad A, it does give you information. If you just wanted to make a prediction, M is useful, but if you wanted to change D, you need to change other things like A." width="80%" />
@@ -170,9 +314,8 @@ Here's the quap code, and we get a table of coefficients. Look for the mean, and
 </div>
 
 
-```marginfigure
 You have to be clear about whether you're interesting in predicting things, or understanding the true nature of things. 
-```
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/22.png" alt="How do we visualise models like this? Lots of ways. Usually the most useful way to visualise depends on the model. You want to think about what you're trying to communicate. The first are predictor residual plots, not that you need to do them, but good for understanding how these linear regressions works." width="80%" />
@@ -183,13 +326,11 @@ You have to be clear about whether you're interesting in predicting things, or u
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/23.png" alt="Purpose is to show how the association looks, having controlled for the other predictors. We want to calculate the intermediate states. Great for intuition but terrible for analysis. Never any statistical justification for running regression over residuals. Why? Gives you the wrong answer, because it gives you bias estimates. What to do instead? Multiple regressions." width="80%" />
 <p class="caption">Purpose is to show how the association looks, having controlled for the other predictors. We want to calculate the intermediate states. Great for intuition but terrible for analysis. Never any statistical justification for running regression over residuals. Why? Gives you the wrong answer, because it gives you bias estimates. What to do instead? Multiple regressions.</p>
 </div>
- 
 
-```marginfigure
 Recipe:
 
 1. Regress a predictor, and find the extra variance left over, and look at the pattern of the relationship between the residuals and the outcome.
-```
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/24.png" alt="Here's our first residual plot" width="80%" />
