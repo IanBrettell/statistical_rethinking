@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-15'
+date: '2021-05-26'
 output:
   html_document:
     toc: true
@@ -136,7 +136,7 @@ prod(1 + runif(12, 0, .1))
 ```
 
 ```
-## [1] 1.73573
+## [1] 2.038528
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
@@ -550,9 +550,9 @@ rethinking::precis(m4.1)
 ```
 
 ```
-##            mean        sd       5.5%      94.5%
-## mu    154.60699 0.4119961 153.948541 155.265440
-## sigma   7.73136 0.2913886   7.265665   8.197055
+##             mean        sd       5.5%      94.5%
+## mu    154.606995 0.4119934 153.948550 155.265440
+## sigma   7.731309 0.2913838   7.265622   8.196997
 ```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
@@ -584,7 +584,7 @@ precis( m4.2 )
 ```
 ##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51756 0.9289233  23.03296  26.00216
+## sigma  24.51757 0.9289236  23.03297  26.00216
 ```
 
 ***4.3.6 Sampling from a `quap`***
@@ -636,12 +636,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 154.6455 7.605080
-## 2 154.7809 7.733258
-## 3 154.8998 7.414985
-## 4 155.2177 7.624417
-## 5 153.4681 7.343153
-## 6 154.1538 7.727733
+## 1 154.8512 7.723557
+## 2 155.1297 8.064942
+## 3 154.0598 6.999181
+## 4 154.6686 7.799261
+## 5 154.8335 7.966827
+## 6 154.8159 7.668216
 ```
 
 
@@ -650,9 +650,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%     histogram
-## mu    154.607094 0.4152618 153.937473 155.272450      ▁▁▁▅▇▂▁▁
-## sigma   7.731445 0.2889114   7.272382   8.189212 ▁▁▁▂▅▇▇▃▁▁▁▁▁
+##             mean        sd       5.5%      94.5%    histogram
+## mu    154.606137 0.4140252 153.949236 155.262547     ▁▁▁▅▇▂▁▁
+## sigma   7.728491 0.2897498   7.264243   8.191132 ▁▁▁▁▂▅▇▇▃▁▁▁
 ```
 
 Here's a peak under the motor of `extract.samples`:
@@ -1348,23 +1348,6 @@ axis( side=1 , at=at , labels=round(labels,1) )
 ***4.5.2 Splines***
 
 
-```r
-library(rethinking)
-data(cherry_blossoms)
-d <- cherry_blossoms
-precis(d)
-```
-
-```
-##                   mean          sd      5.5%      94.5%       histogram
-## year       1408.000000 350.8845964 867.77000 1948.23000   ▇▇▇▇▇▇▇▇▇▇▇▇▁
-## doy         104.540508   6.4070362  94.43000  115.00000        ▁▂▅▇▇▃▁▁
-## temp          6.141886   0.6636479   5.15000    7.29470        ▁▃▅▇▃▂▁▁
-## temp_upper    7.185151   0.9929206   5.89765    8.90235 ▁▂▅▇▇▅▂▂▁▁▁▁▁▁▁
-## temp_lower    5.098941   0.8503496   3.78765    6.37000 ▁▁▁▁▁▁▁▃▅▇▃▂▁▁▁
-```
-
-
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/31.png" alt="A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*." width="80%" />
 <p class="caption">A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*.</p>
@@ -1380,12 +1363,27 @@ precis(d)
 <p class="caption">Again, it's a linear model, an additive equation for $\mu$. But the predictor variables are not observed, rather synthetic data that defines the range of the curve that the parameter acts in. The actual predictor of interest will not appear in your model, but you'll get a fantastic predictor of the relationship between the variables. There will be one weight for each of the basis functions. And the weights affect the range defined by the $\beta$ variables. </p>
 </div>
 
-
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/34.png" alt="New example. Let's find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there's a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data. " width="80%" />
 <p class="caption">New example. Let's find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there's a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data. </p>
 </div>
 
+
+```r
+library(rethinking)
+data(cherry_blossoms)
+d <- cherry_blossoms
+precis(d)
+```
+
+```
+##                   mean          sd      5.5%      94.5%       histogram
+## year       1408.000000 350.8845964 867.77000 1948.23000   ▇▇▇▇▇▇▇▇▇▇▇▇▁
+## doy         104.540508   6.4070362  94.43000  115.00000        ▁▂▅▇▇▃▁▁
+## temp          6.141886   0.6636479   5.15000    7.29470        ▁▃▅▇▃▂▁▁
+## temp_upper    7.185151   0.9929206   5.89765    8.90235 ▁▂▅▇▇▅▂▂▁▁▁▁▁▁▁
+## temp_lower    5.098941   0.8503496   3.78765    6.37000 ▁▁▁▁▁▁▁▃▅▇▃▂▁▁▁
+```
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/35.png" alt="1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there's overlap. You'll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations. " width="80%" />
@@ -1408,11 +1406,74 @@ precis(d)
 <p class="caption">Let's think about construction of these synthetic variables. Think of year. We'll never use them again. The knots are anchored at year, but then they're gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It's weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they're own precious parameter value. When you get to higher degress, they'll be curves. At any particular point (except at a knot), two of these basis functions will determine the value.</p>
 </div>
 
+Let's use 15 knots:
+
+```r
+d2 <- d[ complete.cases(d$doy) , ] # complete cases on doy
+num_knots <- 15
+knot_list <- quantile( d2$year , probs=seq(0,1,length.out=num_knots) )
+```
+
+
+```r
+B <- splines::bs(d2$year,
+  knots=knot_list[-c(1,num_knots)] ,
+  degree=3 , intercept=TRUE )
+```
+
+
+```r
+plot( NULL , xlim=range(d2$year) , ylim=c(0,1) , xlab="year" , ylab="basis" )
+for ( i in 1:ncol(B) ) lines( d2$year , B[,i] )
+```
+
+<img src="04_geocentric_models_files/figure-html/4.75-1.svg" width="672" />
+
+This is the first time we've used an **exponential distribution** as a prior. They're useful priors for scale parameters, parameters that must be positive. We'll use exponential priors for the rest of the book, in place of uniform priors. They way to read an exponential distribution is to think of it as containing just an average deviation, which is inverse of the rate. 
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/39.png" alt="The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. " width="80%" />
 <p class="caption">The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. </p>
 </div>
+
+
+```r
+m4.7 <- rethinking::quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + B %*% w ,
+    a ~ dnorm(100,10),
+    w ~ dnorm(0,10),
+    sigma ~ dexp(1)
+  ), data=list( D=d2$doy , B=B ) ,
+  start=list( w=rep( 0 , ncol(B) ) ) )
+```
+
+Then plot the posterior predictions:
+
+
+```r
+post <- extract.samples( m4.7 )
+w <- apply( post$w , 2 , mean )
+plot( NULL , xlim=range(d2$year) , ylim=c(-6,6) ,
+      xlab="year" , ylab="basis * weight" )
+for ( i in 1:ncol(B) ) lines( d2$year , w[i]*B[,i] )
+```
+
+<img src="04_geocentric_models_files/figure-html/4.77-1.svg" width="672" />
+
+Finally, the 97% posterior interval for $\mu$. 
+
+
+```r
+mu <- link( m4.7 )
+mu_PI <- apply(mu,2,PI,0.97)
+plot( d2$year , d2$doy , col=col.alpha(rangi2,0.3) , pch=16)
+shade( mu_PI , d2$year , col=col.alpha("black",0.5) )
+```
+
+<img src="04_geocentric_models_files/figure-html/4.78-1.svg" width="672" />
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/40.png" alt="Repeating the equation for $mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature." width="80%" />
@@ -1439,6 +1500,21 @@ precis(d)
 <p class="caption">Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest. Play around with the knots and degree and priors.</p>
 </div>
 
+Can do the same thing with matrix multiplication
+
+```r
+m4.7alt <- rethinking::quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + sapply( 1:827 , function(i) sum( B[i,]*w ) ) ,
+    a ~ dnorm(100,1),
+    w ~ dnorm(0,10),
+    sigma ~ dexp(1)
+  ),
+  data=list( D=d2$doy , B=B ) ,
+  start=list( w=rep( 0 , ncol(B) ) ) )
+```
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/45.png" alt="Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year." width="80%" />
@@ -1446,5 +1522,7 @@ precis(d)
 </div>
 
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/46.png" width="80%" />
+
+## Practice
 
 

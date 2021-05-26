@@ -73,9 +73,25 @@ Making decisions between good and bad will mean forming a framework to make them
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
+## Spurious association
+
 ```{r, echo = F, out.width='80%', fig.cap = "Another variable - median age at marriage, could also be causal. Which could it be? We want to now put both in the same model, which reveals that one of these is an imposter."}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
+
+```{r 5.1}
+# load data
+data("WaffleDivorce")
+d = WaffleDivorce
+
+# Standardise variables
+d$D = rethinking::standardize( d$Divorce )
+d$M = rethinking::standardize( d$Marriage)
+d$A = rethinking::standardize( d$MedianAgeMarriage)
+```
+
+
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is what multiple regression is for. We've got two questions in a model that has both questions. Do you get any predictive information from the second variable? "}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
@@ -97,9 +113,7 @@ knitr::include_graphics(file.path(slides_dir, '12.png'))
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
-```{marginfigure}
 `|` means "conditional on".
-```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Already know how to do these, just need to do extra stuff. Linear regression is a special type of Bayesian network where there's an outcome variable, which is assigned Gaussian probability with some mean that is conditional based on some variable, and a standard deviation. The `i`s are states. Have some intercepts. "}
@@ -120,39 +134,137 @@ Slopes are a little harder. You don't want to use flat priors because you don't 
 ```{r, echo = F, out.width='80%', fig.cap = "You can fit your model. You can run that model. `extract.prior` samples from the prior to simulate. Then pass it to `link` to create predictions based on the prior. Then you can plot the regression lines. "}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
+If $\beta_A = 1$, that would imply that a change of one standard deviation in age at marriage is assocatied with a change of one standard deviation in divorce.
+
+To know if that's strong, how big is a standard deviation of age at marriage?
+
+```{r 5.2}
+sd( d$MedianAgeMarriage )
+```
+
+
+```{r 5.3}
+m5.1 = rethinking::quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bA * A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is 50 regression lines from the prior. Standardised deviation of marriage. 2 SD is almost all. If your model thinks a possible divorce rate is outside the observable range of divorce rates, then they're bad. This prior allows really strong relationships. Allows it to govern nearly all the variation in divorce rate. But we'll move forward with this. This is the flattest prior you could justify scientifically. Priors by frequentists consider even crazier priors, just as vertical lines."}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
 
-```{r, echo = F, out.width='80%'}
+```{r 5.4}
+set.seed(10)
+prior = rethinking::extract.prior( m5.1 )
+mu <- rethinking::link( m5.1 , 
+            post=prior , 
+            data=list( A=c(-2,2) ) )
+
+plot( NULL , xlim=c(-2,2) , ylim=c(-2,2) )
+for ( i in 1:50 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+```
+
+Now for the posterior predictions:
+
+```{r 5.5}
+# compute percentile interval of mean
+A_seq = seq( from=-3 , to=3.2 , length.out=30 )
+mu = link( m5.1 , data=list(A=A_seq) )
+mu.mean = apply( mu , 2, mean )
+mu.PI = apply( mu , 2 , PI )
+
+# plot it all
+plot( D ~ A , data=d , col=rangi2 )
+lines( A_seq , mu.mean , lwd=2 )
+shade( mu.PI , A_seq )
+```
+$\beta_A$ is reliably negative. You can fit a similar regression for the relationship in the left-hand plot:
+
+```{r 5.6}
+m5.2 <- rethinking::quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bM * M ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+
+```
+
+Drawing a DAG
+
+```{r 5.7}
+dag5.1 <- dagitty::dagitty( "dag{ A -> D; A -> M; M -> D }" )
+dagitty::coordinates(dag5.1) <- list( x=c(A=0,D=1,M=2) , y=c(A=0,D=1,M=0) )
+rethinking::drawdag( dag5.1 )
+```
+
+***5.1.2 Testable implications***
+
+```{r 5.8}
+DMA_dag2 <- dagitty('dag{ D <- A -> M }')
+impliedConditionalIndependencies( DMA_dag2 )
+```
+
+```{r 5.9}
+DMA_dag1 <- dagitty('dag{ D <- A -> M -> D }')
+impliedConditionalIndependencies( DMA_dag1 )
+```
+
+No conditional independencies, so no output.
+
+***5.1.3 Multiple regression notation***
+
+```{r, echo = F, out.width='80%', fig.cap="Linear means additive, so the model makes a plane. You keep adding them together. There are four parameters. $\\alpha$, two slopes $\\beta_1$ and $\\beta_2$, and the standard deviation $\\sigma$."}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
 
-```{marginfigure}
-Linear means additive, so the model makes a plane. You keep adding them together. There are four parameters. $\alpha$, two slopes $\beta_1$ and $\beta_2$, adn the standard deviation $\sigma$.
+***5.1.4 Approximating the posterior***
+
+```{r 5.10}
+m5.3 <- quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bM*M + bA*A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+precis( m5.3 )
 ```
+
+
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
-
-```{marginfigure}
 Here's the quap code, and we get a table of coefficients. Look for the mean, and as I promised, $\alpha$ is 0. ``bM` is about twice the size of the posterior value itself. No consistent relationship. Age of marriage however, is -.6, but now the posterior mass is entirely below 0. What's the lesson here? There's probably no causal relationship between marriage rate and divorce, and that's because it was confounded by age of marriage. 
-```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "This shows all three models. Bottom is age of marriage only. The one with marriage rates in the middle. Then marriage rate and and age of marriage in the bottom."}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r 5.11}
+# Faulty code
+#plot( rethinking::coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is the graph. Once you know the median age of marriage, you get little extra information in marriage. But when you ad A, it does give you information. If you just wanted to make a prediction, M is useful, but if you wanted to change D, you need to change other things like A."}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-```{marginfigure}
+
 You have to be clear about whether you're interesting in predicting things, or understanding the true nature of things. 
-```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "How do we visualise models like this? Lots of ways. Usually the most useful way to visualise depends on the model. You want to think about what you're trying to communicate. The first are predictor residual plots, not that you need to do them, but good for understanding how these linear regressions works."}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
@@ -161,12 +273,11 @@ knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "Purpose is to show how the association looks, having controlled for the other predictors. We want to calculate the intermediate states. Great for intuition but terrible for analysis. Never any statistical justification for running regression over residuals. Why? Gives you the wrong answer, because it gives you bias estimates. What to do instead? Multiple regressions."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
- 
-```{marginfigure}
+
 Recipe:
 
 1. Regress a predictor, and find the extra variance left over, and look at the pattern of the relationship between the residuals and the outcome.
-```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "Here's our first residual plot"}
 knitr::include_graphics(file.path(slides_dir, '24.png'))

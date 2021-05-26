@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-15" />
+<meta name="date" content="2021-05-26" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -138,10 +138,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
 <li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
-<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+</ul></li>
 <li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
 </ul>
 </div>
 </div>
@@ -165,7 +171,7 @@ What might you want to compute? Commonly people want to construct intervals.
 <p>So let’s see how to perform it using samples from the posterior.</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="3-2-sampling-to-summarize.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add up all the samples under .5, divided by the total number of samples</span></span>
 <span id="cb32-2"><a href="3-2-sampling-to-summarize.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples <span class="sc">&lt;</span> <span class="fl">0.5</span>) <span class="sc">/</span> <span class="fl">1e4</span></span></code></pre></div>
-<pre><code>## [1] 0.1656</code></pre>
+<pre><code>## [1] 0.1744</code></pre>
 <div class="figure">
 <img src="slides/L02/50.png" alt="Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals." width="80%" />
 <p class="caption marginnote shownote">
@@ -174,18 +180,18 @@ Two general kinds of intervals. One is an interval of defined boundaries. Upper 
 </div>
 <p>Using the same approach, how much posterior probability lies between 0.5 and 0.75?</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="3-2-sampling-to-summarize.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples <span class="sc">&gt;</span> <span class="fl">0.5</span> <span class="sc">&amp;</span> samples <span class="sc">&lt;</span> <span class="fl">0.75</span>) <span class="sc">/</span> <span class="fl">1e4</span></span></code></pre></div>
-<pre><code>## [1] 0.6043</code></pre>
+<pre><code>## [1] 0.5954</code></pre>
 <p>This is shown in the upper right of Figure 3.2.</p>
 <p><strong><em>3.2.2 Intervals of defined mass</em></strong></p>
 <p>What a compatibility interval indicates is a range of parameter values compatible with the model and data.</p>
 <p>Where does the 80th percentile lie? i.e. the boundaries fo the lower 80% posterior probability.</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="3-2-sampling-to-summarize.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span> (samples, .<span class="dv">8</span>)</span></code></pre></div>
 <pre><code>##       80% 
-## 0.7627628</code></pre>
+## 0.7637638</code></pre>
 <p>This is shown in the bottom-left of Figure 3.2. Similarly, the middle 80% interval lies between the 10th percentile and the 90th percentile.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="3-2-sampling-to-summarize.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(samples, <span class="fu">c</span>(.<span class="dv">1</span>, .<span class="dv">9</span>))</span></code></pre></div>
 <pre><code>##       10%       90% 
-## 0.4524525 0.8168168</code></pre>
+## 0.4524525 0.8148148</code></pre>
 <p>This is shown in the bottom-right of Figure 3.2.</p>
 <p>Intervals of this sort are very common in the scientific literature. We’ll call them <strong>Percentile Intervals</strong> (PI). These do a good job of communicating the shape of a distribution, as long as it’s not too asymmetrical.</p>
 <p>But in terms of supporting inferences about which parameters are consistent with the data, they are not perfect.</p>
@@ -206,11 +212,11 @@ Two basic kinds of specified mass intervals. PI gives you the central area, wher
 <p><img src="slides/L02/52.png" width="80%" /></p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="3-2-sampling-to-summarize.html#cb41-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(samples, <span class="at">prob =</span> .<span class="dv">5</span>)</span></code></pre></div>
 <pre><code>##       25%       75% 
-## 0.7127127 0.9309309</code></pre>
+## 0.7057057 0.9309309</code></pre>
 <p>In this example, it ends up excluding the most probable parameter values, near <span class="math inline">\(p\)</span> = 1.</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="3-2-sampling-to-summarize.html#cb43-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples, <span class="at">prob =</span> <span class="fl">0.5</span>)</span></code></pre></div>
 <pre><code>##      |0.5      0.5| 
-## 0.8428428 1.0000000</code></pre>
+## 0.8418418 1.0000000</code></pre>
 <p>Here the HPDI has an advantage over the PI, but in most cases, the two are very similar. That’s because the posterior is skewed. When the posterior is bell-shaped, it hardly matters whate type of interval you use.</p>
 <blockquote>
 <p>Often, all compatibility intervals do is communicate the shape of a distribution.</p>
@@ -220,11 +226,11 @@ Two basic kinds of specified mass intervals. PI gives you the central area, wher
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="3-2-sampling-to-summarize.html#cb45-1" aria-hidden="true" tabindex="-1"></a>p_grid[<span class="fu">which.max</span>(posterior)]</span></code></pre></div>
 <pre><code>## [1] 1</code></pre>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="3-2-sampling-to-summarize.html#cb47-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">chainmode</span>(samples, <span class="at">adj =</span> <span class="fl">0.01</span>)</span></code></pre></div>
-<pre><code>## [1] 0.9934605</code></pre>
+<pre><code>## [1] 0.9972835</code></pre>
 <div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="3-2-sampling-to-summarize.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(samples)</span></code></pre></div>
-<pre><code>## [1] 0.8021967</code></pre>
+<pre><code>## [1] 0.8001949</code></pre>
 <div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="3-2-sampling-to-summarize.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(samples)</span></code></pre></div>
-<pre><code>## [1] 0.8428428</code></pre>
+<pre><code>## [1] 0.8418418</code></pre>
 <p>We care about uncertainty, and we want to summarise that. To use a point estimate, you need to provide a cost-benefit analysis. e.g. conservation or forecasting.</p>
 <p>One principles way to go beyond using the entire posterior as the estimate is to choose a <strong>Loss Function</strong>: a rule that tells you the cost assoicated with using any particular point estimate.</p>
 <blockquote>
@@ -240,7 +246,7 @@ Two basic kinds of specified mass intervals. PI gives you the central area, wher
 <pre><code>## [1] 0.8408408</code></pre>
 <p>And this is actually the posterior median.</p>
 <div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="3-2-sampling-to-summarize.html#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(samples)</span></code></pre></div>
-<pre><code>## [1] 0.8428428</code></pre>
+<pre><code>## [1] 0.8418418</code></pre>
 <p>Usually it’s better to communicate as much as you can about the posterior distribution, as well as the data and the model itself.</p>
 <p><img src="slides/L02/54.png" width="80%" /></p>
 <p>You can’t have confidence in an interval. It’s doublespeak. <em>Compatibility</em> emphasises the uncertainty. Credibility is the next conversation.</p>

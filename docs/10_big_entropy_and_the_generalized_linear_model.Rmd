@@ -1,0 +1,304 @@
+---
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
+date: '`r format(Sys.Date())`'
+#output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
+---
+
+# Big Entropy and the Generalized Linear Model
+
+```{r, message = F, warning=F}
+library(here)
+source(here::here("code/scripts/source.R"))
+```
+
+```{r}
+slides_dir = here::here("docs/slides/L11")
+```
+
+
+```{r, echo = F, out.width='80%', fig.cap="We'll move conceptually at a slow rate, which will set up a bunch of different models for this week and next."}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Imagine you have buckets equidistant from you. At your feet you have 100 pebbles, each painted with a number. Unique pebbles. "}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What happens when we toss pebbles one at a time into the buckets at random. Eventually all 100 pebbles end up in the buckets, and you count them, and you get a distribution of pebbles. What types of distributions are really common, and what types are really rare?"}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Think about extreme distributions first. There's only 1 way to get all 100 pebbles in bucket 1. "}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Same with bucket 5. So there are 5 unique distributions with all pebbles in a single bucket."}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are a bunch of distributions that will happen in a bunch of different ways. We could take a pebble from bucket 2 and swap it with one from bucket 3. How many ways could you get the same distribution. This very problem is the basis of Bayesian inference. Some distributions can arise in many more ways. It's a principle called Maximum Entropy, and it justifies Bayesian inference."}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We can replace the integers with $n$s. In some point, you learned that there's a formula for the number of arrangements of the pebbles."}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is called the multiplicity. It's the foundation of statistical inference. It gets big really fast when the Ns get equal. "}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Only one way to get all the pebbles in bucket 3. "}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="How many ways to get the second distribution?"}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="It's massively bigger. This will accelerate. People have really bad intuitions regarding combinatorics."}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now we've got two in bucket 2. Now we're getting an order of magnitude increase."}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="General principle: Distributions that are flat can happen in many many more ways. And this is why we bet on them. They have high entropy. Flat distributions are closer, less surprised when the distribution turns out to be different. Then become really good foundations for statistical inference, because they distribute the possibilities as widely as possible."}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is a unique way to derive the formula. It's nothing more than the multiplicity. W is the multiplicity (number of ways to get the N). Then we've normalised it across the number of the pebbles. And that turns out to be a good approximation. Information entropy is just the logarithm of the number of ways to realise a distribution. And it's maximised when the distribution is flat. And flatter distributions have higher entropy."}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Most centrally associated with Jaynes. If you choose any other distribution to characterise your state of knowledge, you will be implicitly adding other information into your distribution. So if you lay out all the constraints, then solve for the distribution that's as flat as possible under those constraints, you do the best you possibly can. You're honestly characterising your ignorance."}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Lots of conceptual examples for. What is the information content of a prior distribution? It turns out that Bayesian updating is a special case of this principle. You can input the data as constraints, and you get the posterior distribution by solving the maximum entropy problem. High entropy is good because the distance from the truth is smaller. One way to thing about it is it's deflationary. No matter what happens, and even distrubtion is bound to arise. We put in a tiny sliver of scientific information in our model, and the rest we just bet on entropy."}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Motivates forward to other distributions. If we're going to maximise this function, if all the $p$s are equal, they're highest. Sometimes there are constrants that prevent us from making the $p$s equal. What kind of constraints? Known mean or variance."}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is actually what we did in Week 1. Shows that it's just counting. "}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Under some set of constraints, the distributions we use are maximum entropy distributions. Exponential distributions used for scale. They have a very clear maxent constraint. If a parameter is non-negative real, and has some mean value, then the exponential contains only that information."}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Larger family of geocentric linear models. We want to connect a linear model to a mean to the distribution. Unreasonably effective given how geocentric it is. We pick an outcome distribution, then model the parameters using weird things called links, whcih link the distribution to some model. Can do all kinds of fancy things with the same basic strategy. Often if you don't want to play this game, when you write it down, it'll turn out to be a linear model anyway. In most cases, you probably want a GLM."}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Distributions arise from natural processes. And resist histomancy. This doesn't make sense under any framework. You want to use knowledge of your constraints to figure it out. There's no statistical framework where the aggregate outcomes is going to have any particular distribution."}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Going to build GLMs with these different outcome distributions. Just an extension of what you've already been doing. Exponential is everyone's favourite because it only has 1 parameter. Lambda is a rate, and the mean is 1/lambda. Generatively it can arise from a machine with a number of parts. If one part breaks, the whole thing stops working. A fruit fly is the same. Bunch of parts inside the washing machine, and each part has a chance of breaking at a particular time, the waiting time until the washing machine stops is exponentially distributed. "}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If you count events arising from exponential distributions. Mortality rates of fruit flies is bionimal. Like coin flips. Each fly could or could not ascend. And the binomial is maxent. "}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Poisson. Two ways of thinking about it. If you have a binomially distributed variable, but the probabiity of success is low and there are lots of flies oserved over a long time. "}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If you think about the time to the event of the exponential - how long did you wait until the washing machine broke, if you start adding up that time, those waiting times are distributed like Gamma. Also maxent. e.g. age of onset of cancer, perhaps because there are a lot of cellular defence mechanisms, and all of them need to fail. "}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If you get a Gamma with a really large mean, it converges to a Normal. But not the only way - all roads lead to normal. And it's hard to leave. So these are generative processes, based on the constraints. Doesn't mean that they're correct, but it's the betting part."}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Tide prediction engine. When we get to GLMs, the metaphor is very potent. It's a mechinical computer, and a part of it is the prediction of times, and then there's messy stuff at the bottom that's calculating the output. You're absolutely wedded to the prediction perspective. Hard to have intuition about the parameters. You want to understand the prediction space, and you understand the parameters by observing their effects on prediction."}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Just need to think about before the data have arrived, you know things about the outcome variable. e.g. count variables are integers starting at 0, so there are no negative counts. So from the beginning you know things about them. That constrains the distributions before they arrive. Next week we'll move onto monsters because we glue together different models using links. Likhert scales are ordinal scales, but they're not numeric. What it takes to get from 1 to 2 might be different from what it takes to go from 2 to 3. Fight monsters by making monsters. Mixture models are super useful. Bear a lot of resemblance to multi-level models."}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Consider the Gaussian linear regression. It's super benign, and that's because it has a special property: the scientific measurement units and the parameter for the mean are the same. "}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The much more typical case is the binomial model. If you want to connect a linear model to $p$, it's a probability. Probability is unitless. They're divided out. But the outcome has counts. So now the units aren't the same, and we need something that connects the parameter to the outcome scale. We need some function to put in wehre the question mark is so that it obeys physics."}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We're going to wrap $p$ in some function which constraitns it. say there's some function we can apply to the probability so that it's linear in the outcome scale."}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Searching is hearder. OLS can be used, but can be fragile. We're just going to use MCMC because we don't want to worry about it."}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="One of the fun things is that suddenly all the varibles automatically interact with each others. Imagine you're trying to understand the habitat preferences of a reptile. If it gets really cold, probability of surivival is low, but hot they're fine. On the porobability scale, evenutally things get cold enough that you're dead no matter what. If any one varible will kill the lizxard, it doesn't matter what the other variables are doing. That's an interaction. No matter how much food you give it, it's going to die if it's really cold. You want your model to do this."}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If you like to think about the rate of change in a linear regression, you take a partial slope. Do this with any GLM, and the chain rule kicks in. And you get a much less nice expression. In a logistic regression, that's the equation. If you take the partial derivative, you get this thing in teh right That's the rate of change. "}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's move into doing some good work. We'll model some counts of events. What the Bionimal distriibution for? Counts of success out of trials. There's some constant expected value condtioinal on a set of predictor variables. Under those conditions the maxent distribution is binomial. "}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The expected value is $np$. Note the variance is related to the expected value. In general, the Guassian is the only distrubiton where the mean and the variance are independent. With all others, if the mean gets big, so does the variance. "}
+knitr::include_graphics(file.path(slides_dir, '40.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So we're going to plug a linear model and attach it to $p$."}
+knitr::include_graphics(file.path(slides_dir, '41.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="On the horizontal I have some predictor $x$. What are the log odds? The log of $p$. "}
+knitr::include_graphics(file.path(slides_dir, '42.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If you do this, there's a really nice mapping onto the probability scale, where x is linear on the log odds scale, and constrained to the (0,1) internval on teh probability scale. This arises from the maxent derivation of the binomial distribution. In machine learnign they call it the maxent classifier."}
+knitr::include_graphics(file.path(slides_dir, '43.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Logit means 'log odds'. $p$ is the probaility scale.  "}
+knitr::include_graphics(file.path(slides_dir, '44.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '45.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '46.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '47.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="It really is just log odds. If you measure stuff in odds, you can measure things really well. Log odds are just the log of the odds. That's linear. How do you get back to the linear scale? Solve for $p$. "}
+knitr::include_graphics(file.path(slides_dir, '48.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is the conventional way to link, because it has lots of good mathematical properties."}
+knitr::include_graphics(file.path(slides_dir, '49.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="For intuition, you want to relate the two scales. Horizontal is probability. Vertical is log-odds. Log odds 0 is equal chance. There's this compression effect, so you need some scale. Log odds of -1 is 1/4. This is really important for defining priors. "}
+knitr::include_graphics(file.path(slides_dir, '50.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We use this thing because its the natural link within the probability formula. It arises naturally in the derivation of the distribution. Big and legitimate links. If you have a scientific model, you can derive the link automatically. "}
+knitr::include_graphics(file.path(slides_dir, '51.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Example dataset. Imagien you're a chimp on the close side. If you pull a lever, it's expand out on both sides. There may or may not be food in both trays. If you pull the right, they other chimp will get the snack too. Interested in whetehr chimps care about this distinction. It's not enough to do the experiment. They might pull the right because there's more food there. One of the treatments is to remove the partner from the other end. Also chimpanzees are handed, so you have to adjust for that. BUt you want to know the differnce - do they pulll the prosocial option more if there's a chimp on the other end. "}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Alone with no other chimp. Prosocial and asocial option is balanced across left and right. We want to predict the outcome as a function of the condition -the total treatment. "}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Four possible distinct unordered treatments. Wnat to estimate the tendency to pull the lever. The linear model on teh left is the Binomial. $\alpha$ measures handedness. Then we have a vector of four $\\beta$ parameters$, one for each treatment. Note that the Bernoullli is just the Binomial with one trial."}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="How to do priors? They behave in GLMs in very unpredictable ways. So need to do prior simulation. Let's consider a skeletal verison of Bionmal regression where the linear model is some alpha, some intercept, the avberage log odds across all trials. What kind of prior to set on that. Let's set a Gaussian. Centered on a half. But what about the scale? What happens when you pick $\omega$."}
+knitr::include_graphics(file.path(slides_dir, '55.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's try with $''omega = 10$. "}
+knitr::include_graphics(file.path(slides_dir, '56.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What happens is we have the prior proabability scale. THe black density curve is the prior hwere you assign alpha the normal 0,10. Because a Gaussian distribution has huge amount of mass beyond absolute 3. Most of the mass is outside the extremes. Because the range of the log-odds scale is -4,4. So when you change it to the probabilty scale, it puts a lot of probability in the tails. We can adopt this heuritsitc postiion of having something flat, which is normal with omega of 1.5"}
+knitr::include_graphics(file.path(slides_dir, '57.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Next we'll talk about slopes."}
+knitr::include_graphics(file.path(slides_dir, '58.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '59.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '60.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '61.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '62.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '63.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '64.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '65.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '66.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '67.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '68.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '69.png'))
+```
+
+

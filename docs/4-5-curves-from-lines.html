@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-15" />
+<meta name="date" content="2021-05-26" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -138,10 +138,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
 <li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
-<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+</ul></li>
 <li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
 </ul>
 </div>
 </div>
@@ -274,16 +280,6 @@ In this example, you had that outside of the range below the range. But this can
 </p>
 </div>
 <p><strong><em>4.5.2 Splines</em></strong></p>
-<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="4-5-curves-from-lines.html#cb192-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
-<span id="cb192-2"><a href="4-5-curves-from-lines.html#cb192-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cherry_blossoms)</span>
-<span id="cb192-3"><a href="4-5-curves-from-lines.html#cb192-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> cherry_blossoms</span>
-<span id="cb192-4"><a href="4-5-curves-from-lines.html#cb192-4" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(d)</span></code></pre></div>
-<pre><code>##                   mean          sd      5.5%      94.5%       histogram
-## year       1408.000000 350.8845964 867.77000 1948.23000   ▇▇▇▇▇▇▇▇▇▇▇▇▁
-## doy         104.540508   6.4070362  94.43000  115.00000        ▁▂▅▇▇▃▁▁
-## temp          6.141886   0.6636479   5.15000    7.29470        ▁▃▅▇▃▂▁▁
-## temp_upper    7.185151   0.9929206   5.89765    8.90235 ▁▂▅▇▇▅▂▂▁▁▁▁▁▁▁
-## temp_lower    5.098941   0.8503496   3.78765    6.37000 ▁▁▁▁▁▁▁▃▅▇▃▂▁▁▁</code></pre>
 <div class="figure">
 <img src="slides/L04/31.png" alt="A common alternative is another geocentric model, which is also satisfying because it's born from a physical system used to do the same thing. A spline is this metal bar on the draftsman's table. It bends the line to allow drafters to draw smooth curves. This things still exist. The spline is the bar, and the weights are anchors, *knots*." width="80%" />
 <p class="caption marginnote shownote">
@@ -308,6 +304,16 @@ Again, it’s a linear model, an additive equation for <span class="math inline"
 New example. Let’s find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there’s a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data.
 </p>
 </div>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="4-5-curves-from-lines.html#cb192-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb192-2"><a href="4-5-curves-from-lines.html#cb192-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cherry_blossoms)</span>
+<span id="cb192-3"><a href="4-5-curves-from-lines.html#cb192-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> cherry_blossoms</span>
+<span id="cb192-4"><a href="4-5-curves-from-lines.html#cb192-4" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(d)</span></code></pre></div>
+<pre><code>##                   mean          sd      5.5%      94.5%       histogram
+## year       1408.000000 350.8845964 867.77000 1948.23000   ▇▇▇▇▇▇▇▇▇▇▇▇▁
+## doy         104.540508   6.4070362  94.43000  115.00000        ▁▂▅▇▇▃▁▁
+## temp          6.141886   0.6636479   5.15000    7.29470        ▁▃▅▇▃▂▁▁
+## temp_upper    7.185151   0.9929206   5.89765    8.90235 ▁▂▅▇▇▅▂▂▁▁▁▁▁▁▁
+## temp_lower    5.098941   0.8503496   3.78765    6.37000 ▁▁▁▁▁▁▁▃▅▇▃▂▁▁▁</code></pre>
 <div class="figure">
 <img src="slides/L04/35.png" alt="1215 observations. Earliest date is little after 800. A few gaps. Earlier dates are getting temps from tree rings. Wiggles a lot. You can see there's overlap. You'll recognise the end of this trend. Our goal is to de-trend this temperature record. We want to look at micro-deviations. " width="80%" />
 <p class="caption marginnote shownote">
@@ -332,12 +338,45 @@ Start with just 5 knots at equal quantiles. Large literature on this. Nice becau
 Let’s think about construction of these synthetic variables. Think of year. We’ll never use them again. The knots are anchored at year, but then they’re gone. Start with a degree 1 basis function (i.e. straight line). Wiggly function composed of straight line. Focus on the one in red. Basis fucntion 4 has its maximum value at the fourth knot. Only basis function with a non-zero value at that location. It’s weight is determining the position of the spline at that point. As you move away, there are two basis functions that are turning on. Each of them have they’re own precious parameter value. When you get to higher degress, they’ll be curves. At any particular point (except at a knot), two of these basis functions will determine the value.
 </p>
 </div>
+<p>Let’s use 15 knots:</p>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="4-5-curves-from-lines.html#cb194-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> d[ <span class="fu">complete.cases</span>(d<span class="sc">$</span>doy) , ] <span class="co"># complete cases on doy</span></span>
+<span id="cb194-2"><a href="4-5-curves-from-lines.html#cb194-2" aria-hidden="true" tabindex="-1"></a>num_knots <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb194-3"><a href="4-5-curves-from-lines.html#cb194-3" aria-hidden="true" tabindex="-1"></a>knot_list <span class="ot">&lt;-</span> <span class="fu">quantile</span>( d2<span class="sc">$</span>year , <span class="at">probs=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length.out=</span>num_knots) )</span></code></pre></div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="4-5-curves-from-lines.html#cb195-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> splines<span class="sc">::</span><span class="fu">bs</span>(d2<span class="sc">$</span>year,</span>
+<span id="cb195-2"><a href="4-5-curves-from-lines.html#cb195-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">knots=</span>knot_list[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,num_knots)] ,</span>
+<span id="cb195-3"><a href="4-5-curves-from-lines.html#cb195-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree=</span><span class="dv">3</span> , <span class="at">intercept=</span><span class="cn">TRUE</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="4-5-curves-from-lines.html#cb196-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">range</span>(d2<span class="sc">$</span>year) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>) , <span class="at">xlab=</span><span class="st">&quot;year&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;basis&quot;</span> )</span>
+<span id="cb196-2"><a href="4-5-curves-from-lines.html#cb196-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(B) ) <span class="fu">lines</span>( d2<span class="sc">$</span>year , B[,i] )</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.75-1.svg" width="672" /></p>
+<p>This is the first time we’ve used an <strong>exponential distribution</strong> as a prior. They’re useful priors for scale parameters, parameters that must be positive. We’ll use exponential priors for the rest of the book, in place of uniform priors. They way to read an exponential distribution is to think of it as containing just an average deviation, which is inverse of the rate.</p>
 <div class="figure">
 <img src="slides/L04/39.png" alt="The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that's why they call it a penalty. You want one so that you don't *overfit*. " width="80%" />
 <p class="caption marginnote shownote">
 The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that’s why they call it a penalty. You want one so that you don’t <em>overfit</em>.
 </p>
 </div>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="4-5-curves-from-lines.html#cb197-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.7</span> <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb197-2"><a href="4-5-curves-from-lines.html#cb197-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb197-3"><a href="4-5-curves-from-lines.html#cb197-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb197-4"><a href="4-5-curves-from-lines.html#cb197-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> B <span class="sc">%*%</span> w ,</span>
+<span id="cb197-5"><a href="4-5-curves-from-lines.html#cb197-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">100</span>,<span class="dv">10</span>),</span>
+<span id="cb197-6"><a href="4-5-curves-from-lines.html#cb197-6" aria-hidden="true" tabindex="-1"></a>    w <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>),</span>
+<span id="cb197-7"><a href="4-5-curves-from-lines.html#cb197-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb197-8"><a href="4-5-curves-from-lines.html#cb197-8" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span><span class="fu">list</span>( <span class="at">D=</span>d2<span class="sc">$</span>doy , <span class="at">B=</span>B ) ,</span>
+<span id="cb197-9"><a href="4-5-curves-from-lines.html#cb197-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="fu">list</span>( <span class="at">w=</span><span class="fu">rep</span>( <span class="dv">0</span> , <span class="fu">ncol</span>(B) ) ) )</span></code></pre></div>
+<p>Then plot the posterior predictions:</p>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="4-5-curves-from-lines.html#cb198-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>( m4<span class="fl">.7</span> )</span>
+<span id="cb198-2"><a href="4-5-curves-from-lines.html#cb198-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">apply</span>( post<span class="sc">$</span>w , <span class="dv">2</span> , mean )</span>
+<span id="cb198-3"><a href="4-5-curves-from-lines.html#cb198-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">range</span>(d2<span class="sc">$</span>year) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">6</span>) ,</span>
+<span id="cb198-4"><a href="4-5-curves-from-lines.html#cb198-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="st">&quot;year&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;basis * weight&quot;</span> )</span>
+<span id="cb198-5"><a href="4-5-curves-from-lines.html#cb198-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(B) ) <span class="fu">lines</span>( d2<span class="sc">$</span>year , w[i]<span class="sc">*</span>B[,i] )</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.77-1.svg" width="672" /></p>
+<p>Finally, the 97% posterior interval for <span class="math inline">\(\mu\)</span>.</p>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="4-5-curves-from-lines.html#cb199-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m4<span class="fl">.7</span> )</span>
+<span id="cb199-2"><a href="4-5-curves-from-lines.html#cb199-2" aria-hidden="true" tabindex="-1"></a>mu_PI <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,PI,<span class="fl">0.97</span>)</span>
+<span id="cb199-3"><a href="4-5-curves-from-lines.html#cb199-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( d2<span class="sc">$</span>year , d2<span class="sc">$</span>doy , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.3</span>) , <span class="at">pch=</span><span class="dv">16</span>)</span>
+<span id="cb199-4"><a href="4-5-curves-from-lines.html#cb199-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu_PI , d2<span class="sc">$</span>year , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.5</span>) )</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.78-1.svg" width="672" /></p>
 <div class="figure">
 <img src="slides/L04/40.png" alt="Repeating the equation for $mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature." width="80%" />
 <p class="caption marginnote shownote">
@@ -368,6 +407,17 @@ Here’s with 50 samples from the posterior distribution. There’s all this wig
 Now when we add them, we get a pretty wiggly line. The amount of wiggliness depends on your scale of interest. Play around with the knots and degree and priors.
 </p>
 </div>
+<p>Can do the same thing with matrix multiplication</p>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="4-5-curves-from-lines.html#cb200-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.7</span>alt <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb200-2"><a href="4-5-curves-from-lines.html#cb200-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb200-3"><a href="4-5-curves-from-lines.html#cb200-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb200-4"><a href="4-5-curves-from-lines.html#cb200-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">827</span> , <span class="cf">function</span>(i) <span class="fu">sum</span>( B[i,]<span class="sc">*</span>w ) ) ,</span>
+<span id="cb200-5"><a href="4-5-curves-from-lines.html#cb200-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">100</span>,<span class="dv">1</span>),</span>
+<span id="cb200-6"><a href="4-5-curves-from-lines.html#cb200-6" aria-hidden="true" tabindex="-1"></a>    w <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>),</span>
+<span id="cb200-7"><a href="4-5-curves-from-lines.html#cb200-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb200-8"><a href="4-5-curves-from-lines.html#cb200-8" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb200-9"><a href="4-5-curves-from-lines.html#cb200-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span><span class="fu">list</span>( <span class="at">D=</span>d2<span class="sc">$</span>doy , <span class="at">B=</span>B ) ,</span>
+<span id="cb200-10"><a href="4-5-curves-from-lines.html#cb200-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="fu">list</span>( <span class="at">w=</span><span class="fu">rep</span>( <span class="dv">0</span> , <span class="fu">ncol</span>(B) ) ) )</span></code></pre></div>
 <div class="figure">
 <img src="slides/L04/45.png" alt="Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year." width="80%" />
 <p class="caption marginnote shownote">
@@ -375,12 +425,10 @@ Lots of different methods. There are ways of doing Bayesian splines where the nu
 </p>
 </div>
 <p><img src="slides/L04/46.png" width="80%" /></p>
-
 </div>
-<!-- </div> -->
 <p style="text-align: center;">
 <a href="4-4-linear-prediction.html"><button class="btn btn-default">Previous</button></a>
-<a href="5-the-many-variables-the-spurious-waffles.html"><button class="btn btn-default">Next</button></a>
+<a href="4-6-practice-1.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>

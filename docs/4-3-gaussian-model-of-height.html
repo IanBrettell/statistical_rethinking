@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-15" />
+<meta name="date" content="2021-05-26" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -138,10 +138,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
 <li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
-<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+</ul></li>
 <li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
 </ul>
 </div>
 </div>
@@ -329,9 +335,9 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 </p>
 </div>
 <div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="4-3-gaussian-model-of-height.html#cb129-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">precis</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
-<pre><code>##            mean        sd       5.5%      94.5%
-## mu    154.60699 0.4119961 153.948541 155.265440
-## sigma   7.73136 0.2913886   7.265665   8.197055</code></pre>
+<pre><code>##             mean        sd       5.5%      94.5%
+## mu    154.606995 0.4119934 153.948550 155.265440
+## sigma   7.731309 0.2913838   7.265622   8.196997</code></pre>
 <p>These numbers provide Gaussian approximations for each parameter’s <em>marginal</em> distribution, meaning the plausibility of each value of <span class="math inline">\(\mu\)</span> after averaging over the plausibilities of each value of <span class="math inline">\(\sigma\)</span>.</p>
 <p><code>quap</code> estimates the posterior by climbing it like a hill. To do this, it has to start climbing someplace, at some combination of parameter values. But it’s possible to specify a starting value</p>
 <div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="4-3-gaussian-model-of-height.html#cb131-1" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
@@ -349,7 +355,7 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 <span id="cb132-7"><a href="4-3-gaussian-model-of-height.html#cb132-7" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m4<span class="fl">.2</span> )</span></code></pre></div>
 <pre><code>##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51756 0.9289233  23.03296  26.00216</code></pre>
+## sigma  24.51757 0.9289236  23.03297  26.00216</code></pre>
 <p><strong><em>4.3.6 Sampling from a <code>quap</code></em></strong></p>
 <p>To this the matrix of variances and covariances among all paris of parameters:</p>
 <div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="4-3-gaussian-model-of-height.html#cb134-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">vcov</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
@@ -369,16 +375,16 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 <div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="4-3-gaussian-model-of-height.html#cb140-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">extract.samples</span>(m4<span class="fl">.1</span>, <span class="at">n =</span> <span class="fl">1e4</span>)</span>
 <span id="cb140-2"><a href="4-3-gaussian-model-of-height.html#cb140-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(post)</span></code></pre></div>
 <pre><code>##         mu    sigma
-## 1 154.6455 7.605080
-## 2 154.7809 7.733258
-## 3 154.8998 7.414985
-## 4 155.2177 7.624417
-## 5 153.4681 7.343153
-## 6 154.1538 7.727733</code></pre>
+## 1 154.8512 7.723557
+## 2 155.1297 8.064942
+## 3 154.0598 6.999181
+## 4 154.6686 7.799261
+## 5 154.8335 7.966827
+## 6 154.8159 7.668216</code></pre>
 <div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="4-3-gaussian-model-of-height.html#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(post)</span></code></pre></div>
-<pre><code>##             mean        sd       5.5%      94.5%     histogram
-## mu    154.607094 0.4152618 153.937473 155.272450      ▁▁▁▅▇▂▁▁
-## sigma   7.731445 0.2889114   7.272382   8.189212 ▁▁▁▂▅▇▇▃▁▁▁▁▁</code></pre>
+<pre><code>##             mean        sd       5.5%      94.5%    histogram
+## mu    154.606137 0.4140252 153.949236 155.262547     ▁▁▁▅▇▂▁▁
+## sigma   7.728491 0.2897498   7.264243   8.191132 ▁▁▁▁▂▅▇▇▃▁▁▁</code></pre>
 <p>Here’s a peak under the motor of <code>extract.samples</code>:</p>
 <div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="4-3-gaussian-model-of-height.html#cb144-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="fl">1e4</span>, <span class="at">mu =</span> <span class="fu">coef</span>(m4<span class="fl">.1</span>), <span class="at">Sigma =</span> <span class="fu">vcov</span>(m4<span class="fl">.1</span>))</span></code></pre></div>
 <div class="figure">
