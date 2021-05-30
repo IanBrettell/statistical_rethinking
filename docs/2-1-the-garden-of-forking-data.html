@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -192,12 +192,11 @@ You can just update your previous count by mulitplying your previous counts, bec
 </p>
 </div>
 <div class="figure">
-<img src="slides/L01/43.png" alt="You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply." width="80%" />
+<img src="slides/L01/43.png" alt="You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply. The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability." width="80%" />
 <p class="caption marginnote shownote">
-You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply.
+You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply. The goal is to understand what’s happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability.
 </p>
 </div>
-<pre class="marginfigure"><code>The goal is to understand what&#39;s happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability.</code></pre>
 <div class="figure">
 <img src="slides/L01/44.png" alt="The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with." width="80%" />
 <p class="caption marginnote shownote">
@@ -205,8 +204,8 @@ The counts get big really quickly due to combinatorics, so you normalise them be
 </p>
 </div>
 <p><img src="slides/L01/45.png" width="80%" /></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="2-1-the-garden-of-forking-data.html#cb9-1" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">0</span>)</span>
-<span id="cb9-2"><a href="2-1-the-garden-of-forking-data.html#cb9-2" aria-hidden="true" tabindex="-1"></a>ways<span class="sc">/</span><span class="fu">sum</span>(ways)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="2-1-the-garden-of-forking-data.html#cb8-1" aria-hidden="true" tabindex="-1"></a>ways <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">0</span>)</span>
+<span id="cb8-2"><a href="2-1-the-garden-of-forking-data.html#cb8-2" aria-hidden="true" tabindex="-1"></a>ways<span class="sc">/</span><span class="fu">sum</span>(ways)</span></code></pre></div>
 <pre><code>## [1] 0.00 0.15 0.40 0.45 0.00</code></pre>
 </div>
 <p style="text-align: center;">

@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -164,24 +164,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 These height data come from Nancy Howell’s data. <code>Howell1</code> is a simplified dataset. We’ll focus just on adult heights at the moment.
 </p>
 </div>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="4-3-gaussian-model-of-height.html#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Howell1)</span>
-<span id="cb100-2"><a href="4-3-gaussian-model-of-height.html#cb100-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">=</span> Howell1</span></code></pre></div>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="4-3-gaussian-model-of-height.html#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(d)</span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="4-3-gaussian-model-of-height.html#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Howell1)</span>
+<span id="cb99-2"><a href="4-3-gaussian-model-of-height.html#cb99-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">=</span> Howell1</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="4-3-gaussian-model-of-height.html#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(d)</span></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    544 obs. of  4 variables:
 ##  $ height: num  152 140 137 157 145 ...
 ##  $ weight: num  47.8 36.5 31.9 53 41.3 ...
 ##  $ age   : num  63 63 65 41 51 35 32 27 19 54 ...
 ##  $ male  : int  1 0 0 1 0 1 0 1 0 1 ...</code></pre>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="4-3-gaussian-model-of-height.html#cb103-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">precis</span>(d)</span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="4-3-gaussian-model-of-height.html#cb102-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">precis</span>(d)</span></code></pre></div>
 <pre><code>##               mean         sd      5.5%     94.5%     histogram
 ## height 138.2635963 27.6024476 81.108550 165.73500 ▁▁▁▁▁▁▁▂▁▇▇▅▁
 ## weight  35.6106176 14.7191782  9.360721  54.50289 ▁▂▃▂▂▂▂▅▇▇▃▂▁
 ## age     29.3443934 20.7468882  1.000000  66.13500     ▇▅▅▃▅▂▂▁▁
 ## male     0.4724265  0.4996986  0.000000   1.00000    ▇▁▁▁▁▁▁▁▁▇</code></pre>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="4-3-gaussian-model-of-height.html#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(d<span class="sc">$</span>height)</span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="4-3-gaussian-model-of-height.html#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(d<span class="sc">$</span>height)</span></code></pre></div>
 <pre><code>## [1] 151.765 139.700 136.525 156.845 145.415 163.830</code></pre>
 <p>Filter for adults:</p>
-<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="4-3-gaussian-model-of-height.html#cb107-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">=</span> d[d<span class="sc">$</span>age <span class="sc">&gt;=</span> <span class="dv">18</span>, ]</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="4-3-gaussian-model-of-height.html#cb106-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">=</span> d[d<span class="sc">$</span>age <span class="sc">&gt;=</span> <span class="dv">18</span>, ]</span></code></pre></div>
 <p><strong><em>4.3.2 The model</em></strong></p>
 <div class="figure">
 <img src="slides/L03/24.png" alt="Here's the distribution of height data. $h$ is distributed normally." width="80%" />
@@ -202,10 +202,10 @@ Because this is Bayesian, they have prior distributions. Using 187 cm (height of
 </p>
 </div>
 <p>Whatever the prior, it’s a very good idea to plot your priors:</p>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="4-3-gaussian-model-of-height.html#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dnorm</span>(x, <span class="dv">178</span>, <span class="dv">20</span>), <span class="at">from =</span> <span class="dv">100</span>, <span class="at">to =</span> <span class="dv">250</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="4-3-gaussian-model-of-height.html#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dnorm</span>(x, <span class="dv">178</span>, <span class="dv">20</span>), <span class="at">from =</span> <span class="dv">100</span>, <span class="at">to =</span> <span class="dv">250</span>)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.12-1.svg" width="672" /></p>
 <p>The <span class="math inline">\(\sigma\)</span> prior is a truly flat prior.</p>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="4-3-gaussian-model-of-height.html#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dunif</span>(x, <span class="dv">0</span>, <span class="dv">50</span>), <span class="at">from =</span> <span class="sc">-</span><span class="dv">10</span>, <span class="at">to =</span> <span class="dv">60</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="4-3-gaussian-model-of-height.html#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dunif</span>(x, <span class="dv">0</span>, <span class="dv">50</span>), <span class="at">from =</span> <span class="sc">-</span><span class="dv">10</span>, <span class="at">to =</span> <span class="dv">60</span>)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.13-1.svg" width="672" /></p>
 <p>A standard deviation like <span class="math inline">\(\sigma\)</span> must be positive, so bounding it at zero makes sense.</p>
 <div class="figure">
@@ -214,16 +214,16 @@ Because this is Bayesian, they have prior distributions. Using 187 cm (height of
 Before your model has seen the data. This is not p-hacking, because we’re not using the data. We’re using scientific information. All you have to sample values.
 </p>
 </div>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="4-3-gaussian-model-of-height.html#cb110-1" aria-hidden="true" tabindex="-1"></a>sample_mu <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, <span class="dv">178</span>, <span class="dv">20</span>)</span>
-<span id="cb110-2"><a href="4-3-gaussian-model-of-height.html#cb110-2" aria-hidden="true" tabindex="-1"></a>sample_sigma <span class="ot">=</span> <span class="fu">runif</span>(<span class="fl">1e4</span>, <span class="dv">0</span>, <span class="dv">50</span>)</span>
-<span id="cb110-3"><a href="4-3-gaussian-model-of-height.html#cb110-3" aria-hidden="true" tabindex="-1"></a>prior_h <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, sample_mu, sample_sigma)</span>
-<span id="cb110-4"><a href="4-3-gaussian-model-of-height.html#cb110-4" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(prior_h)</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="4-3-gaussian-model-of-height.html#cb109-1" aria-hidden="true" tabindex="-1"></a>sample_mu <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, <span class="dv">178</span>, <span class="dv">20</span>)</span>
+<span id="cb109-2"><a href="4-3-gaussian-model-of-height.html#cb109-2" aria-hidden="true" tabindex="-1"></a>sample_sigma <span class="ot">=</span> <span class="fu">runif</span>(<span class="fl">1e4</span>, <span class="dv">0</span>, <span class="dv">50</span>)</span>
+<span id="cb109-3"><a href="4-3-gaussian-model-of-height.html#cb109-3" aria-hidden="true" tabindex="-1"></a>prior_h <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, sample_mu, sample_sigma)</span>
+<span id="cb109-4"><a href="4-3-gaussian-model-of-height.html#cb109-4" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(prior_h)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.14-1.svg" width="672" /></p>
 <p>This is not a normal distribution. It’s a t-distribution because you have uncertainty about variance, which gives it fat tails. There are some really really tall individuals in this prior. But at least we don’t have any negative heights.</p>
 <p>Let’s see the implied heights with a flatter and less informative prior for <span class="math inline">\(\mu\)</span>.:</p>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="4-3-gaussian-model-of-height.html#cb111-1" aria-hidden="true" tabindex="-1"></a>sample_mu <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, <span class="dv">178</span>, <span class="dv">100</span>)</span>
-<span id="cb111-2"><a href="4-3-gaussian-model-of-height.html#cb111-2" aria-hidden="true" tabindex="-1"></a>prior_h <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, sample_mu, sample_sigma)</span>
-<span id="cb111-3"><a href="4-3-gaussian-model-of-height.html#cb111-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(prior_h)</span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="4-3-gaussian-model-of-height.html#cb110-1" aria-hidden="true" tabindex="-1"></a>sample_mu <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, <span class="dv">178</span>, <span class="dv">100</span>)</span>
+<span id="cb110-2"><a href="4-3-gaussian-model-of-height.html#cb110-2" aria-hidden="true" tabindex="-1"></a>prior_h <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="fl">1e4</span>, sample_mu, sample_sigma)</span>
+<span id="cb110-3"><a href="4-3-gaussian-model-of-height.html#cb110-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(prior_h)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.15-1.svg" width="672" /></p>
 <p>Before it even sees the data, it expects 4% of people to have negative height, and also some giants. Does it matter? In this case we have so much data that the silly prior is harmless. But that won’t always be the case. There are plenty of inference problems for which the data alone are not sufficient, no matter how numerous. Bayes lets us proceed in these cases, but only if we use our scientific knowledge to construct sensible priors. <em>The important thing is that your prior not be based on the values in the data, but only on what you know about the data before you see it.</em></p>
 <p>Let’s use a different prior.</p>
@@ -247,34 +247,34 @@ Once you start working with mixed models, the priors have a greater effect, so i
 </p>
 </div>
 <p>Here are the guts of the golem:</p>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="4-3-gaussian-model-of-height.html#cb112-1" aria-hidden="true" tabindex="-1"></a>mu.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">150</span>, <span class="at">to=</span><span class="dv">160</span> , <span class="at">length.out=</span><span class="dv">100</span> )</span>
-<span id="cb112-2"><a href="4-3-gaussian-model-of-height.html#cb112-2" aria-hidden="true" tabindex="-1"></a>sigma.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">7</span> , <span class="at">to=</span><span class="dv">9</span> , <span class="at">length.out=</span><span class="dv">100</span> )</span>
-<span id="cb112-3"><a href="4-3-gaussian-model-of-height.html#cb112-3" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>( <span class="at">mu=</span>mu.list , <span class="at">sigma=</span>sigma.list )</span>
-<span id="cb112-4"><a href="4-3-gaussian-model-of-height.html#cb112-4" aria-hidden="true" tabindex="-1"></a>post<span class="sc">$</span>LL <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post) , <span class="cf">function</span>(i) <span class="fu">sum</span>(</span>
-<span id="cb112-5"><a href="4-3-gaussian-model-of-height.html#cb112-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( d2<span class="sc">$</span>height , post<span class="sc">$</span>mu[i] , post<span class="sc">$</span>sigma[i] , <span class="at">log=</span><span class="cn">TRUE</span> ) ) )</span>
-<span id="cb112-6"><a href="4-3-gaussian-model-of-height.html#cb112-6" aria-hidden="true" tabindex="-1"></a>post<span class="sc">$</span>prod <span class="ot">&lt;-</span> post<span class="sc">$</span>LL <span class="sc">+</span> <span class="fu">dnorm</span>( post<span class="sc">$</span>mu , <span class="dv">178</span> , <span class="dv">20</span> , <span class="cn">TRUE</span> ) <span class="sc">+</span></span>
-<span id="cb112-7"><a href="4-3-gaussian-model-of-height.html#cb112-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dunif</span>( post<span class="sc">$</span>sigma , <span class="dv">0</span> , <span class="dv">50</span> , <span class="cn">TRUE</span> )</span>
-<span id="cb112-8"><a href="4-3-gaussian-model-of-height.html#cb112-8" aria-hidden="true" tabindex="-1"></a>post<span class="sc">$</span>prob <span class="ot">&lt;-</span> <span class="fu">exp</span>( post<span class="sc">$</span>prod <span class="sc">-</span> <span class="fu">max</span>(post<span class="sc">$</span>prod) )</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="4-3-gaussian-model-of-height.html#cb111-1" aria-hidden="true" tabindex="-1"></a>mu.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">150</span>, <span class="at">to=</span><span class="dv">160</span> , <span class="at">length.out=</span><span class="dv">100</span> )</span>
+<span id="cb111-2"><a href="4-3-gaussian-model-of-height.html#cb111-2" aria-hidden="true" tabindex="-1"></a>sigma.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">7</span> , <span class="at">to=</span><span class="dv">9</span> , <span class="at">length.out=</span><span class="dv">100</span> )</span>
+<span id="cb111-3"><a href="4-3-gaussian-model-of-height.html#cb111-3" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>( <span class="at">mu=</span>mu.list , <span class="at">sigma=</span>sigma.list )</span>
+<span id="cb111-4"><a href="4-3-gaussian-model-of-height.html#cb111-4" aria-hidden="true" tabindex="-1"></a>post<span class="sc">$</span>LL <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post) , <span class="cf">function</span>(i) <span class="fu">sum</span>(</span>
+<span id="cb111-5"><a href="4-3-gaussian-model-of-height.html#cb111-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dnorm</span>( d2<span class="sc">$</span>height , post<span class="sc">$</span>mu[i] , post<span class="sc">$</span>sigma[i] , <span class="at">log=</span><span class="cn">TRUE</span> ) ) )</span>
+<span id="cb111-6"><a href="4-3-gaussian-model-of-height.html#cb111-6" aria-hidden="true" tabindex="-1"></a>post<span class="sc">$</span>prod <span class="ot">&lt;-</span> post<span class="sc">$</span>LL <span class="sc">+</span> <span class="fu">dnorm</span>( post<span class="sc">$</span>mu , <span class="dv">178</span> , <span class="dv">20</span> , <span class="cn">TRUE</span> ) <span class="sc">+</span></span>
+<span id="cb111-7"><a href="4-3-gaussian-model-of-height.html#cb111-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dunif</span>( post<span class="sc">$</span>sigma , <span class="dv">0</span> , <span class="dv">50</span> , <span class="cn">TRUE</span> )</span>
+<span id="cb111-8"><a href="4-3-gaussian-model-of-height.html#cb111-8" aria-hidden="true" tabindex="-1"></a>post<span class="sc">$</span>prob <span class="ot">&lt;-</span> <span class="fu">exp</span>( post<span class="sc">$</span>prod <span class="sc">-</span> <span class="fu">max</span>(post<span class="sc">$</span>prod) )</span></code></pre></div>
 <p>Inspect the posterior distribution</p>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="4-3-gaussian-model-of-height.html#cb113-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">contour_xyz</span>(post<span class="sc">$</span>mu, post<span class="sc">$</span>sigma, post<span class="sc">$</span>prob)</span></code></pre></div>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="4-3-gaussian-model-of-height.html#cb112-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">contour_xyz</span>(post<span class="sc">$</span>mu, post<span class="sc">$</span>sigma, post<span class="sc">$</span>prob)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.17-1.svg" width="672" /></p>
-<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="4-3-gaussian-model-of-height.html#cb114-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">image_xyz</span>(post<span class="sc">$</span>mu, post<span class="sc">$</span>sigma, post<span class="sc">$</span>prob)</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="4-3-gaussian-model-of-height.html#cb113-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">image_xyz</span>(post<span class="sc">$</span>mu, post<span class="sc">$</span>sigma, post<span class="sc">$</span>prob)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.18-1.svg" width="672" /></p>
 <p><strong><em>4.3.4 Sampling from the posterior</em></strong></p>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="4-3-gaussian-model-of-height.html#cb115-1" aria-hidden="true" tabindex="-1"></a>sample.rows <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post) , <span class="at">size=</span><span class="fl">1e4</span> , <span class="at">replace=</span><span class="cn">TRUE</span> , <span class="at">prob=</span>post<span class="sc">$</span>prob )</span>
-<span id="cb115-2"><a href="4-3-gaussian-model-of-height.html#cb115-2" aria-hidden="true" tabindex="-1"></a>sample.mu <span class="ot">&lt;-</span> post<span class="sc">$</span>mu[ sample.rows ]</span>
-<span id="cb115-3"><a href="4-3-gaussian-model-of-height.html#cb115-3" aria-hidden="true" tabindex="-1"></a>sample.sigma <span class="ot">&lt;-</span> post<span class="sc">$</span>sigma[ sample.rows ]</span></code></pre></div>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="4-3-gaussian-model-of-height.html#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( sample.mu , sample.sigma , <span class="at">cex=</span><span class="fl">0.5</span> , <span class="at">pch=</span><span class="dv">16</span> , <span class="at">col=</span>rethinking<span class="sc">::</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.1</span>) )</span></code></pre></div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="4-3-gaussian-model-of-height.html#cb114-1" aria-hidden="true" tabindex="-1"></a>sample.rows <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post) , <span class="at">size=</span><span class="fl">1e4</span> , <span class="at">replace=</span><span class="cn">TRUE</span> , <span class="at">prob=</span>post<span class="sc">$</span>prob )</span>
+<span id="cb114-2"><a href="4-3-gaussian-model-of-height.html#cb114-2" aria-hidden="true" tabindex="-1"></a>sample.mu <span class="ot">&lt;-</span> post<span class="sc">$</span>mu[ sample.rows ]</span>
+<span id="cb114-3"><a href="4-3-gaussian-model-of-height.html#cb114-3" aria-hidden="true" tabindex="-1"></a>sample.sigma <span class="ot">&lt;-</span> post<span class="sc">$</span>sigma[ sample.rows ]</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="4-3-gaussian-model-of-height.html#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( sample.mu , sample.sigma , <span class="at">cex=</span><span class="fl">0.5</span> , <span class="at">pch=</span><span class="dv">16</span> , <span class="at">col=</span>rethinking<span class="sc">::</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.1</span>) )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.20-1.svg" width="672" /></p>
-<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="4-3-gaussian-model-of-height.html#cb117-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(sample.mu)</span></code></pre></div>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="4-3-gaussian-model-of-height.html#cb116-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(sample.mu)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.21-1.svg" width="672" /></p>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="4-3-gaussian-model-of-height.html#cb118-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(sample.sigma)</span></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="4-3-gaussian-model-of-height.html#cb117-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(sample.sigma)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.21-2.svg" width="672" /></p>
 <p>Summarise the widths:</p>
-<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="4-3-gaussian-model-of-height.html#cb119-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(sample.mu)</span></code></pre></div>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="4-3-gaussian-model-of-height.html#cb118-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(sample.mu)</span></code></pre></div>
 <pre><code>##       5%      94% 
 ## 153.9394 155.2525</code></pre>
-<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="4-3-gaussian-model-of-height.html#cb121-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(sample.sigma)</span></code></pre></div>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="4-3-gaussian-model-of-height.html#cb120-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(sample.sigma)</span></code></pre></div>
 <pre><code>##       5%      94% 
 ## 7.323232 8.252525</code></pre>
 <div class="figure">
@@ -285,25 +285,25 @@ Once you have the samples, you just work with the data frame. You can look at cr
 </div>
 <p>Note that this isn’t perfectly symmetrical for sigma - the right tail is longer. This is almost always true for SD parameters. Why? Because you know something about the SD before you see the data: you know it’s positive. So you always have more uncertainty on the higher end.</p>
 <p>Let’s analyze only 20 of the heights from the height data to reveal this issue.</p>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="4-3-gaussian-model-of-height.html#cb123-1" aria-hidden="true" tabindex="-1"></a>d3 <span class="ot">=</span> <span class="fu">sample</span>(d2<span class="sc">$</span>height, <span class="at">size =</span> <span class="dv">20</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="4-3-gaussian-model-of-height.html#cb122-1" aria-hidden="true" tabindex="-1"></a>d3 <span class="ot">=</span> <span class="fu">sample</span>(d2<span class="sc">$</span>height, <span class="at">size =</span> <span class="dv">20</span>)</span></code></pre></div>
 <p>Now repeat the code from the previous subsection, modified to focus on the 20 heights in <code>d3</code> rather than the original data.</p>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="4-3-gaussian-model-of-height.html#cb124-1" aria-hidden="true" tabindex="-1"></a>mu.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">150</span>, <span class="at">to=</span><span class="dv">170</span> , <span class="at">length.out=</span><span class="dv">200</span> )</span>
-<span id="cb124-2"><a href="4-3-gaussian-model-of-height.html#cb124-2" aria-hidden="true" tabindex="-1"></a>sigma.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">4</span> , <span class="at">to=</span><span class="dv">20</span> , <span class="at">length.out=</span><span class="dv">200</span> )</span>
-<span id="cb124-3"><a href="4-3-gaussian-model-of-height.html#cb124-3" aria-hidden="true" tabindex="-1"></a>post2 <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>( <span class="at">mu=</span>mu.list , <span class="at">sigma=</span>sigma.list )</span>
-<span id="cb124-4"><a href="4-3-gaussian-model-of-height.html#cb124-4" aria-hidden="true" tabindex="-1"></a>post2<span class="sc">$</span>LL <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post2) , <span class="cf">function</span>(i)</span>
-<span id="cb124-5"><a href="4-3-gaussian-model-of-height.html#cb124-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>( <span class="fu">dnorm</span>( d3 , <span class="at">mean=</span>post2<span class="sc">$</span>mu[i] , <span class="at">sd=</span>post2<span class="sc">$</span>sigma[i] ,</span>
-<span id="cb124-6"><a href="4-3-gaussian-model-of-height.html#cb124-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">log=</span><span class="cn">TRUE</span> ) ) )</span>
-<span id="cb124-7"><a href="4-3-gaussian-model-of-height.html#cb124-7" aria-hidden="true" tabindex="-1"></a>post2<span class="sc">$</span>prod <span class="ot">&lt;-</span> post2<span class="sc">$</span>LL <span class="sc">+</span> <span class="fu">dnorm</span>( post2<span class="sc">$</span>mu , <span class="dv">178</span> , <span class="dv">20</span> , <span class="cn">TRUE</span> ) <span class="sc">+</span></span>
-<span id="cb124-8"><a href="4-3-gaussian-model-of-height.html#cb124-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dunif</span>( post2<span class="sc">$</span>sigma , <span class="dv">0</span> , <span class="dv">50</span> , <span class="cn">TRUE</span> )</span>
-<span id="cb124-9"><a href="4-3-gaussian-model-of-height.html#cb124-9" aria-hidden="true" tabindex="-1"></a>post2<span class="sc">$</span>prob <span class="ot">&lt;-</span> <span class="fu">exp</span>( post2<span class="sc">$</span>prod <span class="sc">-</span> <span class="fu">max</span>(post2<span class="sc">$</span>prod) )</span>
-<span id="cb124-10"><a href="4-3-gaussian-model-of-height.html#cb124-10" aria-hidden="true" tabindex="-1"></a>sample2.rows <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post2) , <span class="at">size=</span><span class="fl">1e4</span> , <span class="at">replace=</span><span class="cn">TRUE</span> , <span class="at">prob=</span>post2<span class="sc">$</span>prob )</span>
-<span id="cb124-11"><a href="4-3-gaussian-model-of-height.html#cb124-11" aria-hidden="true" tabindex="-1"></a>sample2.mu <span class="ot">&lt;-</span> post2<span class="sc">$</span>mu[ sample2.rows ]</span>
-<span id="cb124-12"><a href="4-3-gaussian-model-of-height.html#cb124-12" aria-hidden="true" tabindex="-1"></a>sample2.sigma <span class="ot">&lt;-</span> post2<span class="sc">$</span>sigma[ sample2.rows ]</span>
-<span id="cb124-13"><a href="4-3-gaussian-model-of-height.html#cb124-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( sample2.mu , sample2.sigma , <span class="at">cex=</span><span class="fl">0.5</span> ,</span>
-<span id="cb124-14"><a href="4-3-gaussian-model-of-height.html#cb124-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.1</span>) ,</span>
-<span id="cb124-15"><a href="4-3-gaussian-model-of-height.html#cb124-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="st">&quot;mu&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;sigma&quot;</span> , <span class="at">pch=</span><span class="dv">16</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="4-3-gaussian-model-of-height.html#cb123-1" aria-hidden="true" tabindex="-1"></a>mu.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">150</span>, <span class="at">to=</span><span class="dv">170</span> , <span class="at">length.out=</span><span class="dv">200</span> )</span>
+<span id="cb123-2"><a href="4-3-gaussian-model-of-height.html#cb123-2" aria-hidden="true" tabindex="-1"></a>sigma.list <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="dv">4</span> , <span class="at">to=</span><span class="dv">20</span> , <span class="at">length.out=</span><span class="dv">200</span> )</span>
+<span id="cb123-3"><a href="4-3-gaussian-model-of-height.html#cb123-3" aria-hidden="true" tabindex="-1"></a>post2 <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>( <span class="at">mu=</span>mu.list , <span class="at">sigma=</span>sigma.list )</span>
+<span id="cb123-4"><a href="4-3-gaussian-model-of-height.html#cb123-4" aria-hidden="true" tabindex="-1"></a>post2<span class="sc">$</span>LL <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post2) , <span class="cf">function</span>(i)</span>
+<span id="cb123-5"><a href="4-3-gaussian-model-of-height.html#cb123-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>( <span class="fu">dnorm</span>( d3 , <span class="at">mean=</span>post2<span class="sc">$</span>mu[i] , <span class="at">sd=</span>post2<span class="sc">$</span>sigma[i] ,</span>
+<span id="cb123-6"><a href="4-3-gaussian-model-of-height.html#cb123-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">log=</span><span class="cn">TRUE</span> ) ) )</span>
+<span id="cb123-7"><a href="4-3-gaussian-model-of-height.html#cb123-7" aria-hidden="true" tabindex="-1"></a>post2<span class="sc">$</span>prod <span class="ot">&lt;-</span> post2<span class="sc">$</span>LL <span class="sc">+</span> <span class="fu">dnorm</span>( post2<span class="sc">$</span>mu , <span class="dv">178</span> , <span class="dv">20</span> , <span class="cn">TRUE</span> ) <span class="sc">+</span></span>
+<span id="cb123-8"><a href="4-3-gaussian-model-of-height.html#cb123-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dunif</span>( post2<span class="sc">$</span>sigma , <span class="dv">0</span> , <span class="dv">50</span> , <span class="cn">TRUE</span> )</span>
+<span id="cb123-9"><a href="4-3-gaussian-model-of-height.html#cb123-9" aria-hidden="true" tabindex="-1"></a>post2<span class="sc">$</span>prob <span class="ot">&lt;-</span> <span class="fu">exp</span>( post2<span class="sc">$</span>prod <span class="sc">-</span> <span class="fu">max</span>(post2<span class="sc">$</span>prod) )</span>
+<span id="cb123-10"><a href="4-3-gaussian-model-of-height.html#cb123-10" aria-hidden="true" tabindex="-1"></a>sample2.rows <span class="ot">&lt;-</span> <span class="fu">sample</span>( <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(post2) , <span class="at">size=</span><span class="fl">1e4</span> , <span class="at">replace=</span><span class="cn">TRUE</span> , <span class="at">prob=</span>post2<span class="sc">$</span>prob )</span>
+<span id="cb123-11"><a href="4-3-gaussian-model-of-height.html#cb123-11" aria-hidden="true" tabindex="-1"></a>sample2.mu <span class="ot">&lt;-</span> post2<span class="sc">$</span>mu[ sample2.rows ]</span>
+<span id="cb123-12"><a href="4-3-gaussian-model-of-height.html#cb123-12" aria-hidden="true" tabindex="-1"></a>sample2.sigma <span class="ot">&lt;-</span> post2<span class="sc">$</span>sigma[ sample2.rows ]</span>
+<span id="cb123-13"><a href="4-3-gaussian-model-of-height.html#cb123-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( sample2.mu , sample2.sigma , <span class="at">cex=</span><span class="fl">0.5</span> ,</span>
+<span id="cb123-14"><a href="4-3-gaussian-model-of-height.html#cb123-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.1</span>) ,</span>
+<span id="cb123-15"><a href="4-3-gaussian-model-of-height.html#cb123-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="st">&quot;mu&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;sigma&quot;</span> , <span class="at">pch=</span><span class="dv">16</span> )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.24-1.svg" width="672" /></p>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="4-3-gaussian-model-of-height.html#cb125-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(sample2.sigma, <span class="at">norm.comp =</span> T)</span></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="4-3-gaussian-model-of-height.html#cb124-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(sample2.sigma, <span class="at">norm.comp =</span> T)</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.25-1.svg" width="672" /></p>
 <p>Now you can see the posterior for <span class="math inline">\(\sigma\)</span> is not Gaussian, but as a long tail towards higher values.</p>
 <p><strong><em>4.3.5 Finding the posterior distribution with <code>quap</code></em></strong></p>
@@ -314,19 +314,19 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 </p>
 </div>
 <p>Repeat the code to load the data and select the adults:</p>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="4-3-gaussian-model-of-height.html#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Howell1)</span>
-<span id="cb126-2"><a href="4-3-gaussian-model-of-height.html#cb126-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> Howell1</span>
-<span id="cb126-3"><a href="4-3-gaussian-model-of-height.html#cb126-3" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> d[ d<span class="sc">$</span>age <span class="sc">&gt;=</span> <span class="dv">18</span> , ]</span></code></pre></div>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="4-3-gaussian-model-of-height.html#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Howell1)</span>
+<span id="cb125-2"><a href="4-3-gaussian-model-of-height.html#cb125-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> Howell1</span>
+<span id="cb125-3"><a href="4-3-gaussian-model-of-height.html#cb125-3" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> d[ d<span class="sc">$</span>age <span class="sc">&gt;=</span> <span class="dv">18</span> , ]</span></code></pre></div>
 <p><img src="slides/L03/33.png" width="80%" /></p>
 <p><code>quap</code> works by making the formula lists. Typically there’s some abbreviated forms. You’ll have to write how every parameter multiplies every variable.</p>
-<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="4-3-gaussian-model-of-height.html#cb127-1" aria-hidden="true" tabindex="-1"></a>flist <span class="ot">=</span> <span class="fu">alist</span>(</span>
-<span id="cb127-2"><a href="4-3-gaussian-model-of-height.html#cb127-2" aria-hidden="true" tabindex="-1"></a>  height <span class="sc">~</span> <span class="fu">dnorm</span>(mu, sigma),</span>
-<span id="cb127-3"><a href="4-3-gaussian-model-of-height.html#cb127-3" aria-hidden="true" tabindex="-1"></a>  mu <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">178</span>, <span class="dv">20</span>),</span>
-<span id="cb127-4"><a href="4-3-gaussian-model-of-height.html#cb127-4" aria-hidden="true" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">50</span>)</span>
-<span id="cb127-5"><a href="4-3-gaussian-model-of-height.html#cb127-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="4-3-gaussian-model-of-height.html#cb126-1" aria-hidden="true" tabindex="-1"></a>flist <span class="ot">=</span> <span class="fu">alist</span>(</span>
+<span id="cb126-2"><a href="4-3-gaussian-model-of-height.html#cb126-2" aria-hidden="true" tabindex="-1"></a>  height <span class="sc">~</span> <span class="fu">dnorm</span>(mu, sigma),</span>
+<span id="cb126-3"><a href="4-3-gaussian-model-of-height.html#cb126-3" aria-hidden="true" tabindex="-1"></a>  mu <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">178</span>, <span class="dv">20</span>),</span>
+<span id="cb126-4"><a href="4-3-gaussian-model-of-height.html#cb126-4" aria-hidden="true" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>(<span class="dv">0</span>, <span class="dv">50</span>)</span>
+<span id="cb126-5"><a href="4-3-gaussian-model-of-height.html#cb126-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>Plug in the parameters and plug it into <code>quap</code>.</p>
 <p><img src="slides/L03/34.png" width="80%" /></p>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="4-3-gaussian-model-of-height.html#cb128-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.1</span> <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(flist, <span class="at">data =</span> d2)</span></code></pre></div>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="4-3-gaussian-model-of-height.html#cb127-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.1</span> <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(flist, <span class="at">data =</span> d2)</span></code></pre></div>
 <p><code>quap</code> translates it into a statement about a log probability of the combinations of data, then passes it to the hill-finding algorithm built into R called <code>optim</code>, which passes it back as a list of means and a covariance matrix, which is sufficient to create a posterior distribution.</p>
 <div class="figure">
 <img src="slides/L03/35.png" alt="`precis` is minimalistic compared to `summary`. Provides the 89% compatibility intervals." width="80%" />
@@ -334,59 +334,59 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 <code>precis</code> is minimalistic compared to <code>summary</code>. Provides the 89% compatibility intervals.
 </p>
 </div>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="4-3-gaussian-model-of-height.html#cb129-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">precis</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="4-3-gaussian-model-of-height.html#cb128-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">precis</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
 <pre><code>##             mean        sd       5.5%      94.5%
-## mu    154.606995 0.4119934 153.948550 155.265440
-## sigma   7.731309 0.2913838   7.265622   8.196997</code></pre>
+## mu    154.607203 0.4119458 153.948834 155.265572
+## sigma   7.730415 0.2912995   7.264862   8.195968</code></pre>
 <p>These numbers provide Gaussian approximations for each parameter’s <em>marginal</em> distribution, meaning the plausibility of each value of <span class="math inline">\(\mu\)</span> after averaging over the plausibilities of each value of <span class="math inline">\(\sigma\)</span>.</p>
 <p><code>quap</code> estimates the posterior by climbing it like a hill. To do this, it has to start climbing someplace, at some combination of parameter values. But it’s possible to specify a starting value</p>
-<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="4-3-gaussian-model-of-height.html#cb131-1" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb131-2"><a href="4-3-gaussian-model-of-height.html#cb131-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu=</span><span class="fu">mean</span>(d2<span class="sc">$</span>height),</span>
-<span id="cb131-3"><a href="4-3-gaussian-model-of-height.html#cb131-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">sigma=</span><span class="fu">sd</span>(d2<span class="sc">$</span>height)</span>
-<span id="cb131-4"><a href="4-3-gaussian-model-of-height.html#cb131-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb131-5"><a href="4-3-gaussian-model-of-height.html#cb131-5" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( flist , <span class="at">data=</span>d2 , <span class="at">start=</span>start )</span></code></pre></div>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="4-3-gaussian-model-of-height.html#cb130-1" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb130-2"><a href="4-3-gaussian-model-of-height.html#cb130-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu=</span><span class="fu">mean</span>(d2<span class="sc">$</span>height),</span>
+<span id="cb130-3"><a href="4-3-gaussian-model-of-height.html#cb130-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">sigma=</span><span class="fu">sd</span>(d2<span class="sc">$</span>height)</span>
+<span id="cb130-4"><a href="4-3-gaussian-model-of-height.html#cb130-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb130-5"><a href="4-3-gaussian-model-of-height.html#cb130-5" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>( flist , <span class="at">data=</span>d2 , <span class="at">start=</span>start )</span></code></pre></div>
 <p>Let’s splice in a more informative prior for <span class="math inline">\(\mu\)</span> so you can see the effect.</p>
-<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="4-3-gaussian-model-of-height.html#cb132-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
-<span id="cb132-2"><a href="4-3-gaussian-model-of-height.html#cb132-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb132-3"><a href="4-3-gaussian-model-of-height.html#cb132-3" aria-hidden="true" tabindex="-1"></a>    height <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb132-4"><a href="4-3-gaussian-model-of-height.html#cb132-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">178</span> , <span class="fl">0.1</span> ) ,</span>
-<span id="cb132-5"><a href="4-3-gaussian-model-of-height.html#cb132-5" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dunif</span>( <span class="dv">0</span> , <span class="dv">50</span> )</span>
-<span id="cb132-6"><a href="4-3-gaussian-model-of-height.html#cb132-6" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d2 )</span>
-<span id="cb132-7"><a href="4-3-gaussian-model-of-height.html#cb132-7" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m4<span class="fl">.2</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="4-3-gaussian-model-of-height.html#cb131-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb131-2"><a href="4-3-gaussian-model-of-height.html#cb131-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb131-3"><a href="4-3-gaussian-model-of-height.html#cb131-3" aria-hidden="true" tabindex="-1"></a>    height <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb131-4"><a href="4-3-gaussian-model-of-height.html#cb131-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">178</span> , <span class="fl">0.1</span> ) ,</span>
+<span id="cb131-5"><a href="4-3-gaussian-model-of-height.html#cb131-5" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dunif</span>( <span class="dv">0</span> , <span class="dv">50</span> )</span>
+<span id="cb131-6"><a href="4-3-gaussian-model-of-height.html#cb131-6" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d2 )</span>
+<span id="cb131-7"><a href="4-3-gaussian-model-of-height.html#cb131-7" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m4<span class="fl">.2</span> )</span></code></pre></div>
 <pre><code>##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51757 0.9289236  23.03297  26.00216</code></pre>
+## sigma  24.51753 0.9289199  23.03293  26.00212</code></pre>
 <p><strong><em>4.3.6 Sampling from a <code>quap</code></em></strong></p>
 <p>To this the matrix of variances and covariances among all paris of parameters:</p>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="4-3-gaussian-model-of-height.html#cb134-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">vcov</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="4-3-gaussian-model-of-height.html#cb133-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">vcov</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
 <pre><code>##                 mu        sigma
 ## mu    0.1697396109 0.0002180307
 ## sigma 0.0002180307 0.0849058224</code></pre>
 <p>This is a <strong>Variant-covariance Matrix</strong>. It is the multi-dimensional glue of a quadratic approximation, because it tells us how each parameter relates to every other parameter in the posterior distribution.</p>
-<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="4-3-gaussian-model-of-height.html#cb136-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(rethinking<span class="sc">::</span><span class="fu">vcov</span>( m4<span class="fl">.1</span> ))</span></code></pre></div>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="4-3-gaussian-model-of-height.html#cb135-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(rethinking<span class="sc">::</span><span class="fu">vcov</span>( m4<span class="fl">.1</span> ))</span></code></pre></div>
 <pre><code>##         mu      sigma 
 ## 0.16973961 0.08490582</code></pre>
-<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="4-3-gaussian-model-of-height.html#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cov2cor</span>(rethinking<span class="sc">::</span><span class="fu">vcov</span>( m4<span class="fl">.1</span> ) )</span></code></pre></div>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="4-3-gaussian-model-of-height.html#cb137-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cov2cor</span>(rethinking<span class="sc">::</span><span class="fu">vcov</span>( m4<span class="fl">.1</span> ) )</span></code></pre></div>
 <pre><code>##                mu       sigma
 ## mu    1.000000000 0.001816174
 ## sigma 0.001816174 1.000000000</code></pre>
 <p><img src="slides/L03/36.png" width="80%" /></p>
 <p>Compare <code>quap</code> to grid approximation. The values in the rows go together. But plot the columns by themselves. Sigma still has a skew.</p>
-<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="4-3-gaussian-model-of-height.html#cb140-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">extract.samples</span>(m4<span class="fl">.1</span>, <span class="at">n =</span> <span class="fl">1e4</span>)</span>
-<span id="cb140-2"><a href="4-3-gaussian-model-of-height.html#cb140-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(post)</span></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="4-3-gaussian-model-of-height.html#cb139-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">extract.samples</span>(m4<span class="fl">.1</span>, <span class="at">n =</span> <span class="fl">1e4</span>)</span>
+<span id="cb139-2"><a href="4-3-gaussian-model-of-height.html#cb139-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(post)</span></code></pre></div>
 <pre><code>##         mu    sigma
-## 1 154.8512 7.723557
-## 2 155.1297 8.064942
-## 3 154.0598 6.999181
-## 4 154.6686 7.799261
-## 5 154.8335 7.966827
-## 6 154.8159 7.668216</code></pre>
-<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="4-3-gaussian-model-of-height.html#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(post)</span></code></pre></div>
+## 1 154.6288 7.702175
+## 2 154.4285 7.847383
+## 3 155.1852 7.846691
+## 4 154.6771 7.806205
+## 5 155.4135 7.585354
+## 6 155.0283 8.375732</code></pre>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="4-3-gaussian-model-of-height.html#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(post)</span></code></pre></div>
 <pre><code>##             mean        sd       5.5%      94.5%    histogram
-## mu    154.606137 0.4140252 153.949236 155.262547     ▁▁▁▅▇▂▁▁
-## sigma   7.728491 0.2897498   7.264243   8.191132 ▁▁▁▁▂▅▇▇▃▁▁▁</code></pre>
+## mu    154.606152 0.4146432 153.947756 155.271550      ▁▁▅▇▂▁▁
+## sigma   7.725941 0.2933462   7.258785   8.199547 ▁▁▁▂▅▇▇▃▁▁▁▁</code></pre>
 <p>Here’s a peak under the motor of <code>extract.samples</code>:</p>
-<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="4-3-gaussian-model-of-height.html#cb144-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="fl">1e4</span>, <span class="at">mu =</span> <span class="fu">coef</span>(m4<span class="fl">.1</span>), <span class="at">Sigma =</span> <span class="fu">vcov</span>(m4<span class="fl">.1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="4-3-gaussian-model-of-height.html#cb143-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="fl">1e4</span>, <span class="at">mu =</span> <span class="fu">coef</span>(m4<span class="fl">.1</span>), <span class="at">Sigma =</span> <span class="fu">vcov</span>(m4<span class="fl">.1</span>))</span></code></pre></div>
 <div class="figure">
 <img src="slides/L03/37.png" alt="To find out what it means, you draw some lines. I think of this tool as a scaffold so you can learn how to do modelling. But after you can use packages that use abbreviations. But it's important to learn how to build them. You'll come to appreciate how explicit it is. " width="80%" />
 <p class="caption marginnote shownote">

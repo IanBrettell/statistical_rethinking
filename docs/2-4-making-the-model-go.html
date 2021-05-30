@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -240,50 +240,50 @@ Now the probability of the data. We put the whole <code>p_grid</code> in.
 Then finally standardise it. Here nothing happens. The important thing is the multiplication step.
 </p>
 </div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="2-4-making-the-model-go.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define grid</span></span>
-<span id="cb21-2"><a href="2-4-making-the-model-go.html#cb21-2" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">20</span>)</span>
-<span id="cb21-3"><a href="2-4-making-the-model-go.html#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="2-4-making-the-model-go.html#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
-<span id="cb21-5"><a href="2-4-making-the-model-go.html#cb21-5" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">20</span>)</span>
-<span id="cb21-6"><a href="2-4-making-the-model-go.html#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-7"><a href="2-4-making-the-model-go.html#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
-<span id="cb21-8"><a href="2-4-making-the-model-go.html#cb21-8" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
-<span id="cb21-9"><a href="2-4-making-the-model-go.html#cb21-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-10"><a href="2-4-making-the-model-go.html#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
-<span id="cb21-11"><a href="2-4-making-the-model-go.html#cb21-11" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
-<span id="cb21-12"><a href="2-4-making-the-model-go.html#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-13"><a href="2-4-making-the-model-go.html#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
-<span id="cb21-14"><a href="2-4-making-the-model-go.html#cb21-14" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
-<span id="cb21-15"><a href="2-4-making-the-model-go.html#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-16"><a href="2-4-making-the-model-go.html#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
-<span id="cb21-17"><a href="2-4-making-the-model-go.html#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
-<span id="cb21-18"><a href="2-4-making-the-model-go.html#cb21-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
-<span id="cb21-19"><a href="2-4-making-the-model-go.html#cb21-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
-<span id="cb21-20"><a href="2-4-making-the-model-go.html#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">&quot;20 points&quot;</span>)</span></code></pre></div>
-<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="2-4-making-the-model-go.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define grid</span></span>
+<span id="cb20-2"><a href="2-4-making-the-model-go.html#cb20-2" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">20</span>)</span>
+<span id="cb20-3"><a href="2-4-making-the-model-go.html#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="2-4-making-the-model-go.html#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
+<span id="cb20-5"><a href="2-4-making-the-model-go.html#cb20-5" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">20</span>)</span>
+<span id="cb20-6"><a href="2-4-making-the-model-go.html#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="2-4-making-the-model-go.html#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb20-8"><a href="2-4-making-the-model-go.html#cb20-8" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb20-9"><a href="2-4-making-the-model-go.html#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-10"><a href="2-4-making-the-model-go.html#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb20-11"><a href="2-4-making-the-model-go.html#cb20-11" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb20-12"><a href="2-4-making-the-model-go.html#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="2-4-making-the-model-go.html#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb20-14"><a href="2-4-making-the-model-go.html#cb20-14" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb20-15"><a href="2-4-making-the-model-go.html#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="2-4-making-the-model-go.html#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb20-17"><a href="2-4-making-the-model-go.html#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb20-18"><a href="2-4-making-the-model-go.html#cb20-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb20-19"><a href="2-4-making-the-model-go.html#cb20-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb20-20"><a href="2-4-making-the-model-go.html#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">&quot;20 points&quot;</span>)</span></code></pre></div>
+<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-72-1.svg" width="672" /></p>
 <p>With four different grid sizes.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="2-4-making-the-model-go.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="fl">1e5</span>), <span class="cf">function</span>(grid_size){</span>
-<span id="cb22-2"><a href="2-4-making-the-model-go.html#cb22-2" aria-hidden="true" tabindex="-1"></a>  p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
-<span id="cb22-3"><a href="2-4-making-the-model-go.html#cb22-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-4"><a href="2-4-making-the-model-go.html#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># define prior</span></span>
-<span id="cb22-5"><a href="2-4-making-the-model-go.html#cb22-5" aria-hidden="true" tabindex="-1"></a>  prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, grid_size)</span>
-<span id="cb22-6"><a href="2-4-making-the-model-go.html#cb22-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-7"><a href="2-4-making-the-model-go.html#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute likelihood at each value in grid</span></span>
-<span id="cb22-8"><a href="2-4-making-the-model-go.html#cb22-8" aria-hidden="true" tabindex="-1"></a>  likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
-<span id="cb22-9"><a href="2-4-making-the-model-go.html#cb22-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-10"><a href="2-4-making-the-model-go.html#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute product of likelihood and prior</span></span>
-<span id="cb22-11"><a href="2-4-making-the-model-go.html#cb22-11" aria-hidden="true" tabindex="-1"></a>  unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
-<span id="cb22-12"><a href="2-4-making-the-model-go.html#cb22-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-13"><a href="2-4-making-the-model-go.html#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># standardise the posterior, so it susms to 1</span></span>
-<span id="cb22-14"><a href="2-4-making-the-model-go.html#cb22-14" aria-hidden="true" tabindex="-1"></a>  posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
-<span id="cb22-15"><a href="2-4-making-the-model-go.html#cb22-15" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb22-16"><a href="2-4-making-the-model-go.html#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
-<span id="cb22-17"><a href="2-4-making-the-model-go.html#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
-<span id="cb22-18"><a href="2-4-making-the-model-go.html#cb22-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
-<span id="cb22-19"><a href="2-4-making-the-model-go.html#cb22-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
-<span id="cb22-20"><a href="2-4-making-the-model-go.html#cb22-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(grid_size)  </span>
-<span id="cb22-21"><a href="2-4-making-the-model-go.html#cb22-21" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
-<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-1.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-2.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-3.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-4.svg" width="672" /></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="2-4-making-the-model-go.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="fl">1e5</span>), <span class="cf">function</span>(grid_size){</span>
+<span id="cb21-2"><a href="2-4-making-the-model-go.html#cb21-2" aria-hidden="true" tabindex="-1"></a>  p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
+<span id="cb21-3"><a href="2-4-making-the-model-go.html#cb21-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-4"><a href="2-4-making-the-model-go.html#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># define prior</span></span>
+<span id="cb21-5"><a href="2-4-making-the-model-go.html#cb21-5" aria-hidden="true" tabindex="-1"></a>  prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, grid_size)</span>
+<span id="cb21-6"><a href="2-4-making-the-model-go.html#cb21-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-7"><a href="2-4-making-the-model-go.html#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb21-8"><a href="2-4-making-the-model-go.html#cb21-8" aria-hidden="true" tabindex="-1"></a>  likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb21-9"><a href="2-4-making-the-model-go.html#cb21-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-10"><a href="2-4-making-the-model-go.html#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb21-11"><a href="2-4-making-the-model-go.html#cb21-11" aria-hidden="true" tabindex="-1"></a>  unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb21-12"><a href="2-4-making-the-model-go.html#cb21-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-13"><a href="2-4-making-the-model-go.html#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb21-14"><a href="2-4-making-the-model-go.html#cb21-14" aria-hidden="true" tabindex="-1"></a>  posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb21-15"><a href="2-4-making-the-model-go.html#cb21-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-16"><a href="2-4-making-the-model-go.html#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb21-17"><a href="2-4-making-the-model-go.html#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb21-18"><a href="2-4-making-the-model-go.html#cb21-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb21-19"><a href="2-4-making-the-model-go.html#cb21-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb21-20"><a href="2-4-making-the-model-go.html#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(grid_size)  </span>
+<span id="cb21-21"><a href="2-4-making-the-model-go.html#cb21-21" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<p><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-1.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-2.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-3.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-4.svg" width="672" /></p>
 <pre><code>## [[1]]
 ## NULL
 ## 

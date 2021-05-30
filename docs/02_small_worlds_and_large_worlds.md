@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-26'
+date: '2021-05-30'
 output:
   html_document:
     toc: true
@@ -77,15 +77,9 @@ slides_dir = here::here("docs/slides/L01")
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L01/43.png" alt="You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply." width="80%" />
-<p class="caption">You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply.</p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L01/43.png" alt="You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply. The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability." width="80%" />
+<p class="caption">You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply. The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability.</p>
 </div>
-
-
-```marginfigure
-The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability.
-```
-
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L01/44.png" alt="The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with." width="80%" />
@@ -379,7 +373,7 @@ plot(p_grid, posterior, type = "b",
 mtext("20 points")
 ```
 
-<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-1.svg" width="672" />
+<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-72-1.svg" width="672" />
 
 With four different grid sizes.
 
@@ -408,7 +402,7 @@ lapply(c(5, 100, 1000, 1e5), function(grid_size){
 })
 ```
 
-<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-1.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-2.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-3.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-74-4.svg" width="672" />
+<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-1.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-2.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-3.svg" width="672" /><img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-4.svg" width="672" />
 
 ```
 ## [[1]]

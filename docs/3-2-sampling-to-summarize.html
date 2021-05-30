@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -164,14 +164,14 @@ What might you want to compute? Commonly people want to construct intervals.
 </div>
 <p><strong><em>3.2.1 Intervals of defined boudaries</em></strong></p>
 <p>What’s the posterior probability that the proportion of water is less than 0.5?</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="3-2-sampling-to-summarize.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add up posterior probability where p &lt; 0.5</span></span>
-<span id="cb30-2"><a href="3-2-sampling-to-summarize.html#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(posterior[ p_grid <span class="sc">&lt;</span> <span class="fl">0.5</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="3-2-sampling-to-summarize.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add up posterior probability where p &lt; 0.5</span></span>
+<span id="cb29-2"><a href="3-2-sampling-to-summarize.html#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(posterior[ p_grid <span class="sc">&lt;</span> <span class="fl">0.5</span>])</span></code></pre></div>
 <pre><code>## [1] 0.1718746</code></pre>
 <p>But since grid approximation isn’t practical in general, it won’t always be so easy. Once there is more than one parameter in the posterior distribution, even this simple sum is no longer very simple.</p>
 <p>So let’s see how to perform it using samples from the posterior.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="3-2-sampling-to-summarize.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add up all the samples under .5, divided by the total number of samples</span></span>
-<span id="cb32-2"><a href="3-2-sampling-to-summarize.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples <span class="sc">&lt;</span> <span class="fl">0.5</span>) <span class="sc">/</span> <span class="fl">1e4</span></span></code></pre></div>
-<pre><code>## [1] 0.1744</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="3-2-sampling-to-summarize.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add up all the samples under .5, divided by the total number of samples</span></span>
+<span id="cb31-2"><a href="3-2-sampling-to-summarize.html#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples <span class="sc">&lt;</span> <span class="fl">0.5</span>) <span class="sc">/</span> <span class="fl">1e4</span></span></code></pre></div>
+<pre><code>## [1] 0.1735</code></pre>
 <div class="figure">
 <img src="slides/L02/50.png" alt="Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals." width="80%" />
 <p class="caption marginnote shownote">
@@ -179,30 +179,30 @@ Two general kinds of intervals. One is an interval of defined boundaries. Upper 
 </p>
 </div>
 <p>Using the same approach, how much posterior probability lies between 0.5 and 0.75?</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="3-2-sampling-to-summarize.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples <span class="sc">&gt;</span> <span class="fl">0.5</span> <span class="sc">&amp;</span> samples <span class="sc">&lt;</span> <span class="fl">0.75</span>) <span class="sc">/</span> <span class="fl">1e4</span></span></code></pre></div>
-<pre><code>## [1] 0.5954</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="3-2-sampling-to-summarize.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(samples <span class="sc">&gt;</span> <span class="fl">0.5</span> <span class="sc">&amp;</span> samples <span class="sc">&lt;</span> <span class="fl">0.75</span>) <span class="sc">/</span> <span class="fl">1e4</span></span></code></pre></div>
+<pre><code>## [1] 0.6006</code></pre>
 <p>This is shown in the upper right of Figure 3.2.</p>
 <p><strong><em>3.2.2 Intervals of defined mass</em></strong></p>
 <p>What a compatibility interval indicates is a range of parameter values compatible with the model and data.</p>
 <p>Where does the 80th percentile lie? i.e. the boundaries fo the lower 80% posterior probability.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="3-2-sampling-to-summarize.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span> (samples, .<span class="dv">8</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="3-2-sampling-to-summarize.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span> (samples, .<span class="dv">8</span>)</span></code></pre></div>
 <pre><code>##       80% 
-## 0.7637638</code></pre>
+## 0.7617618</code></pre>
 <p>This is shown in the bottom-left of Figure 3.2. Similarly, the middle 80% interval lies between the 10th percentile and the 90th percentile.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="3-2-sampling-to-summarize.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(samples, <span class="fu">c</span>(.<span class="dv">1</span>, .<span class="dv">9</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="3-2-sampling-to-summarize.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(samples, <span class="fu">c</span>(.<span class="dv">1</span>, .<span class="dv">9</span>))</span></code></pre></div>
 <pre><code>##       10%       90% 
-## 0.4524525 0.8148148</code></pre>
+## 0.4474474 0.8148148</code></pre>
 <p>This is shown in the bottom-right of Figure 3.2.</p>
 <p>Intervals of this sort are very common in the scientific literature. We’ll call them <strong>Percentile Intervals</strong> (PI). These do a good job of communicating the shape of a distribution, as long as it’s not too asymmetrical.</p>
 <p>But in terms of supporting inferences about which parameters are consistent with the data, they are not perfect.</p>
 <p>Consider the posterior distribution consistent with observing three waters in three tosses, and a flat prior.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="3-2-sampling-to-summarize.html#cb40-1" aria-hidden="true" tabindex="-1"></a>n_grid <span class="ot">=</span> <span class="dv">1000</span></span>
-<span id="cb40-2"><a href="3-2-sampling-to-summarize.html#cb40-2" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> n_grid)</span>
-<span id="cb40-3"><a href="3-2-sampling-to-summarize.html#cb40-3" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, n_grid)</span>
-<span id="cb40-4"><a href="3-2-sampling-to-summarize.html#cb40-4" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">3</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">prob =</span> p_grid)</span>
-<span id="cb40-5"><a href="3-2-sampling-to-summarize.html#cb40-5" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
-<span id="cb40-6"><a href="3-2-sampling-to-summarize.html#cb40-6" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span>
-<span id="cb40-7"><a href="3-2-sampling-to-summarize.html#cb40-7" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">=</span> <span class="fu">sample</span>(p_grid, <span class="at">size =</span> <span class="fl">1e4</span>, <span class="at">replace =</span> T, <span class="at">prob =</span> posterior)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="3-2-sampling-to-summarize.html#cb39-1" aria-hidden="true" tabindex="-1"></a>n_grid <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb39-2"><a href="3-2-sampling-to-summarize.html#cb39-2" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> n_grid)</span>
+<span id="cb39-3"><a href="3-2-sampling-to-summarize.html#cb39-3" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, n_grid)</span>
+<span id="cb39-4"><a href="3-2-sampling-to-summarize.html#cb39-4" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">3</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb39-5"><a href="3-2-sampling-to-summarize.html#cb39-5" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb39-6"><a href="3-2-sampling-to-summarize.html#cb39-6" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span>
+<span id="cb39-7"><a href="3-2-sampling-to-summarize.html#cb39-7" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">=</span> <span class="fu">sample</span>(p_grid, <span class="at">size =</span> <span class="fl">1e4</span>, <span class="at">replace =</span> T, <span class="at">prob =</span> posterior)</span></code></pre></div>
 <div class="figure">
 <img src="slides/L02/51.png" alt="Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They're not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries." width="80%" />
 <p class="caption marginnote shownote">
@@ -210,43 +210,43 @@ Two basic kinds of specified mass intervals. PI gives you the central area, wher
 </p>
 </div>
 <p><img src="slides/L02/52.png" width="80%" /></p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="3-2-sampling-to-summarize.html#cb41-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(samples, <span class="at">prob =</span> .<span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="3-2-sampling-to-summarize.html#cb40-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(samples, <span class="at">prob =</span> .<span class="dv">5</span>)</span></code></pre></div>
 <pre><code>##       25%       75% 
-## 0.7057057 0.9309309</code></pre>
+## 0.7057057 0.9319319</code></pre>
 <p>In this example, it ends up excluding the most probable parameter values, near <span class="math inline">\(p\)</span> = 1.</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="3-2-sampling-to-summarize.html#cb43-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples, <span class="at">prob =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="3-2-sampling-to-summarize.html#cb42-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples, <span class="at">prob =</span> <span class="fl">0.5</span>)</span></code></pre></div>
 <pre><code>##      |0.5      0.5| 
-## 0.8418418 1.0000000</code></pre>
+## 0.8388388 1.0000000</code></pre>
 <p>Here the HPDI has an advantage over the PI, but in most cases, the two are very similar. That’s because the posterior is skewed. When the posterior is bell-shaped, it hardly matters whate type of interval you use.</p>
 <blockquote>
 <p>Often, all compatibility intervals do is communicate the shape of a distribution.</p>
 </blockquote>
 <p><strong><em>3.2.3 Point estimates</em></strong></p>
 <p><img src="slides/L02/53.png" width="80%" /></p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="3-2-sampling-to-summarize.html#cb45-1" aria-hidden="true" tabindex="-1"></a>p_grid[<span class="fu">which.max</span>(posterior)]</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="3-2-sampling-to-summarize.html#cb44-1" aria-hidden="true" tabindex="-1"></a>p_grid[<span class="fu">which.max</span>(posterior)]</span></code></pre></div>
 <pre><code>## [1] 1</code></pre>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="3-2-sampling-to-summarize.html#cb47-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">chainmode</span>(samples, <span class="at">adj =</span> <span class="fl">0.01</span>)</span></code></pre></div>
-<pre><code>## [1] 0.9972835</code></pre>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="3-2-sampling-to-summarize.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(samples)</span></code></pre></div>
-<pre><code>## [1] 0.8001949</code></pre>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="3-2-sampling-to-summarize.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(samples)</span></code></pre></div>
-<pre><code>## [1] 0.8418418</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="3-2-sampling-to-summarize.html#cb46-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">chainmode</span>(samples, <span class="at">adj =</span> <span class="fl">0.01</span>)</span></code></pre></div>
+<pre><code>## [1] 0.986567</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="3-2-sampling-to-summarize.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(samples)</span></code></pre></div>
+<pre><code>## [1] 0.7988651</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="3-2-sampling-to-summarize.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(samples)</span></code></pre></div>
+<pre><code>## [1] 0.8388388</code></pre>
 <p>We care about uncertainty, and we want to summarise that. To use a point estimate, you need to provide a cost-benefit analysis. e.g. conservation or forecasting.</p>
 <p>One principles way to go beyond using the entire posterior as the estimate is to choose a <strong>Loss Function</strong>: a rule that tells you the cost assoicated with using any particular point estimate.</p>
 <blockquote>
 <p>Tell me which value of <span class="math inline">\(p\)</span>, the proportion of water on the Earth, you think is correct, and if you get it exactly right, I will pay you $100. But I will subtract money from your gain, proportional to the distance fo your decision from the correct value. Now that you have the posterior distribution in hand, how should you use it to maximise your expected winnings?</p>
 </blockquote>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="3-2-sampling-to-summarize.html#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The expected loss will be:</span></span>
-<span id="cb53-2"><a href="3-2-sampling-to-summarize.html#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(posterior<span class="sc">*</span><span class="fu">abs</span>(.<span class="dv">5</span> <span class="sc">-</span> p_grid))</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="3-2-sampling-to-summarize.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The expected loss will be:</span></span>
+<span id="cb52-2"><a href="3-2-sampling-to-summarize.html#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(posterior<span class="sc">*</span><span class="fu">abs</span>(.<span class="dv">5</span> <span class="sc">-</span> p_grid))</span></code></pre></div>
 <pre><code>## [1] 0.3128752</code></pre>
 <p>We can repeat this for every possible decision:</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="3-2-sampling-to-summarize.html#cb55-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">=</span> <span class="fu">sapply</span>(p_grid, <span class="cf">function</span>(d) <span class="fu">sum</span>(posterior<span class="sc">*</span><span class="fu">abs</span>(d <span class="sc">-</span> p_grid)))</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="3-2-sampling-to-summarize.html#cb54-1" aria-hidden="true" tabindex="-1"></a>loss <span class="ot">=</span> <span class="fu">sapply</span>(p_grid, <span class="cf">function</span>(d) <span class="fu">sum</span>(posterior<span class="sc">*</span><span class="fu">abs</span>(d <span class="sc">-</span> p_grid)))</span></code></pre></div>
 <p>Now it’s easy to find the parameter value that minimises that loss:</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="3-2-sampling-to-summarize.html#cb56-1" aria-hidden="true" tabindex="-1"></a>p_grid[<span class="fu">which.min</span>(loss)]</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="3-2-sampling-to-summarize.html#cb55-1" aria-hidden="true" tabindex="-1"></a>p_grid[<span class="fu">which.min</span>(loss)]</span></code></pre></div>
 <pre><code>## [1] 0.8408408</code></pre>
 <p>And this is actually the posterior median.</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="3-2-sampling-to-summarize.html#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(samples)</span></code></pre></div>
-<pre><code>## [1] 0.8418418</code></pre>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="3-2-sampling-to-summarize.html#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(samples)</span></code></pre></div>
+<pre><code>## [1] 0.8388388</code></pre>
 <p>Usually it’s better to communicate as much as you can about the posterior distribution, as well as the data and the model itself.</p>
 <p><img src="slides/L02/54.png" width="80%" /></p>
 <p>You can’t have confidence in an interval. It’s doublespeak. <em>Compatibility</em> emphasises the uncertainty. Credibility is the next conversation.</p>

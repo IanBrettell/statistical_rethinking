@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -156,9 +156,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="col-sm-12">
 <div id="the-many-variables-the-spurious-waffles" class="section level1" number="5">
 <h1><span class="header-section-number">Chapter 5</span> The Many Variables &amp; The Spurious Waffles</h1>
-<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb201-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb201-2"><a href="5-the-many-variables-the-spurious-waffles.html#cb201-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
-<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb202-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L05&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb200-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb200-2"><a href="5-the-many-variables-the-spurious-waffles.html#cb200-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="5-the-many-variables-the-spurious-waffles.html#cb201-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L05&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L05/01.png" width="80%" /></p>
 <div class="figure">
 <img src="slides/L05/02.png" alt="Went to College in Atlanta. Has Waffle Houses. Always open. Sometimes there are two Waffle Houses. Other things in the South include Hurricanes." width="80%" />
@@ -196,11 +196,10 @@ Correlation is commonplace. Great example of the divorce rate in Maine with the 
 Have the goal of both building it up and breaking it down. Can remove spurious correlations, and uncover masked associations you wouldn’t see otheriwse. But adding variables can cause as much harm as good. You can actually hide associations as well. So you need a broader structure to think about this.
 </p>
 </div>
-<pre class="marginfigure"><code>Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion.</code></pre>
 <div class="figure">
-<img src="slides/L05/08.png" alt="Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. " width="80%" />
+<img src="slides/L05/08.png" alt="Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion. Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. " width="80%" />
 <p class="caption marginnote shownote">
-Waffle House doesn’t cause divorce, but something does. The South is more religious. Lot’s of things that are correlated with divorce rate. Marriage rate? Can’t get divorce if you haven’t been married, but could also be spurious. Might indicate that it’s a society that views things favourably.
+Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion. Waffle House doesn’t cause divorce, but something does. The South is more religious. Lot’s of things that are correlated with divorce rate. Marriage rate? Can’t get divorce if you haven’t been married, but could also be spurious. Might indicate that it’s a society that views things favourably.
 </p>
 </div>
 </div>

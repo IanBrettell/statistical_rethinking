@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -156,9 +156,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="col-sm-12">
 <div id="the-haunted-dag-the-causal-terror" class="section level1" number="6">
 <h1><span class="header-section-number">Chapter 6</span> The Haunted DAG &amp; The Causal Terror</h1>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="6-the-haunted-dag-the-causal-terror.html#cb223-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb223-2"><a href="6-the-haunted-dag-the-causal-terror.html#cb223-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
-<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="6-the-haunted-dag-the-causal-terror.html#cb224-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L06&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="6-the-haunted-dag-the-causal-terror.html#cb221-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb221-2"><a href="6-the-haunted-dag-the-causal-terror.html#cb221-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="6-the-haunted-dag-the-causal-terror.html#cb222-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L06&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L06/01.png" width="80%" /></p>
 <div class="figure">
 <img src="slides/L06/05.png" alt="Interesting feature of scientific literature is that there's a negative correlation between surprising things and true things. The most trustworthy science is incredibly boring. Paper from PNAS. Hurricanes get names. They had this convention of alternating names. You can regress them, and if you do a terrible regression, female hurricanes are deadlier, but it's not robust. And there's no robust mechanism." width="80%" />
@@ -338,7 +338,7 @@ These are the only ways that variables interact in these graphs.
 </div>
 <p><img src="slides/L06/36.png" width="80%" /></p>
 <p><img src="slides/L06/37.png" width="80%" /></p>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="6-the-haunted-dag-the-causal-terror.html#cb225-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L07&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="6-the-haunted-dag-the-causal-terror.html#cb223-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L07&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L07/01.png" width="80%" /></p>
 <div class="figure">
 <img src="slides/L07/02.png" alt="You can solve causal inference by assuming the DAG is true. There is a framework that unites all these examples: the **back-door criterion**. We need to shut all the back door paths into the exposure. There are only really three different ways they can meet in the DAG." width="80%" />

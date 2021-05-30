@@ -241,4 +241,79 @@ knitr::include_graphics(file.path(slides_dir, '53.png'))
 knitr::include_graphics(file.path(slides_dir, '54.png'))
 ```
 
+```{r}
+slides_dir = here::here("docs/slides/L13")
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This course is like this. The lectures are circles, and the homework is the owl. The book has a lot more detail. What it doesn't get quite right about science is that science doesn't know what the owl looks like. There are many many owls that would be satisfactory. There's not some perfect platonic owl."}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Poisson is a count distribution. 0 to infidinty. Arises where there's some unkown maximum count, but the rate of each trial is very low. This is a very handy way to model counts. This is a very small dataset. Theory that says you get more innovation with larger populations, and therefore more complicated toolkits. Dashed line is for low-contact, solid for high-contact. That's the other interacting effect in the model. Hawaii has low contact. All the others are near one another. Easy to get from one to the other. There's a strong relationship with log population. There's massive uncertainty with large population sizes because there are no high-contact islands with large populations. On the right it's the same curve, but squished. If you calculate the predicted out-of-sample with the Pareto-k, you can find which points are adding uncertainty in prediction. Hawaii has high leverage because it has an order of magnitude higher population, so it's the only one informing what happens on the high end. What could you do? Not drop Hawaii from the analysis, but drop Hawaii playfullly to see what happens. And perhaps you could see there's still a trend for the low-population islands."}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Before we leave this example, here are some criticisms, which extend in general to GLMs. They're unreasonably effective. But, they generate a bunch of anomolies. If you know variables external to the model, they can produce ridiculous effects. If the first time you draw up a quantitative model, something ridiculous happens because you've left something out. Here the first weird thing is the intercept doesn't go through 0. For any real relationships, the 0s have to go together: 0 people = 0 tools. This GLM doesn't assert that because it has a free intercept. This isn't a total disaster. Also this weird thing where they cross."}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's run a simple model of the system. We want a dynamical systems model. Over time individuals make tools. We start with delta t which is the change in number of tools in a given timestep."}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then there's a rate of alpha - how many tools can each person invent? You get more people, you get more tools. The beta is an elasticity. That governs the diminishing returns. People get lazy if other people are making them. So the more people you have, the fewer new inventions you get per person. "}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then there's the loss. People forget them, or you don't need to use them anymore. Now we'll fit this to data. We've got 3 parameters."}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This model implies a time series. We can use the same model in a cross-sectional case - we need an expectation. We can solve them for steady states where after a while the processes are balanced, where $\\Delta T = 0$. On the left we have a hat over T = AlphaP to the Beta over gamma is the expected number of tools. Still stochastic, but the mean of the stationary distribution. Then can stick it into the Poisson. Better than Generalized Linear Madness, because the intercept is fixed here. "}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Can just write this into a Markov chain. Same idea, but now for lambda there's no link function. The only trick is that all these parameters needs to be positive. You have an array of tools to do that. One is to exponenentiate the parameter, which is what I've done with alpha. This is just a trick for making alpha positive. You're taking  a log normal now. For the other two I give them exponential distributions.  "}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Chains happen, and you can compare the two models. The scientific model has flaws, but now it passes through the origin. And you get real separation nwo between the solid and dashed lines. Now the violations mean something. And the parameters have biological meaning. You can use epxerimental datasets to get information about the parameters. "}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Every particular scientific example has its own idiosyncracies. So why teach GLMs? Because they're useful for everyone. If the different counts have different exposures or observation windows. If someone spends twice as much time fishing, we have to adjust for the exposure difference. How to do this? Use an offset, which is a log of the amount of time spent fishing. "}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are other count distributions. Multinomial categorical models are extrapolations to more than two unordered outcomes. Geometric distributions are count distributions. Mixtures are binomial regressions, but allow the rates to vary in each case. Like multi-level models where you don't estimate the random effects."}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="I want to motivate this. They're like count models because they have discrete events. In this dataset it's cat adoptions. But to do this properly, you need to estimate the rate of the events. The parameters are about rates, and survival is counts. So imagine some lonely cat, and it's waiting to be adopted, and then it escapes. We don't know whether the cat would ever be adopted or not. The wrong this to do is throw it away, because it's still importnat to know how long it was waiting. So we have to count things that weren't counted. e.g. escaped, died of natural causes, whatever. This is called censoring. Left-consoring is when we don't know when the cat arrived. Right censoring is where at the time of counting they haven't been adopted yet. "}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="20K cats from the Austin animal facility. Lots of things we know about them. Interested in adoption rates. In particular we want to compare all other cats to black cats. There are adoption events, so given some assumption about the rate. And want to predict what will happen given you're waiting a certain amount of times. Some die, some escape, and pure censoring is the cat is still there when we pulled the data. Epidemiological studies are like this. "}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The simplest kind of distribution for survival analysis is exponential. So the probability of getting adopted that day comes fromt he exponential distribution. "}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Measures the probability that it hasn't happened after a certain length of time. "}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You're really just coding the log-posterior here. It's raw stuff. If adopted = 0, now we're censored, so we need CCDF. When it sees a culstom tag, you can do a lot of dangerous things. "}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Black cats are discriminated against. There's a column for cat colours. "}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
 

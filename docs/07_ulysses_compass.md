@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-26'
+date: '2021-05-30'
 #output: html_notebook
 editor_options: 
   chunk_output_type: inline

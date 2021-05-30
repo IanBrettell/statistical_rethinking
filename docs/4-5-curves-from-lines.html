@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <meta name="generator" content="pandoc" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta property="og:title" content="4.5 4.5 Curves from lines | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:title" content="4.5 Curves from lines | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
 <meta property="og:type" content="book" />
 
 
@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -22,9 +22,9 @@ MathJax.Hub.Config({
 </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<meta name="description" content="4.5 4.5 Curves from lines | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+<meta name="description" content="4.5 Curves from lines | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
 
-<title>4.5 4.5 Curves from lines | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+<title>4.5 Curves from lines | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
 
 <script src="libs/header-attrs-2.8/header-attrs.js"></script>
 <link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -155,7 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="row">
 <div class="col-sm-12">
 <div id="curves-from-lines" class="section level2" number="4.5">
-<h2><span class="header-section-number">4.5</span> 4.5 Curves from lines</h2>
+<h2><span class="header-section-number">4.5</span> Curves from lines</h2>
 <div class="figure">
 <img src="slides/L04/17.png" alt="That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw &quot;lines&quot; i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. " width="80%" />
 <p class="caption marginnote shownote">
@@ -175,10 +175,10 @@ This is a descriptive strategy for drawing curves for the relationship between t
 The data we’re going to use is the total sample. Now we’ll use the kids. Looking at this you can appreciate this isn’t a line. Instead, let’s fit a parabola.
 </p>
 </div>
-<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="4-5-curves-from-lines.html#cb183-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
-<span id="cb183-2"><a href="4-5-curves-from-lines.html#cb183-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Howell1)</span>
-<span id="cb183-3"><a href="4-5-curves-from-lines.html#cb183-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> Howell1</span></code></pre></div>
-<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="4-5-curves-from-lines.html#cb184-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight , d )</span></code></pre></div>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="4-5-curves-from-lines.html#cb182-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb182-2"><a href="4-5-curves-from-lines.html#cb182-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(Howell1)</span>
+<span id="cb182-3"><a href="4-5-curves-from-lines.html#cb182-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> Howell1</span></code></pre></div>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="4-5-curves-from-lines.html#cb183-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight , d )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-70-1.svg" width="672" />
 The relationship is visibly curved now that we’ve included the non-adult individuals.</p>
 <div class="figure">
@@ -199,18 +199,18 @@ To get the machine to work, very useful to standardise the predictor variables. 
 There’s a function in R called <code>scale</code>. All it does is subtract the mean, then divide by the standard deviation. Square the standardised weight.
 </p>
 </div>
-<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb185-1"><a href="4-5-curves-from-lines.html#cb185-1" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>weight_s <span class="ot">&lt;-</span> ( d<span class="sc">$</span>weight <span class="sc">-</span> <span class="fu">mean</span>(d<span class="sc">$</span>weight) )<span class="sc">/</span><span class="fu">sd</span>(d<span class="sc">$</span>weight)</span>
-<span id="cb185-2"><a href="4-5-curves-from-lines.html#cb185-2" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>weight_s2 <span class="ot">&lt;-</span> d<span class="sc">$</span>weight_s<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb185-3"><a href="4-5-curves-from-lines.html#cb185-3" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.5</span> <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
-<span id="cb185-4"><a href="4-5-curves-from-lines.html#cb185-4" aria-hidden="true" tabindex="-1"></a><span class="fu">alist</span>(</span>
-<span id="cb185-5"><a href="4-5-curves-from-lines.html#cb185-5" aria-hidden="true" tabindex="-1"></a>  height <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb185-6"><a href="4-5-curves-from-lines.html#cb185-6" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b1<span class="sc">*</span>weight_s <span class="sc">+</span> b2<span class="sc">*</span>weight_s2 ,</span>
-<span id="cb185-7"><a href="4-5-curves-from-lines.html#cb185-7" aria-hidden="true" tabindex="-1"></a>  a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">178</span> , <span class="dv">20</span> ) ,</span>
-<span id="cb185-8"><a href="4-5-curves-from-lines.html#cb185-8" aria-hidden="true" tabindex="-1"></a>  b1 <span class="sc">~</span> <span class="fu">dlnorm</span>( <span class="dv">0</span> , <span class="dv">1</span>) ,</span>
-<span id="cb185-9"><a href="4-5-curves-from-lines.html#cb185-9" aria-hidden="true" tabindex="-1"></a>  b2 <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
-<span id="cb185-10"><a href="4-5-curves-from-lines.html#cb185-10" aria-hidden="true" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>( <span class="dv">0</span> , <span class="dv">50</span> )</span>
-<span id="cb185-11"><a href="4-5-curves-from-lines.html#cb185-11" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>d )</span></code></pre></div>
-<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="4-5-curves-from-lines.html#cb186-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m4<span class="fl">.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="4-5-curves-from-lines.html#cb184-1" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>weight_s <span class="ot">&lt;-</span> ( d<span class="sc">$</span>weight <span class="sc">-</span> <span class="fu">mean</span>(d<span class="sc">$</span>weight) )<span class="sc">/</span><span class="fu">sd</span>(d<span class="sc">$</span>weight)</span>
+<span id="cb184-2"><a href="4-5-curves-from-lines.html#cb184-2" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>weight_s2 <span class="ot">&lt;-</span> d<span class="sc">$</span>weight_s<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb184-3"><a href="4-5-curves-from-lines.html#cb184-3" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.5</span> <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb184-4"><a href="4-5-curves-from-lines.html#cb184-4" aria-hidden="true" tabindex="-1"></a><span class="fu">alist</span>(</span>
+<span id="cb184-5"><a href="4-5-curves-from-lines.html#cb184-5" aria-hidden="true" tabindex="-1"></a>  height <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb184-6"><a href="4-5-curves-from-lines.html#cb184-6" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b1<span class="sc">*</span>weight_s <span class="sc">+</span> b2<span class="sc">*</span>weight_s2 ,</span>
+<span id="cb184-7"><a href="4-5-curves-from-lines.html#cb184-7" aria-hidden="true" tabindex="-1"></a>  a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">178</span> , <span class="dv">20</span> ) ,</span>
+<span id="cb184-8"><a href="4-5-curves-from-lines.html#cb184-8" aria-hidden="true" tabindex="-1"></a>  b1 <span class="sc">~</span> <span class="fu">dlnorm</span>( <span class="dv">0</span> , <span class="dv">1</span>) ,</span>
+<span id="cb184-9"><a href="4-5-curves-from-lines.html#cb184-9" aria-hidden="true" tabindex="-1"></a>  b2 <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb184-10"><a href="4-5-curves-from-lines.html#cb184-10" aria-hidden="true" tabindex="-1"></a>  sigma <span class="sc">~</span> <span class="fu">dunif</span>( <span class="dv">0</span> , <span class="dv">50</span> )</span>
+<span id="cb184-11"><a href="4-5-curves-from-lines.html#cb184-11" aria-hidden="true" tabindex="-1"></a>) , <span class="at">data=</span>d )</span></code></pre></div>
+<div class="sourceCode" id="cb185"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb185-1"><a href="4-5-curves-from-lines.html#cb185-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m4<span class="fl">.5</span>)</span></code></pre></div>
 <pre><code>##             mean        sd       5.5%      94.5%
 ## a     146.057376 0.3689762 145.467681 146.647072
 ## b1     21.733061 0.2888893  21.271360  22.194762
@@ -242,30 +242,30 @@ Now it’s getting more concentrated.
 Now a thick dark line. Conditional on wanting a parabola to describe the relationship, here are the parabolas. Doesn’t mean the parabola is correct.
 </p>
 </div>
-<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="4-5-curves-from-lines.html#cb188-1" aria-hidden="true" tabindex="-1"></a>weight.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="fl">2.2</span> , <span class="at">to=</span><span class="dv">2</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span>
-<span id="cb188-2"><a href="4-5-curves-from-lines.html#cb188-2" aria-hidden="true" tabindex="-1"></a>pred_dat <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">weight_s=</span>weight.seq , <span class="at">weight_s2=</span>weight.seq<span class="sc">^</span><span class="dv">2</span> )</span>
-<span id="cb188-3"><a href="4-5-curves-from-lines.html#cb188-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m4<span class="fl">.5</span> , <span class="at">data=</span>pred_dat )</span>
-<span id="cb188-4"><a href="4-5-curves-from-lines.html#cb188-4" aria-hidden="true" tabindex="-1"></a>mu.mean <span class="ot">&lt;-</span> <span class="fu">apply</span>( mu , <span class="dv">2</span> , mean )</span>
-<span id="cb188-5"><a href="4-5-curves-from-lines.html#cb188-5" aria-hidden="true" tabindex="-1"></a>mu.PI <span class="ot">&lt;-</span> <span class="fu">apply</span>( mu , <span class="dv">2</span> , PI , <span class="at">prob=</span><span class="fl">0.89</span> )</span>
-<span id="cb188-6"><a href="4-5-curves-from-lines.html#cb188-6" aria-hidden="true" tabindex="-1"></a>sim.height <span class="ot">&lt;-</span> <span class="fu">sim</span>( m4<span class="fl">.5</span> , <span class="at">data=</span>pred_dat )</span>
-<span id="cb188-7"><a href="4-5-curves-from-lines.html#cb188-7" aria-hidden="true" tabindex="-1"></a>height.PI <span class="ot">&lt;-</span> <span class="fu">apply</span>( sim.height , <span class="dv">2</span> , PI , <span class="at">prob=</span><span class="fl">0.89</span> )</span></code></pre></div>
-<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb189-1"><a href="4-5-curves-from-lines.html#cb189-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight_s , d , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) )</span>
-<span id="cb189-2"><a href="4-5-curves-from-lines.html#cb189-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( weight.seq , mu.mean )</span>
-<span id="cb189-3"><a href="4-5-curves-from-lines.html#cb189-3" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu.PI , weight.seq )</span>
-<span id="cb189-4"><a href="4-5-curves-from-lines.html#cb189-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( height.PI , weight.seq )</span></code></pre></div>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb187-1"><a href="4-5-curves-from-lines.html#cb187-1" aria-hidden="true" tabindex="-1"></a>weight.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="fl">2.2</span> , <span class="at">to=</span><span class="dv">2</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span>
+<span id="cb187-2"><a href="4-5-curves-from-lines.html#cb187-2" aria-hidden="true" tabindex="-1"></a>pred_dat <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">weight_s=</span>weight.seq , <span class="at">weight_s2=</span>weight.seq<span class="sc">^</span><span class="dv">2</span> )</span>
+<span id="cb187-3"><a href="4-5-curves-from-lines.html#cb187-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m4<span class="fl">.5</span> , <span class="at">data=</span>pred_dat )</span>
+<span id="cb187-4"><a href="4-5-curves-from-lines.html#cb187-4" aria-hidden="true" tabindex="-1"></a>mu.mean <span class="ot">&lt;-</span> <span class="fu">apply</span>( mu , <span class="dv">2</span> , mean )</span>
+<span id="cb187-5"><a href="4-5-curves-from-lines.html#cb187-5" aria-hidden="true" tabindex="-1"></a>mu.PI <span class="ot">&lt;-</span> <span class="fu">apply</span>( mu , <span class="dv">2</span> , PI , <span class="at">prob=</span><span class="fl">0.89</span> )</span>
+<span id="cb187-6"><a href="4-5-curves-from-lines.html#cb187-6" aria-hidden="true" tabindex="-1"></a>sim.height <span class="ot">&lt;-</span> <span class="fu">sim</span>( m4<span class="fl">.5</span> , <span class="at">data=</span>pred_dat )</span>
+<span id="cb187-7"><a href="4-5-curves-from-lines.html#cb187-7" aria-hidden="true" tabindex="-1"></a>height.PI <span class="ot">&lt;-</span> <span class="fu">apply</span>( sim.height , <span class="dv">2</span> , PI , <span class="at">prob=</span><span class="fl">0.89</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="4-5-curves-from-lines.html#cb188-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight_s , d , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) )</span>
+<span id="cb188-2"><a href="4-5-curves-from-lines.html#cb188-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( weight.seq , mu.mean )</span>
+<span id="cb188-3"><a href="4-5-curves-from-lines.html#cb188-3" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu.PI , weight.seq )</span>
+<span id="cb188-4"><a href="4-5-curves-from-lines.html#cb188-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( height.PI , weight.seq )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.68-1.svg" width="672" /></p>
 <blockquote>
 <p>When you have expert knoweldge, it is often easy to do better than a linear model. These models are geocentric devices for describing partial correlations. We should feel embarrassed to use them, just so we don’t become satisfied with the phenomenologicla explanations they provide.</p>
 </blockquote>
 <p>Convert back to natural scale:</p>
-<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="4-5-curves-from-lines.html#cb190-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the horizontal axis</span></span>
-<span id="cb190-2"><a href="4-5-curves-from-lines.html#cb190-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight_s , d , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) , <span class="at">xaxt=</span><span class="st">&quot;n&quot;</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb189-1"><a href="4-5-curves-from-lines.html#cb189-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the horizontal axis</span></span>
+<span id="cb189-2"><a href="4-5-curves-from-lines.html#cb189-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight_s , d , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) , <span class="at">xaxt=</span><span class="st">&quot;n&quot;</span> )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.70-1.svg" width="672" /></p>
-<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb191-1"><a href="4-5-curves-from-lines.html#cb191-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Then explicitly construct the axis</span></span>
-<span id="cb191-2"><a href="4-5-curves-from-lines.html#cb191-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight_s , d , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) , <span class="at">xaxt=</span><span class="st">&quot;n&quot;</span> )</span>
-<span id="cb191-3"><a href="4-5-curves-from-lines.html#cb191-3" aria-hidden="true" tabindex="-1"></a>at <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>)</span>
-<span id="cb191-4"><a href="4-5-curves-from-lines.html#cb191-4" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> at<span class="sc">*</span><span class="fu">sd</span>(d<span class="sc">$</span>weight) <span class="sc">+</span> <span class="fu">mean</span>(d<span class="sc">$</span>weight)</span>
-<span id="cb191-5"><a href="4-5-curves-from-lines.html#cb191-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>( <span class="at">side=</span><span class="dv">1</span> , <span class="at">at=</span>at , <span class="at">labels=</span><span class="fu">round</span>(labels,<span class="dv">1</span>) )</span></code></pre></div>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="4-5-curves-from-lines.html#cb190-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Then explicitly construct the axis</span></span>
+<span id="cb190-2"><a href="4-5-curves-from-lines.html#cb190-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( height <span class="sc">~</span> weight_s , d , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.5</span>) , <span class="at">xaxt=</span><span class="st">&quot;n&quot;</span> )</span>
+<span id="cb190-3"><a href="4-5-curves-from-lines.html#cb190-3" aria-hidden="true" tabindex="-1"></a>at <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>)</span>
+<span id="cb190-4"><a href="4-5-curves-from-lines.html#cb190-4" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> at<span class="sc">*</span><span class="fu">sd</span>(d<span class="sc">$</span>weight) <span class="sc">+</span> <span class="fu">mean</span>(d<span class="sc">$</span>weight)</span>
+<span id="cb190-5"><a href="4-5-curves-from-lines.html#cb190-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>( <span class="at">side=</span><span class="dv">1</span> , <span class="at">at=</span>at , <span class="at">labels=</span><span class="fu">round</span>(labels,<span class="dv">1</span>) )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.71-1.svg" width="672" /></p>
 <div class="figure">
 <img src="slides/L04/29.png" alt="It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. For the cubic, we add our cubic term $\beta_3$. Fits even better, but now it's extrapolating upwards. " width="80%" />
@@ -304,10 +304,10 @@ Again, it’s a linear model, an additive equation for <span class="math inline"
 New example. Let’s find something very wiggly. Climate data. Date of first cherry blossom bloom. Turns out there’s a very interesting relationship between the date of bloom, and the temperature. Big signature of climate change in this data.
 </p>
 </div>
-<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="4-5-curves-from-lines.html#cb192-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
-<span id="cb192-2"><a href="4-5-curves-from-lines.html#cb192-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cherry_blossoms)</span>
-<span id="cb192-3"><a href="4-5-curves-from-lines.html#cb192-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> cherry_blossoms</span>
-<span id="cb192-4"><a href="4-5-curves-from-lines.html#cb192-4" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(d)</span></code></pre></div>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb191-1"><a href="4-5-curves-from-lines.html#cb191-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb191-2"><a href="4-5-curves-from-lines.html#cb191-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(cherry_blossoms)</span>
+<span id="cb191-3"><a href="4-5-curves-from-lines.html#cb191-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> cherry_blossoms</span>
+<span id="cb191-4"><a href="4-5-curves-from-lines.html#cb191-4" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(d)</span></code></pre></div>
 <pre><code>##                   mean          sd      5.5%      94.5%       histogram
 ## year       1408.000000 350.8845964 867.77000 1948.23000   ▇▇▇▇▇▇▇▇▇▇▇▇▁
 ## doy         104.540508   6.4070362  94.43000  115.00000        ▁▂▅▇▇▃▁▁
@@ -339,14 +339,14 @@ Let’s think about construction of these synthetic variables. Think of year. We
 </p>
 </div>
 <p>Let’s use 15 knots:</p>
-<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="4-5-curves-from-lines.html#cb194-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> d[ <span class="fu">complete.cases</span>(d<span class="sc">$</span>doy) , ] <span class="co"># complete cases on doy</span></span>
-<span id="cb194-2"><a href="4-5-curves-from-lines.html#cb194-2" aria-hidden="true" tabindex="-1"></a>num_knots <span class="ot">&lt;-</span> <span class="dv">15</span></span>
-<span id="cb194-3"><a href="4-5-curves-from-lines.html#cb194-3" aria-hidden="true" tabindex="-1"></a>knot_list <span class="ot">&lt;-</span> <span class="fu">quantile</span>( d2<span class="sc">$</span>year , <span class="at">probs=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length.out=</span>num_knots) )</span></code></pre></div>
-<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="4-5-curves-from-lines.html#cb195-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> splines<span class="sc">::</span><span class="fu">bs</span>(d2<span class="sc">$</span>year,</span>
-<span id="cb195-2"><a href="4-5-curves-from-lines.html#cb195-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">knots=</span>knot_list[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,num_knots)] ,</span>
-<span id="cb195-3"><a href="4-5-curves-from-lines.html#cb195-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree=</span><span class="dv">3</span> , <span class="at">intercept=</span><span class="cn">TRUE</span> )</span></code></pre></div>
-<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="4-5-curves-from-lines.html#cb196-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">range</span>(d2<span class="sc">$</span>year) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>) , <span class="at">xlab=</span><span class="st">&quot;year&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;basis&quot;</span> )</span>
-<span id="cb196-2"><a href="4-5-curves-from-lines.html#cb196-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(B) ) <span class="fu">lines</span>( d2<span class="sc">$</span>year , B[,i] )</span></code></pre></div>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="4-5-curves-from-lines.html#cb193-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> d[ <span class="fu">complete.cases</span>(d<span class="sc">$</span>doy) , ] <span class="co"># complete cases on doy</span></span>
+<span id="cb193-2"><a href="4-5-curves-from-lines.html#cb193-2" aria-hidden="true" tabindex="-1"></a>num_knots <span class="ot">&lt;-</span> <span class="dv">15</span></span>
+<span id="cb193-3"><a href="4-5-curves-from-lines.html#cb193-3" aria-hidden="true" tabindex="-1"></a>knot_list <span class="ot">&lt;-</span> <span class="fu">quantile</span>( d2<span class="sc">$</span>year , <span class="at">probs=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length.out=</span>num_knots) )</span></code></pre></div>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="4-5-curves-from-lines.html#cb194-1" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> splines<span class="sc">::</span><span class="fu">bs</span>(d2<span class="sc">$</span>year,</span>
+<span id="cb194-2"><a href="4-5-curves-from-lines.html#cb194-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">knots=</span>knot_list[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,num_knots)] ,</span>
+<span id="cb194-3"><a href="4-5-curves-from-lines.html#cb194-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">degree=</span><span class="dv">3</span> , <span class="at">intercept=</span><span class="cn">TRUE</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="4-5-curves-from-lines.html#cb195-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">range</span>(d2<span class="sc">$</span>year) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>) , <span class="at">xlab=</span><span class="st">&quot;year&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;basis&quot;</span> )</span>
+<span id="cb195-2"><a href="4-5-curves-from-lines.html#cb195-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(B) ) <span class="fu">lines</span>( d2<span class="sc">$</span>year , B[,i] )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.75-1.svg" width="672" /></p>
 <p>This is the first time we’ve used an <strong>exponential distribution</strong> as a prior. They’re useful priors for scale parameters, parameters that must be positive. We’ll use exponential priors for the rest of the book, in place of uniform priors. They way to read an exponential distribution is to think of it as containing just an average deviation, which is inverse of the rate.</p>
 <div class="figure">
@@ -355,27 +355,27 @@ Let’s think about construction of these synthetic variables. Think of year. We
 The only new trick here is to use linear algebra. You can imagine writing 5 terms. We have a prior for each of the weights. If you make it tighter, the curve gets less wiggly, and that’s why they call it a penalty. You want one so that you don’t <em>overfit</em>.
 </p>
 </div>
-<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="4-5-curves-from-lines.html#cb197-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.7</span> <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
-<span id="cb197-2"><a href="4-5-curves-from-lines.html#cb197-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb197-3"><a href="4-5-curves-from-lines.html#cb197-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb197-4"><a href="4-5-curves-from-lines.html#cb197-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> B <span class="sc">%*%</span> w ,</span>
-<span id="cb197-5"><a href="4-5-curves-from-lines.html#cb197-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">100</span>,<span class="dv">10</span>),</span>
-<span id="cb197-6"><a href="4-5-curves-from-lines.html#cb197-6" aria-hidden="true" tabindex="-1"></a>    w <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>),</span>
-<span id="cb197-7"><a href="4-5-curves-from-lines.html#cb197-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb197-8"><a href="4-5-curves-from-lines.html#cb197-8" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span><span class="fu">list</span>( <span class="at">D=</span>d2<span class="sc">$</span>doy , <span class="at">B=</span>B ) ,</span>
-<span id="cb197-9"><a href="4-5-curves-from-lines.html#cb197-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="fu">list</span>( <span class="at">w=</span><span class="fu">rep</span>( <span class="dv">0</span> , <span class="fu">ncol</span>(B) ) ) )</span></code></pre></div>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="4-5-curves-from-lines.html#cb196-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.7</span> <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb196-2"><a href="4-5-curves-from-lines.html#cb196-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb196-3"><a href="4-5-curves-from-lines.html#cb196-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb196-4"><a href="4-5-curves-from-lines.html#cb196-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> B <span class="sc">%*%</span> w ,</span>
+<span id="cb196-5"><a href="4-5-curves-from-lines.html#cb196-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">100</span>,<span class="dv">10</span>),</span>
+<span id="cb196-6"><a href="4-5-curves-from-lines.html#cb196-6" aria-hidden="true" tabindex="-1"></a>    w <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>),</span>
+<span id="cb196-7"><a href="4-5-curves-from-lines.html#cb196-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb196-8"><a href="4-5-curves-from-lines.html#cb196-8" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span><span class="fu">list</span>( <span class="at">D=</span>d2<span class="sc">$</span>doy , <span class="at">B=</span>B ) ,</span>
+<span id="cb196-9"><a href="4-5-curves-from-lines.html#cb196-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="fu">list</span>( <span class="at">w=</span><span class="fu">rep</span>( <span class="dv">0</span> , <span class="fu">ncol</span>(B) ) ) )</span></code></pre></div>
 <p>Then plot the posterior predictions:</p>
-<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="4-5-curves-from-lines.html#cb198-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>( m4<span class="fl">.7</span> )</span>
-<span id="cb198-2"><a href="4-5-curves-from-lines.html#cb198-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">apply</span>( post<span class="sc">$</span>w , <span class="dv">2</span> , mean )</span>
-<span id="cb198-3"><a href="4-5-curves-from-lines.html#cb198-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">range</span>(d2<span class="sc">$</span>year) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">6</span>) ,</span>
-<span id="cb198-4"><a href="4-5-curves-from-lines.html#cb198-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="st">&quot;year&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;basis * weight&quot;</span> )</span>
-<span id="cb198-5"><a href="4-5-curves-from-lines.html#cb198-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(B) ) <span class="fu">lines</span>( d2<span class="sc">$</span>year , w[i]<span class="sc">*</span>B[,i] )</span></code></pre></div>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="4-5-curves-from-lines.html#cb197-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>( m4<span class="fl">.7</span> )</span>
+<span id="cb197-2"><a href="4-5-curves-from-lines.html#cb197-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">apply</span>( post<span class="sc">$</span>w , <span class="dv">2</span> , mean )</span>
+<span id="cb197-3"><a href="4-5-curves-from-lines.html#cb197-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">range</span>(d2<span class="sc">$</span>year) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">6</span>,<span class="dv">6</span>) ,</span>
+<span id="cb197-4"><a href="4-5-curves-from-lines.html#cb197-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab=</span><span class="st">&quot;year&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;basis * weight&quot;</span> )</span>
+<span id="cb197-5"><a href="4-5-curves-from-lines.html#cb197-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(B) ) <span class="fu">lines</span>( d2<span class="sc">$</span>year , w[i]<span class="sc">*</span>B[,i] )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.77-1.svg" width="672" /></p>
 <p>Finally, the 97% posterior interval for <span class="math inline">\(\mu\)</span>.</p>
-<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="4-5-curves-from-lines.html#cb199-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m4<span class="fl">.7</span> )</span>
-<span id="cb199-2"><a href="4-5-curves-from-lines.html#cb199-2" aria-hidden="true" tabindex="-1"></a>mu_PI <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,PI,<span class="fl">0.97</span>)</span>
-<span id="cb199-3"><a href="4-5-curves-from-lines.html#cb199-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( d2<span class="sc">$</span>year , d2<span class="sc">$</span>doy , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.3</span>) , <span class="at">pch=</span><span class="dv">16</span>)</span>
-<span id="cb199-4"><a href="4-5-curves-from-lines.html#cb199-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu_PI , d2<span class="sc">$</span>year , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.5</span>) )</span></code></pre></div>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="4-5-curves-from-lines.html#cb198-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m4<span class="fl">.7</span> )</span>
+<span id="cb198-2"><a href="4-5-curves-from-lines.html#cb198-2" aria-hidden="true" tabindex="-1"></a>mu_PI <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,PI,<span class="fl">0.97</span>)</span>
+<span id="cb198-3"><a href="4-5-curves-from-lines.html#cb198-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( d2<span class="sc">$</span>year , d2<span class="sc">$</span>doy , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.3</span>) , <span class="at">pch=</span><span class="dv">16</span>)</span>
+<span id="cb198-4"><a href="4-5-curves-from-lines.html#cb198-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu_PI , d2<span class="sc">$</span>year , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.5</span>) )</span></code></pre></div>
 <p><img src="04_geocentric_models_files/figure-html/4.78-1.svg" width="672" /></p>
 <div class="figure">
 <img src="slides/L04/40.png" alt="Repeating the equation for $mu$. Showing you the posterior mean weights multiplied by those basis functions. That's what the predictor up top is. Focusing on the posteriro mean. There's uncertainty here. What happens now is you're adding those values together. Two lines get added together, and that determines prediction of temperature." width="80%" />
@@ -408,16 +408,16 @@ Now when we add them, we get a pretty wiggly line. The amount of wiggliness depe
 </p>
 </div>
 <p>Can do the same thing with matrix multiplication</p>
-<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="4-5-curves-from-lines.html#cb200-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.7</span>alt <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
-<span id="cb200-2"><a href="4-5-curves-from-lines.html#cb200-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb200-3"><a href="4-5-curves-from-lines.html#cb200-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb200-4"><a href="4-5-curves-from-lines.html#cb200-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">827</span> , <span class="cf">function</span>(i) <span class="fu">sum</span>( B[i,]<span class="sc">*</span>w ) ) ,</span>
-<span id="cb200-5"><a href="4-5-curves-from-lines.html#cb200-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">100</span>,<span class="dv">1</span>),</span>
-<span id="cb200-6"><a href="4-5-curves-from-lines.html#cb200-6" aria-hidden="true" tabindex="-1"></a>    w <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>),</span>
-<span id="cb200-7"><a href="4-5-curves-from-lines.html#cb200-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
-<span id="cb200-8"><a href="4-5-curves-from-lines.html#cb200-8" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb200-9"><a href="4-5-curves-from-lines.html#cb200-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span><span class="fu">list</span>( <span class="at">D=</span>d2<span class="sc">$</span>doy , <span class="at">B=</span>B ) ,</span>
-<span id="cb200-10"><a href="4-5-curves-from-lines.html#cb200-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="fu">list</span>( <span class="at">w=</span><span class="fu">rep</span>( <span class="dv">0</span> , <span class="fu">ncol</span>(B) ) ) )</span></code></pre></div>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="4-5-curves-from-lines.html#cb199-1" aria-hidden="true" tabindex="-1"></a>m4<span class="fl">.7</span>alt <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb199-2"><a href="4-5-curves-from-lines.html#cb199-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb199-3"><a href="4-5-curves-from-lines.html#cb199-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb199-4"><a href="4-5-curves-from-lines.html#cb199-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">827</span> , <span class="cf">function</span>(i) <span class="fu">sum</span>( B[i,]<span class="sc">*</span>w ) ) ,</span>
+<span id="cb199-5"><a href="4-5-curves-from-lines.html#cb199-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">100</span>,<span class="dv">1</span>),</span>
+<span id="cb199-6"><a href="4-5-curves-from-lines.html#cb199-6" aria-hidden="true" tabindex="-1"></a>    w <span class="sc">~</span> <span class="fu">dnorm</span>(<span class="dv">0</span>,<span class="dv">10</span>),</span>
+<span id="cb199-7"><a href="4-5-curves-from-lines.html#cb199-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb199-8"><a href="4-5-curves-from-lines.html#cb199-8" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb199-9"><a href="4-5-curves-from-lines.html#cb199-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span><span class="fu">list</span>( <span class="at">D=</span>d2<span class="sc">$</span>doy , <span class="at">B=</span>B ) ,</span>
+<span id="cb199-10"><a href="4-5-curves-from-lines.html#cb199-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">start=</span><span class="fu">list</span>( <span class="at">w=</span><span class="fu">rep</span>( <span class="dv">0</span> , <span class="fu">ncol</span>(B) ) ) )</span></code></pre></div>
 <div class="figure">
 <img src="slides/L04/45.png" alt="Lots of different methods. There are ways of doing Bayesian splines where the number of knots is a parameter you can get a posterior distribution for. Why not just have a knot at every year." width="80%" />
 <p class="caption marginnote shownote">

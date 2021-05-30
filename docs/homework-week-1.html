@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -159,13 +159,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol style="list-style-type: decimal">
 <li>Suppose the globe tossing data (Chapter 2) had turned out ot be 4 water in 15 tosses. Construct the posterior distribution, using grid approximation. Use the same flat prior as in the book.</li>
 </ol>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="homework-week-1.html#cb82-1" aria-hidden="true" tabindex="-1"></a>grid_size <span class="ot">=</span> <span class="dv">1000</span></span>
+<span id="cb82-2"><a href="homework-week-1.html#cb82-2" aria-hidden="true" tabindex="-1"></a>n_water <span class="ot">=</span> <span class="dv">4</span></span>
+<span id="cb82-3"><a href="homework-week-1.html#cb82-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-4"><a href="homework-week-1.html#cb82-4" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
+<span id="cb82-5"><a href="homework-week-1.html#cb82-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-6"><a href="homework-week-1.html#cb82-6" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
+<span id="cb82-7"><a href="homework-week-1.html#cb82-7" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, grid_size)</span>
+<span id="cb82-8"><a href="homework-week-1.html#cb82-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-9"><a href="homework-week-1.html#cb82-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb82-10"><a href="homework-week-1.html#cb82-10" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(n_water, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb82-11"><a href="homework-week-1.html#cb82-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-12"><a href="homework-week-1.html#cb82-12" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb82-13"><a href="homework-week-1.html#cb82-13" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb82-14"><a href="homework-week-1.html#cb82-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-15"><a href="homework-week-1.html#cb82-15" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb82-16"><a href="homework-week-1.html#cb82-16" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb82-17"><a href="homework-week-1.html#cb82-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-18"><a href="homework-week-1.html#cb82-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb82-19"><a href="homework-week-1.html#cb82-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb82-20"><a href="homework-week-1.html#cb82-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb82-21"><a href="homework-week-1.html#cb82-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb82-22"><a href="homework-week-1.html#cb82-22" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(grid_size)  </span></code></pre></div>
+<p><img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-29-1.svg" width="672" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Start over in 1, but now use a prior that is zero below <span class="math inline">\(p\)</span> = 0.5 and a constant above <span class="math inline">\(p\)</span> = 0.5. This corresponds to prior inforamtion that a majority of the Earth’s surface is water. What difference does the better prior make?</li>
+</ol>
 <div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="homework-week-1.html#cb83-1" aria-hidden="true" tabindex="-1"></a>grid_size <span class="ot">=</span> <span class="dv">1000</span></span>
 <span id="cb83-2"><a href="homework-week-1.html#cb83-2" aria-hidden="true" tabindex="-1"></a>n_water <span class="ot">=</span> <span class="dv">4</span></span>
 <span id="cb83-3"><a href="homework-week-1.html#cb83-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb83-4"><a href="homework-week-1.html#cb83-4" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
 <span id="cb83-5"><a href="homework-week-1.html#cb83-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb83-6"><a href="homework-week-1.html#cb83-6" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
-<span id="cb83-7"><a href="homework-week-1.html#cb83-7" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, grid_size)</span>
+<span id="cb83-7"><a href="homework-week-1.html#cb83-7" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">ifelse</span>(p_grid <span class="sc">&lt;</span> .<span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
 <span id="cb83-8"><a href="homework-week-1.html#cb83-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb83-9"><a href="homework-week-1.html#cb83-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
 <span id="cb83-10"><a href="homework-week-1.html#cb83-10" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(n_water, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
@@ -181,45 +207,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb83-20"><a href="homework-week-1.html#cb83-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
 <span id="cb83-21"><a href="homework-week-1.html#cb83-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
 <span id="cb83-22"><a href="homework-week-1.html#cb83-22" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(grid_size)  </span></code></pre></div>
-<p><img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-29-1.svg" width="672" /></p>
-<ol start="2" style="list-style-type: decimal">
-<li>Start over in 1, but now use a prior that is zero below <span class="math inline">\(p\)</span> = 0.5 and a constant above <span class="math inline">\(p\)</span> = 0.5. This corresponds to prior inforamtion that a majority of the Earth’s surface is water. What difference does the better prior make?</li>
-</ol>
-<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="homework-week-1.html#cb84-1" aria-hidden="true" tabindex="-1"></a>grid_size <span class="ot">=</span> <span class="dv">1000</span></span>
-<span id="cb84-2"><a href="homework-week-1.html#cb84-2" aria-hidden="true" tabindex="-1"></a>n_water <span class="ot">=</span> <span class="dv">4</span></span>
-<span id="cb84-3"><a href="homework-week-1.html#cb84-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-4"><a href="homework-week-1.html#cb84-4" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
-<span id="cb84-5"><a href="homework-week-1.html#cb84-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-6"><a href="homework-week-1.html#cb84-6" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
-<span id="cb84-7"><a href="homework-week-1.html#cb84-7" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">ifelse</span>(p_grid <span class="sc">&lt;</span> .<span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb84-8"><a href="homework-week-1.html#cb84-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-9"><a href="homework-week-1.html#cb84-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
-<span id="cb84-10"><a href="homework-week-1.html#cb84-10" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(n_water, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
-<span id="cb84-11"><a href="homework-week-1.html#cb84-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-12"><a href="homework-week-1.html#cb84-12" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
-<span id="cb84-13"><a href="homework-week-1.html#cb84-13" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
-<span id="cb84-14"><a href="homework-week-1.html#cb84-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-15"><a href="homework-week-1.html#cb84-15" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
-<span id="cb84-16"><a href="homework-week-1.html#cb84-16" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
-<span id="cb84-17"><a href="homework-week-1.html#cb84-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb84-18"><a href="homework-week-1.html#cb84-18" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
-<span id="cb84-19"><a href="homework-week-1.html#cb84-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
-<span id="cb84-20"><a href="homework-week-1.html#cb84-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
-<span id="cb84-21"><a href="homework-week-1.html#cb84-21" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
-<span id="cb84-22"><a href="homework-week-1.html#cb84-22" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(grid_size)  </span></code></pre></div>
 <p><img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-30-1.svg" width="672" /></p>
 <ol start="3" style="list-style-type: decimal">
 <li>For the posterior distribution from <strong>2</strong>, compute 89% percentile and HPDI intervals. Compare the widths of these intervals. Which is wider? Why? If you had only the information in the interval, what might you misunderstand about the shape of the posterior distribution?</li>
 </ol>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="homework-week-1.html#cb85-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">=</span> <span class="fu">sample</span>(p_grid, <span class="at">prob =</span> posterior, <span class="at">size =</span> <span class="fl">1e4</span>, <span class="at">replace =</span> T)</span>
-<span id="cb85-2"><a href="homework-week-1.html#cb85-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb85-3"><a href="homework-week-1.html#cb85-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(samples)</span></code></pre></div>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="homework-week-1.html#cb84-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">=</span> <span class="fu">sample</span>(p_grid, <span class="at">prob =</span> posterior, <span class="at">size =</span> <span class="fl">1e4</span>, <span class="at">replace =</span> T)</span>
+<span id="cb84-2"><a href="homework-week-1.html#cb84-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-3"><a href="homework-week-1.html#cb84-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">PI</span>(samples)</span></code></pre></div>
 <pre><code>##        5%       94% 
 ## 0.5085085 0.7497497</code></pre>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="homework-week-1.html#cb87-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples)</span></code></pre></div>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb86-1"><a href="homework-week-1.html#cb86-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">HPDI</span>(samples)</span></code></pre></div>
 <pre><code>##     |0.89     0.89| 
 ## 0.5005005 0.7097097</code></pre>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="homework-week-1.html#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PI is wider, and neither tells you that the highest point is just after 50%.</span></span></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="homework-week-1.html#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PI is wider, and neither tells you that the highest point is just after 50%.</span></span></code></pre></div>
 
 </div>
 <!-- </div> -->
