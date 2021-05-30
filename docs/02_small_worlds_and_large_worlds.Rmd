@@ -79,14 +79,9 @@ knitr::include_graphics(file.path(slides_dir, "40.png"))
 knitr::include_graphics(file.path(slides_dir, "41.png"))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply."}
+```{r, echo = F, out.width='80%', fig.cap = "You can use different types of data. Very straight forward. Say you have a friend who works in the factory. Every Bag contains at least one. In the factory manufacturing process, there are no all-blue or all-white. And there are specific ratios. How to use this? Multiply. The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability."}
 knitr::include_graphics(file.path(slides_dir, "43.png"))
 ```
-
-```{marginfigure}
-The goal is to understand what's happening mechanically in every Bayesian model. The computer is going to rank an infinite number of possibilities using the power of calculus based on their probability.
-```
-
 
 ```{r, echo = F, out.width='80%', fig.cap = "The counts get big really quickly due to combinatorics, so you normalise them between 0 and 1, which also makes them nice to work with."}
 knitr::include_graphics(file.path(slides_dir, "44.png"))

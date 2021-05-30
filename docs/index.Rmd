@@ -70,7 +70,7 @@ lapply(dir_name, function(LECTURE){
 # Delete existing tmp file
 file.remove("tmp.txt")
 
-slides_dir = here::here("docs/slides/L11")
+slides_dir = here::here("docs/slides/L12")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){

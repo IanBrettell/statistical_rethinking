@@ -904,7 +904,7 @@ shade( mu.HPDI , weight.seq )
 shade( height.PI , weight.seq )
 ```
 
-## 4.5 Curves from lines
+## Curves from lines
 
 ```{r, echo = F, out.width='80%', fig.cap = "That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw \"lines\" i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. "}
 knitr::include_graphics(file.path(slides_dir, '17.png'))

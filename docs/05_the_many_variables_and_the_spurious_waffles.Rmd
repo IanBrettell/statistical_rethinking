@@ -65,11 +65,7 @@ knitr::include_graphics(file.path(slides_dir, '06.png'))
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
-```{marginfigure}
-Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion.
-```
-
-```{r, echo = F, out.width='80%', fig.cap = "Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. "}
+```{r, echo = F, out.width='80%', fig.cap = "Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion. Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. "}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
