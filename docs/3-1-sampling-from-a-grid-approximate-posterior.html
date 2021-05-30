@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-26" />
+<meta name="date" content="2021-05-30" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -137,7 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
 <li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
 <li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
-<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> 4.5 Curves from lines</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
 <li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
 </ul></li>
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
@@ -157,16 +157,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="sampling-from-a-grid-approximate-posterior" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Sampling from a grid-approximate posterior</h2>
 <p>Generate the samples. First compute the posterior.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb26-1" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">1000</span>)</span>
-<span id="cb26-2"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb26-2" aria-hidden="true" tabindex="-1"></a>prob_p <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">1000</span>)</span>
-<span id="cb26-3"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb26-3" aria-hidden="true" tabindex="-1"></a>prob_data <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
-<span id="cb26-4"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb26-4" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> prob_data <span class="sc">*</span> prob_p</span>
-<span id="cb26-5"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb26-5" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb25-1" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">1000</span>)</span>
+<span id="cb25-2"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb25-2" aria-hidden="true" tabindex="-1"></a>prob_p <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">1000</span>)</span>
+<span id="cb25-3"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb25-3" aria-hidden="true" tabindex="-1"></a>prob_data <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb25-4"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb25-4" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> prob_data <span class="sc">*</span> prob_p</span>
+<span id="cb25-5"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb25-5" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> posterior <span class="sc">/</span> <span class="fu">sum</span>(posterior)</span></code></pre></div>
 <p>Now draw 10,000 samples from this posterior. Scoop out 10,000 values from the bucket containing parameter values that exist in proportion to the posterior probability.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb27-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">=</span> <span class="fu">sample</span>(p_grid, <span class="at">prob =</span> posterior, <span class="at">size =</span> <span class="fl">1e4</span>, <span class="at">replace =</span> T)</span></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(samples)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb26-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">=</span> <span class="fu">sample</span>(p_grid, <span class="at">prob =</span> posterior, <span class="at">size =</span> <span class="fl">1e4</span>, <span class="at">replace =</span> T)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(samples)</span></code></pre></div>
 <p><img src="03_sampling_from_the_imaginary_files/figure-html/3.4-1.svg" width="672" /></p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dens</span>(samples)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="3-1-sampling-from-a-grid-approximate-posterior.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dens</span>(samples)</span></code></pre></div>
 <p><img src="03_sampling_from_the_imaginary_files/figure-html/3.5-1.svg" width="672" /></p>
 <blockquote>
 <p>All you’ve done so far is crudely replicate the posterior density you had already computed. That isn’t of much value. But next it is time to use these samples to describe and understand the posterior. That is of great value.</p>

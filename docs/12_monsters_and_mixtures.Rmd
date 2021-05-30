@@ -24,87 +24,16 @@ source(here::here("code/scripts/source.R"))
 slides_dir = here::here("docs/slides/L13")
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '01.png'))
-```
 
-```{r, echo = F, out.width='80%', fig.cap="This course is like this. The lectures are circles, and the homework is the owl. The book has a lot more detail. What it doesn't get quite right about science is that science doesn't know what the owl looks like. There are many many owls that would be satisfactory. There's not some perfect platonic owl."}
-knitr::include_graphics(file.path(slides_dir, '02.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Poisson is a count distribution. 0 to infidinty. Arises where there's some unkown maximum count, but the rate of each trial is very low. This is a very handy way to model counts. This is a very small dataset. Theory that says you get more innovation with larger populations, and therefore more complicated toolkits. Dashed line is for low-contact, solid for high-contact. That's the other interacting effect in the model. Hawaii has low contact. All the others are near one another. Easy to get from one to the other. There's a strong relationship with log population. There's massive uncertainty with large population sizes because there are no high-contact islands with large populations. On the right it's the same curve, but squished. If you calculate the predicted out-of-sample with the Pareto-k, you can find which points are adding uncertainty in prediction. Hawaii has high leverage because it has an order of magnitude higher population, so it's the only one informing what happens on the high end. What could you do? Not drop Hawaii from the analysis, but drop Hawaii playfullly to see what happens. And perhaps you could see there's still a trend for the low-population islands."}
-knitr::include_graphics(file.path(slides_dir, '03.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Before we leave this example, here are some criticisms, which extend in general to GLMs. They're unreasonably effective. But, they generate a bunch of anomolies. If you know variables external to the model, they can produce ridiculous effects. If the first time you draw up a quantitative model, something ridiculous happens because you've left something out. Here the first weird thing is the intercept doesn't go through 0. For any real relationships, the 0s have to go together: 0 people = 0 tools. This GLM doesn't assert that because it has a free intercept. This isn't a total disaster. Also this weird thing where they cross."}
-knitr::include_graphics(file.path(slides_dir, '04.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Let's run a simple model of the system. We want a dynamical systems model. Over time individuals make tools. We start with delta t which is the change in number of tools in a given timestep."}
-knitr::include_graphics(file.path(slides_dir, '05.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Then there's a rate of alpha - how many tools can each person invent? You get more people, you get more tools. The beta is an elasticity. That governs the diminishing returns. People get lazy if other people are making them. So the more people you have, the fewer new inventions you get per person. "}
-knitr::include_graphics(file.path(slides_dir, '06.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Then there's the loss. People forget them, or you don't need to use them anymore. Now we'll fit this to data. We've got 3 parameters."}
-knitr::include_graphics(file.path(slides_dir, '07.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="This model implies a time series. We can use the same model in a cross-sectional case - we need an expectation. We can solve them for steady states where after a while the processes are balanced, where $\\Delta T = 0$. On the left we have a hat over T = AlphaP to the Beta over gamma is the expected number of tools. Still stochastic, but the mean of the stationary distribution. Then can stick it into the Poisson. Better than Generalized Linear Madness, because the intercept is fixed here. "}
-knitr::include_graphics(file.path(slides_dir, '08.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Can just write this into a Markov chain. Same idea, but now for lambda there's no link function. The only trick is that all these parameters needs to be positive. You have an array of tools to do that. One is to exponenentiate the parameter, which is what I've done with alpha. This is just a trick for making alpha positive. You're taking  a log normal now. For the other two I give them exponential distributions.  "}
-knitr::include_graphics(file.path(slides_dir, '09.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Chains happen, and you can compare the two models. The scientific model has flaws, but now it passes through the origin. And you get real separation nwo between the solid and dashed lines. Now the violations mean something. And the parameters have biological meaning. You can use epxerimental datasets to get information about the parameters. "}
-knitr::include_graphics(file.path(slides_dir, '10.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Every particular scientific example has its own idiosyncracies. So why teach GLMs? Because they're useful for everyone. If the different counts have different exposures or observation windows. If someone spends twice as much time fishing, we have to adjust for the exposure difference. How to do this? Use an offset, which is a log of the amount of time spent fishing. "}
-knitr::include_graphics(file.path(slides_dir, '11.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="There are other count distributions. Multinomial categorical models are extrapolations to more than two unordered outcomes. Geometric distributions are count distributions. Mixtures are binomial regressions, but allow the rates to vary in each case. Like multi-level models where you don't estimate the random effects."}
-knitr::include_graphics(file.path(slides_dir, '12.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="I want "}
-knitr::include_graphics(file.path(slides_dir, '13.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '14.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '15.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '16.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '17.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '18.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Here we get into more elaborate types of models. Like monsters. In mythology, they're not just bigger, but bits of animals stuck together. "}
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="If you're thkning of making a statistical monster, it's like junkyard challenge. "}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Here, it's safe. And to make sure it works, use simulation. Use ordered categories and ranks. They look like cats, but aren't cats. Other kinds of things are mixtures, like beta-binomials. Zero-inflations are counts that arise from more than one process. So there are more than one way that you could get 0. YOur detection isn't good enough. "}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
@@ -112,27 +41,185 @@ knitr::include_graphics(file.path(slides_dir, '21.png'))
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Here it's a simulation model. Silly, but there's a real problem here. You're a medieval investor who buys monasteries. Your issue is the output rate. How many manuscripts can you make per day? They copy manuscripts, but they also drink. We want to infer the number of days they get drunk."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Let's build up the problem scientifically. There's a hidden state we can't observe. The question is: were they dryinking that day? Maybe they finished a bunch previously. If you observe a non-0, they weren't all drunk. Even though you can't say on any particular day whether they were drinking, you can say on average how often they drink. This arises in any kind of detection problems. e.g. counting birds. Does 0 mean no birds? Maybe you were distracted, or visibility wasn't good. Many ways to get 0. Also 0 augmentation in chemistry, where it needs to reach a certain level to be detected, but many reasons it didn't reach that level."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="1-p is the time they work. Even fi tehy work, you could still get a 0. The blank ones are a pure Poisson process. The extra blue bit are the drunk days, where you get extra 0s. The aggregated data is not Poisson-distribued. "}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="We need a function for the probability of any given observation. Need to count the number of ways you observe that thing conditional on your assumptions. Going to walk through the garden again. "}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Say you observe a 0. There are two ways to do that."}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
+```{r, echo = F, out.width='80%', fig.cap="We need both of those terms, and they're alternatives. Either p or 1-p exp(-lambda). "}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then there's only one way to observe *n*. "}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="To summarise, there are two ways. This is a DAG by the way, but a statistical one not a causal one. "}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This general strategy works for anything."}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Usually there are all these ones that construct the right probability for every observation. We have two parameters - p, whether they drink or work, and you can make a model out of that. For example, the weather may determine whether they work or not, but how hard they work. But you need link functions on them. We have taken the cat and the dog and stuck them together. Really powerful, because natural observable processes are mixtures like this."}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In the book we simulate the data. When createing bespoke models, want to make sure the code works. We can do this dummy data process. The goal is to recover estimates and test the limits of the model."}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's the whole simulation. This is the same model, but going forward. All Bayesian models are generative, which means you can run them in either direction. If you don't have data, you can plug in parameters and produce data. That's waht we're doing here. If you have data but no paramteres, it's create a distibution of parameters based on their plausibility. Non-genersative models are harder to understand. Here we're saying the probability of working is 20%. We're going to have a whole year sampled. Then we just simulate. Then we simulate a binomial first, whether they drink or not. Then we simulate the manuscripts, which is conditional on the drinking. "}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="`dzipois` is interpreted by `ulam` as meaning you want to do this multiple choice thing. To show you at the bottom that the machine works. The posterior mean is a little over 20%. The rate of production is around 1. YOur simluations are finite so you shouldn't be surprised that you don't recover exactly the data-generating parameters. But if it's doing the right thing, it should cover them. "}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The overthiking box shows how to code this without the helper functions. This is the same `ulam` model. All `dzpois` does is replace the two lines at the top. "}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There's no reason you can't also do 0-inflated things in other ways. There's this bernouli process. The model stays exactly the same. Also hurdle models that are common with continuous distributions. Get lots of this with benchwork. This happens all the time because say you're a forager, and often come back with nothing. 50-70% of hunting expeditions result in nothing. There are two models there based on whether you catch something, and if you do, how much."}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
 ```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+-----
+
+```{r}
+slides_dir = here::here("docs/slides/L14")
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Today is entirely one kind of outcome variable. To make it more exciting, it's one of the most common - and most commonly mistreated - type of data in the behavioural sciences."}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="When categories are ordered, they're not exchangeable. The world is full of this stuff because of the way we measure it."}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In terms of constraints, they're discrete outcomes, like counts, but they're not counting anyting. There's an arbitrary minimum and maximum. The important thing we need to model is that the distance *underlying metric change) between categories aren't constant. They could vary a lot. "}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="These things are difficult to model, but people have figured out ways to do it. Need to do it on both ends - outcomes and predictors. Going to start with an example dealing with the outcome. Leads to a kind of GLM known as *ordered logistic regression.*"}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Why we need them. The trolley problem. Going down the track. Turns out there are five people lashed to the track. "}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There's a swith in the track ahead where there's only one person lashed to the track."}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You're standing next to the switch control. If you pull the switch, it will move to B and kill only one person."}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Data is collected by explaining the story then asking this question."}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="It's measuring something substantial. "}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="These come in big flavours. Second version is now a side view. Black thing is an overpass. "}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="5 doomed individuals."}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There's a large individual next to you. You can push the Rock off the bridge and his mass would stop the trolley. "}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then ask the same question."}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Third example. Same setup as the first."}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="But now the switch is set such that it'll veer off to the one individual. "}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="On a logical basis, it's the same, but people feel completely different about this."}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Big literature about this, with real moral intuitions. One way it's organised is under these principles. Designed to probe these principles. Contact is like a subset of action. "}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="First story has action, but no intention or contact."}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here the Rock's death is instrumental."}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The last one has none of them. "}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Different mix and match of these features, plus different stories. This is averaged across all scenarios. Something that's quite typical in ordered categorical data - usually a spike in the middle. Also true that the distribution can often be quite flat. Can take any shape."}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Can break this down. Action is different in that the mass has shifted a little to above. Intention has more 1s. Contact has a lot of 1s. "}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Essentially like a categorical model, li,e a bionial model with more than two categories. Log-cumulative-odds link works like this: We want a model that descrbies this on the logit scale. We'll need 6 parameters, one less than the number of categories. "}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Think of it as a cumulative distribution. A little over 20% is 2 or less. 7 always has 1. "}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then we'll transform them onto the logit scale. What are the log odds? Probability of something over the probabilty of everything else. The log odds are the log of that ratio. So if it's a cumulative proportion, these are just the log cumulative proportions. On the logit scale, 0 is 50%. "}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
@@ -140,19 +227,19 @@ knitr::include_graphics(file.path(slides_dir, '28.png'))
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Log of the probability of something over the 1-probability of something."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="So you're saying what's the cumulative probability of 6? It's the proportion of responses that are 6 or less. Then we take the log of that. In a logistic regression, the probability is discrete. Here it's either geater, or less than or equal to, k. "}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="$\\phi$ is where the action happens."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="As a consequence, if you solve this, you get the logistic function, because it's the same link."}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
@@ -164,15 +251,111 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="These grey bars are the probabilities on the left. For every $k$ value, there's a different bar. Just proportions."}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="When we run a ststatical model, we need the probability of each discrete $y$. To get those, we need to sbustract adjacent grey bars.The whole reason it uses a cumulative link is to establish the order. Very clever trick. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="If you try to take it down, it looks horrible. Because all that fiddling is just a bunch of algebraic transformations. No one ever does this. But just shows you that it's all algorithmic. Just a categorical distribution."}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="All you specified is two things. The linear model. You don't have one intercept, you have a lot. With 7 categories, you have 6. Why? To get the histogram. You need a unique intercept for the log cumulative proportion of that type. You don't need the last one because you know it's 100%. Called `cutpoints` here. If you"}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="4 means always, -4 means never. Run this model and spit out the cutpoints. 6 of them. Totally uninterpretable. These are log-cumulative probabilities. Can interpret them by converting back."}
+knitr::include_graphics(file.path(slides_dir, '40.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Just need `inv_logit`. "}
+knitr::include_graphics(file.path(slides_dir, '41.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's compare them to the picture again. What has it done more than that? Cutpoint 1 is about 1.3. It isn't exactly redescribing the sample, but it's close. There's posterior uncertainty."}
+knitr::include_graphics(file.path(slides_dir, '42.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now we think about all the cutpoints as alphas. And we'll subtract it from all the cutpoints. Why do we subtract it? Because we want to shift probability mass down when ratings go up. It's like we need to re-allocate mass. You can use any linear model. Notice there's no intercept, because you already did them with the cutpoints. We're going to be interested in interactions as well, of action and contact with intent. $A_i$ is action $I_i$ is intent. $C_i$ is contact. If you multiply those out, you get product terms. "}
+knitr::include_graphics(file.path(slides_dir, '43.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Write this into `ulam`. Give all the others priors. cutpoints on the logit scale. "}
+knitr::include_graphics(file.path(slides_dir, '44.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What these coefficients do is tell you how the cutpoints get distorted when you add or subtract a feature from a story. Can't tell much from just looking at the parameters, but you can see they're all negative = each adds disapproval. Interaction for IC is the worst. "}
+knitr::include_graphics(file.path(slides_dir, '45.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="These models are complicated. There are lots of options for plotting like this. Will show you the personally most useful. Also helps to explain how the linear model works."}
+knitr::include_graphics(file.path(slides_dir, '46.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The thing about the posterior is that it's predicting a distribution. So it gives you a probability for every observable value from 0 to 7. So it's a vector, also called a simplex. So we have to plot that vector to see what happens. We have the two possible values of intent. Blue points are the data, and we're only lookking at scenarios when action and contact are 0, and seeing how intention affects it. Black lines are 50 samples from the posterior. Can see the model isn't exactly describing the sample, but is describing the changes in an accurate way. Why do the lines tilt up? Because you squeeze probabiltiy off the top and reallocate to the bottom. **When the lines tilt up, the mean goes down**, beucase there's more mass at the bottom. That makes the average response go down. The cutpoints determine the lines. But your attention should be on the gaps. "}
+knitr::include_graphics(file.path(slides_dir, '47.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now looking at the interaction effect. In the middle we look at where action's present, and we add intent. The lines tilt up again, but more. So there's more interaction, making it even worse. On the right, pushing the Rock off the footbridge, contact implies action, so we've got both action and contact. They tilt up, but a lot more, so there's a lot more probability mass. Especially if there's intent. Lots of these plots in policy journals. "}
+knitr::include_graphics(file.path(slides_dir, '48.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Try to summarise this. We're going through all of this fuss because the spaces are different. We can luckily do that. Going to use same dataset, but we're going to add another variable, `edu`, indicating completed education. An important category here is `Some College`. "}
+knitr::include_graphics(file.path(slides_dir, '49.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There's an ordering here. A cumulative, monotonic idea. If we treated this as a metric, you could maybe get away with that, but ignores the discreate category, because it assumes that each level contributes the same amount of effect on your response. The trick here is if you want to assign a prior and not go insance, you want to code it in a particular way. "}
+knitr::include_graphics(file.path(slides_dir, '50.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's how you do it. You've got $\\phi$. We're going to add the $\\delta$ parameters. Someone who completed the first level of education will get $\\delta_1$ "}
+knitr::include_graphics(file.path(slides_dir, '51.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Someone with second gets both $\\delta_1$ *and* $\\delta_2$."}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In our case we have 7, and we sum over all our different deltas. It's a single predictor, but it implies a bunch of parameters. "}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In practice we have plenty of these. We factor out the sum of all the deltas, and that's the maximum possible effect. Whatever that sum is, here we've called it $\\beta_E$ and that's the maximum effect of education. All the deltas now sum to 1. We can lose the delta. Where does the free delta go? It becomes beta. Then the priors on the deltas you could make them all the same."}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The Dirichlet distribution is a distribution for probability distributions with discrete outcomes. It has one argument, $\\alpha$, which is a vector, and when you sample from it, you get probiablitiies, one for each of the categories. It's everywhere. It's a genralisation of the beta distribution. You could have a million in principle. "}
+knitr::include_graphics(file.path(slides_dir, '55.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '56.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In this case we have a 7-dimensional Dirichlet. What's the relative importance of completing each level of education? We set every alpha value to 2, and sample from them, you get different distributions. When you set all the alphas equal, that isn't saying you think all the probabilities are the same, but that you have no reason to think they're different. Most samples don't give you distributions where they're all the same. "}
+knitr::include_graphics(file.path(slides_dir, '57.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are some ghost similarities. By the time you get to alpha = 64, it's saying they're all about equal. We'll say alpha = 2. "}
+knitr::include_graphics(file.path(slides_dir, '58.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So if you want to do this with `ulam`. This is what your computer is doing. "}
+knitr::include_graphics(file.path(slides_dir, '59.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="When you run this model, look at the first parameter, `bE`. Notice that it's negative. So individuals who have completed a degree give more disapproval. Education makes you more judgy. The treatment effects are much bigger than educuation levels. Then in this pairs plot you see the deltas. Some are bigger than others. Lots of individuals with some college tells you nothing. There's no effect. "}
+knitr::include_graphics(file.path(slides_dir, '60.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If you run the model with education as a metric effect, we run it as an ordinary regression, and it overlaps 0. Why? Because of the some college effect. A linear treatment of it get dampened out. "}
+knitr::include_graphics(file.path(slides_dir, '61.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '62.png'))
 ```
 

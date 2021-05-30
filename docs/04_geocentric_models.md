@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-26'
+date: '2021-05-30'
 output:
   html_document:
     toc: true
@@ -136,7 +136,7 @@ prod(1 + runif(12, 0, .1))
 ```
 
 ```
-## [1] 2.038528
+## [1] 1.736866
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
@@ -551,8 +551,8 @@ rethinking::precis(m4.1)
 
 ```
 ##             mean        sd       5.5%      94.5%
-## mu    154.606995 0.4119934 153.948550 155.265440
-## sigma   7.731309 0.2913838   7.265622   8.196997
+## mu    154.607203 0.4119458 153.948834 155.265572
+## sigma   7.730415 0.2912995   7.264862   8.195968
 ```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
@@ -584,7 +584,7 @@ precis( m4.2 )
 ```
 ##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51757 0.9289236  23.03297  26.00216
+## sigma  24.51753 0.9289199  23.03293  26.00212
 ```
 
 ***4.3.6 Sampling from a `quap`***
@@ -636,12 +636,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 154.8512 7.723557
-## 2 155.1297 8.064942
-## 3 154.0598 6.999181
-## 4 154.6686 7.799261
-## 5 154.8335 7.966827
-## 6 154.8159 7.668216
+## 1 154.6288 7.702175
+## 2 154.4285 7.847383
+## 3 155.1852 7.846691
+## 4 154.6771 7.806205
+## 5 155.4135 7.585354
+## 6 155.0283 8.375732
 ```
 
 
@@ -651,8 +651,8 @@ precis(post)
 
 ```
 ##             mean        sd       5.5%      94.5%    histogram
-## mu    154.606137 0.4140252 153.949236 155.262547     ▁▁▁▅▇▂▁▁
-## sigma   7.728491 0.2897498   7.264243   8.191132 ▁▁▁▁▂▅▇▇▃▁▁▁
+## mu    154.606152 0.4146432 153.947756 155.271550      ▁▁▅▇▂▁▁
+## sigma   7.725941 0.2933462   7.258785   8.199547 ▁▁▁▂▅▇▇▃▁▁▁▁
 ```
 
 Here's a peak under the motor of `extract.samples`:
@@ -1182,7 +1182,7 @@ shade( height.PI , weight.seq )
 
 <img src="04_geocentric_models_files/figure-html/unnamed-chunk-66-1.svg" width="672" />
 
-## 4.5 Curves from lines
+## Curves from lines
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L04/17.png" alt="That's linear regression. The funny thing about it is not linear. Really linear regression is additive. You have an equation for $\mu$ which is a sum of a bunch of variables. We should call these additive regressions because you can use them to draw &quot;lines&quot; i.e. curves from lines. Why? There's no reason that nature should be populated by straight-line relationships. We routinely have reason to think about curvo-linear relationship. There are common strategies. The two most common are polynomial regression - the most common - involves adding a square term. Also pretty bad. Often it's used irresponsibly.The second is splines. Basis splines, probably the most common. Computer drawing software uses these. They don't exhibit the common pathologies of polynomials. But remember that they're geocentric models. So when you receive the information from the model, there's nothing mechanistic about this, and they can exhibit very strange behaviour outside of the range of the data. " width="80%" />

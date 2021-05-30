@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-26'
+date: '2021-05-30'
 output:
   html_document:
     toc: true
@@ -71,14 +71,9 @@ slides_dir = here::here("docs/slides/L05")
 <p class="caption">Have the goal of both building it up and breaking it down. Can remove spurious correlations, and uncover masked associations you wouldn't see otheriwse. But adding variables can cause as much harm as good. You can actually hide associations as well. So you need a broader structure to think about this. </p>
 </div>
 
-
-```marginfigure
-Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion.
-```
-
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/08.png" alt="Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. " width="80%" />
-<p class="caption">Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. </p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L05/08.png" alt="Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion. Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. " width="80%" />
+<p class="caption">Making decisions between good and bad will mean forming a framework to make them. The goal is to learn the back-door criterion. Waffle House doesn't cause divorce, but something does. The South is more religious. Lot's of things that are correlated with divorce rate. Marriage rate? Can't get divorce if you haven't been married, but could also be spurious. Might indicate that it's a society that views things favourably. </p>
 </div>
 
 ## Spurious association
