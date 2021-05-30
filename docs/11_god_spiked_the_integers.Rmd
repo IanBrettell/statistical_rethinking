@@ -1,20 +1,19 @@
 ---
-title: "Chapter 11. God spiked the integers"
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    dev: 'svg'
-    number_sections: false
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
 #output: html_notebook
-#editor_options: 
-#  chunk_output_type: inline
+editor_options: 
+  chunk_output_type: inline
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
 ---
 
-# Setup
+# God Spiked the Integers
 
 ```{r, message = F, warning=F}
 library(here)
@@ -26,457 +25,220 @@ slides_dir = here::here("docs/slides/L12")
 ```
 
 
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_02_fireflies.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
 ```
 
-Fireflies flash in sync. All that's need to acheive this is to bring forward the internal clock every time they see a flash.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_03_kirkwood_gaps.png"))
+```{r, echo = F, out.width='80%', fig.cap="Some motivation. These are simulated fireflies. They synchronise their flashes. The whole forest will flash at once. They're slowly synchroninising. Each is a clock, and when it hits 12 it flashes, but they turn their clocks forward each time a firefly near them flashes. That's all that's required to get perfect synchrony. Heartbeats do this. We're stuyding discrete phenomena. And what's interesting is that underneath they aren't discrete. Just like the GLMs I'm teaching. "}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
 
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_04_asteroids.png"))
+```{r, echo = F, out.width='80%', fig.cap="Number of belts close together, like Saturn's rings. There are significant gaps, and they occur at even integer ratios of Jupite's orbits. It's like God spiked the integers. "}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
 
-# 11.1 Binomial regression
-
-* **Generalized linear models** (GLMs) are like early computers - the moving pieces inside interact to produce non-obvious predictions. But we can't read the paramteres directly to understand the predictions. 
-
-
-## 11.1.1 Logistic regression: prosocial chimpanzees
-
-The data come from an experiment aimed at evaluating the procsocial tendencies of chimpanzees.
-
-While both levers deliver food to the focal animal, only one of the levers delivers food to the other side of the table.
-
-There are two experimental conditions: in the *partner* condition, antoher chimpanzee is seated at the opposite end of the table. Int eh control condition, the other side of the table is empty. 
-
-```{r}
-# trimmed data list
-data("chimpanzees")
-d = chimpanzees
-
-# Add index variables
-d$treatment = 1 + d$prosoc_left + 2*d$condition
-
-# Verify with crosstabs
-stats::xtabs( ~ treatment + prosoc_left + condition , d )
+```{r, echo = F, out.width='80%', fig.cap="Jupiter is like a large parent pushing you on a swing. It pushes asteroids out of orbit when it gets to push them at the same orbit at every time. When it's not at some integer resonance, it'll stay there to be found as an asteroid. Nature is full of discrete phenomena, but underneath they're not discrete; they're complicated. "}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
-Let's try with a flat prior:
-
-```{r}
-m11.1 <- quap(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a ,
-    a ~ dnorm( 0 , 10 )
-  ) , data=d )
-
-# Now sample from the prior
-set.seed(1999)
-prior = extract.prior(m11.1, n = 1e4)
-
-# Now conver the parameter to the outcome scale using the Inverse-link function.
-
-p = inv_logit(prior$a)
-dens(p, adj = 0.1)
+```{r, echo = F, out.width='80%', fig.cap="We turn to these models. To remind you, we're processesing chimp lever-pulling data. We're dealing with getting sinsible priors. Last time it was about slope. Now we're also thinking about treatments. There are 4 treatments. Partner at the table or not, and whether the food is on the left or right. We want to measure unqiue log-odds for each of those. Flat prior on the logit scale is definitely not flat on the probability scale. Same problem for the treatment. For the prior predictives, we want to look at the distribution of differences."}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
 
-Before it sees the data, the model thinks the chimps either never or always pull the left lever.
-
-Now we need to determine a prior for the treatment effects, the $(\beta)$ parameters. To emphasis the weirdness of flat priors, let's see what Normal(0,10) looks like. 
-
-```{r}
-m11.2 <- quap(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a + b[treatment] ,
-    a ~ dnorm( 0 , 1.5 ),
-    b[treatment] ~ dnorm( 0 , 10 )
-  ) , data=d )
-
-set.seed(1999)
-prior <- extract.prior( m11.2 , n=1e4 )
-p <- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )
-
-# Plot absolute prior difference between the first two treatments
-dens( abs( p[,1] - p[,2] ) , adj=0.1 )
+```{r, echo = F, out.width='80%', fig.cap="I'm using `rnorm` to sample some parameter values and look at some differences. Left is simulating the intercept alpha. A flat prior transformed to the probability scale it puts all the mass at 0 and 1, so we use 1.5. On the right we have the difference. The biggest difference is 1, smallest is 0. Again if you iuse something large on the logit scale, on the probability scale assumes that the treatments are either 0 or 1. We want it to reflect that the differences probably aren't large. To be near 0 you need a tighter scale parameter."}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
-This doesn't make sense. Typical behavioural treatments have modest effects.
-
-Average prior difference:
-
-```{r}
-m11.3 <- quap(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a + b[treatment] ,
-    a ~ dnorm( 0 , 1.5 ),
-    b[treatment] ~ dnorm( 0 , 0.5 )
-  ) , data=d )
-set.seed(1999)
-prior <- extract.prior( m11.3 , n=1e4 )
-p <- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )
-mean( abs( p[,1] - p[,2] ) )
+```{r, echo = F, out.width='80%', fig.cap="Ran four chains and here's the summary. 7 chimp parameters and 4 treatment parameters. Each posterior mean is on the logit scale, so this is the log-odds handedness preference. Above 0 means they pull the left lever more than chance. You can see there's a tendency for right-handedness. Chimp 2 knows what chimp 2 wants, which is the left lever. "}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
-The average prior difference is about 10%. Extremely large differences are less plausible. However this is not a strong prior, so if the data contain evidence of large differences, they will shine through.
-
-Let's turn to Hamiltonian Mone Carlo to approximate the posterior. `quap` will doa fine job, but only because the priors are sufficiently regularizing. 
-
-
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_05_logit.png"))
+```{r, echo = F, out.width='80%', fig.cap="Let's look at the individual difference parameters. Chimp 2 is 'lefty'. He never pulled the right lever. The others have some more variation, with a slight tnedency for handedness. 7 has no preference. So handedness adds noise. It's not technically a confound, but it makes measurement harder. Backdoor criterion doesn't tell you to control for handedness. We don't need it because this is an experiment."}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_06.png"))
+```{r, echo = F, out.width='80%', fig.cap="N = no partner; P = partner. This is an example of how hard it is to figure out what happened in the experiment. The contrasts of interest are the interaction. We need them to choose the prosocial option more when there's a parter on the other end, not just because there's more food on that side. When the prosocial option is on the left, we'd expect higher estimates. For the other two treatments are on the right hand side, and they do, but there's not much of an interaction effect. The side of the prosocial option has more effect, but not as much of the handedness. "}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
 
-The right is the probability difference between treatments. We just subtract one from the other. The biggest difference is 1; smallest is 0. Absolute difference. The black density is the 0,10 Norm. Treatments are all identical or completely different. That's not the correct thing to assume. We want a prior that says the differences aren't that great. Something like SD = 0.5. So you need a tigther parameter scale on the prior.
-
-Now we run the model...
-
-
-```{r}
-# trimmed data list
-dat_list <- list(
-  pulled_left = d$pulled_left,
-  actor = d$actor,
-  treatment = as.integer(d$treatment) )
+```{r, echo = F, out.width='80%', fig.cap="It's much easier to just plot this stuff on the outcome scale. Just push the posterior distribution out through the model onto the prediction scale. This is the raw data, with some augmented lines. Each group is an actor, and I've taken all pulls and averaged them. The different treatment are points. Filled are partners. You can see that other than 2, they pull the left lever more when there is more food on that side. But the lines are pretty horizontal. If they titled more, you'd get a big change when you added a partner, but we don't see that consistently. That's the raw data. "}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
- Now we start the Markov chain. 
-```{r, results = "hide"}
-m11.4 <- ulam(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a[actor] + b[treatment] ,
-    a[actor] ~ dnorm( 0 , 1.5 ),
-    b[treatment] ~ dnorm( 0 , 0.5 )
-  ) , data=dat_list , chains=4 , log_lik=TRUE )
-
-precis( m11.4 , depth=2 )
+```{r, echo = F, out.width='80%', fig.cap="Now look at the posterior predictions. This is what it thinks. Sees that every chimp has the same partner effect. Can't vary based on actor. If anything, adding a partner reduced the tendency to pull left. Look at actor 2's predictions. The model is not sure that it would never pull it again. So even though the data has no variation in it, the model does. With 5-year-old kids, adding a partner changes everything."}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_07_chimps.png"))
+```{r, echo = F, out.width='80%', fig.cap="If you want to do model comparison, you'll have to add this `log_lik` which computes the log probability of each observation. Once you hav those, they get spit out of the chain. Have to do it optionally because it can exhaust the memory on your computer. So if you don't need it, don't add it. Here I'm using `LOO` to compare. There's no interaction because there's no unique parameter for that. Now we can confirm that the interaction is not doing any work, because the models are the same on the prediction scale."}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
-We ran four chains here and here's the summary. 7 chimp parameters and 4 treatment parameters. Each posterior mean is on the logit scale for handedness preference. Above 0 = left lever pulled more. Below is pulled left. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_08.png"))
+```{r, echo = F, out.width='80%', fig.cap="You'll get used to bionmial and logistical regression through examples. You can talk about effect scales in two different ways. And you need both. When you're looking at differences between parameters on the log-odds scale, they're relative. Why? Because you're not talking abou tthe probbaiblity of the event happening. But if you want to predict how it happens in the real world, then the base rate matters. That's absolute. Something can seem really big when the absolute effect is small. The proportional odds adjustment is 0.9. SO that's 90% of the preivous odds. If you switch the lever, you reduce the odds by 90%. The risk with this is that unimportant things  can seem super important on the relative scale... because of base rate effects."}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
-We extract the samples and transform them to the porbability scale using inverse logit. Them dump into precis and plot it.
-
-Chimp 2 knows what chimp 2 wants. 
-
-Handedness is not technically a confound, but it makes measurement harder. 
-
-Now look at the treatment effects.
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_09.png"))
+```{r, echo = F, out.width='80%', fig.cap="The parable of absolute shark and relative penguin. This says don't worry about sharks. Why is it easy to believe that more deer kill people than sharks? Because people aren't aquatic. There's an exposure effect. Each individual deer is less dangerous. THe absolute danger of a shark conditioning on the distibution of people acorss the earth is very small. But what if you're a penguin? HTen the absolute risk is much larger. "}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
-Even reading parameters in something simple is hard. You need them to choose the prosocial option more when there's a partner on the other end. How do you figure that out? Let's look at the two treatments with L on the front. Now we expect higher estimates. But now there's not a diffference between when there's a partner or not. 
-
-Now for 1 and 3 when the food is on the other side, there's not a big effect. They're not as big as the handedness effects.
-
-It's much easier to plot it on the outcome scale.
-
-> If you want to understand the behaviour of a model, you should make it behave on the outcome scale.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_10.png"))
+```{r, echo = F, out.width='80%', fig.cap="Relative effects are useful, but misused in epidemiological risk because it can make a very rare disease look dangerous when something you do doubles the risk. 3/4 of all lung cancer is cauised by smoking, but lung cancer is still very rare. MOst of the risk is from heart disease. But you really need relative effect to do cuasual inference to transfer results to things with different base rates. YOu need to think about both. "}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
-Each group is an actor, and they're anchored to a single point. Open points = no partner present. Then we have the two groups connected by lines depending on whether the prosocial option was on the left or the right. 
-
-Forget actor 2. For the others, you can see that there's one group that consistently deviates, and that's that they pull the left lever more when there's more food on that side on the table. But the lines are pretty horizontal. If they tilted more there'd be an interaction, but we don't see that. 
-
-After you've trained the model on the data, it thinks there are more pulls left when prosocial is on the left. Adding a partner if anything reduced the tendency to pull to the left.
-
-Look at actor 2's prediction. It's not absolutely sure that it would always pull left. 
-
-Very distinct to 5-year-old humans. The prosocial option changes everything. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_11.png"))
+```{r, echo = F, out.width='80%', fig.cap="We worry about lots of public health risks. Here's a famous case from the UK. Study of the way that a pill could create blood clots. Turns out that on average they develop in the absence of the pill at 1/1000. (In reality more like 1/10000). Lots of women stopped taking birth control and got pregrant, wihicn is much more dangerous. THis happens whenever th econdition of interest has a really low baserate. A big change in relative risk doesn't make a big absolute difference. But it does when the base rate is large."}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
-If you want to do model comparison between these `ulam` models, you have to add the `log_lik` option in the `ulam`s. This computes the log probabilty of each observation. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_12.png"))
+```{r, echo = F, out.width='80%', fig.cap="Bionial regression takes two flavours. Either Bernoulli as before, or here, 'aggregated bionmial'. Same kind of model with difference in how the data is coded. Graduate admissions data from Berkeley. Worried they might get sued for gender discrimination. See whether there's any evidence of gender bias. "}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
 
-We can compare this model's accuracy to the previous one to confirm that the interaction is not doing any predictive work. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_13.png"))
+```{r, echo = F, out.width='80%', fig.cap="This is the whole dataset. Each application is like a coin flip, with a probabilityt htat the candidate is admitted. There are 6 anonymised departments. `admit` is total offered, `reject` is the complement, and `applications` is the total. You could disaggregate them but it would be a really long table with a row of applications. This is a nice compact way to represent it and run exactly the same model either way."}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
 
-One of the tensions in interpretation is you can talk about effect sizes in two important ways. I call these the *relative* and *absolute* scales. When you're looking at differences between parameters on the log odds scale, it's relative. But if you wnat to predict the rate of the event in the real world, it's absolute. And the base rate (how often things happen) matters. The relative effect can seem really big even when the absolute difference is small. 
-
-0.9 means a 10% reduction in odds on the relative scale. The risk with this is that unimportant things can seem really impnortant on the relative scale. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_14.png"))
+```{r, echo = F, out.width='80%', fig.cap="Here's the model. Start by considering just hte index for the applcant's gender, male 1 female 2. Run this model, the marginal posterior distributions. This is log-odds. Lower numbers have lower probability on the outcome scale. Males have -0.22 and females -0.83, so it looks like it's biased in favour of males."}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
-Shark and penguin parable. If you tally up mortality from different animals, sharks don't kill many. That's the base rate effect. The exposure to deer is large, because humans are on the land. But what if you're a penguin? Then the absolute effect is large. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_15.png"))
+```{r, echo = F, out.width='80%', fig.cap="Let's calculate the relative and absolute effect sizes. `diff_a` is the difference in log-odds between male and females. Summarise with `precis`. On the probability scale it's between 0.12 and 0.16. That's a huge advantage. If you could swithc your gender, you would get a 10% advantage in admission. That's a big effect. Very fewe things have equally big effects."}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
-Relative effects are useful, and you see them (mis)used in epidemiological studies often, which can make rare things seem significant because of large relative effects. e.g. lung cancer - it's still rare, even for smokers. But you really need them to do causal inference, because you have to transport results to contexts where there are difference base rates. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_16.png"))
+```{r, echo = F, out.width='80%', fig.cap="Now push the posterior out through the model and get predictions. Ugly graph. Blue is raw data. Black is predictions. Open circle is posterior mean for each case in data (combination of department and gender). The posteriro predictions go down as you go from male to female, but at the department level, all except 1 are admitted at a higher rate. "}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-Other than Australians, we don't worry about sharks, but we do worry about other things.
-
-Increased rates of blood clots for women on birth control by 200%, so a lot of British women stopped taking birth control, even though the risk was still small and they have a much higher risk of death from giving birth. 
-
-Wearing your helmet in the car is a good idea.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_17.png"))
+```{r, echo = F, out.width='80%', fig.cap="There's a backdoor path into gender. One of them is department. They have idfferent overall admission rates. e.g. physics has small number of applicants, and they take half. Social psychology has many more applicants,a nd take 10%. The applicant for these departments differ on gender. Gender influences which department you apply to. Then department influence probability of admission. Interpretation is legally distinct. One leads to Berkeley getting sued, the other gets them off. There are other backdoors, to explore in the homework. Add another vector of parameters. Estiamte them with deltas. "}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-Binomial regression comes in two major flavours: 
-1. Logistic regression. The outcomes are decomposed into 0,1 (Bernouli) trials. Mathematically it's the same as..
-2. Aggregated binomial. 
-
-Same kind of model, just differ in how the data is coded. Very interesting because a high profile publication came out if this, which illustrates some important statistical principles.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_18.png"))
+```{r, echo = F, out.width='80%', fig.cap="Let's first think about what the previous model actually asked. They're like hostile genies, who will answer your questions extremely literally. The first model is not asking what the direct path is. It's asking the total causal effect of gender, not the discrimination effect. If you want just that one path, you have to use a different model. You need to close the back door. "}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
 
-Each application is a coin flip, with the result as their admission. 6 anonymised departments. Gender column. Admit column is total number admitted. Reject is the complement. Last column is the total. You could disaggregate this table to a row of each column.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_19.png"))
+```{r, echo = F, out.width='80%', fig.cap="Need to condition on the department's average admission rates. Both causal questions, but different ones. "}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
-Male is 1, female is 2. Now there's a variable number of trials on each row. Males have a higher average rate of admission. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_20.png"))
+```{r, echo = F, out.width='80%', fig.cap="Code for the model on the previous slide. Bunch of delta estimates. Notice that some of them are high. Greater than 0 is more than half of applications. Think they're electrical engineering and physics. Then 6 I think is social psychology. Most applications are rejected. Don't have enough slots for the interest. `a` parameters are basically the same. "}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-Think about the penguin. Calculate the difference in log odds (relative), then the difference in the absolute measure (absolute).
-
-Between 0.12 and 0.15 on the probability scale, that's a 10% advantage. That's a huge effect.
-
-Now do the posterior validation check.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_21.png"))
+```{r, echo = F, out.width='80%', fig.cap="Again, same code. On the relative scale, codnitioning on department, is on averge -0.1. On the probability scale, it's on average a 2% disadvantage for males, but overlaps 0 a little bit. This is Simpson's paradox, where you add a variable and the effect flips. You can do this endlessly. It has to do with backdoor paths. It could be a spurious reversal, or it could be a causal one. "}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
-Always looks ugly. Blue is raw data, black is model-based predictions. Open circle is the posteriro mean probability of admission for each case in the data. Posterior predictions go down from male to female, but at the department level, females are almost always admitted more than males. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_22.png"))
+```{r, echo = F, out.width='80%', fig.cap="In this case, the reversal tells us something about teh reason. The system is discrimintory, but the departments would not. "}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-There's a backdoor path into gender, and one of them is department. Some get a small number of applicants and take half (physics). Social psychology has many applicants and only takes 10%. The applicants' gender differ across departments.
-
-We add another vector of parameters - department - and we estimate the offsets with deltas. 
-
-
-Regression models are list hostile oracles. They understand your questions extremely literally. Conditioning on the department's overall admission rate, what's the average difference between males and females.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_24.png"))
+```{r, echo = F, out.width='80%', fig.cap="I have a homework problem where you can explore other paths. It's very hard to make causal inference from these samples, because it's not experimental. If you're doing an intervention to fix this, you need more slots for social psychology."}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-Now we get some estimates. Just notice that some deltas are high, meaning that the majority are accepted. Department 6 is social psychology.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "L12_25.png"))
+```{r, echo = F, out.width='80%', fig.cap="Like binomial models, in whcih the number of trials is unknown and very large, but the probability the event happens is very small. lambda is the average number of events. The variance is also lambda."}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-How you intepret this reversal depends on the model. Simpson's paradox.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "26.png"))
+```{r, echo = F, out.width='80%', fig.cap="Famous dataset of Prussian soliders getting killed by horse kicks."}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "27.png"))
+```{r, echo = F, out.width='80%', fig.cap="Michelle does ethnographic field work. Interestd in Oceania as a natural experiment in cultutral evolution. Theoretical model that says that cultural evolution is proportional to the logarithm of population size. Even these islands have a small population, they might have a high contact rate."}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-The systems is discriminatory, but the application assessors are not. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "28.png"))
+```{r, echo = F, out.width='80%', fig.cap="We'll use a Poisson GLM to model this. Our link is a log-link. This ensures that a parameter is positive. Lambda has to be positive because it's an expected count. "}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-Homework problem using a different dataset.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "29.png"))
+```{r, echo = F, out.width='80%', fig.cap="Can't have a negative expected count. Maps all negative real numbers to the 0,1 interval. e^0 is 1. All of the positive real numbers get mapped from 1 to infinity. It's really explosive. Literally exponential. We exponentiate the curve. 0 or the left scale is mapped to 1. So you get a massive compression of small numbers. And the other half is 1 to infinity. Hard to have intuitions about it, so we should simulate. "}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
-These are like Binomials but the number of trials are unknown and very large. But the probability that it happens is very small. In that case you can describe it with one number: $(\lambda)$
-
-Nature is full of Poisson distributions. 
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "30.png"))
+```{r, echo = F, out.width='80%', fig.cap="Need to do prior predictive simulation because of this explosive scaling. Play with some rudimentary Poisson with something 'benign' liek Normal(0,10). Plotted that distribution in black. Doesn't look very flat. The mean of this distribution. The tail goes for a very long time. So something like norm(3, 0.5) gives something that we see in these kinds of archaeological datasets. At least now the prior mean isn't in the billions. 9^12 is a lot of tools. An island full of tools."}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "31.png"))
+```{r, echo = F, out.width='80%', fig.cap="On the left we have the slopes for the log population. If we put a normal(0,10) prior, it's explosive. That's a problem. Expect that you'll get a billion tools again. On the right something a lot tighter with 0.2, and a lot flatter on the outcome scale. WIth a GLM, if it's flat ont he linear model scale, it's not going to be falt on the outcome scale. But you hav ethe power of prior predictive simulation to sort this out."}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-Example dataset from cultural and technological evolution research. Research in Fiji. Interested in social evolution. Paper where she finds toolkit complexity. Underlying theoretical model that predicts that cultural complexity is proportional to the log population size. Outcome variable is total number of unique tool types. 
-
-Another variable is the contact rate, interacting with bigger societies.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "32.png"))
+```{r, echo = F, out.width='80%', fig.cap="`dpois` is R's Poisson. The top model is intercept only. The model of interest at the bottom. "}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
-Total tools at the top. Link is a log link which ensures a parameter is positive. Here it's an expected count. If you exponentiate any number you get a real number.
-
-Contact rates and an average on the log scale number of tools. Then a change (slope) for each contact rate times the log population size. Then priors to determine. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "33.png"))
+```{r, echo = F, out.width='80%', fig.cap="We can compare the two. This shows that once you get into GLMs, the efffective number of parameters have very little to do with the actual parameter count. The law in GLMs. All that nice relationship in Gausssian, which is a measure of your overfitting risk, is correlated with yoiur paramter count. Why? Ceiling and floor effects. LOO will still measure your overfitting risk. The model with more parameters has less overfitting risk that the model with only one parameter."}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
-Goal is to ensure your parameter is always positive. Maps all real numbers to the (0,1) interval. Scaling is explosive.. literally exponential. Massive compression of small numbers into a tiny range. This is a really difficult scale to think about. So you should simulate to understand the implications of the link functions. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "34.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
-Because of this explosive scaling, priors need to be simulated. Let's think about some rudimentary Poisson. We sample a bunch of `rnorms`, exponentiate them, then plot in black. In the text we've calculated the mean. This is the explosive scaling. But with Normal(3,0.5) we have a much nicer curve. It's going to move with the sample, but at least now it's in the sample space. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "35.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
-Slopes are equally hard to intuit. Calculate log population then centre it. If we put a Normal(0,10) prior, you get explosive scaling up or down. A billion tools again really rapidly. On the right something much tighter and flatter. If it's flat on the linear scale, it's not going to be flat on the outcome scale. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "36.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
-Top model is the intercept-only. The model of interest at the bottom. Compare the two 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "37.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
-This shows you the effective number of parameters have little to do with the parameter count.
-
-The more complicated model actually has less overfitting risk than the model with one parameter - actually common with Poisson models. Consequence of the way the log link generates predictions. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "38.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
-Poisson only needs one parameter - expected counts. 
-
-Here the posterior is on two difference scales. On the left is the log. Two trendlines - high and low (dashed) contact with neighbours. Very strong relationship with log population. Some difference in contact rates. Massive uncertainty for high populations. The crossover seems wrong. 
-
-On the right, it's on the natural scale. Same curves but squished and transformed. This comes from the Pareto smooth LOO cross-validation. It gives you the Pareto-k diagnostic, which is a measure of leverage - how much force is each point exerting on the posterior fit. Really useful. Hawaii is the biggest, and you can see why. Has an order of magnitude larger population, so only on informing what happens on that end. Don't think you want to drop Hawaii, but might want to for fun. It's doing a lot of work at the high end. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "39.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
 
-Could of criticisms with this model. I like GLMs because they're unreasonably effective. But they generate a bunch of anomalies. Often they produce ridiculous effects. 
-> Generalized linear madness
-
-Caused by missing scientific knowledge. The first thing is that the intercepts don't pass through the origin. It has to be true that the 0 and 0 have to go together (0 monkeys, 0 tools). This model doesn't assert that. Doesn't have the physics anchoring it where it has to cross. Not a total disaster. Also a weird thing where they cross at the top. 
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "42.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
-What we want is a dynamical systems model that says from one time point to the next, they're inventing and losing tools, and we get an expected number of tools. Simplest we could do is change in number of tools, with innovation inputs per person $/alpha$, then $\beta$ for diminishing returns for inventions. Then there's the loss rate $\gamma$. World's simplest cultural evolution model. Now we'll fit it to data. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "43.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```
 
-In this model, the intercepts pass through 0. You can pass this through a Markov chain - just draw some circles.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "44.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
-This is just the Poisson regression, but we have this expected lambda now. The only trick is that the parameters must be positive. One is that you can exponentiate the number, which I did with $\alpha$. 
-
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "45.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '47.png'))
 ```
 
-Now we can compare the two models. The scientific model still has flaws, but it passes through 0, and you get a solid separation between the solid and dashed lines. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "46.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '48.png'))
 ```
 
-If the different counts you have in the dataset, you may have different exposure windows. But say you're counting fish, and they come out in the Poisson rate. But if someone spends twice as much time fishing, you can't compare the counts - you need to adjust for the exposure difference. In Poisson, you just add an offset to the model, which here is the log of the amount of time spent fishing. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "47.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '49.png'))
 ```
 
-There are a number of other count distributions. Multinomial/categorical is like a dice rather than a coin. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "48.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '50.png'))
 ```
 
-Very important class of models. Two things to understand:
-1. Discrete (count) events are happening. Cat adoption dataset. But to do it properly, you need to estimate the rate of events. The paramters are about rates, and survival is a count. Because of the exposure window, the cat escapes. We don't know if it would have been adopted or not, so what do you do with that data? Don't throw it away, because it's information. So you count the waiting time until adoption, but also the amount of time you *weren't* adopted before you escaped. Phenomenon called censoring. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "49.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '51.png'))
 ```
 
-This is 20k cats. Data on the website. They all have chips in them. We're interested in adoption rates. Black cats to non-black cats. Estimate rates of adoption. Given some assumption about the rate, what's the probability of waiting for a week. Some cats die, some escape, and peer-censoring is the cat is still there, and the cat's life goes on.
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "50.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
 ```
 
-The simplest kind of distribution for survival analysis is exponential. Constant, then fast decay. Half-life. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "51.png"))
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
 ```
 
-With censored cats, you need to figure out what it means to not have been adopted after a certain time. The complement of the adopted cats up to a day is the cats not adopted up to that day. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "52.png"))
+```{r, echo = F, out.width='80%', fig.cap="Scientific grant awards. "}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
 ```
-
-You're really just coding the log posterior here. If adopted = 1, here's the probability. 
-
-```{r, echo = F}
-knitr::include_graphics(file.path(slides_dir, "53.png"))
-```
-
-Hypothesis was correct - black cats are discriminated against. 
 
 
