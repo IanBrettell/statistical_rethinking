@@ -15,6 +15,9 @@ rmd_files: ["index.Rmd",
             "06_the_haunted_dag_and_the_causal_terror.Rmd",
             "07_ulysses_compass.Rmd",
             "08_conditional_manatees.Rmd",
-            "09_markov_chain_monte_carlo.Rmd"]
+            "09_markov_chain_monte_carlo.Rmd",
+            "10_big_entropy_and_the_generalized_linear_model.Rmd",
+            "11_god_spiked_the_integers.Rmd",
+            "12_monsters_and_mixtures.Rmd"]
 
 
