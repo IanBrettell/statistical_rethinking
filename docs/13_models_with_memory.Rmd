@@ -1,0 +1,333 @@
+---
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
+date: '`r format(Sys.Date())`'
+#output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
+---
+
+# Models With Memory
+
+```{r, message = F, warning=F}
+library(here)
+source(here::here("code/scripts/source.R"))
+```
+
+```{r}
+slides_dir = here::here("docs/slides/L15")
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Way to justify multi-level models is that it's better to remember things than not to. Most of the statistical models we've considered up to this point is like this."}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In statistical language, they've all been fixed effects models. They have amnesia in that every time you move to a new cluster (indivdual, pond, block), it forgets everything it's seen about the thigns they visited previously. Learning develops expectations and lets us learn. MLMs develop expectations about all clusters in the data. They learn in a way that's invariant to the order that they miight visit them. That's the optimal way to learn. Some metaphors to latch onto..."}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Imagine you're visiting some cafes. The experience is largely the same. Here we're contrasting Paris and Berlin. Let's focus on one aspect of ordering - how long you wait for your cofffee. If you've never been to a cafe, you have no expectation of how long it takes. Then you go to Paris, and it takes 5 minutes. Then when you go to Berlin, you don't forget that experience, but you also don't think it's going to be exactly the same. A remmbering model treats a cafe as a population. And you can transfer infomration among units in that population. And that allows for better estaimtes for every cafe. Other thing to think is if it takes 10 minutes in Berlin, you had your 5 mintue prior, you update that with Bayesian updating, but the time order should be irrelevant to your learning. Now you need to update Paris too, because you have a limited sample in Paris, and you've got data from Berlin. So data from both are relevant to updating both of them. "}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="How much information you transfer across depends on how variable they are. You learnn this variance as well. Different metaphor now. In East Africa, one of the strategies for not getting intestinal infections was to carry around a bunch of chillies. These are goat peppers. Their spiciness is quite random. One could be a dud, and the next one will kill you. When estiamting the spiciness of one particular plant, you can use your expectation from the whole population but because the plants are so variable, it's hard to transfer informtaion. It woud be as if with cafes, some give it instantly, others make you wait half an hour, so it's hard to estimate how long you'll wait. This variation is another thing we have to learn."}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In this course, we have to wage our statistical battles on two fronts: causal inference. Avoid causal salad - they typical way it's done. Having a DAG you believe in is a small victory, but not the only thing. Getting precise estiamates is a whole separate technology. Today we'll be talking about the second. If we can use the data in more powerful ways, that's what we'll do. "}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are some really good defaults. Unfortuatnely they're not currently. As a default, you should always use multi-level regression. Single-level is always a bad idea. This is my favourite example of defaults. In some countries you are automatically. In others you have to opt in. In Germany, if you ask them if you should dontate your organs, most say yes. But the defaults are powerful, and MLMs are like that."}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are always reasons to use them, but they're always important. Typically they're better. "}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's what I want to get across today. Why shrinkage and pooling are good. How to do this with `ulam`. Show you how to plot and compre them. And going forward, this will open up a lot of model types. Factor models are a kind of MLM. Turtles all the way down; parameters all the way down. Model in a model. "}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others,a nd you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that."}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We already had examples in this course. All of these things are clusters. "}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experimeent they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pokd). "}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We have tadpoles in tanks (buckets). They're at different densities. Different maximums can survive. This will be binomial regression. Number at start and end. Dummy variable is what we've done before. Now MLM with different intercepts."}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is what we've done before. We have na index variable for tank. Different alpha. Regularising prior. Extreme mortality or survival will be viewed skeptivcally because of that 1.5. This is a fine model, but not a multi-level model. It has amnesia as you move from tank to tank. The only data in the dataset that informs each alpha is the data for that tank only. It learns about tank 1, using 7 tadpoles, estimates the alpha, then moves to the next tank and forgets all about it.  "}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We can do better than this. This is a reminder on how it's fitted."}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now let's try something different. Added some stuff in blue. Let's step through. "}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="$\\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Wheere there used to be (0,1.5). $\\bar{\\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\\alpha$. Then $\\sigma$, which is the SD in this population. So each $\\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\\bar{\\alpha}$ our regularizing prior, same with $\\sigma$."}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives bettte predictions. Now we'll learn it formt he data itself, and it's like visiting cafes. As you learn the variation among them, you pool the information across. "}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We have to learn those parameters and get posteriro distributions for each from the data."}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. YOu'll notice the line for $\\alpha_j$ looks liek the top line. The fcat that it's not observed is irrelevant.  "}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In code. Just write what's up there into `ulam`. "} 
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If you focus on the model structure, you can understand things. If you focus on terminology, you'll get confused. Let's compare these models. Want to show you something about flexibilty in random effects 13.1 is fixed effects. 13.2 is MLM. In terms of WAIC, they're very similar. Not much of a difference. But look at the effective number of parameters. 131. has 48 paramaters because there are 48 tanks. One parameter for each. It ends up with 25 effective. Why? Because of the regularising prior. It wasn't flat. That means there are tank where all the tadploles survived. What's the log-odds of that? Infinite. But because of the piror, you don't end up with an alpha of infinity. What's happening with 13.2 is we've addedd two more parameters  ($\\bar{\\alpha}$ and $\\sigma$). But fewer effective parameters. When teaching you about overfitting, the caveat was that every time you add a paramter the fit in-sample imporoves. *Other than* with MLMs. They learn how regular to be from the data itself. The regularising prior ends up being narrower. One of the coolest facts in statistics. Deep learning works because it's deep. Parameters stacked on parameters.  "}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Graphically, we'll compare the two models. Across the horizontal is all 48 tanks. They come in three sizes. You'll see that experimentally they were set up to be small, medium and large. Very cool experiment. Small have smaller initial density. Medium and large likewise. On the vertical, we're looking at the proportion survive. The outcome scale. Or the probability of survival. Blue dots are raw data. So you'll see the 1s on top. That's where all the lucky tadpoles lived. The open cricles are the multi-level estimates. THere's a pattern here - shrinkage. The model is not retrodicting the sample, but that's why it's a good model. Wnat to learn the regular features to make better predictions. The regularizing prior was learned from teh data so it knows how to treat all the data. The dashed line is the popoulation mean, $\\bar{\\alpha}$that we have estimated from the data."}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The raw mean is in a different place. Why? The raw mean comes from taking all the tadpoles and putting them into one group. The ones on the right bias the estimate because ethe survival rate is lower. If you want the mean of a population in idniviaul tanks, it's not pappropriate. "}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Above the dashed line, the open circles are off the blue lines towards the dashed line. The closer you are to it, the less difference between the two. If you're below the dashed line, you go up. This is shrinkage - shirnakge toward the poupatlion mean. If the divergence formt eh popuation mean is extreme, it's more sceptical and shrinks more. "}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Large tanks you see the shrinkage is smaller because there's more evidence in each tank - greater sample size. So more precise estimate in each tank. Each tank can overwhelm the information in the population. Only observations are 0 or 1. Otherwise we'd have massive overfitting. In any particualr dataset the exact amount of shrinkage will depend on many variables. Here it's reducing the fit-to-sample to improve rpedictive accuracy. You add parameters, and get better predictions out-of-sample.  "}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The more often you go to a cafe, the more data you have on that cafe, the less you need the population information. Extreme values are treated with sceticism of getting the same ones in the future."}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="All of this is really dealing with over/under-fitting. No pooling because there's no information being excahnged among clusters. How much pooling? Depends on variation among clusters. "}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Try to back this up with a picture. MLM at the top. Focus on $\\sigma$. If this was the cafes, it's the variation in wait times. "}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="On the left it has a minimum of 0. If we fix it at 0 or put a really strong prior on it, it converges to the pooling model. All clusters are the same, and it will converge to the grand mean. Exactly one alpha. They're all there, but all the same."}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="On the other extreme, it's infinity. If sigma goes there, you get no pooling. Statistically assuming all tanks are infinteily different from each other. As a vertebrate, as you go from cafe to cafe, you do the pooling. YOur brain won't let you ignore the variation. But a statistical model won't do that unless you tell it to. If you want to program a robot to borrow information across clusters, you can't let $\\sigma$ be infinity. The estimate for any particular alpha will be a mix of the data in that tank and all of the other tanks. The mix depends on the variation on the tanks. If there's no variation across tanks, then the whole population is used. If sigma goes to infitnty , you ignore the population."}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In this paritcular model, you estimate sigma for the data, and it turns out to be this posterior here. Can get an almost Gaussian posterior. And that's the extreme amount of variation. What does this population look like? Not a real population, but a statistical one."}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The population-generating process is called an ecologist. Those processes generate popualations with real mortality effects. We can draw this statistical population. Combinations of alphas and betes produce lines. Alphas and betas are correlated, which is why you need to draw correlated smaples from the posterior. Now the lines are a distribution of distributions. We don't know the distribution. Let's draw it. We could just draw correlated pairs as densities. On the left is a gaussian distribution of log-odds probability. Why Gaussian? Because we said it was. Most tadpoles survive. But there's a lot of heterogeneity. You can see that in the distribution. Ont he right I've transofrmed to the outcome probability scale. About half of the tanks we get a high survival rate. "}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So I keep asserting that the shrinkage estiamtes are better. Let's demonstrate it. We do better in prediction. WAIC works in theory, predicting the out-of-sample accuracy. Regularisation is good. Simulate a bunch of ponds, 60 of them, with different densities of tadpoles in each of 15 ponds. `true.a` is the true log-oddds survival rate. True because we' ve simulated it. THen simulated surivval events. `s`. Therea re some wipeouts, like pond 5. Then the next two are statsitcal estiamtes. `p.nopool` is the raw fixed effects estiamte. The MLM estimate is `p.partpool`. Then `p.true` is the inverse logit of `true.a`. Now we can assess because we can compare it to the truth."}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="On the left we have tiny ponds. The blue points are the raw proportions survived. The open points are the partial pooling estimates. The error is the absolute error from the true value. 0 is totally correct. A lot of error here because you've only got 5 tadpoles. Hard to estimate the probability of heads if you only flip the coin 5 times. THe blue horizontal bar is the average of the raw estimates, the dashed is for the MLM. They're not perfect, but they're better. THis is all shrinkage. "}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The other tanks. The pattern holds as you go across. The amount of error declines, because we have more data. The difference, the advantage of MLMs, shrinks. But still estimates the popualtion, which is important for prediction. So even when it doesn't give you bettre predictions, it allows you to make them in the right way because it takes account of populations. "}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+-----
+
+```{r}
+slides_dir = here::here("docs/slides/L16")
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Experiment with a small number of chimps. Replicated on each. 4 treatments with prosocial option. Question is do they intepret it that way? "}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+
