@@ -241,7 +241,7 @@ knitr::include_graphics(file.path(slides_dir, '53.png'))
 knitr::include_graphics(file.path(slides_dir, '54.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="How to do priors? They behave in GLMs in very unpredictable ways. So need to do prior simulation. Let's consider a skeletal verison of Bionmal regression where the linear model is some alpha, some intercept, the avberage log odds across all trials. What kind of prior to set on that. Let's set a Gaussian. Centered on a half. But what about the scale? What happens when you pick $\omega$."}
+```{r, echo = F, out.width='80%', fig.cap="How to do priors? They behave in GLMs in very unpredictable ways. So need to do prior simulation. Let's consider a skeletal verison of Bionmal regression where the linear model is some alpha, some intercept, the average log odds across all trials. What kind of prior to set on that. Let's set a Gaussian. Centered on a half. But what about the scale? What happens when you pick $\\omega$."}
 knitr::include_graphics(file.path(slides_dir, '55.png'))
 ```
 

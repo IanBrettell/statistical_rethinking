@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Chapter 12 Monsters and Mixtures | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-05-31" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="Chapter 12 Monsters and Mixtures | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>Chapter 12 Monsters and Mixtures | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+</ul></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
+<li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
+<li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
+<li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="monsters-and-mixtures" class="section level1" number="12">
+<h1><span class="header-section-number">Chapter 12</span> Monsters and Mixtures</h1>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="12-monsters-and-mixtures.html#cb237-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb237-2"><a href="12-monsters-and-mixtures.html#cb237-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="12-monsters-and-mixtures.html#cb238-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L13&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="slides/L13/19.png" alt="Here we get into more elaborate types of models. Like monsters. In mythology, they're not just bigger, but bits of animals stuck together. " width="80%" />
+<p class="caption marginnote shownote">
+Here we get into more elaborate types of models. Like monsters. In mythology, they’re not just bigger, but bits of animals stuck together.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/20.png" alt="If you're thkning of making a statistical monster, it's like junkyard challenge. " width="80%" />
+<p class="caption marginnote shownote">
+If you’re thkning of making a statistical monster, it’s like junkyard challenge.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/21.png" alt="Here, it's safe. And to make sure it works, use simulation. Use ordered categories and ranks. They look like cats, but aren't cats. Other kinds of things are mixtures, like beta-binomials. Zero-inflations are counts that arise from more than one process. So there are more than one way that you could get 0. YOur detection isn't good enough. " width="80%" />
+<p class="caption marginnote shownote">
+Here, it’s safe. And to make sure it works, use simulation. Use ordered categories and ranks. They look like cats, but aren’t cats. Other kinds of things are mixtures, like beta-binomials. Zero-inflations are counts that arise from more than one process. So there are more than one way that you could get 0. YOur detection isn’t good enough.
+</p>
+</div>
+<p><img src="slides/L13/22.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L13/23.png" alt="Here it's a simulation model. Silly, but there's a real problem here. You're a medieval investor who buys monasteries. Your issue is the output rate. How many manuscripts can you make per day? They copy manuscripts, but they also drink. We want to infer the number of days they get drunk." width="80%" />
+<p class="caption marginnote shownote">
+Here it’s a simulation model. Silly, but there’s a real problem here. You’re a medieval investor who buys monasteries. Your issue is the output rate. How many manuscripts can you make per day? They copy manuscripts, but they also drink. We want to infer the number of days they get drunk.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/24.png" alt="Let's build up the problem scientifically. There's a hidden state we can't observe. The question is: were they dryinking that day? Maybe they finished a bunch previously. If you observe a non-0, they weren't all drunk. Even though you can't say on any particular day whether they were drinking, you can say on average how often they drink. This arises in any kind of detection problems. e.g. counting birds. Does 0 mean no birds? Maybe you were distracted, or visibility wasn't good. Many ways to get 0. Also 0 augmentation in chemistry, where it needs to reach a certain level to be detected, but many reasons it didn't reach that level." width="80%" />
+<p class="caption marginnote shownote">
+Let’s build up the problem scientifically. There’s a hidden state we can’t observe. The question is: were they dryinking that day? Maybe they finished a bunch previously. If you observe a non-0, they weren’t all drunk. Even though you can’t say on any particular day whether they were drinking, you can say on average how often they drink. This arises in any kind of detection problems. e.g. counting birds. Does 0 mean no birds? Maybe you were distracted, or visibility wasn’t good. Many ways to get 0. Also 0 augmentation in chemistry, where it needs to reach a certain level to be detected, but many reasons it didn’t reach that level.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/25.png" alt="1-p is the time they work. Even fi tehy work, you could still get a 0. The blank ones are a pure Poisson process. The extra blue bit are the drunk days, where you get extra 0s. The aggregated data is not Poisson-distribued. " width="80%" />
+<p class="caption marginnote shownote">
+1-p is the time they work. Even fi tehy work, you could still get a 0. The blank ones are a pure Poisson process. The extra blue bit are the drunk days, where you get extra 0s. The aggregated data is not Poisson-distribued.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/26.png" alt="We need a function for the probability of any given observation. Need to count the number of ways you observe that thing conditional on your assumptions. Going to walk through the garden again. " width="80%" />
+<p class="caption marginnote shownote">
+We need a function for the probability of any given observation. Need to count the number of ways you observe that thing conditional on your assumptions. Going to walk through the garden again.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/27.png" alt="Say you observe a 0. There are two ways to do that." width="80%" />
+<p class="caption marginnote shownote">
+Say you observe a 0. There are two ways to do that.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/28.png" alt="We need both of those terms, and they're alternatives. Either p or 1-p exp(-lambda). " width="80%" />
+<p class="caption marginnote shownote">
+We need both of those terms, and they’re alternatives. Either p or 1-p exp(-lambda).
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/29.png" alt="Then there's only one way to observe *n*. " width="80%" />
+<p class="caption marginnote shownote">
+Then there’s only one way to observe <em>n</em>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/30.png" alt="To summarise, there are two ways. This is a DAG by the way, but a statistical one not a causal one. " width="80%" />
+<p class="caption marginnote shownote">
+To summarise, there are two ways. This is a DAG by the way, but a statistical one not a causal one.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/31.png" alt="This general strategy works for anything." width="80%" />
+<p class="caption marginnote shownote">
+This general strategy works for anything.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/32.png" alt="Usually there are all these ones that construct the right probability for every observation. We have two parameters - p, whether they drink or work, and you can make a model out of that. For example, the weather may determine whether they work or not, but how hard they work. But you need link functions on them. We have taken the cat and the dog and stuck them together. Really powerful, because natural observable processes are mixtures like this." width="80%" />
+<p class="caption marginnote shownote">
+Usually there are all these ones that construct the right probability for every observation. We have two parameters - p, whether they drink or work, and you can make a model out of that. For example, the weather may determine whether they work or not, but how hard they work. But you need link functions on them. We have taken the cat and the dog and stuck them together. Really powerful, because natural observable processes are mixtures like this.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/33.png" alt="In the book we simulate the data. When createing bespoke models, want to make sure the code works. We can do this dummy data process. The goal is to recover estimates and test the limits of the model." width="80%" />
+<p class="caption marginnote shownote">
+In the book we simulate the data. When createing bespoke models, want to make sure the code works. We can do this dummy data process. The goal is to recover estimates and test the limits of the model.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/34.png" alt="Here's the whole simulation. This is the same model, but going forward. All Bayesian models are generative, which means you can run them in either direction. If you don't have data, you can plug in parameters and produce data. That's waht we're doing here. If you have data but no paramteres, it's create a distibution of parameters based on their plausibility. Non-genersative models are harder to understand. Here we're saying the probability of working is 20%. We're going to have a whole year sampled. Then we just simulate. Then we simulate a binomial first, whether they drink or not. Then we simulate the manuscripts, which is conditional on the drinking. " width="80%" />
+<p class="caption marginnote shownote">
+Here’s the whole simulation. This is the same model, but going forward. All Bayesian models are generative, which means you can run them in either direction. If you don’t have data, you can plug in parameters and produce data. That’s waht we’re doing here. If you have data but no paramteres, it’s create a distibution of parameters based on their plausibility. Non-genersative models are harder to understand. Here we’re saying the probability of working is 20%. We’re going to have a whole year sampled. Then we just simulate. Then we simulate a binomial first, whether they drink or not. Then we simulate the manuscripts, which is conditional on the drinking.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/35.png" alt="`dzipois` is interpreted by `ulam` as meaning you want to do this multiple choice thing. To show you at the bottom that the machine works. The posterior mean is a little over 20%. The rate of production is around 1. YOur simluations are finite so you shouldn't be surprised that you don't recover exactly the data-generating parameters. But if it's doing the right thing, it should cover them. " width="80%" />
+<p class="caption marginnote shownote">
+<code>dzipois</code> is interpreted by <code>ulam</code> as meaning you want to do this multiple choice thing. To show you at the bottom that the machine works. The posterior mean is a little over 20%. The rate of production is around 1. YOur simluations are finite so you shouldn’t be surprised that you don’t recover exactly the data-generating parameters. But if it’s doing the right thing, it should cover them.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/36.png" alt="The overthiking box shows how to code this without the helper functions. This is the same `ulam` model. All `dzpois` does is replace the two lines at the top. " width="80%" />
+<p class="caption marginnote shownote">
+The overthiking box shows how to code this without the helper functions. This is the same <code>ulam</code> model. All <code>dzpois</code> does is replace the two lines at the top.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/37.png" alt="There's no reason you can't also do 0-inflated things in other ways. There's this bernouli process. The model stays exactly the same. Also hurdle models that are common with continuous distributions. Get lots of this with benchwork. This happens all the time because say you're a forager, and often come back with nothing. 50-70% of hunting expeditions result in nothing. There are two models there based on whether you catch something, and if you do, how much." width="80%" />
+<p class="caption marginnote shownote">
+There’s no reason you can’t also do 0-inflated things in other ways. There’s this bernouli process. The model stays exactly the same. Also hurdle models that are common with continuous distributions. Get lots of this with benchwork. This happens all the time because say you’re a forager, and often come back with nothing. 50-70% of hunting expeditions result in nothing. There are two models there based on whether you catch something, and if you do, how much.
+</p>
+</div>
+<p><img src="slides/L13/38.png" width="80%" /></p>
+<hr />
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="12-monsters-and-mixtures.html#cb239-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L14&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="slides/L14/01.png" alt="Today is entirely one kind of outcome variable. To make it more exciting, it's one of the most common - and most commonly mistreated - type of data in the behavioural sciences." width="80%" />
+<p class="caption marginnote shownote">
+Today is entirely one kind of outcome variable. To make it more exciting, it’s one of the most common - and most commonly mistreated - type of data in the behavioural sciences.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/02.png" alt="When categories are ordered, they're not exchangeable. The world is full of this stuff because of the way we measure it." width="80%" />
+<p class="caption marginnote shownote">
+When categories are ordered, they’re not exchangeable. The world is full of this stuff because of the way we measure it.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/03.png" alt="In terms of constraints, they're discrete outcomes, like counts, but they're not counting anyting. There's an arbitrary minimum and maximum. The important thing we need to model is that the distance *underlying metric change) between categories aren't constant. They could vary a lot. " width="80%" />
+<p class="caption marginnote shownote">
+In terms of constraints, they’re discrete outcomes, like counts, but they’re not counting anyting. There’s an arbitrary minimum and maximum. The important thing we need to model is that the distance *underlying metric change) between categories aren’t constant. They could vary a lot.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/04.png" alt="These things are difficult to model, but people have figured out ways to do it. Need to do it on both ends - outcomes and predictors. Going to start with an example dealing with the outcome. Leads to a kind of GLM known as *ordered logistic regression.*" width="80%" />
+<p class="caption marginnote shownote">
+These things are difficult to model, but people have figured out ways to do it. Need to do it on both ends - outcomes and predictors. Going to start with an example dealing with the outcome. Leads to a kind of GLM known as <em>ordered logistic regression.</em>
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/05.png" alt="Why we need them. The trolley problem. Going down the track. Turns out there are five people lashed to the track. " width="80%" />
+<p class="caption marginnote shownote">
+Why we need them. The trolley problem. Going down the track. Turns out there are five people lashed to the track.
+</p>
+</div>
+<p><img src="slides/L14/06.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L14/07.png" alt="There's a swith in the track ahead where there's only one person lashed to the track." width="80%" />
+<p class="caption marginnote shownote">
+There’s a swith in the track ahead where there’s only one person lashed to the track.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/08.png" alt="You're standing next to the switch control. If you pull the switch, it will move to B and kill only one person." width="80%" />
+<p class="caption marginnote shownote">
+You’re standing next to the switch control. If you pull the switch, it will move to B and kill only one person.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/09.png" alt="Data is collected by explaining the story then asking this question." width="80%" />
+<p class="caption marginnote shownote">
+Data is collected by explaining the story then asking this question.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/10.png" alt="It's measuring something substantial. " width="80%" />
+<p class="caption marginnote shownote">
+It’s measuring something substantial.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/11.png" alt="These come in big flavours. Second version is now a side view. Black thing is an overpass. " width="80%" />
+<p class="caption marginnote shownote">
+These come in big flavours. Second version is now a side view. Black thing is an overpass.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/12.png" alt="5 doomed individuals." width="80%" />
+<p class="caption marginnote shownote">
+5 doomed individuals.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/13.png" alt="There's a large individual next to you. You can push the Rock off the bridge and his mass would stop the trolley. " width="80%" />
+<p class="caption marginnote shownote">
+There’s a large individual next to you. You can push the Rock off the bridge and his mass would stop the trolley.
+</p>
+</div>
+<p><img src="slides/L14/14.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L14/15.png" alt="Then ask the same question." width="80%" />
+<p class="caption marginnote shownote">
+Then ask the same question.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/16.png" alt="Third example. Same setup as the first." width="80%" />
+<p class="caption marginnote shownote">
+Third example. Same setup as the first.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/17.png" alt="But now the switch is set such that it'll veer off to the one individual. " width="80%" />
+<p class="caption marginnote shownote">
+But now the switch is set such that it’ll veer off to the one individual.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/18.png" alt="On a logical basis, it's the same, but people feel completely different about this." width="80%" />
+<p class="caption marginnote shownote">
+On a logical basis, it’s the same, but people feel completely different about this.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/19.png" alt="Big literature about this, with real moral intuitions. One way it's organised is under these principles. Designed to probe these principles. Contact is like a subset of action. " width="80%" />
+<p class="caption marginnote shownote">
+Big literature about this, with real moral intuitions. One way it’s organised is under these principles. Designed to probe these principles. Contact is like a subset of action.
+</p>
+</div>
+<p><img src="slides/L14/20.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L14/21.png" alt="First story has action, but no intention or contact." width="80%" />
+<p class="caption marginnote shownote">
+First story has action, but no intention or contact.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/22.png" alt="Here the Rock's death is instrumental." width="80%" />
+<p class="caption marginnote shownote">
+Here the Rock’s death is instrumental.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/23.png" alt="The last one has none of them. " width="80%" />
+<p class="caption marginnote shownote">
+The last one has none of them.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/24.png" alt="Different mix and match of these features, plus different stories. This is averaged across all scenarios. Something that's quite typical in ordered categorical data - usually a spike in the middle. Also true that the distribution can often be quite flat. Can take any shape." width="80%" />
+<p class="caption marginnote shownote">
+Different mix and match of these features, plus different stories. This is averaged across all scenarios. Something that’s quite typical in ordered categorical data - usually a spike in the middle. Also true that the distribution can often be quite flat. Can take any shape.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/25.png" alt="Can break this down. Action is different in that the mass has shifted a little to above. Intention has more 1s. Contact has a lot of 1s. " width="80%" />
+<p class="caption marginnote shownote">
+Can break this down. Action is different in that the mass has shifted a little to above. Intention has more 1s. Contact has a lot of 1s.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/26.png" alt="Essentially like a categorical model, li,e a bionial model with more than two categories. Log-cumulative-odds link works like this: We want a model that descrbies this on the logit scale. We'll need 6 parameters, one less than the number of categories. " width="80%" />
+<p class="caption marginnote shownote">
+Essentially like a categorical model, li,e a bionial model with more than two categories. Log-cumulative-odds link works like this: We want a model that descrbies this on the logit scale. We’ll need 6 parameters, one less than the number of categories.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/27.png" alt="Think of it as a cumulative distribution. A little over 20% is 2 or less. 7 always has 1. " width="80%" />
+<p class="caption marginnote shownote">
+Think of it as a cumulative distribution. A little over 20% is 2 or less. 7 always has 1.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/28.png" alt="Then we'll transform them onto the logit scale. What are the log odds? Probability of something over the probabilty of everything else. The log odds are the log of that ratio. So if it's a cumulative proportion, these are just the log cumulative proportions. On the logit scale, 0 is 50%. " width="80%" />
+<p class="caption marginnote shownote">
+Then we’ll transform them onto the logit scale. What are the log odds? Probability of something over the probabilty of everything else. The log odds are the log of that ratio. So if it’s a cumulative proportion, these are just the log cumulative proportions. On the logit scale, 0 is 50%.
+</p>
+</div>
+<p><img src="slides/L14/29.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L14/30.png" alt="Log of the probability of something over the 1-probability of something." width="80%" />
+<p class="caption marginnote shownote">
+Log of the probability of something over the 1-probability of something.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/31.png" alt="So you're saying what's the cumulative probability of 6? It's the proportion of responses that are 6 or less. Then we take the log of that. In a logistic regression, the probability is discrete. Here it's either geater, or less than or equal to, k. " width="80%" />
+<p class="caption marginnote shownote">
+So you’re saying what’s the cumulative probability of 6? It’s the proportion of responses that are 6 or less. Then we take the log of that. In a logistic regression, the probability is discrete. Here it’s either geater, or less than or equal to, k.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/32.png" alt="$\phi$ is where the action happens." width="80%" />
+<p class="caption marginnote shownote">
+<span class="math inline">\(\phi\)</span> is where the action happens.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/33.png" alt="As a consequence, if you solve this, you get the logistic function, because it's the same link." width="80%" />
+<p class="caption marginnote shownote">
+As a consequence, if you solve this, you get the logistic function, because it’s the same link.
+</p>
+</div>
+<p><img src="slides/L14/34.png" width="80%" /></p>
+<p><img src="slides/L14/35.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L14/36.png" alt="These grey bars are the probabilities on the left. For every $k$ value, there's a different bar. Just proportions." width="80%" />
+<p class="caption marginnote shownote">
+These grey bars are the probabilities on the left. For every <span class="math inline">\(k\)</span> value, there’s a different bar. Just proportions.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/37.png" alt="When we run a ststatical model, we need the probability of each discrete $y$. To get those, we need to sbustract adjacent grey bars.The whole reason it uses a cumulative link is to establish the order. Very clever trick. " width="80%" />
+<p class="caption marginnote shownote">
+When we run a ststatical model, we need the probability of each discrete <span class="math inline">\(y\)</span>. To get those, we need to sbustract adjacent grey bars.The whole reason it uses a cumulative link is to establish the order. Very clever trick.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/38.png" alt="If you try to take it down, it looks horrible. Because all that fiddling is just a bunch of algebraic transformations. No one ever does this. But just shows you that it's all algorithmic. Just a categorical distribution." width="80%" />
+<p class="caption marginnote shownote">
+If you try to take it down, it looks horrible. Because all that fiddling is just a bunch of algebraic transformations. No one ever does this. But just shows you that it’s all algorithmic. Just a categorical distribution.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/39.png" alt="All you specified is two things. The linear model. You don't have one intercept, you have a lot. With 7 categories, you have 6. Why? To get the histogram. You need a unique intercept for the log cumulative proportion of that type. You don't need the last one because you know it's 100%. Called `cutpoints` here. If you" width="80%" />
+<p class="caption marginnote shownote">
+All you specified is two things. The linear model. You don’t have one intercept, you have a lot. With 7 categories, you have 6. Why? To get the histogram. You need a unique intercept for the log cumulative proportion of that type. You don’t need the last one because you know it’s 100%. Called <code>cutpoints</code> here. If you
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/40.png" alt="4 means always, -4 means never. Run this model and spit out the cutpoints. 6 of them. Totally uninterpretable. These are log-cumulative probabilities. Can interpret them by converting back." width="80%" />
+<p class="caption marginnote shownote">
+4 means always, -4 means never. Run this model and spit out the cutpoints. 6 of them. Totally uninterpretable. These are log-cumulative probabilities. Can interpret them by converting back.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/41.png" alt="Just need `inv_logit`. " width="80%" />
+<p class="caption marginnote shownote">
+Just need <code>inv_logit</code>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/42.png" alt="Let's compare them to the picture again. What has it done more than that? Cutpoint 1 is about 1.3. It isn't exactly redescribing the sample, but it's close. There's posterior uncertainty." width="80%" />
+<p class="caption marginnote shownote">
+Let’s compare them to the picture again. What has it done more than that? Cutpoint 1 is about 1.3. It isn’t exactly redescribing the sample, but it’s close. There’s posterior uncertainty.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/43.png" alt="Now we think about all the cutpoints as alphas. And we'll subtract it from all the cutpoints. Why do we subtract it? Because we want to shift probability mass down when ratings go up. It's like we need to re-allocate mass. You can use any linear model. Notice there's no intercept, because you already did them with the cutpoints. We're going to be interested in interactions as well, of action and contact with intent. $A_i$ is action $I_i$ is intent. $C_i$ is contact. If you multiply those out, you get product terms. " width="80%" />
+<p class="caption marginnote shownote">
+Now we think about all the cutpoints as alphas. And we’ll subtract it from all the cutpoints. Why do we subtract it? Because we want to shift probability mass down when ratings go up. It’s like we need to re-allocate mass. You can use any linear model. Notice there’s no intercept, because you already did them with the cutpoints. We’re going to be interested in interactions as well, of action and contact with intent. <span class="math inline">\(A_i\)</span> is action <span class="math inline">\(I_i\)</span> is intent. <span class="math inline">\(C_i\)</span> is contact. If you multiply those out, you get product terms.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/44.png" alt="Write this into `ulam`. Give all the others priors. cutpoints on the logit scale. " width="80%" />
+<p class="caption marginnote shownote">
+Write this into <code>ulam</code>. Give all the others priors. cutpoints on the logit scale.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/45.png" alt="What these coefficients do is tell you how the cutpoints get distorted when you add or subtract a feature from a story. Can't tell much from just looking at the parameters, but you can see they're all negative = each adds disapproval. Interaction for IC is the worst. " width="80%" />
+<p class="caption marginnote shownote">
+What these coefficients do is tell you how the cutpoints get distorted when you add or subtract a feature from a story. Can’t tell much from just looking at the parameters, but you can see they’re all negative = each adds disapproval. Interaction for IC is the worst.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/46.png" alt="These models are complicated. There are lots of options for plotting like this. Will show you the personally most useful. Also helps to explain how the linear model works." width="80%" />
+<p class="caption marginnote shownote">
+These models are complicated. There are lots of options for plotting like this. Will show you the personally most useful. Also helps to explain how the linear model works.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/47.png" alt="The thing about the posterior is that it's predicting a distribution. So it gives you a probability for every observable value from 0 to 7. So it's a vector, also called a simplex. So we have to plot that vector to see what happens. We have the two possible values of intent. Blue points are the data, and we're only lookking at scenarios when action and contact are 0, and seeing how intention affects it. Black lines are 50 samples from the posterior. Can see the model isn't exactly describing the sample, but is describing the changes in an accurate way. Why do the lines tilt up? Because you squeeze probabiltiy off the top and reallocate to the bottom. **When the lines tilt up, the mean goes down**, beucase there's more mass at the bottom. That makes the average response go down. The cutpoints determine the lines. But your attention should be on the gaps. " width="80%" />
+<p class="caption marginnote shownote">
+The thing about the posterior is that it’s predicting a distribution. So it gives you a probability for every observable value from 0 to 7. So it’s a vector, also called a simplex. So we have to plot that vector to see what happens. We have the two possible values of intent. Blue points are the data, and we’re only lookking at scenarios when action and contact are 0, and seeing how intention affects it. Black lines are 50 samples from the posterior. Can see the model isn’t exactly describing the sample, but is describing the changes in an accurate way. Why do the lines tilt up? Because you squeeze probabiltiy off the top and reallocate to the bottom. <strong>When the lines tilt up, the mean goes down</strong>, beucase there’s more mass at the bottom. That makes the average response go down. The cutpoints determine the lines. But your attention should be on the gaps.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/48.png" alt="Now looking at the interaction effect. In the middle we look at where action's present, and we add intent. The lines tilt up again, but more. So there's more interaction, making it even worse. On the right, pushing the Rock off the footbridge, contact implies action, so we've got both action and contact. They tilt up, but a lot more, so there's a lot more probability mass. Especially if there's intent. Lots of these plots in policy journals. " width="80%" />
+<p class="caption marginnote shownote">
+Now looking at the interaction effect. In the middle we look at where action’s present, and we add intent. The lines tilt up again, but more. So there’s more interaction, making it even worse. On the right, pushing the Rock off the footbridge, contact implies action, so we’ve got both action and contact. They tilt up, but a lot more, so there’s a lot more probability mass. Especially if there’s intent. Lots of these plots in policy journals.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/49.png" alt="Try to summarise this. We're going through all of this fuss because the spaces are different. We can luckily do that. Going to use same dataset, but we're going to add another variable, `edu`, indicating completed education. An important category here is `Some College`. " width="80%" />
+<p class="caption marginnote shownote">
+Try to summarise this. We’re going through all of this fuss because the spaces are different. We can luckily do that. Going to use same dataset, but we’re going to add another variable, <code>edu</code>, indicating completed education. An important category here is <code>Some College</code>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/50.png" alt="There's an ordering here. A cumulative, monotonic idea. If we treated this as a metric, you could maybe get away with that, but ignores the discreate category, because it assumes that each level contributes the same amount of effect on your response. The trick here is if you want to assign a prior and not go insance, you want to code it in a particular way. " width="80%" />
+<p class="caption marginnote shownote">
+There’s an ordering here. A cumulative, monotonic idea. If we treated this as a metric, you could maybe get away with that, but ignores the discreate category, because it assumes that each level contributes the same amount of effect on your response. The trick here is if you want to assign a prior and not go insance, you want to code it in a particular way.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/51.png" alt="Here's how you do it. You've got $\phi$. We're going to add the $\delta$ parameters. Someone who completed the first level of education will get $\delta_1$ " width="80%" />
+<p class="caption marginnote shownote">
+Here’s how you do it. You’ve got <span class="math inline">\(\phi\)</span>. We’re going to add the <span class="math inline">\(\delta\)</span> parameters. Someone who completed the first level of education will get <span class="math inline">\(\delta_1\)</span>
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/52.png" alt="Someone with second gets both $\delta_1$ *and* $\delta_2$." width="80%" />
+<p class="caption marginnote shownote">
+Someone with second gets both <span class="math inline">\(\delta_1\)</span> <em>and</em> <span class="math inline">\(\delta_2\)</span>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/53.png" alt="In our case we have 7, and we sum over all our different deltas. It's a single predictor, but it implies a bunch of parameters. " width="80%" />
+<p class="caption marginnote shownote">
+In our case we have 7, and we sum over all our different deltas. It’s a single predictor, but it implies a bunch of parameters.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/54.png" alt="In practice we have plenty of these. We factor out the sum of all the deltas, and that's the maximum possible effect. Whatever that sum is, here we've called it $\beta_E$ and that's the maximum effect of education. All the deltas now sum to 1. We can lose the delta. Where does the free delta go? It becomes beta. Then the priors on the deltas you could make them all the same." width="80%" />
+<p class="caption marginnote shownote">
+In practice we have plenty of these. We factor out the sum of all the deltas, and that’s the maximum possible effect. Whatever that sum is, here we’ve called it <span class="math inline">\(\beta_E\)</span> and that’s the maximum effect of education. All the deltas now sum to 1. We can lose the delta. Where does the free delta go? It becomes beta. Then the priors on the deltas you could make them all the same.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/55.png" alt="The Dirichlet distribution is a distribution for probability distributions with discrete outcomes. It has one argument, $\alpha$, which is a vector, and when you sample from it, you get probiablitiies, one for each of the categories. It's everywhere. It's a genralisation of the beta distribution. You could have a million in principle. " width="80%" />
+<p class="caption marginnote shownote">
+The Dirichlet distribution is a distribution for probability distributions with discrete outcomes. It has one argument, <span class="math inline">\(\alpha\)</span>, which is a vector, and when you sample from it, you get probiablitiies, one for each of the categories. It’s everywhere. It’s a genralisation of the beta distribution. You could have a million in principle.
+</p>
+</div>
+<p><img src="slides/L14/56.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L14/57.png" alt="In this case we have a 7-dimensional Dirichlet. What's the relative importance of completing each level of education? We set every alpha value to 2, and sample from them, you get different distributions. When you set all the alphas equal, that isn't saying you think all the probabilities are the same, but that you have no reason to think they're different. Most samples don't give you distributions where they're all the same. " width="80%" />
+<p class="caption marginnote shownote">
+In this case we have a 7-dimensional Dirichlet. What’s the relative importance of completing each level of education? We set every alpha value to 2, and sample from them, you get different distributions. When you set all the alphas equal, that isn’t saying you think all the probabilities are the same, but that you have no reason to think they’re different. Most samples don’t give you distributions where they’re all the same.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/58.png" alt="There are some ghost similarities. By the time you get to alpha = 64, it's saying they're all about equal. We'll say alpha = 2. " width="80%" />
+<p class="caption marginnote shownote">
+There are some ghost similarities. By the time you get to alpha = 64, it’s saying they’re all about equal. We’ll say alpha = 2.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/59.png" alt="So if you want to do this with `ulam`. This is what your computer is doing. " width="80%" />
+<p class="caption marginnote shownote">
+So if you want to do this with <code>ulam</code>. This is what your computer is doing.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/60.png" alt="When you run this model, look at the first parameter, `bE`. Notice that it's negative. So individuals who have completed a degree give more disapproval. Education makes you more judgy. The treatment effects are much bigger than educuation levels. Then in this pairs plot you see the deltas. Some are bigger than others. Lots of individuals with some college tells you nothing. There's no effect. " width="80%" />
+<p class="caption marginnote shownote">
+When you run this model, look at the first parameter, <code>bE</code>. Notice that it’s negative. So individuals who have completed a degree give more disapproval. Education makes you more judgy. The treatment effects are much bigger than educuation levels. Then in this pairs plot you see the deltas. Some are bigger than others. Lots of individuals with some college tells you nothing. There’s no effect.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L14/61.png" alt="If you run the model with education as a metric effect, we run it as an ordinary regression, and it overlaps 0. Why? Because of the some college effect. A linear treatment of it get dampened out. " width="80%" />
+<p class="caption marginnote shownote">
+If you run the model with education as a metric effect, we run it as an ordinary regression, and it overlaps 0. Why? Because of the some college effect. A linear treatment of it get dampened out.
+</p>
+</div>
+<p><img src="slides/L14/62.png" width="80%" /></p>
+
+</div>
+<p style="text-align: center;">
+<a href="11-god-spiked-the-integers.html"><button class="btn btn-default">Previous</button></a>
+<a href="13-models-with-memory.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

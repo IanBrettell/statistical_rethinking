@@ -186,99 +186,99 @@ knitr::include_graphics(file.path(slides_dir, '01.png'))
 knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Want to use it to learn how to build a more complex vasrying effects model when we have more than one type of cluster. Called cross-classfication. The indivdual chimps are cross-classified, as is experimental day. In this dataset everything is balanced. All the chimps in all the blocks. Going to use both these types of clusters. Actors is a clsuter so we can estimate parameters specific to the chimp, like handedness. Also have repeated observations inside blocks. You can just design them liek a varying intercept model. "}
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Here's the MLM with both actor and block intercepts. Alpha for each actor, gamma for each block, and beta for each treatment. Ordinary fixed effects, regularising, not adaptive. Just like tank effects. Interpretation is the handedness. Adaptive prior, with alpha bar. And a sigma alpha. So the model will learn the prior from the data."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Then another adaptive prior, gamma for each block. It's conditional on each parameter. No gamma bar. You could put it there, but it would be redundant. Could just put a 0 there. Hyperpriors at the bottom. Blue bits are the block. You can extend this strategy for as many cluster types as you like. "}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Just a logistic regression with a bunch of stuff. `a[actor]`. "}
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="`a` for each actor. Vector of those. They each have a common prior, with two parameters inside it. Conditional on other parameters (which makes it adaptive.) Then at the bottom it gives it shape. "}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Same thing for blocks. Block in the model, black adaptive prior, then sigma. "}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Run this model at home. WOn't encounter any problems. Plot the precis on the left. Treatment parameters. No new story here. Atraacted to the prosocial option, but not more when there's a partner. `a[2]` has a big intecetpt. Why such a wide marginal posterior for left? `g` are block effects. All very small, around 0. Which means there's not much variation among blocks. Then down the bottom we have alpha bar, which is lslightly left-handed. THen the two sigmas teell the same story. The variation among actor and block, you cna see the actors vary more, and the sigmas are picking them up. For actor, sigma of 2 is very big. sigma[g] is practically 0. Plotted the two densities for the sigma variables. The consequence of this is there's a lot more shrinkage among blocks. The actors had very little shrinkage, becuase lefty proves that indibvdiuals are indiviuals, with personality."}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Natural to ask then, should we even have varying intercepts on bllock. Doesn't matter. Levae them out and get the same inference. Nice feature of varying effects is if there's not much vasriation, not harmful to add varying effects. Here's the sam emodel, but we've taken out the block effects eentirely, but with varying intercepts on indviuals, and can compare with WAIC or LOO, and see that they're very similar models. Effectively the same. Notice the parameter counts have a small difference. 2 effective parameter difference, even though it has 7 more parameters. Lots of machine learning works this way.  "}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Let's add some more random effects. Synonym of varying effects. Rnadom has a tendency to interpret effects in a stronger way. Just a statistcal way to regularise inference. Source of clusters is irrelevant to whethr to add random effects or not. Wnat to regularise, but not adaptively. If you care about mroe accurate inferences, use adaptive priors. All we have ot do is add a sigma beta. Give it a parameter and we learn it. "}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="One more sigma down the bottom. Run it and compare to the preivous. They're basiclaly the same estimates. Why? Because there's tonnes of data per treatment. It trims the posterior uncertainty a little bit, but doesn't change the effective inference."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="You will get these warnings. Divergent transitions. They are your friend, in the sense that they are telling you something numerically inefficient about ht emodel. Easy to get rid of them. Teaches you someting really important. Even though mathematiclaly equivalent, the Markvov Chain will see them as quite different. Need to swtich between different ways of writing the same model. Gives you advice to increase `adapt_delta`. But sometimes that won't save you, and you just need to re-parameterise the modeo."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Imagine you're on a frictionless rollercoaster. As it moves from A to D, there are two forms of energy. The energy is in two buckets. Start at A and going to B, it lost potential gravitational energy, and is converted to kinetic energy, to motion. Then as it goes from B to C, that conversion goes the other way. Then C to D, and will do it again. The sum of those two things is constant in a frictionless system."}
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Divergent transitions are when your rollercoaster pops off the track. In Hamiltonian dynamics, it is the total energy in the system. If energy isn't conserved in the chain, something is wrong. We have little steps, we calculate the gradient, find a step, and get a piecewise approximation. When the rollercoaster track bends really biolently, or the stepsize is big, it can happen. Divergent means it pops off the true surface. On the right is a posterior distribution that tends towards divergent transitions. It happens when you have parameters that is conditional on other parameters. Gibbs and Metropolis experience the same thing, but don't tell you when it's happening. Hamiltonian just works better especially in high dimensions, but also gives you diagnostic information."}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="This is a routine situation where you get divergent transitions. Arises often in the funnel. Turn it on its side. Very simple posterior with two parameters, $v$ and $x$. $x$ is conditional on $v$. When this is true you can get very interesting shapes. As $v$ gets small, $x$ contracts and you get a very narrow valley. Curvature is really tight there. Out in the big plane you can take big steps. But out in the valley, there's no single step size that can efficiently explore both. You want a bigger one int he open area, and a smaller one in the tight area."}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="When energy at the start is different form the energy at the end, that's divergent. This doesn't necessarily corrupt your chain, but it's less efficient. The places where you do the rejections are particular regions of the posterior, and you won't be sampling that area of it. We can also make the step size small, but spend your time missing your funnel completely. Stan will do better than this, but as you increase the dimensionality, it gets pathological. So what do we do?"}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="The first mean you could spend a long time finding the funnel. Also makes the chain run slower. Second is to re-parameterize. When the chain is inefficient, it's usually because I did something stupid, like leave out a prior."}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="It's a wonderful fact that any statistical model can be expressed in a few identical ways. Alpha is conditional on mu and sigma. "}
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Alpha has some probability distribution. This is another way to do it. Now alpha has the same distribution of alpha at the top, just took mu out and then added it back later. "}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="We can go one step further and get $z$. When we multiply the zs by sigma, we're back on the scale. And add mu back in and we're in the same place."}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Why do this? Even though it's mathematically the same, the geometry is different. On the left we have the default (centered) form. There are parameters inside the distribution. Non-centered is wehre we take all the conditioniing out. Let's look at the geometry of these equivalent distributions."}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Same thing but we've got a Guassian bucket again. Same distribution, you can convert between them, but the one on the right is way easier to cruise around in. Can get many more effective samples."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Red points are transitions that are rejected. Start back over where you started again. A lot of them are down in the funnel. A loit of them start in the funnel. On the right, no divergences at all. So this is a big difference. "}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="This is what it looks like in a real model. As before, it's a centered model because it has paramters insdie the adaptive priors. And it sampled fine. But if we de-center it, it'll be more efficient.  "}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Let's focus on the linear model now. It's going to be written with the z socres in it. One zs per actor, times the sigma among actors, which rescales it. Alpha bar is outside too. Same for block. Treatments are still fixed effects so we leave them."}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
@@ -286,47 +286,47 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="The new bit is where we had alpha and gamma. We now have z and x Normal(0,1). This is the most importnat thing to get varying effects models working right. "}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="In code, this is what it looks like. "}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="What does this get us? Going to compare the effective number of sample. Going to compare the effective number of samples per parameter for both models. Same posterior distribution, and the precis shows they're basically the same. `neff_c` is centered. Per parameter, those numbers are always bigger for the non-centered model. Means you don't need to run the model for that long. "}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Last thing to talk about is how to do posterior predictions. You have to make some choices. You get to decide how to think about the generalisation of the model. The most direct way to consider the choices is, when you generalise inferences, are you interested in new units, or the same chimps. If you interested in new ones, you wouldn't get to use the alphas. However the other parameters are definitely relevant, because you've learned about the variation in a popoulation of chimps, which would give you a prior. So here's an example."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Let's consider. Different ways to draw this. Take the statsitically average chimpanzee, and ask what the nmodel says it owuld do. Marginal of actor says let's sampel a bunch of chimps and average over their variation. this is differnet beause it cincludes the population variation. Then show the sample of actors fromt eh posterior."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Chimp with alpha bar. All we have to do is replace all the intercepts with 0, then we can use link. Extract the samples, then put in a big matrix of 0s and run the link. "}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Here's the average actor. There's uncertainty about it. "}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Now we have to create a prediction interval for all chimps. There's uncretainty re: handedness, which makes it wider."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Why wider? Because chimps vary a lto. "}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Finally, sample a bunch of chimps and draw them. One of the things that happens is because there's a posterior distribution for each parameter, the model things it's possible to get completely right-handed chimps. But the treatment effect is still there. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Focus on the variation that adds to the tanks. Look at the sigma across different models, and there will be a pattern. The second dataset is a historical Bangladeshi dataset. Also will be a varying interecepts model, but now youll be exploring shrinkage. "}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
