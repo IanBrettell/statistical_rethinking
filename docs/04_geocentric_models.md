@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-30'
+date: '2021-05-31'
 output:
   html_document:
     toc: true
@@ -136,7 +136,7 @@ prod(1 + runif(12, 0, .1))
 ```
 
 ```
-## [1] 1.736866
+## [1] 1.860525
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
@@ -551,8 +551,8 @@ rethinking::precis(m4.1)
 
 ```
 ##             mean        sd       5.5%      94.5%
-## mu    154.607203 0.4119458 153.948834 155.265572
-## sigma   7.730415 0.2912995   7.264862   8.195968
+## mu    154.607022 0.4119969 153.948572 155.265473
+## sigma   7.731375 0.2913900   7.265678   8.197073
 ```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
@@ -584,7 +584,7 @@ precis( m4.2 )
 ```
 ##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51753 0.9289199  23.03293  26.00212
+## sigma  24.51754 0.9289210  23.03294  26.00213
 ```
 
 ***4.3.6 Sampling from a `quap`***
@@ -636,12 +636,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 154.6288 7.702175
-## 2 154.4285 7.847383
-## 3 155.1852 7.846691
-## 4 154.6771 7.806205
-## 5 155.4135 7.585354
-## 6 155.0283 8.375732
+## 1 154.3309 7.589017
+## 2 155.0092 7.542177
+## 3 154.5532 7.716525
+## 4 154.2810 7.134053
+## 5 154.6771 8.294272
+## 6 154.2899 7.873173
 ```
 
 
@@ -650,9 +650,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%    histogram
-## mu    154.606152 0.4146432 153.947756 155.271550      ▁▁▅▇▂▁▁
-## sigma   7.725941 0.2933462   7.258785   8.199547 ▁▁▁▂▅▇▇▃▁▁▁▁
+##             mean        sd       5.5%      94.5%     histogram
+## mu    154.610738 0.4109574 153.945180 155.274913       ▁▁▅▇▂▁▁
+## sigma   7.731333 0.2932225   7.256561   8.207986 ▁▁▁▁▂▅▇▇▃▁▁▁▁
 ```
 
 Here's a peak under the motor of `extract.samples`:

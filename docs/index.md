@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-30'
+date: '2021-05-31'
 output:
   bookdown::tufte_html_book:
     toc: yes
@@ -73,7 +73,7 @@ lapply(dir_name, function(LECTURE){
 # Delete existing tmp file
 file.remove("tmp.txt")
 
-slides_dir = here::here("docs/slides/L12")
+slides_dir = here::here("docs/slides/L16")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){
