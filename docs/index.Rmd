@@ -31,7 +31,7 @@ cmdstanr::install_cmdstan()
 install.packages(c("coda","mvtnorm","devtools","loo","dagitty"))
 devtools::install_github("rmcelreath/rethinking")
 
-set_ulam_cmdstan(TRUE)
+rethinking::set_ulam_cmdstan(TRUE)
 ```
 
 **Split and convert slides**
@@ -70,7 +70,7 @@ lapply(dir_name, function(LECTURE){
 # Delete existing tmp file
 file.remove("tmp.txt")
 
-slides_dir = here::here("docs/slides/L16")
+slides_dir = here::here("docs/slides/L17")
 slides = list.files(slides_dir) %>% str_remove(".png") %>% .[!grepl(".pdf", .)]
 
 lapply(slides, function(x){

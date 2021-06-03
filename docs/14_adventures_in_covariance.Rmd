@@ -1,0 +1,242 @@
+---
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
+date: '`r format(Sys.Date())`'
+#output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
+---
+
+# Adventures in Covariance
+
+```{r, message = F, warning=F}
+library(here)
+source(here::here("code/scripts/source.R"))
+```
+
+```{r}
+slides_dir = here::here("docs/slides/L17")
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Today we'll take the basic MLM strategy into higher dimensions."}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Last week was all about varying intercepts, the simplest type of MLM. Pooling estimates are biased estimators, but they're better than unbiased ones. One datapoint is an unbiased estimate of the mean, but it's probably not good to estimate it based on that. But being biased, we get better estimates out of sample. We can extend this strategy to slopes. Slopes are treatment effects, another feature of how the subjects respond to treatments. We can distinguish those among the clusters as well, and apply partial pooling, and get better estimates as before. In the upper plot you just have varying intercepts. Each line is a differen tcluster (chimp or tank). They all have the same response (slope). In the lower one we let the slopes vary. We want to do this quite often. "}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There are lots of domain-specific scientific reasons to consider varying slopes. Different people respond to different pain relief in different ways. There could be 0 average, but some poeple could benefit hugely from it. Personalised medicine is trying to leverage this. e.g education. Not everyone benefits from after school programs, but some do, so looking at average effects is not useful. "}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Statistically, the major conceptual innovation is that with varying slopes is you could treat them the same as varying intercepts. But you can do even better than that by noticing that the intercepts adn slopes are related in the population. When you learn about the intercetpp, you often get informatyion about the slope. Why? Because tye're lines, adn when you change the slope, you change the intercept. Now think about a single prior that has botht eh intercepts and slopes inside it. We'lll have a popualtion of features. There's a correlation structure among those features, which lets you transfer infomraiton across the features. Think about your friends or family, There is a correlation structure. There are now other things you expect Brendan to like when you find out he likes Death Metal. That's correlation structure."}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Think back to the cafe example. Before you order your coffee in Berlin, you should update your estimate for Paris even though you left it behind. Now let's extend it. Your robot is your model. How do you get it to learn by visiting cafes. Now it keeps track of the time of day. Average wait time at 9am is longer than at 2pm. So we want to make that distinction. Code it as the difference between afternoon and evening. These two things are related by teh causal properties of cafes. This is toy data. Top is a popular cafe, with a big drop in wait time between morning and afternoon. Cafe B has a much smaller diffference in wait time because there's no morning saturation."}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now we have some statistical population, and there's a negative correlation between the intercepts (average wait time in the morning, standardsied), and the slope (dfiference between morning and afternooon). Higher intercepts = lower slopes. So there are two sets of parameteres, and we could treat them as completely separate."}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The agent of our pooling now is a 2D Gaussian. We're going to have both parameters inside it. You need both a vector of means (average intercept and average slope). Then you need a variance-covarinace matrix. It assumes the posterior was multivariate Guassian, and approximated with this kind of entity. Now we'll be more explicit about it. We'll have covariances as part of the model now. THe simplest one is shown here - tey multi-dimensional analogue of sigma. If you add more dimensions to the Guassian distribution. Then there's the correlation between the two. SO you need three parameters to describe the covariance. $\\sigma_a$ is the standard deviation of the intercepts. Square that for the variance. Then there's the covariance, which is the product of the two variances times this correlation coefficient $\\rho$. The book has a box that explains why the covariance is the product of the variances times the correlation coefficient. That's the definition of correlation. "}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's do some work with this. Simulate the journey of your coffee robot. 10 data points per cafe. Small sample, so we'll do some pooling. "}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is your robot's brain. Step by step: Outcome variabes $W$ is the wait time for some cafe $i$. "}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then we have varying intercepts and slopes (difference between mornign and afternoon, denoted by the dummy variable $A$. If $A$ is 1, it's $\\alpha + \\beta$. "}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's the action. Wehn we wnat to pool across alphas and betas, we have this 2D prior. For each cafe, there's a pair of parameters, alpha and beta, and they're distributed as a 2D normal They're averages are alpha and beta. Then they have this $S$, which si the covariance matrix. "}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Where does this covariance matrix come from? 5 slides on matrix multiplication. Thing to understand is they're matrixes, way sof working with systems of equations. Just a compact form to do things faster. It's compressed. That's all it is. Let's think about our covariance matrix, shuffle it around to put priors on the parameters. $m$ is some dimension (2, going to be 4 by the end of the day). That means you need $m$ standard deviations. And you need the correlations. Just a formula for how many unordered pairs there are. Still a very small number of parameters relative to varying effects."}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So how to put priors on all these parameters. Lots of different conventions. There's a big litereature on what's wrong with the inverse-Wishart. We can do much better in practical terms. Want ot assign priors independently to each sigma and correlation coefficient. So we'll decompose our covariance matrix into three different matrices. Turns out it's a  product of a diagonal matrix with the two sigmas, times a correlation matrix, times the diagonal matrix again."}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="They're very nice, because they're shortcuts. Matrix derived from 'mother' or 'womb'. Something that somethign develops in. There are a few simple rules, which are ways to deal with systems of equations."}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Two-minute version just to demystify. If you have two square matrixes with capital and lower case letters. Set them up like this. The rule is you take the row and the column relevant to it. "}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Sometimes written as $\\boldsymbol{SRS}$"}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You do two matrix multiplications and get the original back."}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now we can specify independent priors ont he correaltions adn the standard deviations. "}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Need priors. Three SDs for this model. One at the top, one for the intercepts, one for the slopes."}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="How do you put a prior on a matrix? In ngeratl the matrix could be very big. You can't assign priors independnetly, because there are contstraints. The values can constrain one another. If you only have one correlation, it can vary between 1 and -1. If you have two values with a really strong correlation, that constrains the other values because they're also correlated with those two. As the matrix gets really big, the constraints get really strong. And in a big correlation matrix, it's really hard to get strong correlations. You can, but then all the others have to be really small. So you need a family of priors that deal with this problem. "}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So there's this really nice family of priors. Present in almos tall recent textbooks. LKJ named after the authors. There's one parameter that determines the shape, which specifies how concentrated it is relative to the identify matrix, which has no correlations. So if *eta* is higher, there are no correaltions. If lower, then flatter, and many more correaltions are possible. Eta = 1 is uniform. As you increase eta, you get more concentration around 0, which is the identity matrix. Usually you want to use somethign that is regularizing, sceptical of high correlations."}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Have both random intercepts and slopes. Vector of alphas for each cafe, and beta for each cafe. Here's the most transparent - use `c` to put `a` and `b` together like making a two-column matrix. Then we write `multi_normal` instead of normal. Then a vector of means. Then our correlation matrix `Rho`. "}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="WHen this builds in Stan, it knows that `sigma_cafe` is fo length 2 because `multi_normal` has two elements. Does it automatically. But later we can specify the link manually because we have to. "}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Run the posterior distribution for the correlation. Extract the posterior and plot the density for the correlation matrix. [1,1] is always  1. [1,2] and [2,1] is the same value. The black dashed density is the prior. The blue is the posterior. Almost all the mass is below 0. What's the consequence of this? You get shrinkage."}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Horizontal are the intercept estimates for each cafe. Vertical are th slope estimates. Drawn like a statistical population. Blue points are the raw data values. Fixed effect estimates. Raw, unregularised fixed effects estimate. Open circles are varying effects estimates."}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="First thing to notice are the elipses. The contours of theinferred populations. The alpha and beta means and covrainces weren't nkown. Plotted the contours of the population with these ellipses. Any 2D Gaussian implies an ellipse. This is the statistical pouplation that generates shrinkage. Remember shinkage works where if the estimate is extrmee, thenn it gets shrunk towards the mean. We can highlight particular cafes liek the red one, and it has a very typical intercept, right in the middle of the popualtion. Boring, avergae cafe. Butits slope is unusual. Very extreme, out on the edges of theh population. Since it's extreme, it gets shrunk, but it also notices that intercepts and slopes are negatively correlated, so it also moves the intercept to the right. Even though the intercept is not extreme, it makes sense to adjust it because of the correlation strucutre. Why is this good? Helps to reduce overfitting. You can tour through. They're being drawn towards some contour twoards the angled middle. "}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Can also transform to the outcome scale. Now there's a positive correlation, and would expect to wait more int he morning than the afternoon. But everything is still being shrunk towards the middle. "}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Exploting multi-dimensional shrinkage here. Even better than pooling wihtin. Depends upon the correaltion between effects. "}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Grown up version of this. Many effects, many types of clusters. Back to the chimp data. Four treatments. Trying to estimate theaverage behaviour in each of these treatments. Howw often the left lever is pulled can vary by treatment. TID is treatment IDs 1 to 4, and for ecah there's an avergae rate of pulling the leve. BUt each chimp and blcok has a deviation from that mean. Alpha sub actor i, TID[i] measn the alpha deviation from the mean in this treatment, for actor[i]. Each actor gets four parameters. 7 actors. 7 x 4 parameters. RThen beta parameters for the block effects - deviations for the gamma means for each block. 4 parameters, times 6 blocks. Want to do some shrinkage. Rawest empirical descrption for this dataset yet. For eery little box, that has a unique idnetity, there's a uknique treatment and blocka dn actor that has its own deviation. But we'll need to do some shrinkage to deal with overfitting."}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="One matrix for each cluster type. So 28 actors, 24 blocks. Means are all 0. Then the covariance matrix."}
+knitr::include_graphics(file.path(slides_dir, '40.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '41.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Actor effects in red. Think of alphas as a matrix, with each row as an actor, and each column as a treatment. Then we define it down int he adaptive priors. `vector[4]` defines the matrix. 4 things minus the numbers of actors. Then there's this `multi_normal`. Multiplies the 4. `sigma_actor` and `Rho_actor`."}
+knitr::include_graphics(file.path(slides_dir, '42.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now we have a matrix of betas. Row for each block, column for each treatment. The different treatment effects hav ea correlation across actors and blocks. What doe sthat mean? It's handedness. Actor number 2 always pulls the left. THe correlation among treatment effects is high. Really strong correlations, arising from handedness. With these models, part of learning is to run these, and then make the priors stronger. Try 64, 128. And see what happens to the posterior. Since you can't plot a 4D matrix. "}
+knitr::include_graphics(file.path(slides_dir, '43.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="One of my favourite topics. The rollercoaster really pops off the rail with these."}
+knitr::include_graphics(file.path(slides_dir, '44.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="To do a non-cetnered parameterisation, you factor all of the parameters out of the prior, into the linear model. For a 1D normal that's easy, because you can take hte mean and sigma out. But now we have a whole matrix. Sigmas aren't a problem, but still have a correlation matrix as a prior. Answer courtesy fo this guy. Figured out a cool trick to figure out a system of equations. "}
+knitr::include_graphics(file.path(slides_dir, '45.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Cholesky factor or decomposition is a workhorse. Artillery officer in WWI. Died in the war, but his colleagues had rescued his notes, where he had solved linear equations by solving fewer than you started with."}
+knitr::include_graphics(file.path(slides_dir, '46.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Why do we care? We've got this correlation matrix, and we need to somehow blend it with a vector of z scores. This is the cnon-centered prior business - you have independnet z-scores, and blend them with a correaltkno matrix ot get thisngs back on the right scale. This is what his technqiue lets us do. Imagine you wanted to simulated two vectors with a particular correlations. You could siulate independent random numbers. And you want their correlation to be 0.6. z1 is just a nuch of z scores, like z2. Then we can get `a1` as a funtion by multiplyign by sigma to put it on the normal scale. The last things is the Cholesky factor. This works for any size matrix. We'll pick up the rest in the next lecture."}
+knitr::include_graphics(file.path(slides_dir, '47.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '48.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '49.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '50.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '51.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
