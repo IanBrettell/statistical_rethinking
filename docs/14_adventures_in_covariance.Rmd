@@ -236,7 +236,337 @@ knitr::include_graphics(file.path(slides_dir, '52.png'))
 knitr::include_graphics(file.path(slides_dir, '53.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap=" "}
 knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
+----
+
+```{r}
+slides_dir = here::here("docs/slides/L18")
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We had specified this complicated random model. Now trying to show you non-centering reparameterising when you have random slopes. French guy called Cholesky figured out this cool technique. Way to take a bunch of uncorrelated values and give them any correlation you want. Here it's not what you want, it's the one the data wants. To get a non-cetnerd parameterisation, we nee the prior not to be conditonal on other parameters. For some datasets and models, some centering is better. You need to be flexible. "}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In red all the bits that have to do with actor effects. Parameter for each actor and treatment, doing it with shrinkage and pooling. That's what this `alpha[actor,tid]` is. Green is the analagous block effects. Column is again a treatment. So what's the average treatment on that day? Need to check for block effects. What we're doing here is almost exactly Stan code. What you want to see is that we're creating the matrix. Defined by `compose_noncentered`. Multiply them by the z-score gives us the right scale again. Last bit down the bottom, now it doesn't contain a correlation matrix, it's a cholesky factor. "}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What you get from this is really amazing. They produce the same inferences, but some do them more effectively than others. Each point is a parameter in the posterior distribution. The horizontal axis is the number of effective samples from the centered model, that looks how the way we talk about MLMs. The vertical si the corresponding number of effective samples. So sometimes there are more than double the number of effective samples. This is not unqiue to Hamiltonian Monte Carlo, but the difference is that it tells you."}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Why are we doing this? We care about inference. Just the standard deviations from the random effects. For now, what do we learn from the SDs? They generate the stregth of pooling. The amount of variation is learned, and these are embodying that learning or information. The first four are actor effects that correspond to treatment factors. 1 was prosocial option on the right, and no partner present. 2 was prosocial left, no partner. 3 was prosocial right, parter, 4 prosocial left, partner present. And there's a lot less variation in treatment 2. The blocks are pretty much all the same. So it does more shrinkage than on actors, because the actors are diffferent due to handedlness. "}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here are the correlation efffects. You can transform the Choleky factors by tranposing - rotating and multiplying by itself to get the correlation matrix. Diagonal is all 1s. All the things on the 1s show up as points. Then the others are correlations between the different treatments. Note they're all positive. What does that mean? It's handedness. At the individual level, the correlations are hgih because of handedness. Now you see it arises as a correlation among the treatments at the actor level. A lot of the information is like this where you can capture it. Looks different when you inspect it. But if you made parameters for left and right, these correlations won't appear. Homework has a similar problem. "}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Posterior predictions. Take the posterior and push it back through the model. Why? To make sure the model works, adn caputres the texture of the data, but isn't identical due to shrinkage. Each actor going across. Each is a point. Tilt tells you what happens when you add the partner. Answer is not much. But moving the food to the other side of the table makes them attracted to more food. Actor 2 doesn't respond that way because actor 2 doesn't change. But notic ehthe model doesn't retrodict, because of shrinkage. SO the predictions are pulled a little bit towards the mean of the population, and most in treatment 2. The variance of treatment 2 was lower, so you get more shirnkage. sigma actor 2 is about 1, where sigma for the others were above 1."}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Only advice I can often give is horoscopic. The design of a proper analysis is outside the table, so the table is not enough. Nevertheless, it's nice to have a default; a place to start. I fyou had the bare minimum of information, you could use a horoscopes, adn the predictions are terrible. So you should feel fine about deviating from them when you learn something. So use a causal model first. Start with the empty model. Itdentify the clusters of interest (chimps, blocks, treatments) then put them in as varying intercepts. Like a shriking ANOVA. Where's the variation? Then you get the machine humming before you start adding predictors. Standardise unless ordered categories. Good default behaviour. Always pregularise by simulating from the piror. THen add in predictors and vary their slopes. Find to drop varying effects whens sigmas are small, but you could also leave them in and they'll aggressively shrink. Consider if you're trying to expmlain the sample, you'll focus on the units. More linkely that you're not interested in lefty, but in the variation in the population. We care about the indivdiuals, but they're exchangeable in the sense we're trying to generalise to the population, not making predictions about the same individuals.  "}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Quick conceptual introduction to two families of covariance models that go beyond random slopes. All the cool things we can do with covariance matrixes. Quick guide to say that lods of models focus on covariance matrixes. Going to look at instrumental variables. MR *is* instrumental variables. Then social relations model. Network models also depend on covariation of behaviour among nodes. Factor analysis is also covariance. And animal model. Shows that height is just a big covariance matrix. (Probably want to de-center.) Spatial distances are another kind of distance you can specify the covariaiton of."}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is a cool technqiue that goes beyond the backdoor crioterion. Sometimes it tells you you can't remove the confounding. But all is not lost - you can still deconfound. Imagine this classic case where we're interested in some E for education, and W for wages. Many people are interested in measuring the ffect of education on wages. Unviersity funding hinges on it. The problem is that there are a huge umber of confounds, labelled U. Could just be personality effects, like your laziness. There are going to be lots like this in any observational system. Can't condition on you because we don't have it measured. "}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="But if you can get an instrument Q, there's some hope. It's a variable that affects the exposure of interest, but not the outcome. Here it's birthday position in year. Q for quarter. Famous exampel form the economics literature. Pepople born earlier consume less eudcation. Why? First, age is a social variable. The age you're assigned is randomly cut off in January. So you can be biolgically almost a year older than someone the same social age. And it's your social age that determines when you start school. So earlier in the year are older when they start school, and graduate having completed less school. You're also eligible to quit school earlier. So you will have consumed less school if you drop out at the same time as someone younger. This is a natural experiment, assigned by the hand of god, interacts with the social system. Adjusts your education independent of the confounds, which are probably not associated with January - people born in January probably aren't lazier, but we need to check this."}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Why does this help? It turns E into a collider. If we condition on E, which we're going ot do, and we know Q, we get information about U. Like the light switch - if the ligth is on, and the conditions for that are that the switch is on and there needs to be electricity, conditioning on E is like saying I know the light is on. Conditioning on Q is like saying I know the switch is thrown. Now you know U, that electricyt is there. So what's happening here? Next slide. Let's talk about correlation first. Q tells us something about the strength of the corrleation U. "}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Imagine on average Q1 people consume 10 years more. Then we look a ta parituclar Q1 person who consumed more than the average. We just learned seomething about the confound. That they're not more lazy. We find out about them when we find out about their education, because we now something about Q. "}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Often these are called natural experiments in biology. If we fould experiemntally maniputlate education, we woudl do that, but can't. We'd satisfy the backdoor criterion. Not ethical to do that. The birthday is random, so now it's liek a weak experiemnt, where we've partially closed the backdoor. Like an experiemnt that doesn't always take. Q is suggesting to indiviuals they should do more or less education. The tendencies to follow the experiemnt give you information about the confound. If you follow up on the litereature, many experiements are actually like this, because we only suggest treatments to poeple. Epidemiologicla experiments are like this, becuase you only suggest treatment - they walk out the door and some take it and some don't. This is called *intent to treat*, and you have to estimate it. Really famous case with anti-retroviral trials. People taking them knew there was a control arm, so they blended up their medications. Turns out this isn't rare. This instrumental variable analysis is the correct way to anlysis an epxeriemtbn where the treatment is not enforced, but only suggested. Happens in psychology. Did they really look at the stimulus?  "}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Generatively, what to do. Take the DAG and simulate from it. There's a model for wages as a function of education and the confound. "}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then education is there. "}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then quarter of birth. Not true, but for the sake of the example."}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Making the effect of E 0. "}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Rn the naive regression. Strong and reliable effect. Purely the confound. Can't interpret these things."}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now add the instrument. And you could estimate all the $U$s as parameters, one for each of the 500 individuals in the sample. But the way better way to do that, is to use the MVNOrmal as your outcome distribution. So now as the likelihood, the top part of the model, we're going to say that $W$ and $E$ are drawn from a common distribtuion with some correlation. Where does the correlation come from? From the confound."}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="First path we'll worry about is the instrument to education. Expected amount of education is some intercept then slope for quartr of birth."}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Siomuiltaenosuly we'll runt he other model of effect of education on wages. "}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Then at the top we deal with the confound. Generates correlated devaitions after we'd conditioned on other things. This is the same gerative model, but we've marginalised over all the $U$ values, by making a correlation matrix."}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="SO now we have this at the top of the mdoel."}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This works. First thignnto look at are the regression effects. No confound there. Now look at our unconfounded education. Notice that `Rho[1,2]` is the correlation between education and wages, after having conditioned on the instrument - so it's the effect of the confound. Positive correlations, which give you clues about what it could be. "}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Instruments are limited. THe hardest part is finding a plausible instrument. Cannot test whetehr seomethig is a good instrument! DAG depends upon scientific infomratyion, not the data alone. Weak instruments maybe not useful. Try some simulations from the chapters. Now we'll instoduce other things likwe the front door criterions."}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="One of my favourite types of models. Often in the social sciences and organismal biology, we're interested in dyadic interactionsb etween units. Complicated because there's a field of interactions. Pulling apart can be difficult. "}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Example from a collaborator. 25 households from rural Nicaragua. Outcome is gifts, usually of meat, from one household to another. Lots of reciprocity in these networks, but meausuring is tricky, becuase there are also generalised effects. 300 dyads. This dataset has 300 rows. Modest correalation of 0.24. But this isn't the way to measure reciprocity. "}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's the problem. TThe 0.24 correlation is produced both by generalised effects, and household-specific (or dyadic) effects. Also a lot of predictors like kinship in the datsaaaset. We're going to ignore it. We think about the count from A to B. There's some average $\\alpha$. There's also a generosity rate. Some households are more generous to others. There's also generalised receiving, $r_B$. These generalised effects are contaminating. Then there are dyad effects, consdiering only the household A and B, how much does A give to B, and how is that correlation to how much B gives to A. "}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="How to model it? We need covariances! One covariance matrix for the generalised effects. For each hosuefhold $i$, you have two parameters, $g$ - gleneralised offset, as in how much it's giving on average, offset, adn $r$, which is how much more than alpha it tends to receive. They're going to be correlated. We set upt this 2x2 covariance matrix as before. Variation in the givingness offset, and variation in the recivingness offset. Nothing new here really.  "}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Next we have the dyad effects. FOr each dyad $i$ and $j$, they're donation offsets in both directions. A can tend to give a lot to B, and B gives little to A, then these d parameters willh have low correaltion. If they're neggative, the pairs end up in depednence relationships. We capture these effects iwth this covariance matrix. It's new, and special, beacuse it only has one sigma isndie of it. Why? Because it's symmetrical. A and B are th same type of parameter. Like judo - blue and read shorts are random, so the variance between their wins must be the same because it's randomised."}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Just copy the sigma twice into the matrix. Details are boring. Just one sigma - $\\sigma_d$."}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Correlation matrix for the GR effects and the two SDs for it. LOok at the correaltion: -0.4.}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Generalised giving  for each household against generalised receiving. Negative correlation meaning that generous households receive less, because thy're rich. Then poor households on the left. Having conditioned on dyad effects. Can see the needs-based structure. Parameters on both axes. Drawn an ellipss. "}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now let's think about dyads. `Rho_d` is 0.88. "}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Some of these devaitions are small. 0s are very balanced. Reciprocity on 0s, and also for kinships. "}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Very pleased with this homework set. Going to go back to the Bangladesh data, going to do random slopes, then adding predictor variables: the woman's age, and the number of kids she already has. Big effects on contrcetpive use. Draw a DAG and use it to anlayse the causal influence of age and kids on contreption."}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
+```
+
+```{r}
+slides_dir = here::here("docs/slides/L19")
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Get to take everything we've learned and put it together."}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Data story. General phenomoent that doesn't just applhy to American politics. Birth year of voters. On the veritcal we have the Republican vote share of individuals in that birth year. Share of the vote they have to the presidential candidates in that year. Each of the colours is a different election year. As you get closer to the present, younger people are allowed to vote, so you can seee the curves are shifting to the left. If you plotted this graph by age, you would see this view. Interesting view that the hills and valleys line up, even though in any particular year it can move up and down quite a lot. 2008 is much lower down across all age groups. Bu tthe peaks and valleys are in teh same place. These are cohort effecs. Something abou thteh year you're born in sets your politial preference for live. It's something that heppns to people born around that time that happens in their life. "}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="They fit a bit heirarchical Bayesian model to find the age it is that sets their poltical orientation. What matters is that when your're 18, who is present, what party theyr'e from, and are they popular. THen you can predict their political orientation for the rest of their life. Things that happen when you're older don't have nearly as much of an effect. Year of birth is linear, but also a category. It's an orderd category. If we can to take effects like this seriously, we need to take them into account. Called continuous cateogries. Trough in 1950 is the Nixon effect. Most conservative is the Reagan effect. He was winnign the Cold War. "}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You can assert that they have linear effects, but then you're giving up on thise non-monotonic cohort effects. Or ny number of other interesting things as well, like income. No reaon that every paddditnoal percent of income has the same effect. How is location a category? It's a proxy of things you haven't measured. Location is a proxy for common exposures. Phylogentic distance analagous to location. No obvious cutpoints, but similar values are similar in their effects. If you want an infinite number of categories, buecasue it's continuous, you want pooling. So we'll make models with infiinte cateogories, and fit arbitrary function swith pooling, and it'll work great. In machine learning is Gaussain process regression. "}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Two examples with code on how to do this. First is with spatial autocorrelation, where shared space is a proxy for unmeasured confounds. Let's go back to tools. Interested in predicting number of tools based on size of population. One of the problems is that islands that are close to others can just go and get the tools rather than inventing them. Certainly down near Tonga there were a lo tof effects. So distance between islands is a proxy for contact. "}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Here's the idea. You construct a distance matrix. Could probably do better than this based on sailing routes, but this will suffice here. This is like our map of confoud threats. What could make the tools counts similar is correlation between islands that are closer together. "}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's build the matrix into the model. We've got expected tools $\\lambda$. $\\alpha$ is the propoertinaly constant, i..e number of tools per member, then $\\beta$ is elasticity, then $\\gamma$ is the loss rate."}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We can add the Guassian process by adding a factor on the front of it. Added this exponent to the $k_{SOCIETY}. It's like a varying intercept. It's a parameter that is estimated for each society, with a normal prior, but exponentitated to make it positive. This makes it a facotr."}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="$k$ = 0 is just the model prediction. Not inated or deflated at all. This factor is increasing or decreasing the expectation from other factors. Some will get inflated because the're near other islands with tools. If you ahd a linear model, you owulnd't do the exponnetiation, you'd just stik the $k$ on there."}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="WHere to get the $k$s from? This matrix. Big prior with all these varying effects. Big vecotr for a ll the $k$,s  10 becuase 1 for each island. Come form teh same multi-variate normal prior. How do you build this thing? Going to generate the whole matrix from that distance matrix, and use it to parameterise how the correlation falls off at distance. Going to show you the most common way to do with with so calle dL2Noral at the bottom, where each cell int he matrix $K$ is given by that expression. Note it only has three parameters in it. 300x300 matrix, which we could have by the end of the day. "}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This is what the L2Normal matrix means. eta squared is the maximum covaiance between any two isaldn,s fit from the data. Then multplied by the thing in the middle. Rho squared i st he rateo fo decline with distance, and Distance ist he squared distance from the distance matrix. THis is the Guassian part, buecause this is a bell curve. the e(-something^2) is what gives you something gaussian. Deltaij turns sigma squared on and off. So if you have multiple observations from each island, you neex thtis factor there so they're not all predicted to be the same.  "}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Gaussian decline, or squared distance. Horitzontal is diwstance between two islands, and vertical is the correlation, standardised. And I'v e made up some values for Rho. Squared idstance function gets the solid curve. Starts with a slow decline, gthen accelerates liek a Gaussain curve. End up with this accelerating rate to get to the flat part of the tail really fast. If you choose a linear distance instead, you take the square off the D, then you get the dahssed linear curve. Nothign wrong with that, but it has a different set of assumpotions: that the rate of loss is the fastests at the start. The amount gyou lose is fastests at the start. Probably not the case."}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="All we're doing is all in the prior. Varying effects drawn from one giant Gaussian. Rest of the model is what we've done before. You could have all the pariwise differece between ages, and all the particular effects.  Vector of $k$s. Priors from eta nd rho, both squared. Don't have to be squared, by why? Convention. Want to simulate from these priors and see what they imply. "}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="If almbda is 2, the mean is 0.5. The rate is the inverse of the mean in an exponential. So sample randomly, and draw a curve. 50 samples from the prior distribution. In this prior, most fall off pretty rapidly, so the prior assumes that it could be anything from moderatley strong to aboslutely incredibly weak, but all of them drop off really fast. POsterior will look really different."}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="As you might expect, only thing that changes is this Guassian process. Helper function in `ulam`"}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="`k`s for each society, a vector of lenght 10. Just like a varying intercept vector. Come from this MVnOrmal distirbution. "}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Sigma is a 10x10 matrix. GPL2 is Gaussian process L2Norm. Do some loops to do what's on the previous slide. If you look at the Stan code, there's just a loop that calculates every trajectory. "}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Action inside this is Dmat, the distance matrix, then the parameters etasq and rhosq. Then the final term, which needs to be aboe 0, But we don't fit it here because we don't have multipole observations per island."}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="What happens? This is wholly uninterpretable. Tide prediction enginge agian. So we want to plot thigns. PUsh the posterior back trhough is and get retrodictions. `k` values are exponentitated. Any island with a 0 is exactly as the model expected. If negative, drageged down by some negibouir. If higher, dragged up by some neighbour beyond the expectation of the model. `zetasq` and `rhosq` are uniterpretable for a reason to be explained."}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="On the left we're repeating the piror. Ont her right, 50 samples form the posterior. Relatively small, but declines more slowly. SO there's some long-distance effects driving the tools around. Can't figure out the shpaes from etasq and rhosq because they're correlated. "}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="For example, just plotting them on the left. Samples for the Markov chain. Non-indenpdence. If you make one smaller, the other gets bigger. Negaitve correlation. So can't interpret them indepedently."}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We want to understand this model now. We can think of this on the outcome scale by taking the posterior distribution of the covariance matrixes, then compute for each pari of ilsands the posterior mean correlation. How? We know their distance on the horizontal axis, then we cna compute form the posterior mean theyir epxected covariance, then standardise for a correlation. The diagonal is all 1s, then the off diagonals are the expected correlations and tool counts. The bottom row is Hawaii. You've got no correlation because it's really far away. "}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="On a map, this is what it looks like. LIke the world's least high-tech map of the pacific ocean. Size of each point is the population size. Line setgments are the correlations. Triad of Santa Cruz, Tikopia and Malekula. Tool counts are more similar, and deviate more because of their popualtions sizes. Tonga correlated with Fiji. "}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Can also plot this based ont he original hypothesis. Again, ilsand society points are proportional to their poulations. Trend is avergae prediction based on pouplation size. Can see things getting dragged around. Model thinks Fiji was dragged upwards from its population expectation."}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="SOmetimes called Bayesian non-parametric regression. Non-parametirc meaning infinte number of functions being considerd. They consider an infinite number of splines taht pass along continuos categories than select among them with regularisatino. Very popular with machine learning. Lots of really diverse applications. There are lots of periodic datasets, like seasonality datasets in ecology or social science, where the covariance function has cosigns in it to measure the periodicity in it. e.g. human births - cool analysis by Gelman et al using Gaussian process regression. Phylogenetic distances are like this as well. All are special cases, with particular stratgeies for building the covariance matrix. Then don't need to make assumpotions about the regression shape, you can do that with regularisation. Finally there's automatic relevance determination - terrible machien learnign term = jestimating the importane of each kind of distance in the covariance between the items."}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In evo bio, you worry about how long ago this pair of species diverged. Concerned about shared common history. This introduces a lot of back doors. Like a proxy of shared exposures. e.g. comon genes, kinds of ecologies, etc. YOu may not have measured all of those things. Then time since divergence is a proxy for those common exposures. We're going to use this to see how flexible it is. Lots of way st o smuggle it in. One way is Brownian motion model Simplest but also goofiest evolutionary model because no trait evolves this way. Other processes like the OU, like Brownian but variance constrained. Some attractor that pulls back traits. Any particular phylogency implies a covariance structure.  "}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's use this primates dataset. "}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Apes are the losers of the pirmates. Old World are the winners - recent diversification. Galagos and Lorises adre small and recently diverged. Tarisers tiny andvery differnt from each other. New World are Americas. A lot of them as well. "}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There we are."}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="A large brain makes it possible to live in big groups. There's this back door through body size, which might also causally affect group size, by changing the ecology you're in. "}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Have to trim the tree. You end up with 150. Purely treating phylogeny as some squishy common exposure measure. Definitely not super sicence. Really geocentric."}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="To get here, this is an ordinary regression but weirded. All of the outcomes for all species is one outcome, a single big vector of group sizes, a log groupsize as a function of log body size and log brian size. Think of sampling all tips of the tree simultaneously at the smae time. Bold G is all the group sizes. Some vector mu. Then this covariance matrix S. In standard linear regression it las sigma squared along the diagonal and 0 everywhere else. So toconstrust S is by multiplying sigma squared by I. If you mutpily the scalar sigma 2 with this, there's no correaltions, and you're back to a linear regression. Why do this? We'll get back to a linear regression by replacing S. "}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Matrix with number of rows equal to numbe ro fspecies, and number o fcolumsn the same. Covariance matrix. Diagonal is sigma squared. Imat is the identity matrix. Just a linear regression, and we find a strong association between brain size and group size, and a slightly negative relationship with boyd mass. These are only direct effects. Bigger species live in bigger groups. But if you take brain size out, you'll see the coeffcient for body mass is positive. This is the direct effect of body size is negative, but not the total effect."}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The inferentail threat is this haunting phylogeny. It gives us a tool, and instrument if you will, to measure these things. To get increased covariance for recently separated species. "}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The traits just wander randomly. When this hapnpens, the covariance is expected to decline in a linear function since the time they divergd. We cmopute the impolied covarance matrix then plot htat against phylogenetic distance. How to get phylogenetic distance? Total branch length. No one really likes this model, but it's easy to use. "}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="So you can get the covariance matrix by inverting the phylogenetic distance matrix. Then once you have that, make it into a correlation matrix so we can fit the residual variance. Then just pass it in = replace the identity matrix with this correlation matrix. That's the Brownian motion model. Run this model. Things change a lot. Brain size is nothing now. Body size is now positive, because all that baackdoor throug brain is knocked out. This says the correlation etween brian size and and group size si that closely related species have similar brains and body sizes. "}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Swap the tip labels for group sizes. At the bottom we have prosimians. Gibbons in the upper left. "}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's do the Guassian process version of this. The only way to get linear decline with distance is thorugh no selection. Anything else, you'd get an acceleration of decline with distance. Closely-related species can be very simliar, but after som ephylogenetic sdsistance you don't expect any of thsoe confounds to be shared anynommre. You can fit a bunch of functions that way.   "}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We just have to change one line. Change the covariance matrix and make the right hand size the cov-GPL2. Now it's about divergence. We're going to estiamte the covariance in group sizes with genetic distance. Brain size is still basically nothing. Now group size is even stronger before. If there's any relationship with brain size, it's negative. But there are a lot of other confounds. So much other reciprocal causation. Important to see the impact that a measure of confounds cna have. "}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We plot the covariance matrix here. Definitely faster than linear. 1 is the maximum phylogenetic distance. The evidence is for closely related species, there's a lot pf correlation of group size. But it declines very fast as you move away. "}
+knitr::include_graphics(file.path(slides_dir, '40.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="One of the interesting thing is variables rates in branches. Think about apes. Some have envolved faster (like us). Other pseices are weird too, but other linearages are more conservative. Gorillas are more diverged from one another than bonobos and chimps. Hemiplasy is incomplete lineage sorting. Where no trait fits the tree because species don't splitin an instance. There's this long period where they're not bifrucating. So at different loci you can be more closely related to one species (.ike chimps) and for other loci more closely related to antoher (gorillas). Big thing to try to jreconstruct nodes. Many equilibria as well. How do all of these things trade off? Want to see group size as an emergent outcome of all these different strategies. There's no unique null in evolutionary biology. "}
+knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 

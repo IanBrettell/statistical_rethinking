@@ -1,0 +1,282 @@
+---
+title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
+date: '`r format(Sys.Date())`'
+#output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+#output:
+#  bookdown::tufte_html_book:
+#    toc: yes
+#    css: toc.css
+#    pandoc_args: --lua-filter=color-text.lua
+#    highlight: pygments
+#    link-citations: yes
+---
+
+# Missing Data and Other Opportunities
+
+```{r, message = F, warning=F}
+library(here)
+source(here::here("code/scripts/source.R"))
+```
+
+```{r}
+slides_dir = here::here("docs/slides/L20")
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '01.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Pancakes. Hatching indicates that that side is burnt. "}
+knitr::include_graphics(file.path(slides_dir, '02.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Now I serve you a burnt pancake. The probability of the other side being burnt is not half, but rather 2/3."}
+knitr::include_graphics(file.path(slides_dir, '03.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Famous logic problem. Point of logic puzzles is to correct your intuitions and teach you methods for solving them. You don't have to be clever, just ruthlessley apply the rules of conditioning. Don't trust your intuitions. Theways we figure things out in probabilty theory, we condition on what we know, and seee if that updates. "}
+knitr::include_graphics(file.path(slides_dir, '04.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We want to know the probabilty that the other side is burnt conditional on what we know, that one side is burnt. "}
+knitr::include_graphics(file.path(slides_dir, '05.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="We have all the information to compute this. There are three pancakes. BB is burnt-burnt. Probabillity that you would see a burnt side if it's BB is 1. "}
+knitr::include_graphics(file.path(slides_dir, '06.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '07.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="In the text there's a simulation. The mistake is focusign on pancakes. You want to focus on sides. There are three burnt sides. Of the other sides of those, how many of those are burnt? 2, so 2/3. "}
+knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Everything we've done is underlain by being ruthless. Express our information by constraints in distributions. Take this approach and show you how it produces automatic solutions. Avoid being clever and you can get useful solutions. Missing data is the extreme version of measurement error."}
+knitr::include_graphics(file.path(slides_dir, '10.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There's always some error in measurement, and ther'e always this sigma error. But what if there's also error on the predictors, and it's not consistent. Let's think about avoiding thying to be clever, and just codntiiong on what we know."}
+knitr::include_graphics(file.path(slides_dir, '11.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="The columns were standard errors on a coulpl eof the variables. The error of measurement has been quantified. We have an esimate of the divors=ce rate, and the stnadared error stells us the error rate of that estiamte. SOome of the standard errors are big. "}
+knitr::include_graphics(file.path(slides_dir, '12.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Right now has the log population on the horizontal. And California is on the right. It's so big that the error rate is small."}
+knitr::include_graphics(file.path(slides_dir, '13.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's think about this in terms of a causal model. We want to see the divorce rate we observe as a function of the true divorce rate `D`, and the population size `N`. "}
+knitr::include_graphics(file.path(slides_dir, '14.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's not be clever, just apply ruthless probability theory. There's some true divorce rate, and we'd like to use that as our outcome variable. Generatively thinking, our observed data is generated from a normal disttribution. The mean of this normal distribution will be the true rate. THen there's a standard deviation. In the long run, there's some D true. But in any finite period, ther's error, and that will be inversely proportional to population size."}
+knitr::include_graphics(file.path(slides_dir, '15.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="This was our DAG before. The thing on the top is D TRUE. We're going to put a line on top of it."}
+knitr::include_graphics(file.path(slides_dir, '16.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="... The observation process. Now D TRUE is's a vector of unkonwn parameters, then the line at the top estimates them for us. We also have the whole regression relationship that is going to pin down values from other states. Shrinkage is going to happen. If you were going to simulate pmeaurement error, this would be the model. Then it runs backwards. **Bayesian models are generative, and you can run them in both directions. If you run them forwards you simulate fake data, and if you run them in the reverse they spit out a posterior distribution. You feed in a distirbution and the spit out data, you feed in data they spit out a distribution.** So if you were going to simulate measurement error, you use the top line.  "}
+knitr::include_graphics(file.path(slides_dir, '17.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="How do we do this in a model? For every dstate, there's a D true, and that's what the vector[N] is. "}
+knitr::include_graphics(file.path(slides_dir, '18.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Remember the distinction between likelihoods and priors in a Baeysian model is coginitive. Probabilityt theory don't care. When something in your dataset becomes unobserved, the model doesn't change. The model exists before you know the sample. The fact that you haven't observed some data doesn't mean the model chagnes. It cjust means you have paraemters there, because parameters are unobserved variables."}
+knitr::include_graphics(file.path(slides_dir, '19.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="There's shrinkage. Plotting the relationship between median age of marriage and the divorce rate. Most of these are standardised variables. The blue points are the values that were observed. The open circles are the values fromt eh posterior distribution. The line segments connect them for each state. There's shrinkage. Some have moved more than others. You can explain this pattern. Why have some moved way more than others? Thye've moved tothe regression line because that's the expectation. How much it shrinks is also a function of standard error. For ID it says given this relationship and these variables, that measred rate is too edteme to be beileveable, party due to sampling error, so it shirnks it. Wyoming is interesitn gbecause it'snot so far but so uncertain that it gets shrunk directly to the line. Maine gets shrunk a lot too. "}
+knitr::include_graphics(file.path(slides_dir, '20.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You can compare it to the plot with teh standard devations. Ont ehleft we've taken the differnce between the estimated and the observed. Horizontal is the standard error. Any state taht has adifference of 0 means there's no shrinkage. "}
+knitr::include_graphics(file.path(slides_dir, '21.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="That's error on the outcome. YOu can also have error on predictor variables. Imagine sampling a predictor now with error. On the plot on this slide we have the marriage rate. On the horizontal against log population. "}
+knitr::include_graphics(file.path(slides_dir, '22.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Top part is the observation process on divorce rate. Then the regression of the true divorce rate on age of marriage and marriage rate. But now inside the regression, we have..."}
+knitr::include_graphics(file.path(slides_dir, '23.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="M true, not the observed M, and that's a paramter. There's a parameter for each state and it goes in. It's a parameter times a parameter. Every state will have one of this M trues. Same model because it's the same generative process. Then we have the likelihood for the observed rate, the M observed for each state comes from this sampling process again.  "}
+knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="You ahve to put in a prior for the MTrues. What hapens as a consquence of setting it as Normal(0, 1), because it's standaredised. Not terrible. Butyou're ignoring oinfoamtion inthe data because if i tele you the age of marrige in each state, you get information about themarriage rate. If you believe the DAG, age of marrige influence marriage rate. So we can get a better prior if we put the whole DAG into the model. If we do it all ato once, there's even more infomration. "}
+knitr::include_graphics(file.path(slides_dir, '25.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '26.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '27.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '30.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '31.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '32.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '34.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '35.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '36.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '37.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '38.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '39.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '40.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '41.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '42.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '43.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '44.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '45.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '46.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '47.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '48.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '49.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '50.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '51.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '55.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '56.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '57.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '58.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '59.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '60.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '61.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '62.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '63.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap=""}
+knitr::include_graphics(file.path(slides_dir, '64.png'))
+```
+
