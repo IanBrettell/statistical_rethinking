@@ -124,75 +124,75 @@ knitr::include_graphics(file.path(slides_dir, '24.png'))
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="We've got two variables now, which are observed with error. Divorce rate on vertical; marigage rate on horitzontal. Open points are the corresponding pairs of posterior means for the esitmate true means. So we have shrinkage in two directions now towards some regression line (undrawn). Some shirnk a lot more than others. If you're really far from the line you shrink more. But also there's more shrinkage for the diveroce rate than the marriage rate. Top left is extreme in both. Comes downa  lot more on divorce rate. WHy?"}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Because the regression says marriage rate isn't strongly associtated. It doesn 't know where to move it, so it doesn't.  "}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="It comes in many disguises. Simplet is when there's variable that's called 'error'. But there are many more subtle forms. Pre-averaging removes the fact tht you have a finite sample to estimate the mean from. THat takes variation out of the dataset. If you're doing that constantly, that's cheating. Otherwise you could just use a MLM. Then the means are varying effects - parameters - and you do the averaging within the model. And all the uncertainty to do with different sample sizes is taken care of. Parentage analysis is a fun case. Say you have a popuation of wild rodents and you're tyring to figure out who was whose parents. So you get their genotypes and figure out how they're related. Phylogenetics - the example last week used a single tree. Phylogenies are rarely very scertain. Trend to plot them like ont he right, so you're showing the whole posterior distribution. You can do the analysis over the whole distribution of trees. In archaology, measurement error is the norm, e.g. radio carbon dating. People take this very seriously now. Very sdifficult to sex a fossil. Or studying a place where they don't keep track of birthdays."}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Grown up measurement error. Mechanically similar but feels really different. You want to do something about missing data. Most of the standard regression tools will autoamtically remove missing cases. So all the variables are removed. This squanders information, but can also create confounds. There are ways to deal with this. So how to deal with it? Worst appraoch is to replace teh missing values with the mean of the column. Really bad idea because they model will intepret it as if you knew the value. Procedure called multiple imputation, whcih works really well. Frequentist way of doing what we're going to do. Unreasoanbly effective. Basically do the modle multiple times on samples on some stochastic model of the dataset. We're just going to go full-flavour Bayesian."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Let's talk about DAGs again. Deeply confusing, because the terminology is awful. Let's think about the primate milk data again. Interested in understanding why the energy content of milk varies so much. Is is related to the proportion of brain neocortex. U is the strong postive correlation between M and B, but we don't know what it is. Something going on here but we don't know what it is."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="This taxonomy tells us what to do. Confusingly, MCAR is totally different to MAR. "}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="MCAR. We're not going to get to see B, because it has missing values in it. Lot's of primates where they didn't measure percent neocortex. To get the gaps, we know it's partly caused by B, but it's also caused by the missingness process R. `R_B` creates missing values in `B`. "}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="We're going to condition on `B_obs`. Are there backdoors? The answer is no, but there are two paths. Direct and indirect. But the total causal effect can be estimated by simple regerssion with just `B_obs`. There's an indirect effect through M. But there's no back door. "}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="There's no path that takes you through `R_B`. This means the missingness mechanism is ignorable, because it doesn't create any backdoor confound. So you don't need to know it. This is the benign case."}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="You don't have to condition on anything to keep your infnerence about K independent fromt he missingness mechanism.  "}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="The only way this could happen is if you had a random number generator deletes values from your dataset. I assert this is hihgly implausible in more research situations. "}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="This is something else that could be going on. This will give us MAR. M is now entering/influencing R_B. Now the missingness mechanism depends on the body mass values. Large or small body masses are more likely to have missing body mass values. Different species are more or less attractive to study. That generates a pattern where some features are associated causally with the missingness. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="As before, is there a backdoor path. Now because there's an arrow entering R_B.."}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="You have a complete path. How to close the backdoor? Condition on M. Here you don't have to knwo the missingness mechanism, but do need to do imputation."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="There's some variable in the graph we can condition on, and separate the two. This is a nice situation to be in, and probably the most common. Why need to impute? Because you'd be polluting the other variables with this missngness pattern, whcihc an create really strong biases."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Worst case. In this case, the most obvious way to get iit si the variable itself causes the missngieesss. Cerain values of neoxortex percetn are more likely to go missing. How? Maybe species with low neocortex weren't measured."}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="This is nasty because you get a backdoor you can't close. Your only hope is to model the missngness mechanism and thereby condition on it."}
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="The other way to get it would be to have a missingness variable. Here there's fork, like phylogeny. We like to study animals closer to us. That will influence neoxotrex percent, and also influence missingness."}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
 
@@ -200,23 +200,23 @@ knitr::include_graphics(file.path(slides_dir, '43.png'))
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Imagine a DAG iwth four variables. R is nowD, a dog. In the first, the dog will eat any homework. In the middle, teh dog eats particular students' homework. The attribute could be attention span, as in they turn away and the dog eats it. Finally, the dog only eats bad homework. Or, more liekly, the stuent feeds it to the dog. But it depends ont he score ofthe homework. "}
 knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Let's go through the mechanics of this. "}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="We'll replace the NAs with a parameter, and get posteriro distributions for each of the missing values. "}
 knitr::include_graphics(file.path(slides_dir, '47.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Now they get assigned a parameter. They'll be imputed by the modeo."}
 knitr::include_graphics(file.path(slides_dir, '48.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="B is now a vector in which some values are observed, and toehrs are paratmets. We'll stick them in an ordianry regression modeo. But now we have a prior. When B is observed, it infomrs the parameters in side it. Those will be estimated from teh observed values."}
 knitr::include_graphics(file.path(slides_dir, '49.png'))
 ```
 
@@ -228,23 +228,23 @@ knitr::include_graphics(file.path(slides_dir, '50.png'))
 knitr::include_graphics(file.path(slides_dir, '51.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Looks exavtly the same, but we add this prior. `ulam` automates this."}
 knitr::include_graphics(file.path(slides_dir, '52.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap=" You can see 12 imputes. What does this do to the slopes in the model?"}
 knitr::include_graphics(file.path(slides_dir, '53.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Let's compare the same model. Now we can compare the slopes. Two predictors assocaited with the outcome variable in opposite directions. NOtice that the esimates have got more precise. They've also moved closer to the mean. "}
 knitr::include_graphics(file.path(slides_dir, '54.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="We can plot the values up, but they'll have standard errors on them. Open circles is imputed. Posterior means follow the regression line. "}
 knitr::include_graphics(file.path(slides_dir, '55.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="The disappointing thing about this midel is that the relationship between the imputed values adn the predictor is 0, which is wrong. THat's because we dodn't tell it they're assocaited."}
 knitr::include_graphics(file.path(slides_dir, '56.png'))
 ```
 
@@ -252,11 +252,11 @@ knitr::include_graphics(file.path(slides_dir, '56.png'))
 knitr::include_graphics(file.path(slides_dir, '57.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap=" We fix this by making it a MVNormal. "}
 knitr::include_graphics(file.path(slides_dir, '58.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Need to manually construct it. "}
 knitr::include_graphics(file.path(slides_dir, '59.png'))
 ```
 
@@ -264,11 +264,11 @@ knitr::include_graphics(file.path(slides_dir, '59.png'))
 knitr::include_graphics(file.path(slides_dir, '60.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="Then happy days, you get even more precision."}
 knitr::include_graphics(file.path(slides_dir, '61.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap=""}
+```{r, echo = F, out.width='80%', fig.cap="This is a really big topic. One ofthe areas that is most important is with occupancy. Really missing data problems. There's a true occupancy but 0s are not trustworthy. They ahve a special preocess that comes from the detection process that you model."}
 knitr::include_graphics(file.path(slides_dir, '62.png'))
 ```
 
