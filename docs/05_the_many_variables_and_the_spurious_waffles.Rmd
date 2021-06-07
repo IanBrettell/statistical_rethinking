@@ -87,8 +87,6 @@ d$A = rethinking::standardize( d$MedianAgeMarriage)
 ```
 
 
-
-
 ```{r, echo = F, out.width='80%', fig.cap = "This is what multiple regression is for. We've got two questions in a model that has both questions. Do you get any predictive information from the second variable? "}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
