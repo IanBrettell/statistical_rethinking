@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-31" />
+<meta name="date" content="2021-06-08" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -152,6 +152,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
 <li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
 <li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
 </ul>
 </div>
 </div>
@@ -160,7 +162,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="col-sm-12">
 <div id="header">
 <h1 class="title">Notes for Statistical Rethinking 2nd ed. by Richard McElreath</h1>
-<h4 class="date"><em>2021-05-31</em></h4>
+<h4 class="date"><em>2021-06-08</em></h4>
 </div>
 <div id="index" class="section level1 unnumbered">
 <h1>Index</h1>
@@ -176,7 +178,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-4"><a href="index.html#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;coda&quot;</span>,<span class="st">&quot;mvtnorm&quot;</span>,<span class="st">&quot;devtools&quot;</span>,<span class="st">&quot;loo&quot;</span>,<span class="st">&quot;dagitty&quot;</span>))</span>
 <span id="cb1-5"><a href="index.html#cb1-5" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;rmcelreath/rethinking&quot;</span>)</span>
 <span id="cb1-6"><a href="index.html#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set_ulam_cmdstan</span>(<span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb1-7"><a href="index.html#cb1-7" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">set_ulam_cmdstan</span>(<span class="cn">TRUE</span>)</span></code></pre></div>
 <p><strong>Split and convert slides</strong></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="index.html#cb2-1" aria-hidden="true" tabindex="-1"></a>n_lectures <span class="ot">=</span> <span class="dv">20</span></span>
 <span id="cb2-2"><a href="index.html#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -207,7 +209,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="index.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Delete existing tmp file</span></span>
 <span id="cb3-2"><a href="index.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;tmp.txt&quot;</span>)</span>
 <span id="cb3-3"><a href="index.html#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="index.html#cb3-4" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L16&quot;</span>)</span>
+<span id="cb3-4"><a href="index.html#cb3-4" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L20&quot;</span>)</span>
 <span id="cb3-5"><a href="index.html#cb3-5" aria-hidden="true" tabindex="-1"></a>slides <span class="ot">=</span> <span class="fu">list.files</span>(slides_dir) <span class="sc">%&gt;%</span> <span class="fu">str_remove</span>(<span class="st">&quot;.png&quot;</span>) <span class="sc">%&gt;%</span> .[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;.pdf&quot;</span>, .)]</span>
 <span id="cb3-6"><a href="index.html#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="index.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(slides, <span class="cf">function</span>(x){</span>

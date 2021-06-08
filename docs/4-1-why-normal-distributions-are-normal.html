@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-05-31" />
+<meta name="date" content="2021-06-08" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -152,6 +152,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
 <li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
 <li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
 </ul>
 </div>
 </div>
@@ -220,7 +222,7 @@ This is the ontological perspective on distributions. When fluctuations tend to 
 <p><strong><em>4.1.2 Normal by multiplication</em></strong></p>
 <p>This code just samples 12 random numbers between 1.0 and 1.1, each representing a proportional increase in growth. Thus 1.0 means no additional growth and 1.1 means a 10% increase.</p>
 <div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="4-1-why-normal-distributions-are-normal.html#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, .<span class="dv">1</span>))</span></code></pre></div>
-<pre><code>## [1] 1.860525</code></pre>
+<pre><code>## [1] 1.589528</code></pre>
 <p>Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:</p>
 <div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="4-1-why-normal-distributions-are-normal.html#cb94-1" aria-hidden="true" tabindex="-1"></a>growth <span class="ot">=</span> <span class="fu">replicate</span>(<span class="fl">1e4</span>, <span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, <span class="fl">0.1</span>)))</span>
 <span id="cb94-2"><a href="4-1-why-normal-distributions-are-normal.html#cb94-2" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(growth, <span class="at">norm.comp =</span> T)</span></code></pre></div>

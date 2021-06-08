@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Chapter 15 Missing Data and Other Opportunities | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-06-08" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="Chapter 15 Missing Data and Other Opportunities | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>Chapter 15 Missing Data and Other Opportunities | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+</ul></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
+<li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
+<li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
+<li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="missing-data-and-other-opportunities" class="section level1" number="15">
+<h1><span class="header-section-number">Chapter 15</span> Missing Data and Other Opportunities</h1>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="15-missing-data-and-other-opportunities.html#cb247-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb247-2"><a href="15-missing-data-and-other-opportunities.html#cb247-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="15-missing-data-and-other-opportunities.html#cb248-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L20&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L20/01.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L20/02.png" alt="Pancakes. Hatching indicates that that side is burnt. " width="80%" />
+<p class="caption marginnote shownote">
+Pancakes. Hatching indicates that that side is burnt.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/03.png" alt="Now I serve you a burnt pancake. The probability of the other side being burnt is not half, but rather 2/3." width="80%" />
+<p class="caption marginnote shownote">
+Now I serve you a burnt pancake. The probability of the other side being burnt is not half, but rather 2/3.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/04.png" alt="Famous logic problem. Point of logic puzzles is to correct your intuitions and teach you methods for solving them. You don't have to be clever, just ruthlessley apply the rules of conditioning. Don't trust your intuitions. Theways we figure things out in probabilty theory, we condition on what we know, and seee if that updates. " width="80%" />
+<p class="caption marginnote shownote">
+Famous logic problem. Point of logic puzzles is to correct your intuitions and teach you methods for solving them. You don’t have to be clever, just ruthlessley apply the rules of conditioning. Don’t trust your intuitions. Theways we figure things out in probabilty theory, we condition on what we know, and seee if that updates.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/05.png" alt="We want to know the probabilty that the other side is burnt conditional on what we know, that one side is burnt. " width="80%" />
+<p class="caption marginnote shownote">
+We want to know the probabilty that the other side is burnt conditional on what we know, that one side is burnt.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/06.png" alt="We have all the information to compute this. There are three pancakes. BB is burnt-burnt. Probabillity that you would see a burnt side if it's BB is 1. " width="80%" />
+<p class="caption marginnote shownote">
+We have all the information to compute this. There are three pancakes. BB is burnt-burnt. Probabillity that you would see a burnt side if it’s BB is 1.
+</p>
+</div>
+<p><img src="slides/L20/07.png" width="80%" /></p>
+<p><img src="slides/L20/08.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L20/09.png" alt="In the text there's a simulation. The mistake is focusign on pancakes. You want to focus on sides. There are three burnt sides. Of the other sides of those, how many of those are burnt? 2, so 2/3. " width="80%" />
+<p class="caption marginnote shownote">
+In the text there’s a simulation. The mistake is focusign on pancakes. You want to focus on sides. There are three burnt sides. Of the other sides of those, how many of those are burnt? 2, so 2/3.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/10.png" alt="Everything we've done is underlain by being ruthless. Express our information by constraints in distributions. Take this approach and show you how it produces automatic solutions. Avoid being clever and you can get useful solutions. Missing data is the extreme version of measurement error." width="80%" />
+<p class="caption marginnote shownote">
+Everything we’ve done is underlain by being ruthless. Express our information by constraints in distributions. Take this approach and show you how it produces automatic solutions. Avoid being clever and you can get useful solutions. Missing data is the extreme version of measurement error.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/11.png" alt="There's always some error in measurement, and ther'e always this sigma error. But what if there's also error on the predictors, and it's not consistent. Let's think about avoiding thying to be clever, and just codntiiong on what we know." width="80%" />
+<p class="caption marginnote shownote">
+There’s always some error in measurement, and ther’e always this sigma error. But what if there’s also error on the predictors, and it’s not consistent. Let’s think about avoiding thying to be clever, and just codntiiong on what we know.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/12.png" alt="The columns were standard errors on a coulpl eof the variables. The error of measurement has been quantified. We have an esimate of the divors=ce rate, and the stnadared error stells us the error rate of that estiamte. SOome of the standard errors are big. " width="80%" />
+<p class="caption marginnote shownote">
+The columns were standard errors on a coulpl eof the variables. The error of measurement has been quantified. We have an esimate of the divors=ce rate, and the stnadared error stells us the error rate of that estiamte. SOome of the standard errors are big.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/13.png" alt="Right now has the log population on the horizontal. And California is on the right. It's so big that the error rate is small." width="80%" />
+<p class="caption marginnote shownote">
+Right now has the log population on the horizontal. And California is on the right. It’s so big that the error rate is small.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/14.png" alt="Let's think about this in terms of a causal model. We want to see the divorce rate we observe as a function of the true divorce rate `D`, and the population size `N`. " width="80%" />
+<p class="caption marginnote shownote">
+Let’s think about this in terms of a causal model. We want to see the divorce rate we observe as a function of the true divorce rate <code>D</code>, and the population size <code>N</code>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/15.png" alt="Let's not be clever, just apply ruthless probability theory. There's some true divorce rate, and we'd like to use that as our outcome variable. Generatively thinking, our observed data is generated from a normal disttribution. The mean of this normal distribution will be the true rate. THen there's a standard deviation. In the long run, there's some D true. But in any finite period, ther's error, and that will be inversely proportional to population size." width="80%" />
+<p class="caption marginnote shownote">
+Let’s not be clever, just apply ruthless probability theory. There’s some true divorce rate, and we’d like to use that as our outcome variable. Generatively thinking, our observed data is generated from a normal disttribution. The mean of this normal distribution will be the true rate. THen there’s a standard deviation. In the long run, there’s some D true. But in any finite period, ther’s error, and that will be inversely proportional to population size.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/16.png" alt="This was our DAG before. The thing on the top is D TRUE. We're going to put a line on top of it." width="80%" />
+<p class="caption marginnote shownote">
+This was our DAG before. The thing on the top is D TRUE. We’re going to put a line on top of it.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/17.png" alt="... The observation process. Now D TRUE is's a vector of unkonwn parameters, then the line at the top estimates them for us. We also have the whole regression relationship that is going to pin down values from other states. Shrinkage is going to happen. If you were going to simulate pmeaurement error, this would be the model. Then it runs backwards. **Bayesian models are generative, and you can run them in both directions. If you run them forwards you simulate fake data, and if you run them in the reverse they spit out a posterior distribution. You feed in a distirbution and the spit out data, you feed in data they spit out a distribution.** So if you were going to simulate measurement error, you use the top line.  " width="80%" />
+<p class="caption marginnote shownote">
+… The observation process. Now D TRUE is’s a vector of unkonwn parameters, then the line at the top estimates them for us. We also have the whole regression relationship that is going to pin down values from other states. Shrinkage is going to happen. If you were going to simulate pmeaurement error, this would be the model. Then it runs backwards. <strong>Bayesian models are generative, and you can run them in both directions. If you run them forwards you simulate fake data, and if you run them in the reverse they spit out a posterior distribution. You feed in a distirbution and the spit out data, you feed in data they spit out a distribution.</strong> So if you were going to simulate measurement error, you use the top line.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/18.png" alt="How do we do this in a model? For every dstate, there's a D true, and that's what the vector[N] is. " width="80%" />
+<p class="caption marginnote shownote">
+How do we do this in a model? For every dstate, there’s a D true, and that’s what the vector[N] is.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/19.png" alt="Remember the distinction between likelihoods and priors in a Baeysian model is coginitive. Probabilityt theory don't care. When something in your dataset becomes unobserved, the model doesn't change. The model exists before you know the sample. The fact that you haven't observed some data doesn't mean the model chagnes. It cjust means you have paraemters there, because parameters are unobserved variables." width="80%" />
+<p class="caption marginnote shownote">
+Remember the distinction between likelihoods and priors in a Baeysian model is coginitive. Probabilityt theory don’t care. When something in your dataset becomes unobserved, the model doesn’t change. The model exists before you know the sample. The fact that you haven’t observed some data doesn’t mean the model chagnes. It cjust means you have paraemters there, because parameters are unobserved variables.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/20.png" alt="There's shrinkage. Plotting the relationship between median age of marriage and the divorce rate. Most of these are standardised variables. The blue points are the values that were observed. The open circles are the values fromt eh posterior distribution. The line segments connect them for each state. There's shrinkage. Some have moved more than others. You can explain this pattern. Why have some moved way more than others? Thye've moved tothe regression line because that's the expectation. How much it shrinks is also a function of standard error. For ID it says given this relationship and these variables, that measred rate is too edteme to be beileveable, party due to sampling error, so it shirnks it. Wyoming is interesitn gbecause it'snot so far but so uncertain that it gets shrunk directly to the line. Maine gets shrunk a lot too. " width="80%" />
+<p class="caption marginnote shownote">
+There’s shrinkage. Plotting the relationship between median age of marriage and the divorce rate. Most of these are standardised variables. The blue points are the values that were observed. The open circles are the values fromt eh posterior distribution. The line segments connect them for each state. There’s shrinkage. Some have moved more than others. You can explain this pattern. Why have some moved way more than others? Thye’ve moved tothe regression line because that’s the expectation. How much it shrinks is also a function of standard error. For ID it says given this relationship and these variables, that measred rate is too edteme to be beileveable, party due to sampling error, so it shirnks it. Wyoming is interesitn gbecause it’snot so far but so uncertain that it gets shrunk directly to the line. Maine gets shrunk a lot too.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/21.png" alt="You can compare it to the plot with teh standard devations. Ont ehleft we've taken the differnce between the estimated and the observed. Horizontal is the standard error. Any state taht has adifference of 0 means there's no shrinkage. " width="80%" />
+<p class="caption marginnote shownote">
+You can compare it to the plot with teh standard devations. Ont ehleft we’ve taken the differnce between the estimated and the observed. Horizontal is the standard error. Any state taht has adifference of 0 means there’s no shrinkage.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/22.png" alt="That's error on the outcome. YOu can also have error on predictor variables. Imagine sampling a predictor now with error. On the plot on this slide we have the marriage rate. On the horizontal against log population. " width="80%" />
+<p class="caption marginnote shownote">
+That’s error on the outcome. YOu can also have error on predictor variables. Imagine sampling a predictor now with error. On the plot on this slide we have the marriage rate. On the horizontal against log population.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/23.png" alt="Top part is the observation process on divorce rate. Then the regression of the true divorce rate on age of marriage and marriage rate. But now inside the regression, we have..." width="80%" />
+<p class="caption marginnote shownote">
+Top part is the observation process on divorce rate. Then the regression of the true divorce rate on age of marriage and marriage rate. But now inside the regression, we have…
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/24.png" alt="M true, not the observed M, and that's a paramter. There's a parameter for each state and it goes in. It's a parameter times a parameter. Every state will have one of this M trues. Same model because it's the same generative process. Then we have the likelihood for the observed rate, the M observed for each state comes from this sampling process again.  " width="80%" />
+<p class="caption marginnote shownote">
+M true, not the observed M, and that’s a paramter. There’s a parameter for each state and it goes in. It’s a parameter times a parameter. Every state will have one of this M trues. Same model because it’s the same generative process. Then we have the likelihood for the observed rate, the M observed for each state comes from this sampling process again.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/25.png" alt="You ahve to put in a prior for the MTrues. What hapens as a consquence of setting it as Normal(0, 1), because it's standaredised. Not terrible. Butyou're ignoring oinfoamtion inthe data because if i tele you the age of marrige in each state, you get information about themarriage rate. If you believe the DAG, age of marrige influence marriage rate. So we can get a better prior if we put the whole DAG into the model. If we do it all ato once, there's even more infomration. " width="80%" />
+<p class="caption marginnote shownote">
+You ahve to put in a prior for the MTrues. What hapens as a consquence of setting it as Normal(0, 1), because it’s standaredised. Not terrible. Butyou’re ignoring oinfoamtion inthe data because if i tele you the age of marrige in each state, you get information about themarriage rate. If you believe the DAG, age of marrige influence marriage rate. So we can get a better prior if we put the whole DAG into the model. If we do it all ato once, there’s even more infomration.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/26.png" alt="We've got two variables now, which are observed with error. Divorce rate on vertical; marigage rate on horitzontal. Open points are the corresponding pairs of posterior means for the esitmate true means. So we have shrinkage in two directions now towards some regression line (undrawn). Some shirnk a lot more than others. If you're really far from the line you shrink more. But also there's more shrinkage for the diveroce rate than the marriage rate. Top left is extreme in both. Comes downa  lot more on divorce rate. WHy?" width="80%" />
+<p class="caption marginnote shownote">
+We’ve got two variables now, which are observed with error. Divorce rate on vertical; marigage rate on horitzontal. Open points are the corresponding pairs of posterior means for the esitmate true means. So we have shrinkage in two directions now towards some regression line (undrawn). Some shirnk a lot more than others. If you’re really far from the line you shrink more. But also there’s more shrinkage for the diveroce rate than the marriage rate. Top left is extreme in both. Comes downa lot more on divorce rate. WHy?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/27.png" alt="Because the regression says marriage rate isn't strongly associtated. It doesn 't know where to move it, so it doesn't.  " width="80%" />
+<p class="caption marginnote shownote">
+Because the regression says marriage rate isn’t strongly associtated. It doesn ’t know where to move it, so it doesn’t.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/28.png" alt="It comes in many disguises. Simplet is when there's variable that's called 'error'. But there are many more subtle forms. Pre-averaging removes the fact tht you have a finite sample to estimate the mean from. THat takes variation out of the dataset. If you're doing that constantly, that's cheating. Otherwise you could just use a MLM. Then the means are varying effects - parameters - and you do the averaging within the model. And all the uncertainty to do with different sample sizes is taken care of. Parentage analysis is a fun case. Say you have a popuation of wild rodents and you're tyring to figure out who was whose parents. So you get their genotypes and figure out how they're related. Phylogenetics - the example last week used a single tree. Phylogenies are rarely very scertain. Trend to plot them like ont he right, so you're showing the whole posterior distribution. You can do the analysis over the whole distribution of trees. In archaology, measurement error is the norm, e.g. radio carbon dating. People take this very seriously now. Very sdifficult to sex a fossil. Or studying a place where they don't keep track of birthdays." width="80%" />
+<p class="caption marginnote shownote">
+It comes in many disguises. Simplet is when there’s variable that’s called ‘error’. But there are many more subtle forms. Pre-averaging removes the fact tht you have a finite sample to estimate the mean from. THat takes variation out of the dataset. If you’re doing that constantly, that’s cheating. Otherwise you could just use a MLM. Then the means are varying effects - parameters - and you do the averaging within the model. And all the uncertainty to do with different sample sizes is taken care of. Parentage analysis is a fun case. Say you have a popuation of wild rodents and you’re tyring to figure out who was whose parents. So you get their genotypes and figure out how they’re related. Phylogenetics - the example last week used a single tree. Phylogenies are rarely very scertain. Trend to plot them like ont he right, so you’re showing the whole posterior distribution. You can do the analysis over the whole distribution of trees. In archaology, measurement error is the norm, e.g. radio carbon dating. People take this very seriously now. Very sdifficult to sex a fossil. Or studying a place where they don’t keep track of birthdays.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/29.png" alt="Grown up measurement error. Mechanically similar but feels really different. You want to do something about missing data. Most of the standard regression tools will autoamtically remove missing cases. So all the variables are removed. This squanders information, but can also create confounds. There are ways to deal with this. So how to deal with it? Worst appraoch is to replace teh missing values with the mean of the column. Really bad idea because they model will intepret it as if you knew the value. Procedure called multiple imputation, whcih works really well. Frequentist way of doing what we're going to do. Unreasoanbly effective. Basically do the modle multiple times on samples on some stochastic model of the dataset. We're just going to go full-flavour Bayesian." width="80%" />
+<p class="caption marginnote shownote">
+Grown up measurement error. Mechanically similar but feels really different. You want to do something about missing data. Most of the standard regression tools will autoamtically remove missing cases. So all the variables are removed. This squanders information, but can also create confounds. There are ways to deal with this. So how to deal with it? Worst appraoch is to replace teh missing values with the mean of the column. Really bad idea because they model will intepret it as if you knew the value. Procedure called multiple imputation, whcih works really well. Frequentist way of doing what we’re going to do. Unreasoanbly effective. Basically do the modle multiple times on samples on some stochastic model of the dataset. We’re just going to go full-flavour Bayesian.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/30.png" alt="Let's talk about DAGs again. Deeply confusing, because the terminology is awful. Let's think about the primate milk data again. Interested in understanding why the energy content of milk varies so much. Is is related to the proportion of brain neocortex. U is the strong postive correlation between M and B, but we don't know what it is. Something going on here but we don't know what it is." width="80%" />
+<p class="caption marginnote shownote">
+Let’s talk about DAGs again. Deeply confusing, because the terminology is awful. Let’s think about the primate milk data again. Interested in understanding why the energy content of milk varies so much. Is is related to the proportion of brain neocortex. U is the strong postive correlation between M and B, but we don’t know what it is. Something going on here but we don’t know what it is.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/31.png" alt="This taxonomy tells us what to do. Confusingly, MCAR is totally different to MAR. " width="80%" />
+<p class="caption marginnote shownote">
+This taxonomy tells us what to do. Confusingly, MCAR is totally different to MAR.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/32.png" alt="MCAR. We're not going to get to see B, because it has missing values in it. Lot's of primates where they didn't measure percent neocortex. To get the gaps, we know it's partly caused by B, but it's also caused by the missingness process R. `R_B` creates missing values in `B`. " width="80%" />
+<p class="caption marginnote shownote">
+MCAR. We’re not going to get to see B, because it has missing values in it. Lot’s of primates where they didn’t measure percent neocortex. To get the gaps, we know it’s partly caused by B, but it’s also caused by the missingness process R. <code>R_B</code> creates missing values in <code>B</code>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/33.png" alt="We're going to condition on `B_obs`. Are there backdoors? The answer is no, but there are two paths. Direct and indirect. But the total causal effect can be estimated by simple regerssion with just `B_obs`. There's an indirect effect through M. But there's no back door. " width="80%" />
+<p class="caption marginnote shownote">
+We’re going to condition on <code>B_obs</code>. Are there backdoors? The answer is no, but there are two paths. Direct and indirect. But the total causal effect can be estimated by simple regerssion with just <code>B_obs</code>. There’s an indirect effect through M. But there’s no back door.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/34.png" alt="There's no path that takes you through `R_B`. This means the missingness mechanism is ignorable, because it doesn't create any backdoor confound. So you don't need to know it. This is the benign case." width="80%" />
+<p class="caption marginnote shownote">
+There’s no path that takes you through <code>R_B</code>. This means the missingness mechanism is ignorable, because it doesn’t create any backdoor confound. So you don’t need to know it. This is the benign case.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/35.png" alt="You don't have to condition on anything to keep your infnerence about K independent fromt he missingness mechanism.  " width="80%" />
+<p class="caption marginnote shownote">
+You don’t have to condition on anything to keep your infnerence about K independent fromt he missingness mechanism.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/36.png" alt="The only way this could happen is if you had a random number generator deletes values from your dataset. I assert this is hihgly implausible in more research situations. " width="80%" />
+<p class="caption marginnote shownote">
+The only way this could happen is if you had a random number generator deletes values from your dataset. I assert this is hihgly implausible in more research situations.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/37.png" alt="This is something else that could be going on. This will give us MAR. M is now entering/influencing R_B. Now the missingness mechanism depends on the body mass values. Large or small body masses are more likely to have missing body mass values. Different species are more or less attractive to study. That generates a pattern where some features are associated causally with the missingness. " width="80%" />
+<p class="caption marginnote shownote">
+This is something else that could be going on. This will give us MAR. M is now entering/influencing R_B. Now the missingness mechanism depends on the body mass values. Large or small body masses are more likely to have missing body mass values. Different species are more or less attractive to study. That generates a pattern where some features are associated causally with the missingness.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/38.png" alt="As before, is there a backdoor path. Now because there's an arrow entering R_B.." width="80%" />
+<p class="caption marginnote shownote">
+As before, is there a backdoor path. Now because there’s an arrow entering R_B..
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/39.png" alt="You have a complete path. How to close the backdoor? Condition on M. Here you don't have to knwo the missingness mechanism, but do need to do imputation." width="80%" />
+<p class="caption marginnote shownote">
+You have a complete path. How to close the backdoor? Condition on M. Here you don’t have to knwo the missingness mechanism, but do need to do imputation.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/40.png" alt="There's some variable in the graph we can condition on, and separate the two. This is a nice situation to be in, and probably the most common. Why need to impute? Because you'd be polluting the other variables with this missngness pattern, whcihc an create really strong biases." width="80%" />
+<p class="caption marginnote shownote">
+There’s some variable in the graph we can condition on, and separate the two. This is a nice situation to be in, and probably the most common. Why need to impute? Because you’d be polluting the other variables with this missngness pattern, whcihc an create really strong biases.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/41.png" alt="Worst case. In this case, the most obvious way to get iit si the variable itself causes the missngieesss. Cerain values of neoxortex percetn are more likely to go missing. How? Maybe species with low neocortex weren't measured." width="80%" />
+<p class="caption marginnote shownote">
+Worst case. In this case, the most obvious way to get iit si the variable itself causes the missngieesss. Cerain values of neoxortex percetn are more likely to go missing. How? Maybe species with low neocortex weren’t measured.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/42.png" alt="This is nasty because you get a backdoor you can't close. Your only hope is to model the missngness mechanism and thereby condition on it." width="80%" />
+<p class="caption marginnote shownote">
+This is nasty because you get a backdoor you can’t close. Your only hope is to model the missngness mechanism and thereby condition on it.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/43.png" alt="The other way to get it would be to have a missingness variable. Here there's fork, like phylogeny. We like to study animals closer to us. That will influence neoxotrex percent, and also influence missingness." width="80%" />
+<p class="caption marginnote shownote">
+The other way to get it would be to have a missingness variable. Here there’s fork, like phylogeny. We like to study animals closer to us. That will influence neoxotrex percent, and also influence missingness.
+</p>
+</div>
+<p><img src="slides/L20/44.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L20/45.png" alt="Imagine a DAG iwth four variables. R is nowD, a dog. In the first, the dog will eat any homework. In the middle, teh dog eats particular students' homework. The attribute could be attention span, as in they turn away and the dog eats it. Finally, the dog only eats bad homework. Or, more liekly, the stuent feeds it to the dog. But it depends ont he score ofthe homework. " width="80%" />
+<p class="caption marginnote shownote">
+Imagine a DAG iwth four variables. R is nowD, a dog. In the first, the dog will eat any homework. In the middle, teh dog eats particular students’ homework. The attribute could be attention span, as in they turn away and the dog eats it. Finally, the dog only eats bad homework. Or, more liekly, the stuent feeds it to the dog. But it depends ont he score ofthe homework.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/46.png" alt="Let's go through the mechanics of this. " width="80%" />
+<p class="caption marginnote shownote">
+Let’s go through the mechanics of this.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/47.png" alt="We'll replace the NAs with a parameter, and get posteriro distributions for each of the missing values. " width="80%" />
+<p class="caption marginnote shownote">
+We’ll replace the NAs with a parameter, and get posteriro distributions for each of the missing values.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/48.png" alt="Now they get assigned a parameter. They'll be imputed by the modeo." width="80%" />
+<p class="caption marginnote shownote">
+Now they get assigned a parameter. They’ll be imputed by the modeo.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/49.png" alt="B is now a vector in which some values are observed, and toehrs are paratmets. We'll stick them in an ordianry regression modeo. But now we have a prior. When B is observed, it infomrs the parameters in side it. Those will be estimated from teh observed values." width="80%" />
+<p class="caption marginnote shownote">
+B is now a vector in which some values are observed, and toehrs are paratmets. We’ll stick them in an ordianry regression modeo. But now we have a prior. When B is observed, it infomrs the parameters in side it. Those will be estimated from teh observed values.
+</p>
+</div>
+<p><img src="slides/L20/50.png" width="80%" /></p>
+<p><img src="slides/L20/51.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L20/52.png" alt="Looks exavtly the same, but we add this prior. `ulam` automates this." width="80%" />
+<p class="caption marginnote shownote">
+Looks exavtly the same, but we add this prior. <code>ulam</code> automates this.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/53.png" alt=" You can see 12 imputes. What does this do to the slopes in the model?" width="80%" />
+<p class="caption marginnote shownote">
+You can see 12 imputes. What does this do to the slopes in the model?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/54.png" alt="Let's compare the same model. Now we can compare the slopes. Two predictors assocaited with the outcome variable in opposite directions. NOtice that the esimates have got more precise. They've also moved closer to the mean. " width="80%" />
+<p class="caption marginnote shownote">
+Let’s compare the same model. Now we can compare the slopes. Two predictors assocaited with the outcome variable in opposite directions. NOtice that the esimates have got more precise. They’ve also moved closer to the mean.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/55.png" alt="We can plot the values up, but they'll have standard errors on them. Open circles is imputed. Posterior means follow the regression line. " width="80%" />
+<p class="caption marginnote shownote">
+We can plot the values up, but they’ll have standard errors on them. Open circles is imputed. Posterior means follow the regression line.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/56.png" alt="The disappointing thing about this midel is that the relationship between the imputed values adn the predictor is 0, which is wrong. THat's because we dodn't tell it they're assocaited." width="80%" />
+<p class="caption marginnote shownote">
+The disappointing thing about this midel is that the relationship between the imputed values adn the predictor is 0, which is wrong. THat’s because we dodn’t tell it they’re assocaited.
+</p>
+</div>
+<p><img src="slides/L20/57.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L20/58.png" alt=" We fix this by making it a MVNormal. " width="80%" />
+<p class="caption marginnote shownote">
+We fix this by making it a MVNormal.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/59.png" alt="Need to manually construct it. " width="80%" />
+<p class="caption marginnote shownote">
+Need to manually construct it.
+</p>
+</div>
+<p><img src="slides/L20/60.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L20/61.png" alt="Then happy days, you get even more precision." width="80%" />
+<p class="caption marginnote shownote">
+Then happy days, you get even more precision.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L20/62.png" alt="This is a really big topic. One ofthe areas that is most important is with occupancy. Really missing data problems. There's a true occupancy but 0s are not trustworthy. They ahve a special preocess that comes from the detection process that you model." width="80%" />
+<p class="caption marginnote shownote">
+This is a really big topic. One ofthe areas that is most important is with occupancy. Really missing data problems. There’s a true occupancy but 0s are not trustworthy. They ahve a special preocess that comes from the detection process that you model.
+</p>
+</div>
+<p><img src="slides/L20/63.png" width="80%" /></p>
+<p><img src="slides/L20/64.png" width="80%" /></p>
+
+</div>
+<p style="text-align: center;">
+<a href="14-adventures-in-covariance.html"><button class="btn btn-default">Previous</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

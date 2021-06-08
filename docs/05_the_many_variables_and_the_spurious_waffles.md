@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-05-31'
+date: '2021-06-08'
 output:
   html_document:
     toc: true
@@ -94,8 +94,6 @@ d$D = rethinking::standardize( d$Divorce )
 d$M = rethinking::standardize( d$Marriage)
 d$A = rethinking::standardize( d$MedianAgeMarriage)
 ```
-
-
 
 
 <div class="figure">
