@@ -382,7 +382,7 @@ knitr::include_graphics(file.path(slides_dir, '33.png'))
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Correlation matrix for the GR effects and the two SDs for it. LOok at the correaltion: -0.4.}
+```{r, echo = F, out.width='80%', fig.cap="Correlation matrix for the GR effects and the two SDs for it. Look at the correaltion: -0.4."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 

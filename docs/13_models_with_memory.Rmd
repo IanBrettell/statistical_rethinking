@@ -60,7 +60,7 @@ knitr::include_graphics(file.path(slides_dir, '08.png'))
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others,a nd you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that."}
+```{r, echo = F, out.width='80%', fig.cap="What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others, and you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that."}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
