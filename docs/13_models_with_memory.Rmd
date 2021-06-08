@@ -68,7 +68,7 @@ knitr::include_graphics(file.path(slides_dir, '10.png'))
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experimeent they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pokd). "}
+```{r, echo = F, out.width='80%', fig.cap="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond). "}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
@@ -88,19 +88,19 @@ knitr::include_graphics(file.path(slides_dir, '15.png'))
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="$\\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Wheere there used to be (0,1.5). $\\bar{\\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\\alpha$. Then $\\sigma$, which is the SD in this population. So each $\\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\\bar{\\alpha}$ our regularizing prior, same with $\\sigma$."}
+```{r, echo = F, out.width='80%', fig.cap="$\\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). $\\bar{\\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\\alpha$. Then $\\sigma$, which is the SD in this population. So each $\\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\\bar{\\alpha}$ our regularizing prior, same with $\\sigma$."}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives bettte predictions. Now we'll learn it formt he data itself, and it's like visiting cafes. As you learn the variation among them, you pool the information across. "}
+```{r, echo = F, out.width='80%', fig.cap="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives better predictions. Now we'll learn it from the data itself, and it's like visiting cafés. As you learn the variation among them, you pool the information across. "}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="We have to learn those parameters and get posteriro distributions for each from the data."}
+```{r, echo = F, out.width='80%', fig.cap="We have to learn those parameters and get posterior distributions for each from the data."}
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. YOu'll notice the line for $\\alpha_j$ looks liek the top line. The fcat that it's not observed is irrelevant.  "}
+```{r, echo = F, out.width='80%', fig.cap="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. You'll notice the line for $\\alpha_j$ looks like the top line. The fact that it's not observed is irrelevant.  "}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
