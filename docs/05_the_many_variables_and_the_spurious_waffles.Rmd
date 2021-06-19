@@ -115,14 +115,8 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
 
-```{r, echo = F, out.width='80%', fig.cap = "Have to think harder about priors now. It help a lot by standardising the priors - converting them into Z-scores. If you make all your variables z-scores, you make you life easier. (But not in all cases.) "}
+```{r, echo = F, out.width='80%', fig.cap = "Have to think harder about priors now. It help a lot by standardising the priors - converting them into Z-scores. If you make all your variables z-scores, you make you life easier. (But not in all cases.) When you standardise your predictors, you're setting your mean as 0. The regression line has to go through 0, and so alpha should be 0, We'll give it a Gaussian prior with a tight SD. Maybe should even be tighter. Slopes are a little harder. You don't want to use flat priors because you don't want it to think wildly impossible slopes are possible to start. That's why we do some prior predictive simulation."}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
-```
-
-```{marginfigure}
-When you standardise your predictors, you're setting your mean as 0. The regression line has to go through 0, and so alpha should be 0, We'll give it a Gaussian prior with a tight SD. Maybe should even be tighter. 
-
-Slopes are a little harder. You don't want to use flat priors because you don't want it to think wildly impossible slopes are possible to start. That's why we do some prior predictive simulation.
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "You can fit your model. You can run that model. `extract.prior` samples from the prior to simulate. Then pass it to `link` to create predictions based on the prior. Then you can plot the regression lines. "}
@@ -259,10 +253,22 @@ knitr::include_graphics(file.path(slides_dir, '21.png'))
 
 You have to be clear about whether you're interesting in predicting things, or understanding the true nature of things. 
 
+Let's simulate the divorce example. Every DAG implies a simulation, and such simulations can help us design models to correclty infer relationships among variables.
+
+```{r 5.12}
+N = 50 # number of simulated States
+age = rnorm(N) # sim A
+mar = rnorm(N, -age) # sim A -> M
+div = rnorm(N, age) # sim A -> D
+```
+
+***5.1.5 Plotting multivariate posteriors***
 
 ```{r, echo = F, out.width='80%', fig.cap = "How do we visualise models like this? Lots of ways. Usually the most useful way to visualise depends on the model. You want to think about what you're trying to communicate. The first are predictor residual plots, not that you need to do them, but good for understanding how these linear regressions works."}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
+
+*5.1.5.1 Predictor residual plots*
 
 ```{r, echo = F, out.width='80%', fig.cap = "Purpose is to show how the association looks, having controlled for the other predictors. We want to calculate the intermediate states. Great for intuition but terrible for analysis. Never any statistical justification for running regression over residuals. Why? Gives you the wrong answer, because it gives you bias estimates. What to do instead? Multiple regressions."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
@@ -271,6 +277,26 @@ knitr::include_graphics(file.path(slides_dir, '23.png'))
 Recipe:
 
 1. Regress a predictor, and find the extra variance left over, and look at the pattern of the relationship between the residuals and the outcome.
+
+```{r 5.13}
+# Approximate the posterior
+m5.4 = rethinking::quap(
+  alist(
+    M ~ dnorm( mu , sigma ) ,
+    mu <- a + bAM * A ,
+    a ~ dnorm( 0, 0.2 ) ,
+    bAM ~ dnorm( 0, 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ), data = d
+)
+```
+
+```{r 5.14}
+# Compute the residuals
+mu = rethinking::link(m5.4)
+mu_mean = apply( mu, 2, mean)
+mu_resid = d$M - mu_mean
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Here's our first residual plot"}
@@ -294,12 +320,8 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "This is one of the things we mean. In observational studies like this one, there's no ethical intervention we can make. But we want to make causal information. Linear regression allows you to do that, but only if you have an idea of the causal relationship between the variables. To interpret, you need a causal framework. We'll have an example latter when controlling can *create* a confound."}
+```{r, echo = F, out.width='80%', fig.cap = "This is one of the things we mean. In observational studies like this one, there's no ethical intervention we can make. But we want to make causal information. Linear regression allows you to do that, but only if you have an idea of the causal relationship between the variables. To interpret, you need a causal framework. We'll have an example latter when controlling can *create* a confound. These models are not magic. You shouldn't get cocky. This is the kind of study where you use average data. Quite a pathological dataset."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
-```
-
-```{marginfigure}
-These models are not magic. You shouldn't get cocky. This is the kind of study where you use average data. Quite a pathological dataset.
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "Cases where you hold other predictor variables constant. All the code for generating them is in the text. In the real world we can't do that. If we're right in our DAG here, and we manipulate A, you'll also manipulate M as well. "}
@@ -314,16 +336,161 @@ Goals:
 1. Figure out whether the approximation of the posterior works. Compare the predictions with the raw data. If they're different, they fail. 
 2. It can inspire you to look at the cases that don't fit well, and figure out what you need to make better causal inferences.
 
+```{r 5.15}
+# call link without specifying new data
+# so it uses original data
+mu = link(m5.3)
+
+# summarize samples across cases
+mu_mean = apply(mu, 2, mean)
+mu_PI = apply(mu, 2, rethinking::PI)
+
+# simulate observations
+# again no new data, so uses original data
+D_sim = rethinking::sim( m5.3 , n=1e4 )
+D_PI = apply( D_sim, 2, rethinking::PI)
+```
+
+
+Plot predictions against observed. 
+
+```{r 5.16}
+plot(mu_mean ~ d$D, col = rangi2, ylim = range(mu_PI) ,
+     xlab = "Observed divorce", ylab = "Predicted divorce")
+abline( a=0, b=1, lty=2 )
+for ( i in 1:nrow(d) ) lines( rep(d$D[i], 2) , mu_PI[, i] , col = rangi2 )
+```
+
+```{r 5.17}
+plot(mu_mean ~ d$D, col = rangi2, ylim = range(mu_PI) ,
+     xlab = "Observed divorce", ylab = "Predicted divorce")
+abline( a=0, b=1, lty=2 )
+for ( i in 1:nrow(d) ) lines( rep(d$D[i], 2) , mu_PI[, i] , col = rangi2 )
+identify( x=d$D , y=mu_mean , labels=d$Loc )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap = "Diagonal is unity - perfect prediction. But there are states where they're making bad predictions, like ID. Has a very low D. That's why there's a mismatch. It's getting it really wrong. Why? The Mormons. They have a very low divorce rate. UT as well."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "Another good thing regression can do is reveal spurious correlations. When there are two predictors that both influence the outcome in different directions, you can get the total causal effect between the two. This tends to arise where you have two predictors, and they act in different directions, and cancel each other out, so if you don't model both of them individually, it looks like they have no effect. "}
-knitr::include_graphics(file.path(slides_dir, '33.png'))
+*5.1.5.3 Counterfactual plots*
+
+They can be produced for any values of the predictor variables you like, even unobserved combinations like high median age of marriage and high marriage rate.
+
+Used with clarity of purpose, counterfactual plots help you understand the model, as well as generate predictions for imaginary interventions and compute how much some observed outcome could be attributed to some cause. 
+
+Recipe:
+1. Pick a variable to manipulate (the intervention variable)
+2. Define the range of values to set the intervention variable to.
+3. FOr each vlaue of the intervention variable, and for each sample in posterior, use the causal model to simulate the values of other variables, including the outcome. 
+
+```{r 5.19}
+data(WaffleDivorce)
+d <- list()
+d$A <- standardize( WaffleDivorce$MedianAgeMarriage )
+d$D <- standardize( WaffleDivorce$Divorce )
+d$M <- standardize( WaffleDivorce$Marriage )
+m5.3_A <- quap(
+  alist(
+    ## A -> D <- M
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bM*M + bA*A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 ),
+    ## A -> M
+    M ~ dnorm( mu_M , sigma_M ),
+    mu_M <- aM + bAM*A,
+    aM ~ dnorm( 0 , 0.2 ),
+    bAM ~ dnorm( 0 , 0.5 ),
+    sigma_M ~ dexp( 1 )
+  ) , data = d )
+
+precis(m5.3_A)
 ```
 
-```{marginfigure}
-Noise can also cause you not to see a relationship.
+Now simulate what would happen if we manipulate A. 
+```{r 5.20}
+# Define a rang eof values for A
+A_seq <- seq( from=-2 , to=2 , length.out=30 )
+```
+
+```{r 5.21}
+# Simulate the influence of A on M
+# prep data
+sim_dat <- data.frame( A=A_seq )
+
+# simulate M and then D, using A_seq
+s <- rethinking::sim( m5.3_A , data=sim_dat , vars=c("M","D") )
+```
+
+```{r 5.22}
+#Plot the predictions
+plot( sim_dat$A , colMeans(s$D) , ylim=c(-2,2) , type="l" , xlab="manipulated A" , ylab="counterfactual D" )
+shade( apply(s$D,2,PI) , sim_dat$A )
+mtext( "Total counterfactual effect of A on D" )
+```
+
+```{r 5.23}
+# new data frame, standardized to mean 26.1 and std dev 1.24
+sim2_dat <- data.frame( A=(c(20,30)-26.1)/1.24 )
+s2 <- rethinking::sim( m5.3_A , data=sim2_dat , vars=c("M","D") )
+mean( s2$D[,2] - s2$D[,1] )
+```
+
+This is a huge effect of 4.5 standard deviations, probably impossibly large.
+
+Now let's simulate the effect of manipulating $M$. It's like a perfectly controlled experiment. We'll simulate a counterfactual for an average state, with $A = 0$, and see what changing $M$ does.
+
+```{r 5.24}
+sim_dat <- data.frame( M=seq(from=-2,to=2,length.out=30) , A=0 )
+s <- rethinking::sim( m5.3_A , data=sim_dat , vars="D" )
+
+plot( sim_dat$M , colMeans(s) , ylim=c(-2,2) , type="l" ,
+  xlab="manipulated M" , ylab="counterfactual D" )
+shade( apply(s,2,PI) , sim_dat$M )
+mtext( "Total counterfactual effect of M on D" )
+```
+
+Note that we only simulated $D$ now. We don't simulate $A$, because $M$ doesn't influence it. 
+
+**Simulatig counterfactuals**
+
+Define a range of vlaues that we want to assign to $A$:
+```{r 5.25}
+A_seq <- seq( from=-2 , to=2 , length.out=30 )
+```
+
+Then extract the posterior samples:
+
+```{r 5.26}
+post <- rethinking::extract.samples( m5.3_A )
+M_sim <- with( post , sapply( 1:30 ,
+  function(i) rnorm( 1e3 , aM + bAM*A_seq[i] , sigma_M ) ) )
+# The linear model inside `rnorm` comes right out of the model definition.
+```
+
+This produces a matrix of values, with samples in rows and cases corresponding to the values in `A_seq` in the columns. Now that we have simulated values for $M$, we can simulate $D$ too:
+
+```{r 5.27}
+D_sim <- with( post , sapply( 1:30 ,
+  function(i) rnorm( 1e3 , a + bA*A_seq[i] + bM*M_sim[,i] , sigma ) ) )
+```
+
+If you plot `A_seq` against the column means of `D_sim`, you'll see the same result as before. 
+
+```{r}
+ggplot() +
+  geom_line(aes(A_seq, colMeans(D_sim)))
+```
+
+
+## Masked relationship
+
+```{r, echo = F, out.width='80%', fig.cap = "Another good thing regression can do is reveal spurious correlations. When there are two predictors that both influence the outcome in different directions, you can get the total causal effect between the two. This tends to arise where you have two predictors, and they act in different directions, and cancel each other out, so if you don't model both of them individually, it looks like they have no effect. Noise can also cause you not to see a relationship."}
+knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "Relationship between milk energy and how brainy they are? Intersted in things that are interested in what makes us unique. Primates are mammals, and some mammals have very highly energetic milk, like seals basically ooze butter. Primates in contrast carry their offspring on them. As a consequence, the energy density is lower. Human milk is not energetically rich. 75% of our brain mass is neocortex. Then the brainiest primate is *Cebus*. Can we see a signal of selection on milk energy from braininess?"}
@@ -333,34 +500,242 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "Sample of primate species. Pairs plot. Particularly strong correlation between the magnitude of body mass (log(mass)) is strongly correlated with neocortex. No particular strong relationship between `log(mass)` and `kcal.per.g`."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
+```{r 5.28}
+data(milk)
+d <- milk
+str(d)
+```
+
+As before, standardising helps us both get a reliable approximation of the posterior as well as build reasonable priors.
+
+```{r 5.29}
+d$K <- standardize( d$kcal.per.g )
+d$N <- standardize( d$neocortex.perc )
+d$M <- standardize( log(d$mass) )
+```
+
+Let's first just try to run this as a quap model with some vague priors:
+
+```{r, 5.30, eval = F}
+m5.5_draft <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bN*N ,
+    a ~ dnorm( 0 , 1 ) ,
+    bN ~ dnorm( 0 , 1 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=d )
+# Returns following error:
+# Error in quap(alist(K ~ dnorm(mu, sigma), mu <- a + bN * N, a ~ dnorm(0,  : 
+#  initial value in 'vmmin' is not finite
+# The start values for the parameters were invalid. This could be caused by missing values (NA) in the data or by start values outside the parameter constraints. If there are no NA values in the data, try using explicit start values.
+```
+
+The culprit is the missing values in `N`. 
+
+```{r 5.31}
+d$neocortex.perc
+```
+
+Here we'll just drop the missing values, known as **complete case analysis**. But it isn't always a good thing - see Chapter 15.
+
+```{r 5.32}
+dcc <- d[ complete.cases(d$K,d$N,d$M) , ]
+```
+
+Now let's model with that.
+
+```{r 5.33}
+m5.5_draft <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bN*N ,
+    a ~ dnorm( 0 , 1 ) ,
+    bN ~ dnorm( 0 , 1 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=dcc )
+```
+
+Simulate and plot 50 prior regression lines.
+```{r 5.34}
+prior <- rethinking::extract.prior( m5.5_draft )
+xseq <- c(-2,2)
+mu <- link( m5.5_draft , post=prior , data=list(N=xseq) )
+
+
+plot( NULL , xlim=xseq , ylim=xseq )
+for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )
+```
+
+```{r 5.35}
+m5.5 <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bN*N ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bN ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=dcc )
+
+prior <- rethinking::extract.prior( m5.5 )
+xseq <- c(-2,2)
+mu <- link( m5.5 , post=prior , data=list(N=xseq) )
+
+
+plot( NULL , xlim=xseq , ylim=xseq )
+for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )
+```
+
+
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "We need to do some prior predictive simulation. Left is not a good prior. All we need to do to get the regression lines to live in the outcome space, we can contract $\alpha$ - should be about 0, and the slope should be about 0.5 to be tighter. If you standardise the predictor and outcome, Normal(0, 0.5) should keep you in the outcome space."}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
+```{r 5.36}
+precis( m5.5 )
+```
+
+```{r 5.37}
+xseq <- seq( from=min(dcc$N)-0.15 , to=max(dcc$N)+0.15 , length.out=30 )
+mu <- link( m5.5 , data=list(N=xseq) )
+mu_mean <- apply(mu,2,mean)
+mu_PI <- apply(mu,2,PI)
+plot( K ~ N , data=dcc )
+lines( xseq , mu_mean , lwd=2 )
+shade( mu_PI , xseq )
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "There's a slight relationship between brain and milk energy, and a slightly negative relationship with body mass. Look what happens when you include both in a model."}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
+Let's consider another predictor variable, adult female body mass, `mass`. Let's use the logarithm of mass as a predictor as well. Why a logarithm instead of the raw mass? 
+>Because taking the log of a measure translates the measure into magnitudes. 
+
+```{r}
+m5.6 <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bM*M ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=dcc )
+precis(m5.6)
+
+xseq <- seq( from=min(dcc$M)-0.15 , to=max(dcc$M)+0.15 , length.out=30 )
+mu <- link( m5.6 , data=list(M=xseq) )
+mu_mean <- apply(mu,2,mean)
+mu_PI <- apply(mu,2,PI)
+plot( K ~ M , data=dcc )
+lines( xseq , mu_mean , lwd=2 )
+shade( mu_PI , xseq )
+```
+
+
+
 ```{r, echo = F, out.width='80%', fig.cap = "Now very strong relationship between both."}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
+
+Now add both together.
+
+```{r 5.39}
+m5.7 <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bN*N + bM*M ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bN ~ dnorm( 0 , 0.5 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=dcc )
+precis(m5.7)
+```
+
+```{r 5.40, eval = F}
+# Faulty code
+plot( rethinking::coeftab( m5.5 , m5.6 , m5.7 ) , pars=c("bM","bN") )
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "You can see strong relationships, but only when they're both present in the model. This is the masking effect. One is positively related to the outcome, the other is negatively related to the outcome, and they're correlated with one another. Bigger primates need bigger brains, bigger brains need more energy, bigger bodies need less because they're are longer developmental times. THey're antagonistic effects, but correlated in same species. This sort of effect can happen a lot. "}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
+```{r}
+pairs( ~K + M + N , dcc )
+```
+
+```{r 5.41}
+xseq <- seq( from=min(dcc$M)-0.15 , to=max(dcc$M)+0.15 , length.out=30 )
+mu <- link( m5.7 , data=data.frame( M=xseq , N=0 ) )
+mu_mean <- apply(mu,2,mean)
+mu_PI <- apply(mu,2,PI)
+plot( NULL , xlim=range(dcc$M) , ylim=range(dcc$K) )
+lines( xseq , mu_mean , lwd=2 )
+shade( mu_PI , xseq )
+```
+
+**Simulating a masking relationship**
+
 ```{r, echo = F, out.width='80%', fig.cap = "Fake data that causes this relationship. `U` is unobserved, some life history variable. Then the causal influence on each of those. This relationship is sufficient to create what we saw."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap = "Often we have data that represents discrete categories. Want to include those, but they're not continuous. Useful variables because the mean varies, but can't add them as they are"}
+```{r}
+# M -> K <- N
+# M -> N
+n <- 100
+M <- rnorm( n )
+N <- rnorm( n , M )
+K <- rnorm( n , N - M )
+d_sim <- data.frame(K=K,N=N,M=M)
+```
+
+```{r 5.43}
+# M -> K <- N
+# N -> M
+n <- 100
+N <- rnorm( n )
+M <- rnorm( n , N )
+K <- rnorm( n , N - M )
+d_sim2 <- data.frame(K=K,N=N,M=M)
+
+# M -> K <- N
+# M <- U -> N
+n <- 100
+U <- rnorm( n )
+N <- rnorm( n , U )
+M <- rnorm( n , U )
+K <- rnorm( n , N - M )
+d_sim3 <- data.frame(K=K,N=N,M=M)
+```
+
+```{r 5.44}
+dag5.7 <- dagitty( "dag{
+  M -> K <- N
+  M -> N }" )
+coordinates(dag5.7) <- list( x=c(M=0,K=1,N=2) , y=c(M=0.5,K=1,N=0.5) )
+MElist <- equivalentDAGs(dag5.7)
+drawdag(MElist)
+```
+
+## Categorical variables
+
+```{r, echo = F, out.width='80%', fig.cap = "Often we have data that represents discrete categories. Want to include those, but they're not continuous. Useful variables because the mean varies, but can't add them as they are. First is to create a dummy, and the next is almost always superior, and that's the index. "}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
-```{marginfigure}
-First is to create a dummy, and the next is almost always superior, and that's the index. 
+```{r 5.45}
+data(Howell1)
+d <- Howell1
+str(d)
 ```
+
+`male` is an indicator, or dummy, variable.
 
 ```{r, echo = F, out.width='80%', fig.cap = "Take a categorical variable and convert them to indicator variables. They stand in for something. e.g. Kalahari height data, `0` means not `male`. "}
 knitr::include_graphics(file.path(slides_dir, '42.png'))
@@ -369,6 +744,12 @@ knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "Height varies by sex, so you could include it in the model. The linear model looks like a continuous predictor, because you've coded it as 0 and 1, if effectively turns the parameter off and on, and adjusts the mean. Effectively makes two intercepts, one male, one female. `alpha` is the intercept for females, and `alpha + betaM` is the intercept for males. "}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
+```{r 5.46}
+mu_female <- rnorm(1e4,178,20)
+mu_male <- rnorm(1e4,178,20) + rnorm(1e4,0,10)
+precis( data.frame( mu_female , mu_male ) )
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap =  "Have to pick same number of priors for number of categories. Consequence is you end up assuming that one of the categories is less certain than all the others."}
 knitr::include_graphics(file.path(slides_dir, '44.png'))
@@ -376,6 +757,11 @@ knitr::include_graphics(file.path(slides_dir, '44.png'))
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is the better option."}
 knitr::include_graphics(file.path(slides_dir, '45.png'))
+```
+
+```{r 5.47}
+d$sex <- ifelse( d$male==1 , 2 , 1 )
+str( d$sex )
 ```
 
 -------
@@ -396,6 +782,23 @@ knitr::include_graphics(file.path(slides_dir, '02.png'))
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
 
+```{r 5.48}
+m5.8 <- quap(
+  alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu <- a[sex] ,
+    a[sex] ~ dnorm( 178 , 20 ) ,
+    sigma ~ dunif( 0 , 50 )
+  ) , data=d )
+precis( m5.8 , depth=2 )
+```
+
 ```{r, echo = F, out.width='80%', fig.cap = "If you want the posterior distribution for the sexes, you extract samples from the posterior. Then compute the difference by subtracting the difference from each sample. Still it in a column called `diff_fm`. Posterior mean is -8. All the comparisons are already in the posterior, you just have to extract samples to compute them. We'll be using this kind of coding in future examples."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
+```{r 5.49}
+post <- extract.samples(m5.8)
+post$diff_fm <- post$a[,1] - post$a[,2]
+precis( post , depth=2 )
+```
+
