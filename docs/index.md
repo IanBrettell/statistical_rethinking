@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-06-08'
+date: '2021-06-20'
 output:
   bookdown::tufte_html_book:
     toc: yes

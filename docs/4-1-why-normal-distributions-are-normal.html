@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-06-08" />
+<meta name="date" content="2021-06-20" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -26,7 +26,7 @@ MathJax.Hub.Config({
 
 <title>4.1 Why normal distributions are normal | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
 
-<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
@@ -143,8 +143,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
 <ul>
 <li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
 </ul></li>
-<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+</ul></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
 <li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
 <li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
@@ -222,7 +229,7 @@ This is the ontological perspective on distributions. When fluctuations tend to 
 <p><strong><em>4.1.2 Normal by multiplication</em></strong></p>
 <p>This code just samples 12 random numbers between 1.0 and 1.1, each representing a proportional increase in growth. Thus 1.0 means no additional growth and 1.1 means a 10% increase.</p>
 <div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="4-1-why-normal-distributions-are-normal.html#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, .<span class="dv">1</span>))</span></code></pre></div>
-<pre><code>## [1] 1.589528</code></pre>
+<pre><code>## [1] 1.661893</code></pre>
 <p>Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:</p>
 <div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="4-1-why-normal-distributions-are-normal.html#cb94-1" aria-hidden="true" tabindex="-1"></a>growth <span class="ot">=</span> <span class="fu">replicate</span>(<span class="fl">1e4</span>, <span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, <span class="fl">0.1</span>)))</span>
 <span id="cb94-2"><a href="4-1-why-normal-distributions-are-normal.html#cb94-2" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">dens</span>(growth, <span class="at">norm.comp =</span> T)</span></code></pre></div>

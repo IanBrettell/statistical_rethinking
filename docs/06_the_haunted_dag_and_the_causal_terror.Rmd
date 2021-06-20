@@ -48,6 +48,21 @@ knitr::include_graphics(file.path(slides_dir, '06.png'))
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
+```{r 6.1}
+set.seed(1914)
+N <- 200 # num grant proposals
+p <- 0.1 # proportion to select
+# uncorrelated newsworthiness and trustworthiness
+nw <- rnorm(N)
+tw <- rnorm(N)
+# select top 10% of combined scores
+s <- nw + tw # total score
+q <- quantile( s , 1-p ) # top 10% threshold
+selected <- ifelse( s >= q , TRUE , FALSE )
+cor( tw[selected] , nw[selected] )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap = "Regression is an incredible tool. But it's an oracle. It automatically finds the most informative cases. It's amazing that the universe is designed such that this works out. But it's a historical oracle. Like the Oracle of Delphi. Poweful, but not benign. Or like a genie. Will take your wish (question) very literally."}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
@@ -68,6 +83,59 @@ knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "The pipe is a lot like the fork. Here there's a mediation. In reality X is mediated by Z. If we condition on Z, we don't notice the true effect. If you condition on Z, then you remove the dependency between X and Y. From the data alone, you can't see the difference between a pipe and a fork. "}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
+
+## Multicollinearity
+
+Means a very strong association between two or more predictors. 
+
+Consequence: the posterior distribution will seem to suggest that none of the variables is reliably associated with the outcome, even if all of the variables are in reality strongly associated with the outcome.
+
+That said, the model will work fine for prediction; you will jsut be frustrated trying to understand it.
+
+***6.1.1 Multicollinear legs***
+
+Imagine trying to predict an individual's height using the length of their legs as a predictor. But once you put both legs (right and left) into the model, something vexing will happen. 
+
+```{r 6.2}
+N <- 100 # number of individuals
+set.seed(909)
+height <- rnorm(N,10,2) # sim total height of each
+leg_prop <- runif(N,0.4,0.5) # leg as proportion of height
+leg_left <- leg_prop*height + # sim left leg as proportion + error
+  rnorm( N , 0 , 0.02 )
+leg_right <- leg_prop*height + # sim right leg as proportion + error
+  rnorm( N , 0 , 0.02 )
+# combine into data frame
+d <- data.frame(height,leg_left,leg_right)
+```
+
+We expect the beta coefficient that measures the association of a leg with height to end up around the average height (10) divided by 45% of the average height (4.5). 
+
+```{r 6.3}
+m6.1 <- quap(
+  alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu <- a + bl*leg_left + br*leg_right ,
+    a ~ dnorm( 10 , 100 ) ,
+    bl ~ dnorm( 2 , 10 ) ,
+    br ~ dnorm( 2 , 10 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=d )
+precis(m6.1)
+```
+
+```{r}
+plot(precis(m6.1))
+```
+
+```{r 6.5}
+post <- extract.samples(m6.1)
+plot( bl ~ br , post , col=col.alpha(rangi2,0.1) , pch=16 )
+```
+
+The posterior distribution for these two parameters is very hgihly correlated, with all of the plausible values of `bl` and `br` lying around a narrow ridge. When `bl` is large, then `br` must be small. Since both leg variables contain almost exactly the same information, if you insist on including both in a model, then there will be a practically infinite number of combinations of `bl` and `br` that produce the same predictions.
+
+## Post-treatment bias
 
 ```{r, echo = F, out.width='80%', fig.cap = "The confound that gets created is the \"post-treatment bias\", Z. Post-treatment variables arise as a consequence of treatment. This happens a lot. The bias occurs when you're not aware of Z, and end up inferring something wrong. "}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
