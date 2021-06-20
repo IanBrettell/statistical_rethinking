@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-06-08'
+date: '2021-06-20'
 output:
   html_document:
     toc: true
@@ -136,7 +136,7 @@ prod(1 + runif(12, 0, .1))
 ```
 
 ```
-## [1] 1.589528
+## [1] 1.661893
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
@@ -449,7 +449,7 @@ rethinking::PI(sample.sigma)
 
 ```
 ##       5%      94% 
-## 7.303030 8.252525
+## 7.323232 8.252525
 ```
 
 <div class="figure">
@@ -550,9 +550,9 @@ rethinking::precis(m4.1)
 ```
 
 ```
-##             mean        sd     5.5%      94.5%
-## mu    154.607266 0.4119983 153.9488 155.265719
-## sigma   7.731401 0.2913925   7.2657   8.197102
+##             mean        sd       5.5%      94.5%
+## mu    154.606103 0.4119930 153.947659 155.264548
+## sigma   7.731304 0.2913833   7.265617   8.196991
 ```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
@@ -584,7 +584,7 @@ precis( m4.2 )
 ```
 ##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51757 0.9289236  23.03297  26.00216
+## sigma  24.51755 0.9289218  23.03295  26.00214
 ```
 
 ***4.3.6 Sampling from a `quap`***
@@ -636,12 +636,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 153.8970 7.999108
-## 2 155.2034 7.866710
-## 3 154.7197 8.015983
-## 4 154.8960 7.355977
-## 5 154.8955 7.707209
-## 6 155.0064 7.524133
+## 1 154.2431 7.965715
+## 2 154.4715 7.875032
+## 3 155.1764 7.885016
+## 4 154.8297 7.514147
+## 5 153.9091 7.694580
+## 6 154.2664 7.967946
 ```
 
 
@@ -650,9 +650,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%     94.5%    histogram
-## mu    154.607461 0.4095072 153.941536 155.25617      ▁▁▅▇▂▁▁
-## sigma   7.730442 0.2943439   7.255739   8.20614 ▁▁▁▁▂▅▇▇▃▁▁▁
+##             mean        sd      5.5%     94.5%    histogram
+## mu    154.604552 0.4103304 153.95464 155.26089     ▁▁▁▅▇▂▁▁
+## sigma   7.730061 0.2875193   7.26772   8.18983 ▁▁▁▁▂▅▇▇▃▁▁▁
 ```
 
 Here's a peak under the motor of `extract.samples`:

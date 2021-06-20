@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-06-08" />
+<meta name="date" content="2021-06-20" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -26,7 +26,7 @@ MathJax.Hub.Config({
 
 <title>5.1 Spurious association | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
 
-<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
@@ -143,8 +143,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
 <ul>
 <li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
 </ul></li>
-<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+</ul></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
 <li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
 <li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
@@ -208,14 +215,11 @@ Already know how to do these, just need to do extra stuff. Linear regression is 
 </p>
 </div>
 <div class="figure">
-<img src="slides/L05/15.png" alt="Have to think harder about priors now. It help a lot by standardising the priors - converting them into Z-scores. If you make all your variables z-scores, you make you life easier. (But not in all cases.) " width="80%" />
+<img src="slides/L05/15.png" alt="Have to think harder about priors now. It help a lot by standardising the priors - converting them into Z-scores. If you make all your variables z-scores, you make you life easier. (But not in all cases.) When you standardise your predictors, you're setting your mean as 0. The regression line has to go through 0, and so alpha should be 0, We'll give it a Gaussian prior with a tight SD. Maybe should even be tighter. Slopes are a little harder. You don't want to use flat priors because you don't want it to think wildly impossible slopes are possible to start. That's why we do some prior predictive simulation." width="80%" />
 <p class="caption marginnote shownote">
-Have to think harder about priors now. It help a lot by standardising the priors - converting them into Z-scores. If you make all your variables z-scores, you make you life easier. (But not in all cases.)
+Have to think harder about priors now. It help a lot by standardising the priors - converting them into Z-scores. If you make all your variables z-scores, you make you life easier. (But not in all cases.) When you standardise your predictors, you’re setting your mean as 0. The regression line has to go through 0, and so alpha should be 0, We’ll give it a Gaussian prior with a tight SD. Maybe should even be tighter. Slopes are a little harder. You don’t want to use flat priors because you don’t want it to think wildly impossible slopes are possible to start. That’s why we do some prior predictive simulation.
 </p>
 </div>
-<pre class="marginfigure"><code>When you standardise your predictors, you&#39;re setting your mean as 0. The regression line has to go through 0, and so alpha should be 0, We&#39;ll give it a Gaussian prior with a tight SD. Maybe should even be tighter. 
-
-Slopes are a little harder. You don&#39;t want to use flat priors because you don&#39;t want it to think wildly impossible slopes are possible to start. That&#39;s why we do some prior predictive simulation.</code></pre>
 <div class="figure">
 <img src="slides/L05/16.png" alt="You can fit your model. You can run that model. `extract.prior` samples from the prior to simulate. Then pass it to `link` to create predictions based on the prior. Then you can plot the regression lines. " width="80%" />
 <p class="caption marginnote shownote">
@@ -224,63 +228,63 @@ You can fit your model. You can run that model. <code>extract.prior</code> sampl
 </div>
 <p>If <span class="math inline">\(\beta_A = 1\)</span>, that would imply that a change of one standard deviation in age at marriage is assocatied with a change of one standard deviation in divorce.</p>
 <p>To know if that’s strong, how big is a standard deviation of age at marriage?</p>
-<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="5-1-spurious-association.html#cb204-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>( d<span class="sc">$</span>MedianAgeMarriage )</span></code></pre></div>
+<div class="sourceCode" id="cb203"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb203-1"><a href="5-1-spurious-association.html#cb203-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>( d<span class="sc">$</span>MedianAgeMarriage )</span></code></pre></div>
 <pre><code>## [1] 1.24363</code></pre>
-<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="5-1-spurious-association.html#cb206-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.1</span> <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
-<span id="cb206-2"><a href="5-1-spurious-association.html#cb206-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb206-3"><a href="5-1-spurious-association.html#cb206-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb206-4"><a href="5-1-spurious-association.html#cb206-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bA <span class="sc">*</span> A ,</span>
-<span id="cb206-5"><a href="5-1-spurious-association.html#cb206-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
-<span id="cb206-6"><a href="5-1-spurious-association.html#cb206-6" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
-<span id="cb206-7"><a href="5-1-spurious-association.html#cb206-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb206-8"><a href="5-1-spurious-association.html#cb206-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data =</span> d )</span></code></pre></div>
+<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="5-1-spurious-association.html#cb205-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.1</span> <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb205-2"><a href="5-1-spurious-association.html#cb205-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb205-3"><a href="5-1-spurious-association.html#cb205-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb205-4"><a href="5-1-spurious-association.html#cb205-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bA <span class="sc">*</span> A ,</span>
+<span id="cb205-5"><a href="5-1-spurious-association.html#cb205-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb205-6"><a href="5-1-spurious-association.html#cb205-6" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb205-7"><a href="5-1-spurious-association.html#cb205-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb205-8"><a href="5-1-spurious-association.html#cb205-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data =</span> d )</span></code></pre></div>
 <div class="figure">
 <img src="slides/L05/17.png" alt="This is 50 regression lines from the prior. Standardised deviation of marriage. 2 SD is almost all. If your model thinks a possible divorce rate is outside the observable range of divorce rates, then they're bad. This prior allows really strong relationships. Allows it to govern nearly all the variation in divorce rate. But we'll move forward with this. This is the flattest prior you could justify scientifically. Priors by frequentists consider even crazier priors, just as vertical lines." width="80%" />
 <p class="caption marginnote shownote">
 This is 50 regression lines from the prior. Standardised deviation of marriage. 2 SD is almost all. If your model thinks a possible divorce rate is outside the observable range of divorce rates, then they’re bad. This prior allows really strong relationships. Allows it to govern nearly all the variation in divorce rate. But we’ll move forward with this. This is the flattest prior you could justify scientifically. Priors by frequentists consider even crazier priors, just as vertical lines.
 </p>
 </div>
-<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="5-1-spurious-association.html#cb207-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
-<span id="cb207-2"><a href="5-1-spurious-association.html#cb207-2" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">extract.prior</span>( m5<span class="fl">.1</span> )</span>
-<span id="cb207-3"><a href="5-1-spurious-association.html#cb207-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">link</span>( m5<span class="fl">.1</span> , </span>
-<span id="cb207-4"><a href="5-1-spurious-association.html#cb207-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">post=</span>prior , </span>
-<span id="cb207-5"><a href="5-1-spurious-association.html#cb207-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span><span class="fu">list</span>( <span class="at">A=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) ) )</span>
-<span id="cb207-6"><a href="5-1-spurious-association.html#cb207-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb207-7"><a href="5-1-spurious-association.html#cb207-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) )</span>
-<span id="cb207-8"><a href="5-1-spurious-association.html#cb207-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span> ) <span class="fu">lines</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) , mu[i,] , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.4</span>) )</span></code></pre></div>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="5-1-spurious-association.html#cb206-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">10</span>)</span>
+<span id="cb206-2"><a href="5-1-spurious-association.html#cb206-2" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">extract.prior</span>( m5<span class="fl">.1</span> )</span>
+<span id="cb206-3"><a href="5-1-spurious-association.html#cb206-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">link</span>( m5<span class="fl">.1</span> , </span>
+<span id="cb206-4"><a href="5-1-spurious-association.html#cb206-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">post=</span>prior , </span>
+<span id="cb206-5"><a href="5-1-spurious-association.html#cb206-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">data=</span><span class="fu">list</span>( <span class="at">A=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) ) )</span>
+<span id="cb206-6"><a href="5-1-spurious-association.html#cb206-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb206-7"><a href="5-1-spurious-association.html#cb206-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) )</span>
+<span id="cb206-8"><a href="5-1-spurious-association.html#cb206-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span> ) <span class="fu">lines</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) , mu[i,] , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.4</span>) )</span></code></pre></div>
 <p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.4-1.svg" width="672" /></p>
 <p>Now for the posterior predictions:</p>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="5-1-spurious-association.html#cb208-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute percentile interval of mean</span></span>
-<span id="cb208-2"><a href="5-1-spurious-association.html#cb208-2" aria-hidden="true" tabindex="-1"></a>A_seq <span class="ot">=</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="dv">3</span> , <span class="at">to=</span><span class="fl">3.2</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span>
-<span id="cb208-3"><a href="5-1-spurious-association.html#cb208-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">=</span> <span class="fu">link</span>( m5<span class="fl">.1</span> , <span class="at">data=</span><span class="fu">list</span>(<span class="at">A=</span>A_seq) )</span>
-<span id="cb208-4"><a href="5-1-spurious-association.html#cb208-4" aria-hidden="true" tabindex="-1"></a>mu.mean <span class="ot">=</span> <span class="fu">apply</span>( mu , <span class="dv">2</span>, mean )</span>
-<span id="cb208-5"><a href="5-1-spurious-association.html#cb208-5" aria-hidden="true" tabindex="-1"></a>mu.PI <span class="ot">=</span> <span class="fu">apply</span>( mu , <span class="dv">2</span> , PI )</span>
-<span id="cb208-6"><a href="5-1-spurious-association.html#cb208-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb208-7"><a href="5-1-spurious-association.html#cb208-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot it all</span></span>
-<span id="cb208-8"><a href="5-1-spurious-association.html#cb208-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( D <span class="sc">~</span> A , <span class="at">data=</span>d , <span class="at">col=</span>rangi2 )</span>
-<span id="cb208-9"><a href="5-1-spurious-association.html#cb208-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( A_seq , mu.mean , <span class="at">lwd=</span><span class="dv">2</span> )</span>
-<span id="cb208-10"><a href="5-1-spurious-association.html#cb208-10" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu.PI , A_seq )</span></code></pre></div>
+<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="5-1-spurious-association.html#cb207-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute percentile interval of mean</span></span>
+<span id="cb207-2"><a href="5-1-spurious-association.html#cb207-2" aria-hidden="true" tabindex="-1"></a>A_seq <span class="ot">=</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="dv">3</span> , <span class="at">to=</span><span class="fl">3.2</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span>
+<span id="cb207-3"><a href="5-1-spurious-association.html#cb207-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">=</span> <span class="fu">link</span>( m5<span class="fl">.1</span> , <span class="at">data=</span><span class="fu">list</span>(<span class="at">A=</span>A_seq) )</span>
+<span id="cb207-4"><a href="5-1-spurious-association.html#cb207-4" aria-hidden="true" tabindex="-1"></a>mu.mean <span class="ot">=</span> <span class="fu">apply</span>( mu , <span class="dv">2</span>, mean )</span>
+<span id="cb207-5"><a href="5-1-spurious-association.html#cb207-5" aria-hidden="true" tabindex="-1"></a>mu.PI <span class="ot">=</span> <span class="fu">apply</span>( mu , <span class="dv">2</span> , PI )</span>
+<span id="cb207-6"><a href="5-1-spurious-association.html#cb207-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb207-7"><a href="5-1-spurious-association.html#cb207-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot it all</span></span>
+<span id="cb207-8"><a href="5-1-spurious-association.html#cb207-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( D <span class="sc">~</span> A , <span class="at">data=</span>d , <span class="at">col=</span>rangi2 )</span>
+<span id="cb207-9"><a href="5-1-spurious-association.html#cb207-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( A_seq , mu.mean , <span class="at">lwd=</span><span class="dv">2</span> )</span>
+<span id="cb207-10"><a href="5-1-spurious-association.html#cb207-10" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu.PI , A_seq )</span></code></pre></div>
 <p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.5-1.svg" width="672" />
 <span class="math inline">\(\beta_A\)</span> is reliably negative. You can fit a similar regression for the relationship in the left-hand plot:</p>
-<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="5-1-spurious-association.html#cb209-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.2</span> <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
-<span id="cb209-2"><a href="5-1-spurious-association.html#cb209-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb209-3"><a href="5-1-spurious-association.html#cb209-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb209-4"><a href="5-1-spurious-association.html#cb209-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM <span class="sc">*</span> M ,</span>
-<span id="cb209-5"><a href="5-1-spurious-association.html#cb209-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
-<span id="cb209-6"><a href="5-1-spurious-association.html#cb209-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
-<span id="cb209-7"><a href="5-1-spurious-association.html#cb209-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb209-8"><a href="5-1-spurious-association.html#cb209-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data =</span> d )</span></code></pre></div>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="5-1-spurious-association.html#cb208-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.2</span> <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb208-2"><a href="5-1-spurious-association.html#cb208-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb208-3"><a href="5-1-spurious-association.html#cb208-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb208-4"><a href="5-1-spurious-association.html#cb208-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM <span class="sc">*</span> M ,</span>
+<span id="cb208-5"><a href="5-1-spurious-association.html#cb208-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb208-6"><a href="5-1-spurious-association.html#cb208-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb208-7"><a href="5-1-spurious-association.html#cb208-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb208-8"><a href="5-1-spurious-association.html#cb208-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data =</span> d )</span></code></pre></div>
 <p>Drawing a DAG</p>
-<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="5-1-spurious-association.html#cb210-1" aria-hidden="true" tabindex="-1"></a>dag5<span class="fl">.1</span> <span class="ot">&lt;-</span> dagitty<span class="sc">::</span><span class="fu">dagitty</span>( <span class="st">&quot;dag{ A -&gt; D; A -&gt; M; M -&gt; D }&quot;</span> )</span>
-<span id="cb210-2"><a href="5-1-spurious-association.html#cb210-2" aria-hidden="true" tabindex="-1"></a>dagitty<span class="sc">::</span><span class="fu">coordinates</span>(dag5<span class="fl">.1</span>) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">2</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">0</span>) )</span>
-<span id="cb210-3"><a href="5-1-spurious-association.html#cb210-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">drawdag</span>( dag5<span class="fl">.1</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="5-1-spurious-association.html#cb209-1" aria-hidden="true" tabindex="-1"></a>dag5<span class="fl">.1</span> <span class="ot">&lt;-</span> dagitty<span class="sc">::</span><span class="fu">dagitty</span>( <span class="st">&quot;dag{ A -&gt; D; A -&gt; M; M -&gt; D }&quot;</span> )</span>
+<span id="cb209-2"><a href="5-1-spurious-association.html#cb209-2" aria-hidden="true" tabindex="-1"></a>dagitty<span class="sc">::</span><span class="fu">coordinates</span>(dag5<span class="fl">.1</span>) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">2</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">A=</span><span class="dv">0</span>,<span class="at">D=</span><span class="dv">1</span>,<span class="at">M=</span><span class="dv">0</span>) )</span>
+<span id="cb209-3"><a href="5-1-spurious-association.html#cb209-3" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">drawdag</span>( dag5<span class="fl">.1</span> )</span></code></pre></div>
 <p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.7-1.svg" width="672" /></p>
 <p><strong><em>5.1.2 Testable implications</em></strong></p>
-<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="5-1-spurious-association.html#cb211-1" aria-hidden="true" tabindex="-1"></a>DMA_dag2 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&#39;dag{ D &lt;- A -&gt; M }&#39;</span>)</span>
-<span id="cb211-2"><a href="5-1-spurious-association.html#cb211-2" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>( DMA_dag2 )</span></code></pre></div>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="5-1-spurious-association.html#cb210-1" aria-hidden="true" tabindex="-1"></a>DMA_dag2 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&#39;dag{ D &lt;- A -&gt; M }&#39;</span>)</span>
+<span id="cb210-2"><a href="5-1-spurious-association.html#cb210-2" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>( DMA_dag2 )</span></code></pre></div>
 <pre><code>## D _||_ M | A</code></pre>
-<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="5-1-spurious-association.html#cb213-1" aria-hidden="true" tabindex="-1"></a>DMA_dag1 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&#39;dag{ D &lt;- A -&gt; M -&gt; D }&#39;</span>)</span>
-<span id="cb213-2"><a href="5-1-spurious-association.html#cb213-2" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>( DMA_dag1 )</span></code></pre></div>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="5-1-spurious-association.html#cb212-1" aria-hidden="true" tabindex="-1"></a>DMA_dag1 <span class="ot">&lt;-</span> <span class="fu">dagitty</span>(<span class="st">&#39;dag{ D &lt;- A -&gt; M -&gt; D }&#39;</span>)</span>
+<span id="cb212-2"><a href="5-1-spurious-association.html#cb212-2" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>( DMA_dag1 )</span></code></pre></div>
 <p>No conditional independencies, so no output.</p>
 <p><strong><em>5.1.3 Multiple regression notation</em></strong></p>
 <div class="figure">
@@ -290,16 +294,16 @@ Linear means additive, so the model makes a plane. You keep adding them together
 </p>
 </div>
 <p><strong><em>5.1.4 Approximating the posterior</em></strong></p>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="5-1-spurious-association.html#cb214-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
-<span id="cb214-2"><a href="5-1-spurious-association.html#cb214-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
-<span id="cb214-3"><a href="5-1-spurious-association.html#cb214-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
-<span id="cb214-4"><a href="5-1-spurious-association.html#cb214-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM<span class="sc">*</span>M <span class="sc">+</span> bA<span class="sc">*</span>A ,</span>
-<span id="cb214-5"><a href="5-1-spurious-association.html#cb214-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
-<span id="cb214-6"><a href="5-1-spurious-association.html#cb214-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
-<span id="cb214-7"><a href="5-1-spurious-association.html#cb214-7" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
-<span id="cb214-8"><a href="5-1-spurious-association.html#cb214-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
-<span id="cb214-9"><a href="5-1-spurious-association.html#cb214-9" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data =</span> d )</span>
-<span id="cb214-10"><a href="5-1-spurious-association.html#cb214-10" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m5<span class="fl">.3</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="5-1-spurious-association.html#cb213-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb213-2"><a href="5-1-spurious-association.html#cb213-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb213-3"><a href="5-1-spurious-association.html#cb213-3" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb213-4"><a href="5-1-spurious-association.html#cb213-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM<span class="sc">*</span>M <span class="sc">+</span> bA<span class="sc">*</span>A ,</span>
+<span id="cb213-5"><a href="5-1-spurious-association.html#cb213-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb213-6"><a href="5-1-spurious-association.html#cb213-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb213-7"><a href="5-1-spurious-association.html#cb213-7" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb213-8"><a href="5-1-spurious-association.html#cb213-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb213-9"><a href="5-1-spurious-association.html#cb213-9" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data =</span> d )</span>
+<span id="cb213-10"><a href="5-1-spurious-association.html#cb213-10" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m5<span class="fl">.3</span> )</span></code></pre></div>
 <pre><code>##                mean         sd       5.5%      94.5%
 ## a     -2.828642e-05 0.09707123 -0.1551669  0.1551103
 ## bM    -6.553086e-02 0.15076312 -0.3064794  0.1754177
@@ -313,8 +317,8 @@ Here’s the quap code, and we get a table of coefficients. Look for the mean, a
 This shows all three models. Bottom is age of marriage only. The one with marriage rates in the middle. Then marriage rate and and age of marriage in the bottom.
 </p>
 </div>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="5-1-spurious-association.html#cb216-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Faulty code</span></span>
-<span id="cb216-2"><a href="5-1-spurious-association.html#cb216-2" aria-hidden="true" tabindex="-1"></a><span class="co">#plot( rethinking::coeftab(m5.1,m5.2,m5.3), par=c(&quot;bA&quot;,&quot;bM&quot;) )</span></span></code></pre></div>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="5-1-spurious-association.html#cb215-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Faulty code</span></span>
+<span id="cb215-2"><a href="5-1-spurious-association.html#cb215-2" aria-hidden="true" tabindex="-1"></a><span class="co">#plot( rethinking::coeftab(m5.1,m5.2,m5.3), par=c(&quot;bA&quot;,&quot;bM&quot;) )</span></span></code></pre></div>
 <div class="figure">
 <img src="slides/L05/21.png" alt="This is the graph. Once you know the median age of marriage, you get little extra information in marriage. But when you ad A, it does give you information. If you just wanted to make a prediction, M is useful, but if you wanted to change D, you need to change other things like A." width="80%" />
 <p class="caption marginnote shownote">
@@ -322,12 +326,19 @@ This is the graph. Once you know the median age of marriage, you get little extr
 </p>
 </div>
 <p>You have to be clear about whether you’re interesting in predicting things, or understanding the true nature of things.</p>
+<p>Let’s simulate the divorce example. Every DAG implies a simulation, and such simulations can help us design models to correclty infer relationships among variables.</p>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="5-1-spurious-association.html#cb216-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">=</span> <span class="dv">50</span> <span class="co"># number of simulated States</span></span>
+<span id="cb216-2"><a href="5-1-spurious-association.html#cb216-2" aria-hidden="true" tabindex="-1"></a>age <span class="ot">=</span> <span class="fu">rnorm</span>(N) <span class="co"># sim A</span></span>
+<span id="cb216-3"><a href="5-1-spurious-association.html#cb216-3" aria-hidden="true" tabindex="-1"></a>mar <span class="ot">=</span> <span class="fu">rnorm</span>(N, <span class="sc">-</span>age) <span class="co"># sim A -&gt; M</span></span>
+<span id="cb216-4"><a href="5-1-spurious-association.html#cb216-4" aria-hidden="true" tabindex="-1"></a>div <span class="ot">=</span> <span class="fu">rnorm</span>(N, age) <span class="co"># sim A -&gt; D</span></span></code></pre></div>
+<p><strong><em>5.1.5 Plotting multivariate posteriors</em></strong></p>
 <div class="figure">
 <img src="slides/L05/22.png" alt="How do we visualise models like this? Lots of ways. Usually the most useful way to visualise depends on the model. You want to think about what you're trying to communicate. The first are predictor residual plots, not that you need to do them, but good for understanding how these linear regressions works." width="80%" />
 <p class="caption marginnote shownote">
 How do we visualise models like this? Lots of ways. Usually the most useful way to visualise depends on the model. You want to think about what you’re trying to communicate. The first are predictor residual plots, not that you need to do them, but good for understanding how these linear regressions works.
 </p>
 </div>
+<p><em>5.1.5.1 Predictor residual plots</em></p>
 <div class="figure">
 <img src="slides/L05/23.png" alt="Purpose is to show how the association looks, having controlled for the other predictors. We want to calculate the intermediate states. Great for intuition but terrible for analysis. Never any statistical justification for running regression over residuals. Why? Gives you the wrong answer, because it gives you bias estimates. What to do instead? Multiple regressions." width="80%" />
 <p class="caption marginnote shownote">
@@ -338,6 +349,20 @@ Purpose is to show how the association looks, having controlled for the other pr
 <ol style="list-style-type: decimal">
 <li>Regress a predictor, and find the extra variance left over, and look at the pattern of the relationship between the residuals and the outcome.</li>
 </ol>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="5-1-spurious-association.html#cb217-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Approximate the posterior</span></span>
+<span id="cb217-2"><a href="5-1-spurious-association.html#cb217-2" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.4</span> <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">quap</span>(</span>
+<span id="cb217-3"><a href="5-1-spurious-association.html#cb217-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb217-4"><a href="5-1-spurious-association.html#cb217-4" aria-hidden="true" tabindex="-1"></a>    M <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb217-5"><a href="5-1-spurious-association.html#cb217-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bAM <span class="sc">*</span> A ,</span>
+<span id="cb217-6"><a href="5-1-spurious-association.html#cb217-6" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span>, <span class="fl">0.2</span> ) ,</span>
+<span id="cb217-7"><a href="5-1-spurious-association.html#cb217-7" aria-hidden="true" tabindex="-1"></a>    bAM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span>, <span class="fl">0.5</span> ) ,</span>
+<span id="cb217-8"><a href="5-1-spurious-association.html#cb217-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb217-9"><a href="5-1-spurious-association.html#cb217-9" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data =</span> d</span>
+<span id="cb217-10"><a href="5-1-spurious-association.html#cb217-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="5-1-spurious-association.html#cb218-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the residuals</span></span>
+<span id="cb218-2"><a href="5-1-spurious-association.html#cb218-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">link</span>(m5<span class="fl">.4</span>)</span>
+<span id="cb218-3"><a href="5-1-spurious-association.html#cb218-3" aria-hidden="true" tabindex="-1"></a>mu_mean <span class="ot">=</span> <span class="fu">apply</span>( mu, <span class="dv">2</span>, mean)</span>
+<span id="cb218-4"><a href="5-1-spurious-association.html#cb218-4" aria-hidden="true" tabindex="-1"></a>mu_resid <span class="ot">=</span> d<span class="sc">$</span>M <span class="sc">-</span> mu_mean</span></code></pre></div>
 <div class="figure">
 <img src="slides/L05/24.png" alt="Here's our first residual plot" width="80%" />
 <p class="caption marginnote shownote">
@@ -369,12 +394,11 @@ Then put those on the plot on the bottom. So now that you know M, there’s cons
 </p>
 </div>
 <div class="figure">
-<img src="slides/L05/29.png" alt="This is one of the things we mean. In observational studies like this one, there's no ethical intervention we can make. But we want to make causal information. Linear regression allows you to do that, but only if you have an idea of the causal relationship between the variables. To interpret, you need a causal framework. We'll have an example latter when controlling can *create* a confound." width="80%" />
+<img src="slides/L05/29.png" alt="This is one of the things we mean. In observational studies like this one, there's no ethical intervention we can make. But we want to make causal information. Linear regression allows you to do that, but only if you have an idea of the causal relationship between the variables. To interpret, you need a causal framework. We'll have an example latter when controlling can *create* a confound. These models are not magic. You shouldn't get cocky. This is the kind of study where you use average data. Quite a pathological dataset." width="80%" />
 <p class="caption marginnote shownote">
-This is one of the things we mean. In observational studies like this one, there’s no ethical intervention we can make. But we want to make causal information. Linear regression allows you to do that, but only if you have an idea of the causal relationship between the variables. To interpret, you need a causal framework. We’ll have an example latter when controlling can <em>create</em> a confound.
+This is one of the things we mean. In observational studies like this one, there’s no ethical intervention we can make. But we want to make causal information. Linear regression allows you to do that, but only if you have an idea of the causal relationship between the variables. To interpret, you need a causal framework. We’ll have an example latter when controlling can <em>create</em> a confound. These models are not magic. You shouldn’t get cocky. This is the kind of study where you use average data. Quite a pathological dataset.
 </p>
 </div>
-<pre class="marginfigure"><code>These models are not magic. You shouldn&#39;t get cocky. This is the kind of study where you use average data. Quite a pathological dataset.</code></pre>
 <div class="figure">
 <img src="slides/L05/30.png" alt="Cases where you hold other predictor variables constant. All the code for generating them is in the text. In the real world we can't do that. If we're right in our DAG here, and we manipulate A, you'll also manipulate M as well. " width="80%" />
 <p class="caption marginnote shownote">
@@ -385,119 +409,124 @@ Cases where you hold other predictor variables constant. All the code for genera
 <p>Goals:
 1. Figure out whether the approximation of the posterior works. Compare the predictions with the raw data. If they’re different, they fail.
 2. It can inspire you to look at the cases that don’t fit well, and figure out what you need to make better causal inferences.</p>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="5-1-spurious-association.html#cb219-1" aria-hidden="true" tabindex="-1"></a><span class="co"># call link without specifying new data</span></span>
+<span id="cb219-2"><a href="5-1-spurious-association.html#cb219-2" aria-hidden="true" tabindex="-1"></a><span class="co"># so it uses original data</span></span>
+<span id="cb219-3"><a href="5-1-spurious-association.html#cb219-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">=</span> <span class="fu">link</span>(m5<span class="fl">.3</span>)</span>
+<span id="cb219-4"><a href="5-1-spurious-association.html#cb219-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb219-5"><a href="5-1-spurious-association.html#cb219-5" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize samples across cases</span></span>
+<span id="cb219-6"><a href="5-1-spurious-association.html#cb219-6" aria-hidden="true" tabindex="-1"></a>mu_mean <span class="ot">=</span> <span class="fu">apply</span>(mu, <span class="dv">2</span>, mean)</span>
+<span id="cb219-7"><a href="5-1-spurious-association.html#cb219-7" aria-hidden="true" tabindex="-1"></a>mu_PI <span class="ot">=</span> <span class="fu">apply</span>(mu, <span class="dv">2</span>, rethinking<span class="sc">::</span>PI)</span>
+<span id="cb219-8"><a href="5-1-spurious-association.html#cb219-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb219-9"><a href="5-1-spurious-association.html#cb219-9" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate observations</span></span>
+<span id="cb219-10"><a href="5-1-spurious-association.html#cb219-10" aria-hidden="true" tabindex="-1"></a><span class="co"># again no new data, so uses original data</span></span>
+<span id="cb219-11"><a href="5-1-spurious-association.html#cb219-11" aria-hidden="true" tabindex="-1"></a>D_sim <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">sim</span>( m5<span class="fl">.3</span> , <span class="at">n=</span><span class="fl">1e4</span> )</span>
+<span id="cb219-12"><a href="5-1-spurious-association.html#cb219-12" aria-hidden="true" tabindex="-1"></a>D_PI <span class="ot">=</span> <span class="fu">apply</span>( D_sim, <span class="dv">2</span>, rethinking<span class="sc">::</span>PI)</span></code></pre></div>
+<p>Plot predictions against observed.</p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="5-1-spurious-association.html#cb220-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mu_mean <span class="sc">~</span> d<span class="sc">$</span>D, <span class="at">col =</span> rangi2, <span class="at">ylim =</span> <span class="fu">range</span>(mu_PI) ,</span>
+<span id="cb220-2"><a href="5-1-spurious-association.html#cb220-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Observed divorce&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Predicted divorce&quot;</span>)</span>
+<span id="cb220-3"><a href="5-1-spurious-association.html#cb220-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>( <span class="at">a=</span><span class="dv">0</span>, <span class="at">b=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">2</span> )</span>
+<span id="cb220-4"><a href="5-1-spurious-association.html#cb220-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(d) ) <span class="fu">lines</span>( <span class="fu">rep</span>(d<span class="sc">$</span>D[i], <span class="dv">2</span>) , mu_PI[, i] , <span class="at">col =</span> rangi2 )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.16-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="5-1-spurious-association.html#cb221-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mu_mean <span class="sc">~</span> d<span class="sc">$</span>D, <span class="at">col =</span> rangi2, <span class="at">ylim =</span> <span class="fu">range</span>(mu_PI) ,</span>
+<span id="cb221-2"><a href="5-1-spurious-association.html#cb221-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Observed divorce&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Predicted divorce&quot;</span>)</span>
+<span id="cb221-3"><a href="5-1-spurious-association.html#cb221-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>( <span class="at">a=</span><span class="dv">0</span>, <span class="at">b=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">2</span> )</span>
+<span id="cb221-4"><a href="5-1-spurious-association.html#cb221-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(d) ) <span class="fu">lines</span>( <span class="fu">rep</span>(d<span class="sc">$</span>D[i], <span class="dv">2</span>) , mu_PI[, i] , <span class="at">col =</span> rangi2 )</span>
+<span id="cb221-5"><a href="5-1-spurious-association.html#cb221-5" aria-hidden="true" tabindex="-1"></a><span class="fu">identify</span>( <span class="at">x=</span>d<span class="sc">$</span>D , <span class="at">y=</span>mu_mean , <span class="at">labels=</span>d<span class="sc">$</span>Loc )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.17-1.svg" width="672" /></p>
+<pre><code>## integer(0)</code></pre>
 <div class="figure">
 <img src="slides/L05/32.png" alt="Diagonal is unity - perfect prediction. But there are states where they're making bad predictions, like ID. Has a very low D. That's why there's a mismatch. It's getting it really wrong. Why? The Mormons. They have a very low divorce rate. UT as well." width="80%" />
 <p class="caption marginnote shownote">
 Diagonal is unity - perfect prediction. But there are states where they’re making bad predictions, like ID. Has a very low D. That’s why there’s a mismatch. It’s getting it really wrong. Why? The Mormons. They have a very low divorce rate. UT as well.
 </p>
 </div>
-<div class="figure">
-<img src="slides/L05/33.png" alt="Another good thing regression can do is reveal spurious correlations. When there are two predictors that both influence the outcome in different directions, you can get the total causal effect between the two. This tends to arise where you have two predictors, and they act in different directions, and cancel each other out, so if you don't model both of them individually, it looks like they have no effect. " width="80%" />
-<p class="caption marginnote shownote">
-Another good thing regression can do is reveal spurious correlations. When there are two predictors that both influence the outcome in different directions, you can get the total causal effect between the two. This tends to arise where you have two predictors, and they act in different directions, and cancel each other out, so if you don’t model both of them individually, it looks like they have no effect.
-</p>
+<p><em>5.1.5.3 Counterfactual plots</em></p>
+<p>They can be produced for any values of the predictor variables you like, even unobserved combinations like high median age of marriage and high marriage rate.</p>
+<p>Used with clarity of purpose, counterfactual plots help you understand the model, as well as generate predictions for imaginary interventions and compute how much some observed outcome could be attributed to some cause.</p>
+<p>Recipe:
+1. Pick a variable to manipulate (the intervention variable)
+2. Define the range of values to set the intervention variable to.
+3. FOr each vlaue of the intervention variable, and for each sample in posterior, use the causal model to simulate the values of other variables, including the outcome.</p>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="5-1-spurious-association.html#cb223-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(WaffleDivorce)</span>
+<span id="cb223-2"><a href="5-1-spurious-association.html#cb223-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb223-3"><a href="5-1-spurious-association.html#cb223-3" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>A <span class="ot">&lt;-</span> <span class="fu">standardize</span>( WaffleDivorce<span class="sc">$</span>MedianAgeMarriage )</span>
+<span id="cb223-4"><a href="5-1-spurious-association.html#cb223-4" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>D <span class="ot">&lt;-</span> <span class="fu">standardize</span>( WaffleDivorce<span class="sc">$</span>Divorce )</span>
+<span id="cb223-5"><a href="5-1-spurious-association.html#cb223-5" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>M <span class="ot">&lt;-</span> <span class="fu">standardize</span>( WaffleDivorce<span class="sc">$</span>Marriage )</span>
+<span id="cb223-6"><a href="5-1-spurious-association.html#cb223-6" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.3</span>_A <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb223-7"><a href="5-1-spurious-association.html#cb223-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb223-8"><a href="5-1-spurious-association.html#cb223-8" aria-hidden="true" tabindex="-1"></a>    <span class="do">## A -&gt; D &lt;- M</span></span>
+<span id="cb223-9"><a href="5-1-spurious-association.html#cb223-9" aria-hidden="true" tabindex="-1"></a>    D <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb223-10"><a href="5-1-spurious-association.html#cb223-10" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM<span class="sc">*</span>M <span class="sc">+</span> bA<span class="sc">*</span>A ,</span>
+<span id="cb223-11"><a href="5-1-spurious-association.html#cb223-11" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb223-12"><a href="5-1-spurious-association.html#cb223-12" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb223-13"><a href="5-1-spurious-association.html#cb223-13" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb223-14"><a href="5-1-spurious-association.html#cb223-14" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> ),</span>
+<span id="cb223-15"><a href="5-1-spurious-association.html#cb223-15" aria-hidden="true" tabindex="-1"></a>    <span class="do">## A -&gt; M</span></span>
+<span id="cb223-16"><a href="5-1-spurious-association.html#cb223-16" aria-hidden="true" tabindex="-1"></a>    M <span class="sc">~</span> <span class="fu">dnorm</span>( mu_M , sigma_M ),</span>
+<span id="cb223-17"><a href="5-1-spurious-association.html#cb223-17" aria-hidden="true" tabindex="-1"></a>    mu_M <span class="ot">&lt;-</span> aM <span class="sc">+</span> bAM<span class="sc">*</span>A,</span>
+<span id="cb223-18"><a href="5-1-spurious-association.html#cb223-18" aria-hidden="true" tabindex="-1"></a>    aM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ),</span>
+<span id="cb223-19"><a href="5-1-spurious-association.html#cb223-19" aria-hidden="true" tabindex="-1"></a>    bAM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb223-20"><a href="5-1-spurious-association.html#cb223-20" aria-hidden="true" tabindex="-1"></a>    sigma_M <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb223-21"><a href="5-1-spurious-association.html#cb223-21" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data =</span> d )</span>
+<span id="cb223-22"><a href="5-1-spurious-association.html#cb223-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb223-23"><a href="5-1-spurious-association.html#cb223-23" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m5<span class="fl">.3</span>_A)</span></code></pre></div>
+<pre><code>##                  mean         sd       5.5%      94.5%
+## a       -2.515644e-07 0.09707590 -0.1551463  0.1551458
+## bM      -6.538073e-02 0.15077284 -0.3063448  0.1755834
+## bA      -6.135131e-01 0.15098338 -0.8548137 -0.3722125
+## sigma    7.851167e-01 0.07784307  0.6607084  0.9095249
+## aM      -4.065746e-07 0.08684798 -0.1388002  0.1387994
+## bAM     -6.947375e-01 0.09572712 -0.8477279 -0.5417471
+## sigma_M  6.817382e-01 0.06758039  0.5737317  0.7897448</code></pre>
+<p>Now simulate what would happen if we manipulate A.</p>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="5-1-spurious-association.html#cb225-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a rang eof values for A</span></span>
+<span id="cb225-2"><a href="5-1-spurious-association.html#cb225-2" aria-hidden="true" tabindex="-1"></a>A_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="dv">2</span> , <span class="at">to=</span><span class="dv">2</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span></code></pre></div>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="5-1-spurious-association.html#cb226-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate the influence of A on M</span></span>
+<span id="cb226-2"><a href="5-1-spurious-association.html#cb226-2" aria-hidden="true" tabindex="-1"></a><span class="co"># prep data</span></span>
+<span id="cb226-3"><a href="5-1-spurious-association.html#cb226-3" aria-hidden="true" tabindex="-1"></a>sim_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>( <span class="at">A=</span>A_seq )</span>
+<span id="cb226-4"><a href="5-1-spurious-association.html#cb226-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb226-5"><a href="5-1-spurious-association.html#cb226-5" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate M and then D, using A_seq</span></span>
+<span id="cb226-6"><a href="5-1-spurious-association.html#cb226-6" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">sim</span>( m5<span class="fl">.3</span>_A , <span class="at">data=</span>sim_dat , <span class="at">vars=</span><span class="fu">c</span>(<span class="st">&quot;M&quot;</span>,<span class="st">&quot;D&quot;</span>) )</span></code></pre></div>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="5-1-spurious-association.html#cb227-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the predictions</span></span>
+<span id="cb227-2"><a href="5-1-spurious-association.html#cb227-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( sim_dat<span class="sc">$</span>A , <span class="fu">colMeans</span>(s<span class="sc">$</span>D) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) , <span class="at">type=</span><span class="st">&quot;l&quot;</span> , <span class="at">xlab=</span><span class="st">&quot;manipulated A&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;counterfactual D&quot;</span> )</span>
+<span id="cb227-3"><a href="5-1-spurious-association.html#cb227-3" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( <span class="fu">apply</span>(s<span class="sc">$</span>D,<span class="dv">2</span>,PI) , sim_dat<span class="sc">$</span>A )</span>
+<span id="cb227-4"><a href="5-1-spurious-association.html#cb227-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>( <span class="st">&quot;Total counterfactual effect of A on D&quot;</span> )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.22-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="5-1-spurious-association.html#cb228-1" aria-hidden="true" tabindex="-1"></a><span class="co"># new data frame, standardized to mean 26.1 and std dev 1.24</span></span>
+<span id="cb228-2"><a href="5-1-spurious-association.html#cb228-2" aria-hidden="true" tabindex="-1"></a>sim2_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>( <span class="at">A=</span>(<span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">30</span>)<span class="sc">-</span><span class="fl">26.1</span>)<span class="sc">/</span><span class="fl">1.24</span> )</span>
+<span id="cb228-3"><a href="5-1-spurious-association.html#cb228-3" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">sim</span>( m5<span class="fl">.3</span>_A , <span class="at">data=</span>sim2_dat , <span class="at">vars=</span><span class="fu">c</span>(<span class="st">&quot;M&quot;</span>,<span class="st">&quot;D&quot;</span>) )</span>
+<span id="cb228-4"><a href="5-1-spurious-association.html#cb228-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>( s2<span class="sc">$</span>D[,<span class="dv">2</span>] <span class="sc">-</span> s2<span class="sc">$</span>D[,<span class="dv">1</span>] )</span></code></pre></div>
+<pre><code>## [1] -4.540882</code></pre>
+<p>This is a huge effect of 4.5 standard deviations, probably impossibly large.</p>
+<p>Now let’s simulate the effect of manipulating <span class="math inline">\(M\)</span>. It’s like a perfectly controlled experiment. We’ll simulate a counterfactual for an average state, with <span class="math inline">\(A = 0\)</span>, and see what changing <span class="math inline">\(M\)</span> does.</p>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="5-1-spurious-association.html#cb230-1" aria-hidden="true" tabindex="-1"></a>sim_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>( <span class="at">M=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="sc">-</span><span class="dv">2</span>,<span class="at">to=</span><span class="dv">2</span>,<span class="at">length.out=</span><span class="dv">30</span>) , <span class="at">A=</span><span class="dv">0</span> )</span>
+<span id="cb230-2"><a href="5-1-spurious-association.html#cb230-2" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">sim</span>( m5<span class="fl">.3</span>_A , <span class="at">data=</span>sim_dat , <span class="at">vars=</span><span class="st">&quot;D&quot;</span> )</span>
+<span id="cb230-3"><a href="5-1-spurious-association.html#cb230-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb230-4"><a href="5-1-spurious-association.html#cb230-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( sim_dat<span class="sc">$</span>M , <span class="fu">colMeans</span>(s) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>) , <span class="at">type=</span><span class="st">&quot;l&quot;</span> ,</span>
+<span id="cb230-5"><a href="5-1-spurious-association.html#cb230-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab=</span><span class="st">&quot;manipulated M&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;counterfactual D&quot;</span> )</span>
+<span id="cb230-6"><a href="5-1-spurious-association.html#cb230-6" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( <span class="fu">apply</span>(s,<span class="dv">2</span>,PI) , sim_dat<span class="sc">$</span>M )</span>
+<span id="cb230-7"><a href="5-1-spurious-association.html#cb230-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>( <span class="st">&quot;Total counterfactual effect of M on D&quot;</span> )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.24-1.svg" width="672" /></p>
+<p>Note that we only simulated <span class="math inline">\(D\)</span> now. We don’t simulate <span class="math inline">\(A\)</span>, because <span class="math inline">\(M\)</span> doesn’t influence it.</p>
+<p><strong>Simulatig counterfactuals</strong></p>
+<p>Define a range of vlaues that we want to assign to <span class="math inline">\(A\)</span>:</p>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="5-1-spurious-association.html#cb231-1" aria-hidden="true" tabindex="-1"></a>A_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="sc">-</span><span class="dv">2</span> , <span class="at">to=</span><span class="dv">2</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span></code></pre></div>
+<p>Then extract the posterior samples:</p>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="5-1-spurious-association.html#cb232-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">extract.samples</span>( m5<span class="fl">.3</span>_A )</span>
+<span id="cb232-2"><a href="5-1-spurious-association.html#cb232-2" aria-hidden="true" tabindex="-1"></a>M_sim <span class="ot">&lt;-</span> <span class="fu">with</span>( post , <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span> ,</span>
+<span id="cb232-3"><a href="5-1-spurious-association.html#cb232-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(i) <span class="fu">rnorm</span>( <span class="fl">1e3</span> , aM <span class="sc">+</span> bAM<span class="sc">*</span>A_seq[i] , sigma_M ) ) )</span>
+<span id="cb232-4"><a href="5-1-spurious-association.html#cb232-4" aria-hidden="true" tabindex="-1"></a><span class="co"># The linear model inside `rnorm` comes right out of the model definition.</span></span></code></pre></div>
+<p>This produces a matrix of values, with samples in rows and cases corresponding to the values in <code>A_seq</code> in the columns. Now that we have simulated values for <span class="math inline">\(M\)</span>, we can simulate <span class="math inline">\(D\)</span> too:</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="5-1-spurious-association.html#cb233-1" aria-hidden="true" tabindex="-1"></a>D_sim <span class="ot">&lt;-</span> <span class="fu">with</span>( post , <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">30</span> ,</span>
+<span id="cb233-2"><a href="5-1-spurious-association.html#cb233-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(i) <span class="fu">rnorm</span>( <span class="fl">1e3</span> , a <span class="sc">+</span> bA<span class="sc">*</span>A_seq[i] <span class="sc">+</span> bM<span class="sc">*</span>M_sim[,i] , sigma ) ) )</span></code></pre></div>
+<p>If you plot <code>A_seq</code> against the column means of <code>D_sim</code>, you’ll see the same result as before.</p>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="5-1-spurious-association.html#cb234-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb234-2"><a href="5-1-spurious-association.html#cb234-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(A_seq, <span class="fu">colMeans</span>(D_sim)))</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/unnamed-chunk-35-1.svg" width="672" /></p>
 </div>
-<pre class="marginfigure"><code>Noise can also cause you not to see a relationship.</code></pre>
-<div class="figure">
-<img src="slides/L05/34.png" alt="Relationship between milk energy and how brainy they are? Intersted in things that are interested in what makes us unique. Primates are mammals, and some mammals have very highly energetic milk, like seals basically ooze butter. Primates in contrast carry their offspring on them. As a consequence, the energy density is lower. Human milk is not energetically rich. 75% of our brain mass is neocortex. Then the brainiest primate is *Cebus*. Can we see a signal of selection on milk energy from braininess?" width="80%" />
-<p class="caption marginnote shownote">
-Relationship between milk energy and how brainy they are? Intersted in things that are interested in what makes us unique. Primates are mammals, and some mammals have very highly energetic milk, like seals basically ooze butter. Primates in contrast carry their offspring on them. As a consequence, the energy density is lower. Human milk is not energetically rich. 75% of our brain mass is neocortex. Then the brainiest primate is <em>Cebus</em>. Can we see a signal of selection on milk energy from braininess?
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/35.png" alt="Sample of primate species. Pairs plot. Particularly strong correlation between the magnitude of body mass (log(mass)) is strongly correlated with neocortex. No particular strong relationship between `log(mass)` and `kcal.per.g`." width="80%" />
-<p class="caption marginnote shownote">
-Sample of primate species. Pairs plot. Particularly strong correlation between the magnitude of body mass (log(mass)) is strongly correlated with neocortex. No particular strong relationship between <code>log(mass)</code> and <code>kcal.per.g</code>.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/36.png" alt="We need to do some prior predictive simulation. Left is not a good prior. All we need to do to get the regression lines to live in the outcome space, we can contract $lpha$ - should be about 0, and the slope should be about 0.5 to be tighter. If you standardise the predictor and outcome, Normal(0, 0.5) should keep you in the outcome space." width="80%" />
-<p class="caption marginnote shownote">
-We need to do some prior predictive simulation. Left is not a good prior. All we need to do to get the regression lines to live in the outcome space, we can contract <span class="math inline">\(lpha\)</span> - should be about 0, and the slope should be about 0.5 to be tighter. If you standardise the predictor and outcome, Normal(0, 0.5) should keep you in the outcome space.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/37.png" alt="There's a slight relationship between brain and milk energy, and a slightly negative relationship with body mass. Look what happens when you include both in a model." width="80%" />
-<p class="caption marginnote shownote">
-There’s a slight relationship between brain and milk energy, and a slightly negative relationship with body mass. Look what happens when you include both in a model.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/38.png" alt="Now very strong relationship between both." width="80%" />
-<p class="caption marginnote shownote">
-Now very strong relationship between both.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/39.png" alt="You can see strong relationships, but only when they're both present in the model. This is the masking effect. One is positively related to the outcome, the other is negatively related to the outcome, and they're correlated with one another. Bigger primates need bigger brains, bigger brains need more energy, bigger bodies need less because they're are longer developmental times. THey're antagonistic effects, but correlated in same species. This sort of effect can happen a lot. " width="80%" />
-<p class="caption marginnote shownote">
-You can see strong relationships, but only when they’re both present in the model. This is the masking effect. One is positively related to the outcome, the other is negatively related to the outcome, and they’re correlated with one another. Bigger primates need bigger brains, bigger brains need more energy, bigger bodies need less because they’re are longer developmental times. THey’re antagonistic effects, but correlated in same species. This sort of effect can happen a lot.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/40.png" alt="Fake data that causes this relationship. `U` is unobserved, some life history variable. Then the causal influence on each of those. This relationship is sufficient to create what we saw." width="80%" />
-<p class="caption marginnote shownote">
-Fake data that causes this relationship. <code>U</code> is unobserved, some life history variable. Then the causal influence on each of those. This relationship is sufficient to create what we saw.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/41.png" alt="Often we have data that represents discrete categories. Want to include those, but they're not continuous. Useful variables because the mean varies, but can't add them as they are" width="80%" />
-<p class="caption marginnote shownote">
-Often we have data that represents discrete categories. Want to include those, but they’re not continuous. Useful variables because the mean varies, but can’t add them as they are
-</p>
-</div>
-<pre class="marginfigure"><code>First is to create a dummy, and the next is almost always superior, and that&#39;s the index. </code></pre>
-<div class="figure">
-<img src="slides/L05/42.png" alt="Take a categorical variable and convert them to indicator variables. They stand in for something. e.g. Kalahari height data, `0` means not `male`. " width="80%" />
-<p class="caption marginnote shownote">
-Take a categorical variable and convert them to indicator variables. They stand in for something. e.g. Kalahari height data, <code>0</code> means not <code>male</code>.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/43.png" alt="Height varies by sex, so you could include it in the model. The linear model looks like a continuous predictor, because you've coded it as 0 and 1, if effectively turns the parameter off and on, and adjusts the mean. Effectively makes two intercepts, one male, one female. `alpha` is the intercept for females, and `alpha + betaM` is the intercept for males. " width="80%" />
-<p class="caption marginnote shownote">
-Height varies by sex, so you could include it in the model. The linear model looks like a continuous predictor, because you’ve coded it as 0 and 1, if effectively turns the parameter off and on, and adjusts the mean. Effectively makes two intercepts, one male, one female. <code>alpha</code> is the intercept for females, and <code>alpha + betaM</code> is the intercept for males.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/44.png" alt="Have to pick same number of priors for number of categories. Consequence is you end up assuming that one of the categories is less certain than all the others." width="80%" />
-<p class="caption marginnote shownote">
-Have to pick same number of priors for number of categories. Consequence is you end up assuming that one of the categories is less certain than all the others.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L05/45.png" alt="This is the better option." width="80%" />
-<p class="caption marginnote shownote">
-This is the better option.
-</p>
-</div>
-<hr />
-<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="5-1-spurious-association.html#cb220-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L06&quot;</span>)</span></code></pre></div>
-<p><img src="slides/L06/01.png" width="80%" /></p>
-<div class="figure">
-<img src="slides/L06/02.png" alt="Pick up where we left off. How to include un-ordered categorical data in a regression? A lot of downsides for using dummy variables. Index variables have a lot of advantages, including that you can assign the same priors to each of the categories. Another reason is that when you get more and more categories, you don't have to change anything other than include more numbers in the index. Grows really nicely, and is the foundation of multi-level models." width="80%" />
-<p class="caption marginnote shownote">
-Pick up where we left off. How to include un-ordered categorical data in a regression? A lot of downsides for using dummy variables. Index variables have a lot of advantages, including that you can assign the same priors to each of the categories. Another reason is that when you get more and more categories, you don’t have to change anything other than include more numbers in the index. Grows really nicely, and is the foundation of multi-level models.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/03.png" alt="Can code this in `quap`. The bracket notation means `a` for each `sex`. Now you see you get an alpha for each sex. The awkwardness is you need to make inferences." width="80%" />
-<p class="caption marginnote shownote">
-Can code this in <code>quap</code>. The bracket notation means <code>a</code> for each <code>sex</code>. Now you see you get an alpha for each sex. The awkwardness is you need to make inferences.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/04.png" alt="If you want the posterior distribution for the sexes, you extract samples from the posterior. Then compute the difference by subtracting the difference from each sample. Still it in a column called `diff_fm`. Posterior mean is -8. All the comparisons are already in the posterior, you just have to extract samples to compute them. We'll be using this kind of coding in future examples." width="80%" />
-<p class="caption marginnote shownote">
-If you want the posterior distribution for the sexes, you extract samples from the posterior. Then compute the difference by subtracting the difference from each sample. Still it in a column called <code>diff_fm</code>. Posterior mean is -8. All the comparisons are already in the posterior, you just have to extract samples to compute them. We’ll be using this kind of coding in future examples.
-</p>
-</div>
-
-</div>
-<!-- </div> -->
 <p style="text-align: center;">
 <a href="5-the-many-variables-the-spurious-waffles.html"><button class="btn btn-default">Previous</button></a>
-<a href="6-the-haunted-dag-the-causal-terror.html"><button class="btn btn-default">Next</button></a>
+<a href="5-2-masked-relationship.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>

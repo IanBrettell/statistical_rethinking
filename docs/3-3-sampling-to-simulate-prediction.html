@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-06-08" />
+<meta name="date" content="2021-06-20" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -26,7 +26,7 @@ MathJax.Hub.Config({
 
 <title>3.3 Sampling to simulate prediction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
 
-<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
@@ -143,8 +143,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
 <ul>
 <li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
 </ul></li>
-<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+</ul></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
 <li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
 <li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
@@ -173,13 +180,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>## [1] 1</code></pre>
 <p>That 1 means “1 water in 2 tosses.” You can simulate a set of 10:</p>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="3-3-sampling-to-simulate-prediction.html#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbinom</span>(<span class="dv">10</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">prob =</span> <span class="fl">0.7</span>)</span></code></pre></div>
-<pre><code>##  [1] 1 1 1 2 2 1 2 2 2 2</code></pre>
+<pre><code>##  [1] 2 1 1 2 1 2 1 1 2 2</code></pre>
 <p>Let’s generate 10,000 just to verify 0, 1 and 2 appear in proportion to their likelihoods:</p>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="3-3-sampling-to-simulate-prediction.html#cb65-1" aria-hidden="true" tabindex="-1"></a>dummy_w <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="fl">1e5</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">prob =</span> .<span class="dv">7</span>)</span>
 <span id="cb65-2"><a href="3-3-sampling-to-simulate-prediction.html#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(dummy_w) <span class="sc">/</span> <span class="fl">1e5</span></span></code></pre></div>
 <pre><code>## dummy_w
 ##       0       1       2 
-## 0.08938 0.42099 0.48963</code></pre>
+## 0.08792 0.42262 0.48946</code></pre>
 <p>Let’s now simulate the sample size as before, with 9 tosses</p>
 <div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="3-3-sampling-to-simulate-prediction.html#cb67-1" aria-hidden="true" tabindex="-1"></a>dummy_w <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="fl">1e5</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> .<span class="dv">7</span>)</span>
 <span id="cb67-2"><a href="3-3-sampling-to-simulate-prediction.html#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">simplehist</span>(dummy_w, <span class="at">xlab =</span> <span class="st">&quot;dummy water count&quot;</span>)</span></code></pre></div>

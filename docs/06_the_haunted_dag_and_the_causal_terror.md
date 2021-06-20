@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-06-08'
+date: '2021-06-20'
 output:
   html_document:
     toc: true
@@ -51,6 +51,26 @@ slides_dir = here::here("docs/slides/L06")
 <p class="caption">We don't need any elaborate theory that we all have. All you need to get a negative correlation between newsworthy things and trustworthy things are peer-review. Here's a simulated example. Imagine that either journals or grant-review panels, you care about both. But you also care about rigour. A study can get published or funding *if* it's sufficiently trustworthy *or* it's sufficiently newsworthy. So even it there's no correlation in the production of science, post-selection there'll be a negative correlation. Here you can see there's no correlation. There's a threshold of the sum of newsworthiness and trustowrthiness. The blue are the ones that get funded, and the correlations are -0.8. You can't know from the correlation what's happening generatively. This is a spurious correlation. Conditioning on a variable in a regression is a selection process. Don't just add things to regressions. It's called a Simpson's paradox.</p>
 </div>
 
+
+```r
+set.seed(1914)
+N <- 200 # num grant proposals
+p <- 0.1 # proportion to select
+# uncorrelated newsworthiness and trustworthiness
+nw <- rnorm(N)
+tw <- rnorm(N)
+# select top 10% of combined scores
+s <- nw + tw # total score
+q <- quantile( s , 1-p ) # top 10% threshold
+selected <- ifelse( s >= q , TRUE , FALSE )
+cor( tw[selected] , nw[selected] )
+```
+
+```
+## [1] -0.7680083
+```
+
+
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L06/08.png" alt="Regression is an incredible tool. But it's an oracle. It automatically finds the most informative cases. It's amazing that the universe is designed such that this works out. But it's a historical oracle. Like the Oracle of Delphi. Poweful, but not benign. Or like a genie. Will take your wish (question) very literally." width="80%" />
 <p class="caption">Regression is an incredible tool. But it's an oracle. It automatically finds the most informative cases. It's amazing that the universe is designed such that this works out. But it's a historical oracle. Like the Oracle of Delphi. Poweful, but not benign. Or like a genie. Will take your wish (question) very literally.</p>
@@ -76,6 +96,75 @@ slides_dir = here::here("docs/slides/L06")
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L06/12.png" alt="The pipe is a lot like the fork. Here there's a mediation. In reality X is mediated by Z. If we condition on Z, we don't notice the true effect. If you condition on Z, then you remove the dependency between X and Y. From the data alone, you can't see the difference between a pipe and a fork. " width="80%" />
 <p class="caption">The pipe is a lot like the fork. Here there's a mediation. In reality X is mediated by Z. If we condition on Z, we don't notice the true effect. If you condition on Z, then you remove the dependency between X and Y. From the data alone, you can't see the difference between a pipe and a fork. </p>
 </div>
+
+## Multicollinearity
+
+Means a very strong association between two or more predictors. 
+
+Consequence: the posterior distribution will seem to suggest that none of the variables is reliably associated with the outcome, even if all of the variables are in reality strongly associated with the outcome.
+
+That said, the model will work fine for prediction; you will jsut be frustrated trying to understand it.
+
+***6.1.1 Multicollinear legs***
+
+Imagine trying to predict an individual's height using the length of their legs as a predictor. But once you put both legs (right and left) into the model, something vexing will happen. 
+
+
+```r
+N <- 100 # number of individuals
+set.seed(909)
+height <- rnorm(N,10,2) # sim total height of each
+leg_prop <- runif(N,0.4,0.5) # leg as proportion of height
+leg_left <- leg_prop*height + # sim left leg as proportion + error
+  rnorm( N , 0 , 0.02 )
+leg_right <- leg_prop*height + # sim right leg as proportion + error
+  rnorm( N , 0 , 0.02 )
+# combine into data frame
+d <- data.frame(height,leg_left,leg_right)
+```
+
+We expect the beta coefficient that measures the association of a leg with height to end up around the average height (10) divided by 45% of the average height (4.5). 
+
+
+```r
+m6.1 <- quap(
+  alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu <- a + bl*leg_left + br*leg_right ,
+    a ~ dnorm( 10 , 100 ) ,
+    bl ~ dnorm( 2 , 10 ) ,
+    br ~ dnorm( 2 , 10 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=d )
+precis(m6.1)
+```
+
+```
+##            mean         sd       5.5%     94.5%
+## a     0.9812791 0.28395540  0.5274635 1.4350947
+## bl    0.2118585 2.52703706 -3.8268348 4.2505518
+## br    1.7836774 2.53125061 -2.2617500 5.8291047
+## sigma 0.6171026 0.04343427  0.5476862 0.6865189
+```
+
+
+```r
+plot(precis(m6.1))
+```
+
+<img src="06_the_haunted_dag_and_the_causal_terror_files/figure-html/unnamed-chunk-12-1.svg" width="672" />
+
+
+```r
+post <- extract.samples(m6.1)
+plot( bl ~ br , post , col=col.alpha(rangi2,0.1) , pch=16 )
+```
+
+<img src="06_the_haunted_dag_and_the_causal_terror_files/figure-html/6.5-1.svg" width="672" />
+
+The posterior distribution for these two parameters is very hgihly correlated, with all of the plausible values of `bl` and `br` lying around a narrow ridge. When `bl` is large, then `br` must be small. Since both leg variables contain almost exactly the same information, if you insist on including both in a model, then there will be a practically infinite number of combinations of `bl` and `br` that produce the same predictions.
+
+## Post-treatment bias
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L06/13.png" alt="The confound that gets created is the &quot;post-treatment bias&quot;, Z. Post-treatment variables arise as a consequence of treatment. This happens a lot. The bias occurs when you're not aware of Z, and end up inferring something wrong. " width="80%" />

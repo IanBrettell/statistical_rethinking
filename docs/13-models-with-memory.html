@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-06-08" />
+<meta name="date" content="2021-06-20" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -26,7 +26,7 @@ MathJax.Hub.Config({
 
 <title>Chapter 13 Models With Memory | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
 
-<script src="libs/header-attrs-2.8/header-attrs.js"></script>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
 <link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
 <link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
@@ -143,8 +143,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
 <ul>
 <li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
 </ul></li>
-<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+</ul></li>
 <li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
 <li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
 <li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
@@ -162,9 +169,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="col-sm-12">
 <div id="models-with-memory" class="section level1" number="13">
 <h1><span class="header-section-number">Chapter 13</span> Models With Memory</h1>
-<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="13-models-with-memory.html#cb240-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb240-2"><a href="13-models-with-memory.html#cb240-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="13-models-with-memory.html#cb241-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L15&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="13-models-with-memory.html#cb302-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb302-2"><a href="13-models-with-memory.html#cb302-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;code/scripts/source.R&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="13-models-with-memory.html#cb303-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L15&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L15/01.png" width="80%" /></p>
 <div class="figure">
 <img src="slides/L15/02.png" alt="Way to justify multi-level models is that it's better to remember things than not to. Most of the statistical models we've considered up to this point is like this." width="80%" />
@@ -215,9 +222,9 @@ Here’s what I want to get across today. Why shrinkage and pooling are good. Ho
 </p>
 </div>
 <div class="figure">
-<img src="slides/L15/10.png" alt="What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others,a nd you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that." width="80%" />
+<img src="slides/L15/10.png" alt="What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others, and you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that." width="80%" />
 <p class="caption marginnote shownote">
-What are they for? We’re interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there’s imbalance in sampling. Some of the clusters have been visited more than others,a nd you don’t want that imbalance to let them dominate inference by regarding them separately. In biology, there’s this term pseudoreplication. These models handle that.
+What are they for? We’re interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there’s imbalance in sampling. Some of the clusters have been visited more than others, and you don’t want that imbalance to let them dominate inference by regarding them separately. In biology, there’s this term pseudoreplication. These models handle that.
 </p>
 </div>
 <div class="figure">
@@ -227,9 +234,9 @@ We already had examples in this course. All of these things are clusters.
 </p>
 </div>
 <div class="figure">
-<img src="slides/L15/12.png" alt="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experimeent they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pokd). " width="80%" />
+<img src="slides/L15/12.png" alt="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond). " width="80%" />
 <p class="caption marginnote shownote">
-Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experimeent they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pokd).
+Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond).
 </p>
 </div>
 <div class="figure">
@@ -257,27 +264,27 @@ Now let’s try something different. Added some stuff in blue. Let’s step thro
 </p>
 </div>
 <div class="figure">
-<img src="slides/L15/17.png" alt="$\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Wheere there used to be (0,1.5). $\bar{\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\alpha$. Then $\sigma$, which is the SD in this population. So each $\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\bar{\alpha}$ our regularizing prior, same with $\sigma$." width="80%" />
+<img src="slides/L15/17.png" alt="$\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). $\bar{\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\alpha$. Then $\sigma$, which is the SD in this population. So each $\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\bar{\alpha}$ our regularizing prior, same with $\sigma$." width="80%" />
 <p class="caption marginnote shownote">
-<span class="math inline">\(\alpha_j\)</span> is still there. But I’ve made it into this magical thing called varying intercetps by inserting parameters inside the prior. Wheere there used to be (0,1.5). <span class="math inline">\(\bar{\alpha}\)</span> is a parameter in and of itself that we’re going to estimate. Represents the mean <span class="math inline">\(\alpha\)</span>. Then <span class="math inline">\(\sigma\)</span>, which is the SD in this population. So each <span class="math inline">\(\alpha_j\)</span> where <span class="math inline">\(j\)</span> is a tank has this prior. Then for these new parameters we have to give them priors. We give <span class="math inline">\(\bar{\alpha}\)</span> our regularizing prior, same with <span class="math inline">\(\sigma\)</span>.
+<span class="math inline">\(\alpha_j\)</span> is still there. But I’ve made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). <span class="math inline">\(\bar{\alpha}\)</span> is a parameter in and of itself that we’re going to estimate. Represents the mean <span class="math inline">\(\alpha\)</span>. Then <span class="math inline">\(\sigma\)</span>, which is the SD in this population. So each <span class="math inline">\(\alpha_j\)</span> where <span class="math inline">\(j\)</span> is a tank has this prior. Then for these new parameters we have to give them priors. We give <span class="math inline">\(\bar{\alpha}\)</span> our regularizing prior, same with <span class="math inline">\(\sigma\)</span>.
 </p>
 </div>
 <div class="figure">
-<img src="slides/L15/18.png" alt="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives bettte predictions. Now we'll learn it formt he data itself, and it's like visiting cafes. As you learn the variation among them, you pool the information across. " width="80%" />
+<img src="slides/L15/18.png" alt="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives better predictions. Now we'll learn it from the data itself, and it's like visiting cafés. As you learn the variation among them, you pool the information across. " width="80%" />
 <p class="caption marginnote shownote">
-Why would we do this? What are varying intercepts? What’s distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we’ll regularise because it gives bettte predictions. Now we’ll learn it formt he data itself, and it’s like visiting cafes. As you learn the variation among them, you pool the information across.
+Why would we do this? What are varying intercepts? What’s distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we’ll regularise because it gives better predictions. Now we’ll learn it from the data itself, and it’s like visiting cafés. As you learn the variation among them, you pool the information across.
 </p>
 </div>
 <div class="figure">
-<img src="slides/L15/19.png" alt="We have to learn those parameters and get posteriro distributions for each from the data." width="80%" />
+<img src="slides/L15/19.png" alt="We have to learn those parameters and get posterior distributions for each from the data." width="80%" />
 <p class="caption marginnote shownote">
-We have to learn those parameters and get posteriro distributions for each from the data.
+We have to learn those parameters and get posterior distributions for each from the data.
 </p>
 </div>
 <div class="figure">
-<img src="slides/L15/20.png" alt="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. YOu'll notice the line for $\alpha_j$ looks liek the top line. The fcat that it's not observed is irrelevant.  " width="80%" />
+<img src="slides/L15/20.png" alt="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. You'll notice the line for $\alpha_j$ looks like the top line. The fact that it's not observed is irrelevant.  " width="80%" />
 <p class="caption marginnote shownote">
-Then each of those gets a prior. A prior of a prior is called a hyperprior. They’re all just priors. But now they’re feeding up, with multiple levels of inference. YOu’ll notice the line for <span class="math inline">\(\alpha_j\)</span> looks liek the top line. The fcat that it’s not observed is irrelevant.
+Then each of those gets a prior. A prior of a prior is called a hyperprior. They’re all just priors. But now they’re feeding up, with multiple levels of inference. You’ll notice the line for <span class="math inline">\(\alpha_j\)</span> looks like the top line. The fact that it’s not observed is irrelevant.
 </p>
 </div>
 <div class="figure">
@@ -378,7 +385,7 @@ The other tanks. The pattern holds as you go across. The amount of error decline
 </p>
 </div>
 <hr />
-<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="13-models-with-memory.html#cb242-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L16&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="13-models-with-memory.html#cb304-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L16&quot;</span>)</span></code></pre></div>
 <p><img src="slides/L16/01.png" width="80%" /></p>
 <div class="figure">
 <img src="slides/L16/02.png" alt="Experiment with a small number of chimps. Replicated on each. 4 treatments with prosocial option. Question is do they intepret it that way? " width="80%" />

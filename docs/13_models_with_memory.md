@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-06-08'
+date: '2021-06-20'
 #output: html_notebook
 editor_options: 
   chunk_output_type: inline
@@ -69,8 +69,8 @@ slides_dir = here::here("docs/slides/L15")
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/10.png" alt="What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others,a nd you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that." width="80%" />
-<p class="caption">What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others,a nd you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that.</p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/10.png" alt="What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others, and you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that." width="80%" />
+<p class="caption">What are they for? We're interested in what they can do for us: They help us with clustering in our dataset. e.g. you have a single dataset on educatioal tests, you can have a bunch of different levels nested within one another, and repeated observations at each of those levels. This is especially important when there's imbalance in sampling. Some of the clusters have been visited more than others, and you don't want that imbalance to let them dominate inference by regarding them separately. In biology, there's this term pseudoreplication. These models handle that.</p>
 </div>
 
 <div class="figure">
@@ -79,8 +79,8 @@ slides_dir = here::here("docs/slides/L15")
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/12.png" alt="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experimeent they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pokd). " width="80%" />
-<p class="caption">Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experimeent they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pokd). </p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/12.png" alt="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond). " width="80%" />
+<p class="caption">Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond). </p>
 </div>
 
 <div class="figure">
@@ -104,23 +104,23 @@ slides_dir = here::here("docs/slides/L15")
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/17.png" alt="$\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Wheere there used to be (0,1.5). $\bar{\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\alpha$. Then $\sigma$, which is the SD in this population. So each $\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\bar{\alpha}$ our regularizing prior, same with $\sigma$." width="80%" />
-<p class="caption">$\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Wheere there used to be (0,1.5). $\bar{\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\alpha$. Then $\sigma$, which is the SD in this population. So each $\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\bar{\alpha}$ our regularizing prior, same with $\sigma$.</p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/17.png" alt="$\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). $\bar{\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\alpha$. Then $\sigma$, which is the SD in this population. So each $\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\bar{\alpha}$ our regularizing prior, same with $\sigma$." width="80%" />
+<p class="caption">$\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). $\bar{\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\alpha$. Then $\sigma$, which is the SD in this population. So each $\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\bar{\alpha}$ our regularizing prior, same with $\sigma$.</p>
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/18.png" alt="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives bettte predictions. Now we'll learn it formt he data itself, and it's like visiting cafes. As you learn the variation among them, you pool the information across. " width="80%" />
-<p class="caption">Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives bettte predictions. Now we'll learn it formt he data itself, and it's like visiting cafes. As you learn the variation among them, you pool the information across. </p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/18.png" alt="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives better predictions. Now we'll learn it from the data itself, and it's like visiting cafés. As you learn the variation among them, you pool the information across. " width="80%" />
+<p class="caption">Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives better predictions. Now we'll learn it from the data itself, and it's like visiting cafés. As you learn the variation among them, you pool the information across. </p>
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/19.png" alt="We have to learn those parameters and get posteriro distributions for each from the data." width="80%" />
-<p class="caption">We have to learn those parameters and get posteriro distributions for each from the data.</p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/19.png" alt="We have to learn those parameters and get posterior distributions for each from the data." width="80%" />
+<p class="caption">We have to learn those parameters and get posterior distributions for each from the data.</p>
 </div>
 
 <div class="figure">
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/20.png" alt="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. YOu'll notice the line for $\alpha_j$ looks liek the top line. The fcat that it's not observed is irrelevant.  " width="80%" />
-<p class="caption">Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. YOu'll notice the line for $\alpha_j$ looks liek the top line. The fcat that it's not observed is irrelevant.  </p>
+<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L15/20.png" alt="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. You'll notice the line for $\alpha_j$ looks like the top line. The fact that it's not observed is irrelevant.  " width="80%" />
+<p class="caption">Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. You'll notice the line for $\alpha_j$ looks like the top line. The fact that it's not observed is irrelevant.  </p>
 </div>
 
 <div class="figure">

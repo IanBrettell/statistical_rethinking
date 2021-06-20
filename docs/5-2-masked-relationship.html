@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="5.2 Masked relationship | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-06-20" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="5.2 Masked relationship | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>5.2 Masked relationship | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+</ul></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
+<li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
+<li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
+<li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="masked-relationship" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Masked relationship</h2>
+<div class="figure">
+<img src="slides/L05/33.png" alt="Another good thing regression can do is reveal spurious correlations. When there are two predictors that both influence the outcome in different directions, you can get the total causal effect between the two. This tends to arise where you have two predictors, and they act in different directions, and cancel each other out, so if you don't model both of them individually, it looks like they have no effect. Noise can also cause you not to see a relationship." width="80%" />
+<p class="caption marginnote shownote">
+Another good thing regression can do is reveal spurious correlations. When there are two predictors that both influence the outcome in different directions, you can get the total causal effect between the two. This tends to arise where you have two predictors, and they act in different directions, and cancel each other out, so if you don’t model both of them individually, it looks like they have no effect. Noise can also cause you not to see a relationship.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L05/34.png" alt="Relationship between milk energy and how brainy they are? Intersted in things that are interested in what makes us unique. Primates are mammals, and some mammals have very highly energetic milk, like seals basically ooze butter. Primates in contrast carry their offspring on them. As a consequence, the energy density is lower. Human milk is not energetically rich. 75% of our brain mass is neocortex. Then the brainiest primate is *Cebus*. Can we see a signal of selection on milk energy from braininess?" width="80%" />
+<p class="caption marginnote shownote">
+Relationship between milk energy and how brainy they are? Intersted in things that are interested in what makes us unique. Primates are mammals, and some mammals have very highly energetic milk, like seals basically ooze butter. Primates in contrast carry their offspring on them. As a consequence, the energy density is lower. Human milk is not energetically rich. 75% of our brain mass is neocortex. Then the brainiest primate is <em>Cebus</em>. Can we see a signal of selection on milk energy from braininess?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L05/35.png" alt="Sample of primate species. Pairs plot. Particularly strong correlation between the magnitude of body mass (log(mass)) is strongly correlated with neocortex. No particular strong relationship between `log(mass)` and `kcal.per.g`." width="80%" />
+<p class="caption marginnote shownote">
+Sample of primate species. Pairs plot. Particularly strong correlation between the magnitude of body mass (log(mass)) is strongly correlated with neocortex. No particular strong relationship between <code>log(mass)</code> and <code>kcal.per.g</code>.
+</p>
+</div>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="5-2-masked-relationship.html#cb235-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(milk)</span>
+<span id="cb235-2"><a href="5-2-masked-relationship.html#cb235-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> milk</span>
+<span id="cb235-3"><a href="5-2-masked-relationship.html#cb235-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(d)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    29 obs. of  8 variables:
+##  $ clade         : Factor w/ 4 levels &quot;Ape&quot;,&quot;New World Monkey&quot;,..: 4 4 4 4 4 2 2 2 2 2 ...
+##  $ species       : Factor w/ 29 levels &quot;A palliata&quot;,&quot;Alouatta seniculus&quot;,..: 11 8 9 10 16 2 1 6 28 27 ...
+##  $ kcal.per.g    : num  0.49 0.51 0.46 0.48 0.6 0.47 0.56 0.89 0.91 0.92 ...
+##  $ perc.fat      : num  16.6 19.3 14.1 14.9 27.3 ...
+##  $ perc.protein  : num  15.4 16.9 16.9 13.2 19.5 ...
+##  $ perc.lactose  : num  68 63.8 69 71.9 53.2 ...
+##  $ mass          : num  1.95 2.09 2.51 1.62 2.19 5.25 5.37 2.51 0.71 0.68 ...
+##  $ neocortex.perc: num  55.2 NA NA NA NA ...</code></pre>
+<p>As before, standardising helps us both get a reliable approximation of the posterior as well as build reasonable priors.</p>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="5-2-masked-relationship.html#cb237-1" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>K <span class="ot">&lt;-</span> <span class="fu">standardize</span>( d<span class="sc">$</span>kcal.per.g )</span>
+<span id="cb237-2"><a href="5-2-masked-relationship.html#cb237-2" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>N <span class="ot">&lt;-</span> <span class="fu">standardize</span>( d<span class="sc">$</span>neocortex.perc )</span>
+<span id="cb237-3"><a href="5-2-masked-relationship.html#cb237-3" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>M <span class="ot">&lt;-</span> <span class="fu">standardize</span>( <span class="fu">log</span>(d<span class="sc">$</span>mass) )</span></code></pre></div>
+<p>Let’s first just try to run this as a quap model with some vague priors:</p>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="5-2-masked-relationship.html#cb238-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.5</span>_draft <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb238-2"><a href="5-2-masked-relationship.html#cb238-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb238-3"><a href="5-2-masked-relationship.html#cb238-3" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb238-4"><a href="5-2-masked-relationship.html#cb238-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bN<span class="sc">*</span>N ,</span>
+<span id="cb238-5"><a href="5-2-masked-relationship.html#cb238-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb238-6"><a href="5-2-masked-relationship.html#cb238-6" aria-hidden="true" tabindex="-1"></a>    bN <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb238-7"><a href="5-2-masked-relationship.html#cb238-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb238-8"><a href="5-2-masked-relationship.html#cb238-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d )</span>
+<span id="cb238-9"><a href="5-2-masked-relationship.html#cb238-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Returns following error:</span></span>
+<span id="cb238-10"><a href="5-2-masked-relationship.html#cb238-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Error in quap(alist(K ~ dnorm(mu, sigma), mu &lt;- a + bN * N, a ~ dnorm(0,  : </span></span>
+<span id="cb238-11"><a href="5-2-masked-relationship.html#cb238-11" aria-hidden="true" tabindex="-1"></a><span class="co">#  initial value in &#39;vmmin&#39; is not finite</span></span>
+<span id="cb238-12"><a href="5-2-masked-relationship.html#cb238-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The start values for the parameters were invalid. This could be caused by missing values (NA) in the data or by start values outside the parameter constraints. If there are no NA values in the data, try using explicit start values.</span></span></code></pre></div>
+<p>The culprit is the missing values in <code>N</code>.</p>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="5-2-masked-relationship.html#cb239-1" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>neocortex.perc</span></code></pre></div>
+<pre><code>##  [1] 55.16    NA    NA    NA    NA 64.54 64.54 67.64    NA 68.85 58.85 61.69
+## [13] 60.32    NA    NA 69.97    NA 70.41    NA 73.40    NA 67.53    NA 71.26
+## [25] 72.60    NA 70.24 76.30 75.49</code></pre>
+<p>Here we’ll just drop the missing values, known as <strong>complete case analysis</strong>. But it isn’t always a good thing - see Chapter 15.</p>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="5-2-masked-relationship.html#cb241-1" aria-hidden="true" tabindex="-1"></a>dcc <span class="ot">&lt;-</span> d[ <span class="fu">complete.cases</span>(d<span class="sc">$</span>K,d<span class="sc">$</span>N,d<span class="sc">$</span>M) , ]</span></code></pre></div>
+<p>Now let’s model with that.</p>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="5-2-masked-relationship.html#cb242-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.5</span>_draft <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb242-2"><a href="5-2-masked-relationship.html#cb242-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb242-3"><a href="5-2-masked-relationship.html#cb242-3" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb242-4"><a href="5-2-masked-relationship.html#cb242-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bN<span class="sc">*</span>N ,</span>
+<span id="cb242-5"><a href="5-2-masked-relationship.html#cb242-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb242-6"><a href="5-2-masked-relationship.html#cb242-6" aria-hidden="true" tabindex="-1"></a>    bN <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb242-7"><a href="5-2-masked-relationship.html#cb242-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb242-8"><a href="5-2-masked-relationship.html#cb242-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>dcc )</span></code></pre></div>
+<p>Simulate and plot 50 prior regression lines.</p>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="5-2-masked-relationship.html#cb243-1" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">extract.prior</span>( m5<span class="fl">.5</span>_draft )</span>
+<span id="cb243-2"><a href="5-2-masked-relationship.html#cb243-2" aria-hidden="true" tabindex="-1"></a>xseq <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>)</span>
+<span id="cb243-3"><a href="5-2-masked-relationship.html#cb243-3" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m5<span class="fl">.5</span>_draft , <span class="at">post=</span>prior , <span class="at">data=</span><span class="fu">list</span>(<span class="at">N=</span>xseq) )</span>
+<span id="cb243-4"><a href="5-2-masked-relationship.html#cb243-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb243-5"><a href="5-2-masked-relationship.html#cb243-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb243-6"><a href="5-2-masked-relationship.html#cb243-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span>xseq , <span class="at">ylim=</span>xseq )</span>
+<span id="cb243-7"><a href="5-2-masked-relationship.html#cb243-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span> ) <span class="fu">lines</span>( xseq , mu[i,] , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.3</span>) )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.34-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="5-2-masked-relationship.html#cb244-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb244-2"><a href="5-2-masked-relationship.html#cb244-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb244-3"><a href="5-2-masked-relationship.html#cb244-3" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb244-4"><a href="5-2-masked-relationship.html#cb244-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bN<span class="sc">*</span>N ,</span>
+<span id="cb244-5"><a href="5-2-masked-relationship.html#cb244-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb244-6"><a href="5-2-masked-relationship.html#cb244-6" aria-hidden="true" tabindex="-1"></a>    bN <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb244-7"><a href="5-2-masked-relationship.html#cb244-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb244-8"><a href="5-2-masked-relationship.html#cb244-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>dcc )</span>
+<span id="cb244-9"><a href="5-2-masked-relationship.html#cb244-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb244-10"><a href="5-2-masked-relationship.html#cb244-10" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">extract.prior</span>( m5<span class="fl">.5</span> )</span>
+<span id="cb244-11"><a href="5-2-masked-relationship.html#cb244-11" aria-hidden="true" tabindex="-1"></a>xseq <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">2</span>)</span>
+<span id="cb244-12"><a href="5-2-masked-relationship.html#cb244-12" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m5<span class="fl">.5</span> , <span class="at">post=</span>prior , <span class="at">data=</span><span class="fu">list</span>(<span class="at">N=</span>xseq) )</span>
+<span id="cb244-13"><a href="5-2-masked-relationship.html#cb244-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb244-14"><a href="5-2-masked-relationship.html#cb244-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb244-15"><a href="5-2-masked-relationship.html#cb244-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span>xseq , <span class="at">ylim=</span>xseq )</span>
+<span id="cb244-16"><a href="5-2-masked-relationship.html#cb244-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">50</span> ) <span class="fu">lines</span>( xseq , mu[i,] , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.3</span>) )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.35-1.svg" width="672" /></p>
+<div class="figure">
+<img src="slides/L05/36.png" alt="We need to do some prior predictive simulation. Left is not a good prior. All we need to do to get the regression lines to live in the outcome space, we can contract $lpha$ - should be about 0, and the slope should be about 0.5 to be tighter. If you standardise the predictor and outcome, Normal(0, 0.5) should keep you in the outcome space." width="80%" />
+<p class="caption marginnote shownote">
+We need to do some prior predictive simulation. Left is not a good prior. All we need to do to get the regression lines to live in the outcome space, we can contract <span class="math inline">\(lpha\)</span> - should be about 0, and the slope should be about 0.5 to be tighter. If you standardise the predictor and outcome, Normal(0, 0.5) should keep you in the outcome space.
+</p>
+</div>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="5-2-masked-relationship.html#cb245-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m5<span class="fl">.5</span> )</span></code></pre></div>
+<pre><code>##             mean        sd       5.5%     94.5%
+## a     0.03993496 0.1544904 -0.2069706 0.2868405
+## bN    0.13323261 0.2237459 -0.2243565 0.4908218
+## sigma 0.99981473 0.1647058  0.7365831 1.2630463</code></pre>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="5-2-masked-relationship.html#cb247-1" aria-hidden="true" tabindex="-1"></a>xseq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="fu">min</span>(dcc<span class="sc">$</span>N)<span class="sc">-</span><span class="fl">0.15</span> , <span class="at">to=</span><span class="fu">max</span>(dcc<span class="sc">$</span>N)<span class="sc">+</span><span class="fl">0.15</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span>
+<span id="cb247-2"><a href="5-2-masked-relationship.html#cb247-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m5<span class="fl">.5</span> , <span class="at">data=</span><span class="fu">list</span>(<span class="at">N=</span>xseq) )</span>
+<span id="cb247-3"><a href="5-2-masked-relationship.html#cb247-3" aria-hidden="true" tabindex="-1"></a>mu_mean <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,mean)</span>
+<span id="cb247-4"><a href="5-2-masked-relationship.html#cb247-4" aria-hidden="true" tabindex="-1"></a>mu_PI <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,PI)</span>
+<span id="cb247-5"><a href="5-2-masked-relationship.html#cb247-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( K <span class="sc">~</span> N , <span class="at">data=</span>dcc )</span>
+<span id="cb247-6"><a href="5-2-masked-relationship.html#cb247-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( xseq , mu_mean , <span class="at">lwd=</span><span class="dv">2</span> )</span>
+<span id="cb247-7"><a href="5-2-masked-relationship.html#cb247-7" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu_PI , xseq )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.37-1.svg" width="672" /></p>
+<div class="figure">
+<img src="slides/L05/37.png" alt="There's a slight relationship between brain and milk energy, and a slightly negative relationship with body mass. Look what happens when you include both in a model." width="80%" />
+<p class="caption marginnote shownote">
+There’s a slight relationship between brain and milk energy, and a slightly negative relationship with body mass. Look what happens when you include both in a model.
+</p>
+</div>
+<p>Let’s consider another predictor variable, adult female body mass, <code>mass</code>. Let’s use the logarithm of mass as a predictor as well. Why a logarithm instead of the raw mass?
+&gt;Because taking the log of a measure translates the measure into magnitudes.</p>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="5-2-masked-relationship.html#cb248-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb248-2"><a href="5-2-masked-relationship.html#cb248-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb248-3"><a href="5-2-masked-relationship.html#cb248-3" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb248-4"><a href="5-2-masked-relationship.html#cb248-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bM<span class="sc">*</span>M ,</span>
+<span id="cb248-5"><a href="5-2-masked-relationship.html#cb248-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb248-6"><a href="5-2-masked-relationship.html#cb248-6" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb248-7"><a href="5-2-masked-relationship.html#cb248-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb248-8"><a href="5-2-masked-relationship.html#cb248-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>dcc )</span>
+<span id="cb248-9"><a href="5-2-masked-relationship.html#cb248-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m5<span class="fl">.6</span>)</span></code></pre></div>
+<pre><code>##              mean        sd       5.5%      94.5%
+## a      0.04654706 0.1512803 -0.1952281 0.28832217
+## bM    -0.28253741 0.1928825 -0.5908009 0.02572611
+## sigma  0.94928377 0.1570633  0.6982662 1.20030131</code></pre>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="5-2-masked-relationship.html#cb250-1" aria-hidden="true" tabindex="-1"></a>xseq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="fu">min</span>(dcc<span class="sc">$</span>M)<span class="sc">-</span><span class="fl">0.15</span> , <span class="at">to=</span><span class="fu">max</span>(dcc<span class="sc">$</span>M)<span class="sc">+</span><span class="fl">0.15</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span>
+<span id="cb250-2"><a href="5-2-masked-relationship.html#cb250-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m5<span class="fl">.6</span> , <span class="at">data=</span><span class="fu">list</span>(<span class="at">M=</span>xseq) )</span>
+<span id="cb250-3"><a href="5-2-masked-relationship.html#cb250-3" aria-hidden="true" tabindex="-1"></a>mu_mean <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,mean)</span>
+<span id="cb250-4"><a href="5-2-masked-relationship.html#cb250-4" aria-hidden="true" tabindex="-1"></a>mu_PI <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,PI)</span>
+<span id="cb250-5"><a href="5-2-masked-relationship.html#cb250-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( K <span class="sc">~</span> M , <span class="at">data=</span>dcc )</span>
+<span id="cb250-6"><a href="5-2-masked-relationship.html#cb250-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( xseq , mu_mean , <span class="at">lwd=</span><span class="dv">2</span> )</span>
+<span id="cb250-7"><a href="5-2-masked-relationship.html#cb250-7" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu_PI , xseq )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/unnamed-chunk-41-1.svg" width="672" /></p>
+<div class="figure">
+<img src="slides/L05/38.png" alt="Now very strong relationship between both." width="80%" />
+<p class="caption marginnote shownote">
+Now very strong relationship between both.
+</p>
+</div>
+<p>Now add both together.</p>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="5-2-masked-relationship.html#cb251-1" aria-hidden="true" tabindex="-1"></a>m5<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb251-2"><a href="5-2-masked-relationship.html#cb251-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb251-3"><a href="5-2-masked-relationship.html#cb251-3" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb251-4"><a href="5-2-masked-relationship.html#cb251-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bN<span class="sc">*</span>N <span class="sc">+</span> bM<span class="sc">*</span>M ,</span>
+<span id="cb251-5"><a href="5-2-masked-relationship.html#cb251-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb251-6"><a href="5-2-masked-relationship.html#cb251-6" aria-hidden="true" tabindex="-1"></a>    bN <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb251-7"><a href="5-2-masked-relationship.html#cb251-7" aria-hidden="true" tabindex="-1"></a>    bM <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb251-8"><a href="5-2-masked-relationship.html#cb251-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb251-9"><a href="5-2-masked-relationship.html#cb251-9" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>dcc )</span>
+<span id="cb251-10"><a href="5-2-masked-relationship.html#cb251-10" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m5<span class="fl">.7</span>)</span></code></pre></div>
+<pre><code>##              mean        sd       5.5%      94.5%
+## a      0.06799172 0.1339987 -0.1461641  0.2821475
+## bN     0.67511778 0.2482986  0.2782886  1.0719470
+## bM    -0.70299094 0.2207870 -1.0558513 -0.3501306
+## sigma  0.73801445 0.1324619  0.5263148  0.9497141</code></pre>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="5-2-masked-relationship.html#cb253-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Faulty code</span></span>
+<span id="cb253-2"><a href="5-2-masked-relationship.html#cb253-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( rethinking<span class="sc">::</span><span class="fu">coeftab</span>( m5<span class="fl">.5</span> , m5<span class="fl">.6</span> , m5<span class="fl">.7</span> ) , <span class="at">pars=</span><span class="fu">c</span>(<span class="st">&quot;bM&quot;</span>,<span class="st">&quot;bN&quot;</span>) )</span></code></pre></div>
+<div class="figure">
+<img src="slides/L05/39.png" alt="You can see strong relationships, but only when they're both present in the model. This is the masking effect. One is positively related to the outcome, the other is negatively related to the outcome, and they're correlated with one another. Bigger primates need bigger brains, bigger brains need more energy, bigger bodies need less because they're are longer developmental times. THey're antagonistic effects, but correlated in same species. This sort of effect can happen a lot. " width="80%" />
+<p class="caption marginnote shownote">
+You can see strong relationships, but only when they’re both present in the model. This is the masking effect. One is positively related to the outcome, the other is negatively related to the outcome, and they’re correlated with one another. Bigger primates need bigger brains, bigger brains need more energy, bigger bodies need less because they’re are longer developmental times. THey’re antagonistic effects, but correlated in same species. This sort of effect can happen a lot.
+</p>
+</div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="5-2-masked-relationship.html#cb254-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>( <span class="sc">~</span>K <span class="sc">+</span> M <span class="sc">+</span> N , dcc )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/unnamed-chunk-44-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="5-2-masked-relationship.html#cb255-1" aria-hidden="true" tabindex="-1"></a>xseq <span class="ot">&lt;-</span> <span class="fu">seq</span>( <span class="at">from=</span><span class="fu">min</span>(dcc<span class="sc">$</span>M)<span class="sc">-</span><span class="fl">0.15</span> , <span class="at">to=</span><span class="fu">max</span>(dcc<span class="sc">$</span>M)<span class="sc">+</span><span class="fl">0.15</span> , <span class="at">length.out=</span><span class="dv">30</span> )</span>
+<span id="cb255-2"><a href="5-2-masked-relationship.html#cb255-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m5<span class="fl">.7</span> , <span class="at">data=</span><span class="fu">data.frame</span>( <span class="at">M=</span>xseq , <span class="at">N=</span><span class="dv">0</span> ) )</span>
+<span id="cb255-3"><a href="5-2-masked-relationship.html#cb255-3" aria-hidden="true" tabindex="-1"></a>mu_mean <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,mean)</span>
+<span id="cb255-4"><a href="5-2-masked-relationship.html#cb255-4" aria-hidden="true" tabindex="-1"></a>mu_PI <span class="ot">&lt;-</span> <span class="fu">apply</span>(mu,<span class="dv">2</span>,PI)</span>
+<span id="cb255-5"><a href="5-2-masked-relationship.html#cb255-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="cn">NULL</span> , <span class="at">xlim=</span><span class="fu">range</span>(dcc<span class="sc">$</span>M) , <span class="at">ylim=</span><span class="fu">range</span>(dcc<span class="sc">$</span>K) )</span>
+<span id="cb255-6"><a href="5-2-masked-relationship.html#cb255-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>( xseq , mu_mean , <span class="at">lwd=</span><span class="dv">2</span> )</span>
+<span id="cb255-7"><a href="5-2-masked-relationship.html#cb255-7" aria-hidden="true" tabindex="-1"></a><span class="fu">shade</span>( mu_PI , xseq )</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.41-1.svg" width="672" /></p>
+<p><strong>Simulating a masking relationship</strong></p>
+<div class="figure">
+<img src="slides/L05/40.png" alt="Fake data that causes this relationship. `U` is unobserved, some life history variable. Then the causal influence on each of those. This relationship is sufficient to create what we saw." width="80%" />
+<p class="caption marginnote shownote">
+Fake data that causes this relationship. <code>U</code> is unobserved, some life history variable. Then the causal influence on each of those. This relationship is sufficient to create what we saw.
+</p>
+</div>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="5-2-masked-relationship.html#cb256-1" aria-hidden="true" tabindex="-1"></a><span class="co"># M -&gt; K &lt;- N</span></span>
+<span id="cb256-2"><a href="5-2-masked-relationship.html#cb256-2" aria-hidden="true" tabindex="-1"></a><span class="co"># M -&gt; N</span></span>
+<span id="cb256-3"><a href="5-2-masked-relationship.html#cb256-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb256-4"><a href="5-2-masked-relationship.html#cb256-4" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n )</span>
+<span id="cb256-5"><a href="5-2-masked-relationship.html#cb256-5" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n , M )</span>
+<span id="cb256-6"><a href="5-2-masked-relationship.html#cb256-6" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n , N <span class="sc">-</span> M )</span>
+<span id="cb256-7"><a href="5-2-masked-relationship.html#cb256-7" aria-hidden="true" tabindex="-1"></a>d_sim <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">K=</span>K,<span class="at">N=</span>N,<span class="at">M=</span>M)</span></code></pre></div>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="5-2-masked-relationship.html#cb257-1" aria-hidden="true" tabindex="-1"></a><span class="co"># M -&gt; K &lt;- N</span></span>
+<span id="cb257-2"><a href="5-2-masked-relationship.html#cb257-2" aria-hidden="true" tabindex="-1"></a><span class="co"># N -&gt; M</span></span>
+<span id="cb257-3"><a href="5-2-masked-relationship.html#cb257-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb257-4"><a href="5-2-masked-relationship.html#cb257-4" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n )</span>
+<span id="cb257-5"><a href="5-2-masked-relationship.html#cb257-5" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n , N )</span>
+<span id="cb257-6"><a href="5-2-masked-relationship.html#cb257-6" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n , N <span class="sc">-</span> M )</span>
+<span id="cb257-7"><a href="5-2-masked-relationship.html#cb257-7" aria-hidden="true" tabindex="-1"></a>d_sim2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">K=</span>K,<span class="at">N=</span>N,<span class="at">M=</span>M)</span>
+<span id="cb257-8"><a href="5-2-masked-relationship.html#cb257-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb257-9"><a href="5-2-masked-relationship.html#cb257-9" aria-hidden="true" tabindex="-1"></a><span class="co"># M -&gt; K &lt;- N</span></span>
+<span id="cb257-10"><a href="5-2-masked-relationship.html#cb257-10" aria-hidden="true" tabindex="-1"></a><span class="co"># M &lt;- U -&gt; N</span></span>
+<span id="cb257-11"><a href="5-2-masked-relationship.html#cb257-11" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb257-12"><a href="5-2-masked-relationship.html#cb257-12" aria-hidden="true" tabindex="-1"></a>U <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n )</span>
+<span id="cb257-13"><a href="5-2-masked-relationship.html#cb257-13" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n , U )</span>
+<span id="cb257-14"><a href="5-2-masked-relationship.html#cb257-14" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n , U )</span>
+<span id="cb257-15"><a href="5-2-masked-relationship.html#cb257-15" aria-hidden="true" tabindex="-1"></a>K <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( n , N <span class="sc">-</span> M )</span>
+<span id="cb257-16"><a href="5-2-masked-relationship.html#cb257-16" aria-hidden="true" tabindex="-1"></a>d_sim3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">K=</span>K,<span class="at">N=</span>N,<span class="at">M=</span>M)</span></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="5-2-masked-relationship.html#cb258-1" aria-hidden="true" tabindex="-1"></a>dag5<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">dagitty</span>( <span class="st">&quot;dag{</span></span>
+<span id="cb258-2"><a href="5-2-masked-relationship.html#cb258-2" aria-hidden="true" tabindex="-1"></a><span class="st">  M -&gt; K &lt;- N</span></span>
+<span id="cb258-3"><a href="5-2-masked-relationship.html#cb258-3" aria-hidden="true" tabindex="-1"></a><span class="st">  M -&gt; N }&quot;</span> )</span>
+<span id="cb258-4"><a href="5-2-masked-relationship.html#cb258-4" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>(dag5<span class="fl">.7</span>) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">M=</span><span class="dv">0</span>,<span class="at">K=</span><span class="dv">1</span>,<span class="at">N=</span><span class="dv">2</span>) , <span class="at">y=</span><span class="fu">c</span>(<span class="at">M=</span><span class="fl">0.5</span>,<span class="at">K=</span><span class="dv">1</span>,<span class="at">N=</span><span class="fl">0.5</span>) )</span>
+<span id="cb258-5"><a href="5-2-masked-relationship.html#cb258-5" aria-hidden="true" tabindex="-1"></a>MElist <span class="ot">&lt;-</span> <span class="fu">equivalentDAGs</span>(dag5<span class="fl">.7</span>)</span>
+<span id="cb258-6"><a href="5-2-masked-relationship.html#cb258-6" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>(MElist)</span></code></pre></div>
+<p><img src="05_the_many_variables_and_the_spurious_waffles_files/figure-html/5.44-1.svg" width="672" /></p>
+</div>
+<p style="text-align: center;">
+<a href="5-1-spurious-association.html"><button class="btn btn-default">Previous</button></a>
+<a href="5-3-categorical-variables.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
