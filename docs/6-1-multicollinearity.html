@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-06-20" />
+<meta name="date" content="2021-06-22" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -151,8 +151,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
 <li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6-3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6-4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6-5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6-6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
 </ul></li>
-<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7-1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7-2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7-3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7-4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7-5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7-6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
 <li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
 <li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
 <li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
@@ -206,6 +218,100 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb284-2"><a href="6-1-multicollinearity.html#cb284-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( bl <span class="sc">~</span> br , post , <span class="at">col=</span><span class="fu">col.alpha</span>(rangi2,<span class="fl">0.1</span>) , <span class="at">pch=</span><span class="dv">16</span> )</span></code></pre></div>
 <p><img src="06_the_haunted_dag_and_the_causal_terror_files/figure-html/6.5-1.svg" width="672" /></p>
 <p>The posterior distribution for these two parameters is very hgihly correlated, with all of the plausible values of <code>bl</code> and <code>br</code> lying around a narrow ridge. When <code>bl</code> is large, then <code>br</code> must be small. Since both leg variables contain almost exactly the same information, if you insist on including both in a model, then there will be a practically infinite number of combinations of <code>bl</code> and <code>br</code> that produce the same predictions.</p>
+<p>Compute the posterior distribution and plot it.</p>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="6-1-multicollinearity.html#cb285-1" aria-hidden="true" tabindex="-1"></a>sum_blbr <span class="ot">&lt;-</span> post<span class="sc">$</span>bl <span class="sc">+</span> post<span class="sc">$</span>br</span>
+<span id="cb285-2"><a href="6-1-multicollinearity.html#cb285-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dens</span>( sum_blbr , <span class="at">col=</span>rangi2 , <span class="at">lwd=</span><span class="dv">2</span> , <span class="at">xlab=</span><span class="st">&quot;sum of bl and br&quot;</span> )</span></code></pre></div>
+<p><img src="06_the_haunted_dag_and_the_causal_terror_files/figure-html/6.6-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="6-1-multicollinearity.html#cb286-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb286-2"><a href="6-1-multicollinearity.html#cb286-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb286-3"><a href="6-1-multicollinearity.html#cb286-3" aria-hidden="true" tabindex="-1"></a>    height <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb286-4"><a href="6-1-multicollinearity.html#cb286-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bl<span class="sc">*</span>leg_left,</span>
+<span id="cb286-5"><a href="6-1-multicollinearity.html#cb286-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">10</span> , <span class="dv">100</span> ) ,</span>
+<span id="cb286-6"><a href="6-1-multicollinearity.html#cb286-6" aria-hidden="true" tabindex="-1"></a>    bl <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">2</span> , <span class="dv">10</span> ) ,</span>
+<span id="cb286-7"><a href="6-1-multicollinearity.html#cb286-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb286-8"><a href="6-1-multicollinearity.html#cb286-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d )</span>
+<span id="cb286-9"><a href="6-1-multicollinearity.html#cb286-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.2</span>)</span></code></pre></div>
+<pre><code>##            mean         sd      5.5%    94.5%
+## a     0.9979326 0.28364620 0.5446112 1.451254
+## bl    1.9920676 0.06115704 1.8943269 2.089808
+## sigma 0.6186038 0.04353998 0.5490185 0.688189</code></pre>
+<p>The basic lesson is this:
+&gt;When two predictor varilables are very strongly correlated (conditional on other variables int he model), including both in a model may lead to confusion.</p>
+<p><strong><em>6.1.2. Multicollinear milk</em></strong></p>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="6-1-multicollinearity.html#cb288-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb288-2"><a href="6-1-multicollinearity.html#cb288-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(milk)</span>
+<span id="cb288-3"><a href="6-1-multicollinearity.html#cb288-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> milk</span>
+<span id="cb288-4"><a href="6-1-multicollinearity.html#cb288-4" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>K <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">standardize</span>( d<span class="sc">$</span>kcal.per.g )</span>
+<span id="cb288-5"><a href="6-1-multicollinearity.html#cb288-5" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>F <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">standardize</span>( d<span class="sc">$</span>perc.fat )</span>
+<span id="cb288-6"><a href="6-1-multicollinearity.html#cb288-6" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>L <span class="ot">&lt;-</span> rethinking<span class="sc">::</span><span class="fu">standardize</span>( d<span class="sc">$</span>perc.lactose )</span></code></pre></div>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="6-1-multicollinearity.html#cb289-1" aria-hidden="true" tabindex="-1"></a><span class="co"># kcal.per.g regressed on perc.fat</span></span>
+<span id="cb289-2"><a href="6-1-multicollinearity.html#cb289-2" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb289-3"><a href="6-1-multicollinearity.html#cb289-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb289-4"><a href="6-1-multicollinearity.html#cb289-4" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb289-5"><a href="6-1-multicollinearity.html#cb289-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bF<span class="sc">*</span>F ,</span>
+<span id="cb289-6"><a href="6-1-multicollinearity.html#cb289-6" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb289-7"><a href="6-1-multicollinearity.html#cb289-7" aria-hidden="true" tabindex="-1"></a>    bF <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb289-8"><a href="6-1-multicollinearity.html#cb289-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb289-9"><a href="6-1-multicollinearity.html#cb289-9" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d )</span>
+<span id="cb289-10"><a href="6-1-multicollinearity.html#cb289-10" aria-hidden="true" tabindex="-1"></a><span class="co"># kcal.per.g regressed on perc.lactose</span></span>
+<span id="cb289-11"><a href="6-1-multicollinearity.html#cb289-11" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb289-12"><a href="6-1-multicollinearity.html#cb289-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb289-13"><a href="6-1-multicollinearity.html#cb289-13" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb289-14"><a href="6-1-multicollinearity.html#cb289-14" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bL<span class="sc">*</span>L ,</span>
+<span id="cb289-15"><a href="6-1-multicollinearity.html#cb289-15" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb289-16"><a href="6-1-multicollinearity.html#cb289-16" aria-hidden="true" tabindex="-1"></a>    bL <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb289-17"><a href="6-1-multicollinearity.html#cb289-17" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb289-18"><a href="6-1-multicollinearity.html#cb289-18" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d )</span>
+<span id="cb289-19"><a href="6-1-multicollinearity.html#cb289-19" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m6<span class="fl">.3</span> )</span></code></pre></div>
+<pre><code>##               mean         sd       5.5%     94.5%
+## a     1.535526e-07 0.07725195 -0.1234634 0.1234637
+## bF    8.618970e-01 0.08426088  0.7272318 0.9965621
+## sigma 4.510179e-01 0.05870756  0.3571919 0.5448440</code></pre>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="6-1-multicollinearity.html#cb291-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m6<span class="fl">.4</span> )</span></code></pre></div>
+<pre><code>##                mean         sd       5.5%      94.5%
+## a      7.438895e-07 0.06661633 -0.1064650  0.1064665
+## bL    -9.024550e-01 0.07132848 -1.0164517 -0.7884583
+## sigma  3.804653e-01 0.04958259  0.3012227  0.4597078</code></pre>
+<p>Given the strong association of each predictor with the outcome, we might conclude that both variables are reliable predictors of total energy in milk, across species. But watch what happens when we place both predictor variables in the same regression model:</p>
+<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="6-1-multicollinearity.html#cb293-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb293-2"><a href="6-1-multicollinearity.html#cb293-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb293-3"><a href="6-1-multicollinearity.html#cb293-3" aria-hidden="true" tabindex="-1"></a>    K <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb293-4"><a href="6-1-multicollinearity.html#cb293-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bF<span class="sc">*</span>F <span class="sc">+</span> bL<span class="sc">*</span>L ,</span>
+<span id="cb293-5"><a href="6-1-multicollinearity.html#cb293-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb293-6"><a href="6-1-multicollinearity.html#cb293-6" aria-hidden="true" tabindex="-1"></a>    bF <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb293-7"><a href="6-1-multicollinearity.html#cb293-7" aria-hidden="true" tabindex="-1"></a>    bL <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ) ,</span>
+<span id="cb293-8"><a href="6-1-multicollinearity.html#cb293-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb293-9"><a href="6-1-multicollinearity.html#cb293-9" aria-hidden="true" tabindex="-1"></a>  ) ,</span>
+<span id="cb293-10"><a href="6-1-multicollinearity.html#cb293-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span>d )</span>
+<span id="cb293-11"><a href="6-1-multicollinearity.html#cb293-11" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m6<span class="fl">.5</span> )</span></code></pre></div>
+<pre><code>##                mean         sd        5.5%      94.5%
+## a     -3.172136e-07 0.06603577 -0.10553823  0.1055376
+## bF     2.434983e-01 0.18357865 -0.04989579  0.5368925
+## bL    -6.780825e-01 0.18377670 -0.97179320 -0.3843719
+## sigma  3.767418e-01 0.04918394  0.29813637  0.4553472</code></pre>
+<p>Now the posterior means of both bF and bL are closer to zero. And the standard deviations for both parameters are twice as large as in the bivariate models (m6.3 and m6.4).</p>
+<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="6-1-multicollinearity.html#cb295-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>( <span class="sc">~</span> kcal.per.g <span class="sc">+</span> perc.fat <span class="sc">+</span> perc.lactose , <span class="at">data=</span>d , <span class="at">col=</span>rangi2 )</span></code></pre></div>
+<p><img src="06_the_haunted_dag_and_the_causal_terror_files/figure-html/6.11-1.svg" width="672" /></p>
+<p>Either helps in predicting kcal.per.g, but neither helps as much <em>once you already know the other</em>.</p>
+<p>Some fields actually teach students to inspect pairwise correlations before fitting a model, to identify and drop highly correlated predictors. This is a mistake. Pairwise correlations are not the problem. It is the conditional associations—not correlations—that matter.</p>
+<p>Now let’s see how the imprecision of the posterior increases with association between two predictors.</p>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="6-1-multicollinearity.html#cb296-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb296-2"><a href="6-1-multicollinearity.html#cb296-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(milk)</span>
+<span id="cb296-3"><a href="6-1-multicollinearity.html#cb296-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> milk</span>
+<span id="cb296-4"><a href="6-1-multicollinearity.html#cb296-4" aria-hidden="true" tabindex="-1"></a>sim.coll <span class="ot">&lt;-</span> <span class="cf">function</span>( <span class="at">r=</span><span class="fl">0.9</span> ) {</span>
+<span id="cb296-5"><a href="6-1-multicollinearity.html#cb296-5" aria-hidden="true" tabindex="-1"></a>  d<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( <span class="fu">nrow</span>(d) , <span class="at">mean=</span>r<span class="sc">*</span>d<span class="sc">$</span>perc.fat ,</span>
+<span id="cb296-6"><a href="6-1-multicollinearity.html#cb296-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd=</span><span class="fu">sqrt</span>( (<span class="dv">1</span><span class="sc">-</span>r<span class="sc">^</span><span class="dv">2</span>)<span class="sc">*</span><span class="fu">var</span>(d<span class="sc">$</span>perc.fat) ) )</span>
+<span id="cb296-7"><a href="6-1-multicollinearity.html#cb296-7" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">lm</span>( kcal.per.g <span class="sc">~</span> perc.fat <span class="sc">+</span> x , <span class="at">data=</span>d )</span>
+<span id="cb296-8"><a href="6-1-multicollinearity.html#cb296-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>( <span class="fu">diag</span>( <span class="fu">vcov</span>(m) ) )[<span class="dv">2</span>] <span class="co"># stddev of parameter</span></span>
+<span id="cb296-9"><a href="6-1-multicollinearity.html#cb296-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb296-10"><a href="6-1-multicollinearity.html#cb296-10" aria-hidden="true" tabindex="-1"></a>rep.sim.coll <span class="ot">&lt;-</span> <span class="cf">function</span>( <span class="at">r=</span><span class="fl">0.9</span> , <span class="at">n=</span><span class="dv">100</span> ) {</span>
+<span id="cb296-11"><a href="6-1-multicollinearity.html#cb296-11" aria-hidden="true" tabindex="-1"></a>  stddev <span class="ot">&lt;-</span> <span class="fu">replicate</span>( n , <span class="fu">sim.coll</span>(r) )</span>
+<span id="cb296-12"><a href="6-1-multicollinearity.html#cb296-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(stddev)</span>
+<span id="cb296-13"><a href="6-1-multicollinearity.html#cb296-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb296-14"><a href="6-1-multicollinearity.html#cb296-14" aria-hidden="true" tabindex="-1"></a>r.seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">0</span>,<span class="at">to=</span><span class="fl">0.99</span>,<span class="at">by=</span><span class="fl">0.01</span>)</span>
+<span id="cb296-15"><a href="6-1-multicollinearity.html#cb296-15" aria-hidden="true" tabindex="-1"></a>stddev <span class="ot">&lt;-</span> <span class="fu">sapply</span>( r.seq , <span class="cf">function</span>(z) <span class="fu">rep.sim.coll</span>(<span class="at">r=</span>z,<span class="at">n=</span><span class="dv">100</span>) )</span>
+<span id="cb296-16"><a href="6-1-multicollinearity.html#cb296-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( stddev <span class="sc">~</span> r.seq , <span class="at">type=</span><span class="st">&quot;l&quot;</span> , <span class="at">col=</span>rangi2, <span class="at">lwd=</span><span class="dv">2</span> , <span class="at">xlab=</span><span class="st">&quot;correlation&quot;</span> )</span></code></pre></div>
+<p><img src="06_the_haunted_dag_and_the_causal_terror_files/figure-html/6.12-1.svg" width="672" /></p>
 </div>
 <p style="text-align: center;">
 <a href="6-the-haunted-dag-the-causal-terror.html"><button class="btn btn-default">Previous</button></a>

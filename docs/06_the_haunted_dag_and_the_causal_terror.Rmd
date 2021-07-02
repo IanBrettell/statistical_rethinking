@@ -135,6 +135,110 @@ plot( bl ~ br , post , col=col.alpha(rangi2,0.1) , pch=16 )
 
 The posterior distribution for these two parameters is very hgihly correlated, with all of the plausible values of `bl` and `br` lying around a narrow ridge. When `bl` is large, then `br` must be small. Since both leg variables contain almost exactly the same information, if you insist on including both in a model, then there will be a practically infinite number of combinations of `bl` and `br` that produce the same predictions.
 
+Compute the posterior distribution and plot it.
+
+```{r 6.6}
+sum_blbr <- post$bl + post$br
+dens( sum_blbr , col=rangi2 , lwd=2 , xlab="sum of bl and br" )
+```
+
+```{r 6.7}
+m6.2 <- quap(
+  alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu <- a + bl*leg_left,
+    a ~ dnorm( 10 , 100 ) ,
+    bl ~ dnorm( 2 , 10 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=d )
+precis(m6.2)
+```
+
+The basic lesson is this:
+>When two predictor varilables are very strongly correlated (conditional on other variables int he model), including both in a model may lead to confusion.
+
+***6.1.2. Multicollinear milk***
+
+```{r 6.8}
+library(rethinking)
+data(milk)
+d <- milk
+d$K <- rethinking::standardize( d$kcal.per.g )
+d$F <- rethinking::standardize( d$perc.fat )
+d$L <- rethinking::standardize( d$perc.lactose )
+```
+
+```{r 6.9}
+# kcal.per.g regressed on perc.fat
+m6.3 <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bF*F ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bF ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=d )
+# kcal.per.g regressed on perc.lactose
+m6.4 <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bL*L ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bL ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data=d )
+precis( m6.3 )
+precis( m6.4 )
+```
+
+Given the strong association of each predictor with the outcome, we might conclude that both variables are reliable predictors of total energy in milk, across species. But watch what happens when we place both predictor variables in the same regression model:
+
+```{r 6.10}
+m6.5 <- quap(
+  alist(
+    K ~ dnorm( mu , sigma ) ,
+    mu <- a + bF*F + bL*L ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bF ~ dnorm( 0 , 0.5 ) ,
+    bL ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) ,
+  data=d )
+precis( m6.5 )
+```
+
+Now the posterior means of both bF and bL are closer to zero. And the standard deviations for both parameters are twice as large as in the bivariate models (m6.3 and m6.4).
+
+```{r 6.11}
+pairs( ~ kcal.per.g + perc.fat + perc.lactose , data=d , col=rangi2 )
+```
+
+Either helps in predicting kcal.per.g, but neither helps as much *once you already know the other*.
+
+Some fields actually teach students to inspect pairwise correlations before fitting a model, to identify and drop highly correlated predictors. This is a mistake. Pairwise correlations are not the problem. It is the conditional associations—not correlations—that matter. 
+
+Now let's see how the imprecision of the posterior increases with association between two predictors.
+
+```{r 6.12}
+library(rethinking)
+data(milk)
+d <- milk
+sim.coll <- function( r=0.9 ) {
+  d$x <- rnorm( nrow(d) , mean=r*d$perc.fat ,
+    sd=sqrt( (1-r^2)*var(d$perc.fat) ) )
+  m <- lm( kcal.per.g ~ perc.fat + x , data=d )
+  sqrt( diag( vcov(m) ) )[2] # stddev of parameter
+}
+rep.sim.coll <- function( r=0.9 , n=100 ) {
+  stddev <- replicate( n , sim.coll(r) )
+  mean(stddev)
+}
+r.seq <- seq(from=0,to=0.99,by=0.01)
+stddev <- sapply( r.seq , function(z) rep.sim.coll(r=z,n=100) )
+plot( stddev ~ r.seq , type="l" , col=rangi2, lwd=2 , xlab="correlation" )
+```
+
+
 ## Post-treatment bias
 
 ```{r, echo = F, out.width='80%', fig.cap = "The confound that gets created is the \"post-treatment bias\", Z. Post-treatment variables arise as a consequence of treatment. This happens a lot. The bias occurs when you're not aware of Z, and end up inferring something wrong. "}
@@ -145,9 +249,157 @@ knitr::include_graphics(file.path(slides_dir, '13.png'))
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
+```{r 6.13}
+set.seed(71)
+# number of plants
+N <- 100
+
+# simulate initial heights
+h0 <- rnorm(N,10,2)
+
+# assign treatments and simulate fungus and growth
+treatment <- rep( 0:1 , each=N/2 )
+fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4 )
+h1 <- h0 + rnorm(N, 5 - 3*fungus)
+
+# compose a clean data frame
+d <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+precis(d)
+```
+
+***6.2.1. A prior is born***
+
+We should allow $p$ to be less than 1, in case the experiment goes horribly wrong and we kill all the plants. We also have to ensure that $p > 0$, because it is a proportion. 
+
+$$
+h_{1,i}\sim Normal(\mu_i, \sigma) \\
+\mu_i = h_{0,i} \times p
+$$
+
+```{r 6.14}
+sim_p <- rlnorm( 1e4 , 0 , 0.25 )
+precis( data.frame(sim_p) )
+```
+
+So this prior expects anything from 40% shrinkage up to 50% growth.
+
+```{r 6.15}
+m6.6 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0*p,
+    p ~ dlnorm( 0 , 0.25 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.6)
+```
+```{r 6.16}
+m6.7 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0 * p,
+    p <- a + bt*treatment + bf*fungus,
+    a ~ dlnorm( 0 , 0.2 ) ,
+    bt ~ dnorm( 0 , 0.5 ),
+    bf ~ dnorm( 0 , 0.5 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.7)
+```
+
+***6.2.2. Blocked by consequence***
+
+>So when we control for fungus, the model is implicitly answering the question: Once we already know whether or not a plant developed fungus, does soil treatment matter? The answer is “no,” because soil treatment has its effects on growth through reducing fungus.
+
+To measure treatment properly, we should omit the post-treatment variable `fungus`.
+
+
+```{r 6.17}
+m6.8 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0 * p,
+    p <- a + bt*treatment,
+    a ~ dlnorm( 0 , 0.2 ),
+    bt ~ dnorm( 0 , 0.5 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.8)
+```
+
+Now the impact of treatment is clearly positive, as it should be.
+
+***6.2.3. Fungus and d-separation***
+
+```{r 6.18}
+library(dagitty)
+plant_dag <- dagitty( "dag {
+  H_0 -> H_1
+  F -> H_1
+  T -> F
+}")
+coordinates( plant_dag ) <- list( x=c(H_0=0,T=2,F=1.5,H_1=1) ,
+    y=c(H_0=0,T=0,F=0,H_1=0) )
+drawdag( plant_dag )
+```
+
+```{r 6.19}
+dagitty::impliedConditionalIndependencies(plant_dag)
+```
+
+The first two say that original plant height should not be associated with the treatment of fungus, provided we do not condition on anything.
+
+But consider this DAG:
+
+```{r}
+knitr::include_graphics(here::here("docs/misc_figs/06/fungus_dag.png"))
+```
+
+A regression of $H_1$ on $T$ will show no association between the treatment and plant growth. But if we include $F$ in the model, suddenly there will be an association. Let’s try it.
+
+```{r 6.20}
+set.seed(71)
+N <- 1000
+h0 <- rnorm(N,10,2)
+treatment <- rep( 0:1 , each=N/2 )
+M <- rbern(N)
+fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4 + 0.4*M )
+h1 <- h0 + rnorm( N , 5 + 3*M )
+d2 <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+
+# Rerun models with d2
+m6.7 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0 * p,
+    p <- a + bt*treatment + bf*fungus,
+    a ~ dlnorm( 0 , 0.2 ) ,
+    bt ~ dnorm( 0 , 0.5 ),
+    bf ~ dnorm( 0 , 0.5 ),
+    sigma ~ dexp( 1 )
+  ), data=d2 )
+precis(m6.7)
+
+
+m6.8 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0 * p,
+    p <- a + bt*treatment,
+    a ~ dlnorm( 0 , 0.2 ),
+    bt ~ dnorm( 0 , 0.5 ),
+    sigma ~ dexp( 1 )
+  ), data=d2 )
+precis(m6.8)
+```
+
+Now fungus seems like it helped the plants, even though it had no effect.
+
 ```{r, echo = F, out.width='80%', fig.cap = "Frustrating thing for statisticians is that if you condition on career choice, there's basically no wage gap. But that doesn't mean gender and race isn't causal, because there are streams where something downstream knocks it out. If you look at funding rates for the sciences, women get way less grant money. But not if you condition on field. "}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
+
+## Collider bias
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is where the selection effect comes from. Like the fork but in reverse. Here `Z` is a common result of `X` and `Y`. X and Y are really independent, but if you condition on Z, it creates a spurious causal connection between X and Y. There's this \"finding out\" effect. "}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
@@ -179,7 +431,7 @@ knitr::include_graphics(file.path(slides_dir, '21.png'))
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-
+***6.3.1. Collider of false sorrow***
 
 ```{r, echo = F, out.width='80%', fig.cap = "Let's do an example. Image this causal graph at the bottom. Imagine it's true that getting married is positively, causally associated with happiness, and age. Now our question is, is there any causal impact of age on happiness? Here's a simulation where it's totally spurious. "}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
@@ -189,6 +441,46 @@ knitr::include_graphics(file.path(slides_dir, '23.png'))
 
 ```{r, echo = F, out.width='80%', fig.cap = "Here the simulation is slightly different to the usual `rnorm`. Here's the algorithm. Uniform happiness at birth. Distributed from 0 to 1. Reality is more complicated, even harder to figure out. At 18 years old, you're eligible to marry. Then you have your coin-flip chance to get married. The chance is proportional to your happiness, which is constant. Age itself doesn't cause marriage, but each year you're alive you have another chance to get married. Married people remain married unto death. Then everyone moves to Spain. 1300 people, 3 variables, over 1000 years."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+```{r 6.21}
+library(rethinking)
+d <- sim_happiness( seed=1977 , N_years=1000 )
+precis(d)
+```
+
+Rescale age so that the range from 18 to 65 is one unit, i.e. `A` ranges from 0 to 1, where 0 is age 18 and 1 is age 65:
+
+```{r 6.22}
+d2 <- d[ d$age>17 , ] # only adults
+d2$A <- ( d2$age - 18 ) / ( 65 - 18 )
+```
+
+Approximate the posterior 
+```{r 6.23}
+d2$mid <- d2$married + 1
+m6.9 <- quap(
+  alist(
+    happiness ~ dnorm( mu , sigma ),
+    mu <- a[mid] + bA*A,
+    a[mid] ~ dnorm( 0 , 1 ) ,
+    bA ~ dnorm( 0 , 2 ) ,
+    sigma ~ dexp(1)
+  ) , data=d2 )
+precis(m6.9,depth=2)
+```
+
+The model is quite sure that age is negatively associated with happiness. We’d like to compare the inferences from this model to a model that omits marriage status:
+
+```{r 6.24}
+m6.10 <- quap(
+  alist(
+    happiness ~ dnorm( mu , sigma ),
+    mu <- a + bA*A,
+    a ~ dnorm( 0 , 1 ),
+    bA ~ dnorm( 0 , 2 ),
+    sigma ~ dexp(1)
+  ) , data=d2 )
+precis(m6.10)
 ```
 
 
@@ -214,6 +506,8 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
+***6.3.2. The haunted DAG***
+
 ```{r, echo = F, out.width='80%', fig.cap  = "Another example. Colliders are so powerful they can even occur when you haven't measured the confounder. In my subfield, we're interested in allopaternal effects. What is the material benefit of having grandparents? There are resource and information flows, so we want to figure out how important they are. How do you figure this out empirically? Say you have triads, and you're looking at educational outcomes. Indirect path through P, say through books. But also a potential direct effects during say babysitting. But regressions can show that grandparents have a negative effect?"}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
@@ -226,15 +520,64 @@ knitr::include_graphics(file.path(slides_dir, '30.png'))
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
+```{r 6.25}
+N <- 200 # number of grandparent-parent-child triads
+b_GP <- 1 # direct effect of G on P
+b_GC <- 0 # direct effect of G on C
+b_PC <- 1 # direct effect of P on C
+b_U <- 2 # direct effect of U on P and C
+```
+
+```{r 6.26}
+set.seed(1)
+U <- 2*rbern( N , 0.5 ) - 1
+G <- rnorm( N )
+P <- rnorm( N , b_GP*G + b_U*U )
+C <- rnorm( N , b_PC*P + b_GC*G + b_U*U )
+d <- data.frame( C=C , P=P , G=G , U=U )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap = "We end up concluding that grandparents hurt their kids. How does this work? Conditioning on a collider opens a path. It's closed by default. This oepns a path from G through U to see, which creates a spurious correlation."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
+```{r 6.27}
+m6.11 <- quap(
+  alist(
+    C ~ dnorm( mu , sigma ),
+    mu <- a + b_PC*P + b_GC*G,
+    a ~ dnorm( 0 , 1 ),
+    c(b_PC,b_GC) ~ dnorm( 0 , 1 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.11)
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "One way to think about this is on the left we have good neighbourhoods in blue. All filled in points are where the parents are in a particular stratum. Why is it negative? Focus only on parents in the narrow range of educational outcomes. Parents in the good neighbourhoods, to be within this range, they must have had less educated grandparents. There are two ways to become a highly-educated parent. Either you are in a good neighbourhood, or you had an educated parent yourself. Each end the P box. "}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
+
+What can we do about this? We have to measure $U$:
+
+```{r 6.28}
+m6.12 <- quap(
+  alist(
+    C ~ dnorm( mu , sigma ),
+    mu <- a + b_PC*P + b_GC*G + b_U*U,
+    a ~ dnorm( 0 , 1 ) ,
+    c(b_PC,b_GC,b_U) ~ dnorm( 0 , 1 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.12)
+```
+
+And those are the slopes we simulated with.
+
+## Confronting confounding
+
+***6.4.1. Shutting the backdoor***
 
 ```{r, echo = F, out.width='80%', fig.cap = "The back door criterion is that you want to figure out the true causal impact on some outcome, you need to shut all backdoor paths from the treatment to the outcome. We have to shut that arrow off to infer a true causal effect. In experiments you shut all the backdoor paths by randomising. But in observational studies, you want some set of criteria for what variables you should include to shut the paths."}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
@@ -272,13 +615,10 @@ knitr::include_graphics(file.path(slides_dir, '03.png'))
 
 
 
-```{r, echo = F, out.width='80%'}
+```{r, echo = F, out.width='80%', fig.cap = "The classic confound involves some exposure $E$. A lot of research goes into understanding what the returns on education are. There are a lot of confounds $U$. How do we de-confound this DAG using the back-door criterion? $E \\leftarrow  U \\rightarrow W$. How to shut this? It's a fork, and you close it by conditioning on $U$. But here it's unobserved, so we can't condition on it. You therefore can't get an unbiased estimate. But that's an achievement, because we've wasted less time. "}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
-```{marginfigure}
-The classic confound involves some exposure $E$. A lot of research goes into understanding what the returns on education are. There are a lot of confounds $U$. How do we de-confound this DAG using the back-door criterion? $E \leftarrow  U \rightarrow W$. How to shut this? It's a fork, and you close it by conditioning on $U$. But here it's unobserved, so we can't condition on it. You therefore can't get an unbiased estimate. But that's an achievement, because we've wasted less time. 
-```
 
 ```{r, echo = F, out.width='80%', fig.cap = "If we want to estimate the direct causal influence from grandparents to kids, we see there are three paths from G to C. If we condition on $P$, that closes the second path through parents. Since that's a pipe, you condition on parents, but that opens the other path, because they're a collider between grandparents and unobserved neighbourhood effects. So we can't get a valid estimate unless we measure it. This is happy news, because we know we're being fooled."}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
@@ -289,14 +629,45 @@ knitr::include_graphics(file.path(slides_dir, '05.png'))
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
+Can get `dagitty` to do it for us:
+
+```{r 6.29}
+library(dagitty)
+dag_6.1 <- dagitty( "dag {
+  U [unobserved]
+  X -> Y
+  X <- U <- A -> C -> Y
+  U -> B <- C
+}")
+adjustmentSets( dag_6.1 , exposure="X" , outcome="Y" )
+```
+
+Conditioning on either $C$ or $A$ would suffice. Conditioning on $C$ is the better idea, from the perspective of efficiency, since it could also help with the precision of the estimate of $X \rightarrow Y$. 
+
+Now consider the second path, passing through $B$. This path does contain a collider, $U → B ← C$ It is therefore already closed, which is why `adjustmentSets` did not mention $B$.
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "What should we prefer between A or C? Just pick the one that's measured better. By the way, you need both good estimation, and a causal framework. Both are necessary."}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
+***6.4.3. Backdoor waffles***
+
 ```{r, echo = F, out.width='80%', fig.cap = "Statistical assocation between Waffle Houses and divorce rate. What do we need to control for to remove spurious causation? Same elemental confounds as before. Backdoor into Waffle Houses through South. What do we have to do to estimate the causal impact of Waffles? Come out the backdoor of Waffle House, and find all the paths to get to D. It's sufficient to condition on A and M too. But it's sufficient to just condition on S."}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
+
+```{r 6.30}
+library(dagitty)
+dag_6.2 <- dagitty( "dag {
+  A -> D
+  A -> M -> D
+  A <- S -> M
+  S -> W -> D
+}")
+adjustmentSets( dag_6.2 , exposure="W", outcome="D" )
+```
+
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
@@ -308,6 +679,9 @@ knitr::include_graphics(file.path(slides_dir, '09.png'))
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
+```{r 6.31}
+impliedConditionalIndependencies( dag_6.2 )
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Hume did more to sort out causal inference than any other thinker. The whole approach of causal inference is Humian. We ahven't solved the problem, but he'd be proud of what we've built. It shows that experiments aren't necessary. We don't need them if we can close the backdoor paths. Often experiments in the human sciences are either impractical or unethical or both. Lots of progress can come from observational studies. Also, interventions influence many variables at once. e.g. experimentally manipulate obsesity. Choosing exercise or diet will affect what you're observing. Huge advantage of observational studies."}
@@ -326,6 +700,16 @@ knitr::include_graphics(file.path(slides_dir, '12.png'))
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
+## Summary
 
+>Multiple regression is no oracle, but only a golem. It is logical, but the relationships it describes are conditional associations, not causal influences. Therefore additional information, from outside the model, is needed to make sense of it. This chapter presented introductory examples of some common frustrations: multicollinearity, post-treatment bias, and collider bias. Solutions to these frustrations can be organized under a coherent framework in which hypothetical causal relations among variables are analyzed to cope with confounding. In all cases, causal models exist outside the statistical model and can be difficult to test. However, it is possible to reach valid causal inferences in the absence of experiments. This is good news, because we often cannot perform experiments, both for practical and ethical reasons.
+
+## Practice
+
+6E1.  List three mechanisms by which multiple regression can produce false inferences about causal effects.
+
+* Multicollinearity
+* Post-treatment bias
+* Collider bias
 
 

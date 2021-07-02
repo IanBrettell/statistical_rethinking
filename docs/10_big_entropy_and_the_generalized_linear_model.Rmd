@@ -29,6 +29,20 @@ slides_dir = here::here("docs/slides/L11")
 knitr::include_graphics(file.path(slides_dir, '01.png'))
 ```
 
+There are vastly more ways for cords to end up in a knot than for them to remain untied. Events that can happen vastly more ways are more likely.
+
+Statistical models force many choices upon us. Some of these choices are distributions that represent uncertainty. We must choose, for each parameter, a prior distribution. And we must choose a likelihood function, which serves as a distribution of data. There are conventional choices, such as wide Gaussian priors and the Gaussian likelihood of linear regression. These conventional choices work unreasonably well in many circumstances. But very often the conventional choices are not the best choices. Inference can be more powerful when we use all of the information, and doing so usually requires going beyond convention.
+
+Bet on the distribution with the biggest entropy. Why? There are three sorts of justifications:
+
+1. The distribution with the biggest entropy is the widest and least informative distribution. Choosing the distribution with the largest entropy means spreading probability as evenly as possible, while still remaining consistent with anything we think we know about a process.
+1. Nature tends to produce empirical distributions that have high entropy.
+1. Regardless of why it works, it tends to work.
+
+A generalized linear model (GLM) is much like the linear regressions of previous chapters. It is a model that replaces a parameter of a likelihood function with a linear model. But GLMs need not use Gaussian likelihoods. Any likelihood function can be used, and linear models can be attached to any or all of the parameters that describe its shape. The principle of maximum entropy helps us choose likelihood functions, by providing a way to use stated assumptions about constraints on the outcome variable to choose the likelihood function that is the most conservative distribution compatible with the known constraints.
+
+## Maximum entropy
+
 ```{r, echo = F, out.width='80%', fig.cap="Imagine you have buckets equidistant from you. At your feet you have 100 pebbles, each painted with a number. Unique pebbles. "}
 knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
