@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-06-20" />
+<meta name="date" content="2021-06-22" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -151,8 +151,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
 <li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6-3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6-4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6-5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6-6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
 </ul></li>
-<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7-1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7-2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7-3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7-4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7-5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7-6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
 <li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
 <li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
 <li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
@@ -181,195 +193,155 @@ The confound that gets created is the “post-treatment bias”, Z. Post-treatme
 Let’s imagine an experiment where there’s fungal growth in a greenhouse, and you have an anti-fungal treatment, and you randomly assign plants to either the treatment or control. The initial height of the plant is H0. The anti-fungal treatment is upstream from the fungus, but doesn’t influence it directly. What happens here in a regression is if you measure fungus - which is how you test for mediation - but what you’re interested in is the full path from T to H1. If you condition on F, it’ll look like the treatment doesn’t work. If you condition on F, you block the pipe, and information doesn’t flow from T to H1. In observational studies, the terror is real.
 </p>
 </div>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="6-2-post-treatment-bias.html#cb297-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">71</span>)</span>
+<span id="cb297-2"><a href="6-2-post-treatment-bias.html#cb297-2" aria-hidden="true" tabindex="-1"></a><span class="co"># number of plants</span></span>
+<span id="cb297-3"><a href="6-2-post-treatment-bias.html#cb297-3" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb297-4"><a href="6-2-post-treatment-bias.html#cb297-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb297-5"><a href="6-2-post-treatment-bias.html#cb297-5" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate initial heights</span></span>
+<span id="cb297-6"><a href="6-2-post-treatment-bias.html#cb297-6" aria-hidden="true" tabindex="-1"></a>h0 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb297-7"><a href="6-2-post-treatment-bias.html#cb297-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb297-8"><a href="6-2-post-treatment-bias.html#cb297-8" aria-hidden="true" tabindex="-1"></a><span class="co"># assign treatments and simulate fungus and growth</span></span>
+<span id="cb297-9"><a href="6-2-post-treatment-bias.html#cb297-9" aria-hidden="true" tabindex="-1"></a>treatment <span class="ot">&lt;-</span> <span class="fu">rep</span>( <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span> , <span class="at">each=</span>N<span class="sc">/</span><span class="dv">2</span> )</span>
+<span id="cb297-10"><a href="6-2-post-treatment-bias.html#cb297-10" aria-hidden="true" tabindex="-1"></a>fungus <span class="ot">&lt;-</span> <span class="fu">rbinom</span>( N , <span class="at">size=</span><span class="dv">1</span> , <span class="at">prob=</span><span class="fl">0.5</span> <span class="sc">-</span> treatment<span class="sc">*</span><span class="fl">0.4</span> )</span>
+<span id="cb297-11"><a href="6-2-post-treatment-bias.html#cb297-11" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> h0 <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">5</span> <span class="sc">-</span> <span class="dv">3</span><span class="sc">*</span>fungus)</span>
+<span id="cb297-12"><a href="6-2-post-treatment-bias.html#cb297-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb297-13"><a href="6-2-post-treatment-bias.html#cb297-13" aria-hidden="true" tabindex="-1"></a><span class="co"># compose a clean data frame</span></span>
+<span id="cb297-14"><a href="6-2-post-treatment-bias.html#cb297-14" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">data.frame</span>( <span class="at">h0=</span>h0 , <span class="at">h1=</span>h1 , <span class="at">treatment=</span>treatment , <span class="at">fungus=</span>fungus )</span>
+<span id="cb297-15"><a href="6-2-post-treatment-bias.html#cb297-15" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(d)</span></code></pre></div>
+<pre><code>##               mean        sd      5.5%    94.5%    histogram
+## h0         9.95978 2.1011623  6.570328 13.07874 ▁▂▂▂▇▃▂▃▁▁▁▁
+## h1        14.39920 2.6880870 10.618002 17.93369     ▁▁▃▇▇▇▁▁
+## treatment  0.50000 0.5025189  0.000000  1.00000   ▇▁▁▁▁▁▁▁▁▇
+## fungus     0.23000 0.4229526  0.000000  1.00000   ▇▁▁▁▁▁▁▁▁▂</code></pre>
+<p><strong><em>6.2.1. A prior is born</em></strong></p>
+<p>We should allow <span class="math inline">\(p\)</span> to be less than 1, in case the experiment goes horribly wrong and we kill all the plants. We also have to ensure that <span class="math inline">\(p &gt; 0\)</span>, because it is a proportion.</p>
+<p><span class="math display">\[
+h_{1,i}\sim Normal(\mu_i, \sigma) \\
+\mu_i = h_{0,i} \times p
+\]</span></p>
+<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="6-2-post-treatment-bias.html#cb299-1" aria-hidden="true" tabindex="-1"></a>sim_p <span class="ot">&lt;-</span> <span class="fu">rlnorm</span>( <span class="fl">1e4</span> , <span class="dv">0</span> , <span class="fl">0.25</span> )</span>
+<span id="cb299-2"><a href="6-2-post-treatment-bias.html#cb299-2" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( <span class="fu">data.frame</span>(sim_p) )</span></code></pre></div>
+<pre><code>##          mean        sd     5.5%    94.5%    histogram
+## sim_p 1.03699 0.2629894 0.670683 1.496397 ▁▁▃▇▇▃▁▁▁▁▁▁</code></pre>
+<p>So this prior expects anything from 40% shrinkage up to 50% growth.</p>
+<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="6-2-post-treatment-bias.html#cb301-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb301-2"><a href="6-2-post-treatment-bias.html#cb301-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb301-3"><a href="6-2-post-treatment-bias.html#cb301-3" aria-hidden="true" tabindex="-1"></a>    h1 <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb301-4"><a href="6-2-post-treatment-bias.html#cb301-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> h0<span class="sc">*</span>p,</span>
+<span id="cb301-5"><a href="6-2-post-treatment-bias.html#cb301-5" aria-hidden="true" tabindex="-1"></a>    p <span class="sc">~</span> <span class="fu">dlnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ),</span>
+<span id="cb301-6"><a href="6-2-post-treatment-bias.html#cb301-6" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb301-7"><a href="6-2-post-treatment-bias.html#cb301-7" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span>d )</span>
+<span id="cb301-8"><a href="6-2-post-treatment-bias.html#cb301-8" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.6</span>)</span></code></pre></div>
+<pre><code>##           mean         sd     5.5%    94.5%
+## p     1.426626 0.01760992 1.398482 1.454770
+## sigma 1.793286 0.12517262 1.593236 1.993336</code></pre>
+<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="6-2-post-treatment-bias.html#cb303-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb303-2"><a href="6-2-post-treatment-bias.html#cb303-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb303-3"><a href="6-2-post-treatment-bias.html#cb303-3" aria-hidden="true" tabindex="-1"></a>    h1 <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb303-4"><a href="6-2-post-treatment-bias.html#cb303-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> h0 <span class="sc">*</span> p,</span>
+<span id="cb303-5"><a href="6-2-post-treatment-bias.html#cb303-5" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> a <span class="sc">+</span> bt<span class="sc">*</span>treatment <span class="sc">+</span> bf<span class="sc">*</span>fungus,</span>
+<span id="cb303-6"><a href="6-2-post-treatment-bias.html#cb303-6" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dlnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb303-7"><a href="6-2-post-treatment-bias.html#cb303-7" aria-hidden="true" tabindex="-1"></a>    bt <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb303-8"><a href="6-2-post-treatment-bias.html#cb303-8" aria-hidden="true" tabindex="-1"></a>    bf <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb303-9"><a href="6-2-post-treatment-bias.html#cb303-9" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb303-10"><a href="6-2-post-treatment-bias.html#cb303-10" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span>d )</span>
+<span id="cb303-11"><a href="6-2-post-treatment-bias.html#cb303-11" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.7</span>)</span></code></pre></div>
+<pre><code>##               mean         sd        5.5%       94.5%
+## a      1.481391468 0.02451069  1.44221865  1.52056429
+## bt     0.002412222 0.02986965 -0.04532525  0.05014969
+## bf    -0.266718915 0.03654772 -0.32512923 -0.20830860
+## sigma  1.408797442 0.09862070  1.25118251  1.56641237</code></pre>
+<p><strong><em>6.2.2. Blocked by consequence</em></strong></p>
+<blockquote>
+<p>So when we control for fungus, the model is implicitly answering the question: Once we already know whether or not a plant developed fungus, does soil treatment matter? The answer is “no,” because soil treatment has its effects on growth through reducing fungus.</p>
+</blockquote>
+<p>To measure treatment properly, we should omit the post-treatment variable <code>fungus</code>.</p>
+<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="6-2-post-treatment-bias.html#cb305-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.8</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb305-2"><a href="6-2-post-treatment-bias.html#cb305-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb305-3"><a href="6-2-post-treatment-bias.html#cb305-3" aria-hidden="true" tabindex="-1"></a>    h1 <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb305-4"><a href="6-2-post-treatment-bias.html#cb305-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> h0 <span class="sc">*</span> p,</span>
+<span id="cb305-5"><a href="6-2-post-treatment-bias.html#cb305-5" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> a <span class="sc">+</span> bt<span class="sc">*</span>treatment,</span>
+<span id="cb305-6"><a href="6-2-post-treatment-bias.html#cb305-6" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dlnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ),</span>
+<span id="cb305-7"><a href="6-2-post-treatment-bias.html#cb305-7" aria-hidden="true" tabindex="-1"></a>    bt <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb305-8"><a href="6-2-post-treatment-bias.html#cb305-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb305-9"><a href="6-2-post-treatment-bias.html#cb305-9" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span>d )</span>
+<span id="cb305-10"><a href="6-2-post-treatment-bias.html#cb305-10" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.8</span>)</span></code></pre></div>
+<pre><code>##             mean         sd       5.5%     94.5%
+## a     1.38035767 0.02517554 1.34012229 1.4205931
+## bt    0.08499924 0.03429718 0.03018573 0.1398128
+## sigma 1.74631655 0.12191552 1.55147200 1.9411611</code></pre>
+<p>Now the impact of treatment is clearly positive, as it should be.</p>
+<p><strong><em>6.2.3. Fungus and d-separation</em></strong></p>
+<div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb307-1"><a href="6-2-post-treatment-bias.html#cb307-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dagitty)</span>
+<span id="cb307-2"><a href="6-2-post-treatment-bias.html#cb307-2" aria-hidden="true" tabindex="-1"></a>plant_dag <span class="ot">&lt;-</span> <span class="fu">dagitty</span>( <span class="st">&quot;dag {</span></span>
+<span id="cb307-3"><a href="6-2-post-treatment-bias.html#cb307-3" aria-hidden="true" tabindex="-1"></a><span class="st">  H_0 -&gt; H_1</span></span>
+<span id="cb307-4"><a href="6-2-post-treatment-bias.html#cb307-4" aria-hidden="true" tabindex="-1"></a><span class="st">  F -&gt; H_1</span></span>
+<span id="cb307-5"><a href="6-2-post-treatment-bias.html#cb307-5" aria-hidden="true" tabindex="-1"></a><span class="st">  T -&gt; F</span></span>
+<span id="cb307-6"><a href="6-2-post-treatment-bias.html#cb307-6" aria-hidden="true" tabindex="-1"></a><span class="st">}&quot;</span>)</span>
+<span id="cb307-7"><a href="6-2-post-treatment-bias.html#cb307-7" aria-hidden="true" tabindex="-1"></a><span class="fu">coordinates</span>( plant_dag ) <span class="ot">&lt;-</span> <span class="fu">list</span>( <span class="at">x=</span><span class="fu">c</span>(<span class="at">H_0=</span><span class="dv">0</span>,<span class="at">T=</span><span class="dv">2</span>,<span class="at">F=</span><span class="fl">1.5</span>,<span class="at">H_1=</span><span class="dv">1</span>) ,</span>
+<span id="cb307-8"><a href="6-2-post-treatment-bias.html#cb307-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">c</span>(<span class="at">H_0=</span><span class="dv">0</span>,<span class="at">T=</span><span class="dv">0</span>,<span class="at">F=</span><span class="dv">0</span>,<span class="at">H_1=</span><span class="dv">0</span>) )</span>
+<span id="cb307-9"><a href="6-2-post-treatment-bias.html#cb307-9" aria-hidden="true" tabindex="-1"></a><span class="fu">drawdag</span>( plant_dag )</span></code></pre></div>
+<p><img src="06_the_haunted_dag_and_the_causal_terror_files/figure-html/6.18-1.svg" width="672" /></p>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="6-2-post-treatment-bias.html#cb308-1" aria-hidden="true" tabindex="-1"></a>dagitty<span class="sc">::</span><span class="fu">impliedConditionalIndependencies</span>(plant_dag)</span></code></pre></div>
+<pre><code>## F _||_ H_0
+## H_0 _||_ T
+## H_1 _||_ T | F</code></pre>
+<p>The first two say that original plant height should not be associated with the treatment of fungus, provided we do not condition on anything.</p>
+<p>But consider this DAG:</p>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="6-2-post-treatment-bias.html#cb310-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/misc_figs/06/fungus_dag.png&quot;</span>))</span></code></pre></div>
+<p><img src="misc_figs/06/fungus_dag.png" width="218" /></p>
+<p>A regression of <span class="math inline">\(H_1\)</span> on <span class="math inline">\(T\)</span> will show no association between the treatment and plant growth. But if we include <span class="math inline">\(F\)</span> in the model, suddenly there will be an association. Let’s try it.</p>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="6-2-post-treatment-bias.html#cb311-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">71</span>)</span>
+<span id="cb311-2"><a href="6-2-post-treatment-bias.html#cb311-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb311-3"><a href="6-2-post-treatment-bias.html#cb311-3" aria-hidden="true" tabindex="-1"></a>h0 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N,<span class="dv">10</span>,<span class="dv">2</span>)</span>
+<span id="cb311-4"><a href="6-2-post-treatment-bias.html#cb311-4" aria-hidden="true" tabindex="-1"></a>treatment <span class="ot">&lt;-</span> <span class="fu">rep</span>( <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span> , <span class="at">each=</span>N<span class="sc">/</span><span class="dv">2</span> )</span>
+<span id="cb311-5"><a href="6-2-post-treatment-bias.html#cb311-5" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">rbern</span>(N)</span>
+<span id="cb311-6"><a href="6-2-post-treatment-bias.html#cb311-6" aria-hidden="true" tabindex="-1"></a>fungus <span class="ot">&lt;-</span> <span class="fu">rbinom</span>( N , <span class="at">size=</span><span class="dv">1</span> , <span class="at">prob=</span><span class="fl">0.5</span> <span class="sc">-</span> treatment<span class="sc">*</span><span class="fl">0.4</span> <span class="sc">+</span> <span class="fl">0.4</span><span class="sc">*</span>M )</span>
+<span id="cb311-7"><a href="6-2-post-treatment-bias.html#cb311-7" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> h0 <span class="sc">+</span> <span class="fu">rnorm</span>( N , <span class="dv">5</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>M )</span>
+<span id="cb311-8"><a href="6-2-post-treatment-bias.html#cb311-8" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>( <span class="at">h0=</span>h0 , <span class="at">h1=</span>h1 , <span class="at">treatment=</span>treatment , <span class="at">fungus=</span>fungus )</span>
+<span id="cb311-9"><a href="6-2-post-treatment-bias.html#cb311-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb311-10"><a href="6-2-post-treatment-bias.html#cb311-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Rerun models with d2</span></span>
+<span id="cb311-11"><a href="6-2-post-treatment-bias.html#cb311-11" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb311-12"><a href="6-2-post-treatment-bias.html#cb311-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb311-13"><a href="6-2-post-treatment-bias.html#cb311-13" aria-hidden="true" tabindex="-1"></a>    h1 <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb311-14"><a href="6-2-post-treatment-bias.html#cb311-14" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> h0 <span class="sc">*</span> p,</span>
+<span id="cb311-15"><a href="6-2-post-treatment-bias.html#cb311-15" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> a <span class="sc">+</span> bt<span class="sc">*</span>treatment <span class="sc">+</span> bf<span class="sc">*</span>fungus,</span>
+<span id="cb311-16"><a href="6-2-post-treatment-bias.html#cb311-16" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dlnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ) ,</span>
+<span id="cb311-17"><a href="6-2-post-treatment-bias.html#cb311-17" aria-hidden="true" tabindex="-1"></a>    bt <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb311-18"><a href="6-2-post-treatment-bias.html#cb311-18" aria-hidden="true" tabindex="-1"></a>    bf <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb311-19"><a href="6-2-post-treatment-bias.html#cb311-19" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb311-20"><a href="6-2-post-treatment-bias.html#cb311-20" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span>d2 )</span>
+<span id="cb311-21"><a href="6-2-post-treatment-bias.html#cb311-21" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.7</span>)</span></code></pre></div>
+<pre><code>##             mean         sd       5.5%      94.5%
+## a     1.52211420 0.01360385 1.50037263 1.54385578
+## bt    0.04859313 0.01415624 0.02596872 0.07121754
+## bf    0.14276270 0.01415774 0.12013590 0.16538949
+## sigma 2.10262855 0.04694249 2.02760537 2.17765172</code></pre>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="6-2-post-treatment-bias.html#cb313-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.8</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb313-2"><a href="6-2-post-treatment-bias.html#cb313-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb313-3"><a href="6-2-post-treatment-bias.html#cb313-3" aria-hidden="true" tabindex="-1"></a>    h1 <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb313-4"><a href="6-2-post-treatment-bias.html#cb313-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> h0 <span class="sc">*</span> p,</span>
+<span id="cb313-5"><a href="6-2-post-treatment-bias.html#cb313-5" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> a <span class="sc">+</span> bt<span class="sc">*</span>treatment,</span>
+<span id="cb313-6"><a href="6-2-post-treatment-bias.html#cb313-6" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dlnorm</span>( <span class="dv">0</span> , <span class="fl">0.2</span> ),</span>
+<span id="cb313-7"><a href="6-2-post-treatment-bias.html#cb313-7" aria-hidden="true" tabindex="-1"></a>    bt <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.5</span> ),</span>
+<span id="cb313-8"><a href="6-2-post-treatment-bias.html#cb313-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb313-9"><a href="6-2-post-treatment-bias.html#cb313-9" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span>d2 )</span>
+<span id="cb313-10"><a href="6-2-post-treatment-bias.html#cb313-10" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.8</span>)</span></code></pre></div>
+<pre><code>##              mean          sd        5.5%      94.5%
+## a      1.62401319 0.009546625  1.60875584 1.63927054
+## bt    -0.01051596 0.013511945 -0.03211066 0.01107874
+## sigma  2.20520300 0.049231869  2.12652096 2.28388504</code></pre>
+<p>Now fungus seems like it helped the plants, even though it had no effect.</p>
 <div class="figure">
 <img src="slides/L06/15.png" alt="Frustrating thing for statisticians is that if you condition on career choice, there's basically no wage gap. But that doesn't mean gender and race isn't causal, because there are streams where something downstream knocks it out. If you look at funding rates for the sciences, women get way less grant money. But not if you condition on field. " width="80%" />
 <p class="caption marginnote shownote">
 Frustrating thing for statisticians is that if you condition on career choice, there’s basically no wage gap. But that doesn’t mean gender and race isn’t causal, because there are streams where something downstream knocks it out. If you look at funding rates for the sciences, women get way less grant money. But not if you condition on field.
 </p>
 </div>
-<div class="figure">
-<img src="slides/L06/16.png" alt="This is where the selection effect comes from. Like the fork but in reverse. Here `Z` is a common result of `X` and `Y`. X and Y are really independent, but if you condition on Z, it creates a spurious causal connection between X and Y. There's this &quot;finding out&quot; effect. " width="80%" />
-<p class="caption marginnote shownote">
-This is where the selection effect comes from. Like the fork but in reverse. Here <code>Z</code> is a common result of <code>X</code> and <code>Y</code>. X and Y are really independent, but if you condition on Z, it creates a spurious causal connection between X and Y. There’s this “finding out” effect.
-</p>
 </div>
-<p><img src="slides/L06/17.png" width="80%" /></p>
-<div class="figure">
-<img src="slides/L06/18.png" alt="This is the finding out effect. Works for continuous variables as well. " width="80%" />
-<p class="caption marginnote shownote">
-This is the finding out effect. Works for continuous variables as well.
-</p>
-</div>
-<p><img src="slides/L06/19.png" width="80%" /></p>
-<div class="figure">
-<img src="slides/L06/20.png" alt="Both influence publication." width="80%" />
-<p class="caption marginnote shownote">
-Both influence publication.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/21.png" alt="So if it's been published in Nature and isn't trustworthy, can you tell me how newsworthy it is?" width="80%" />
-<p class="caption marginnote shownote">
-So if it’s been published in Nature and isn’t trustworthy, can you tell me how newsworthy it is?
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/22.png" alt="There are lots of effects like this that happen all the time. Being tall is definitely causatively-speaking an advantage. The taller you are, the easier to score field goals. But conditional on being a professional player, there's no correlation between height and shooting percentage. Because the shorter players are compensating by being amazing in other ways. They've been distorted by the selection effects." width="80%" />
-<p class="caption marginnote shownote">
-There are lots of effects like this that happen all the time. Being tall is definitely causatively-speaking an advantage. The taller you are, the easier to score field goals. But conditional on being a professional player, there’s no correlation between height and shooting percentage. Because the shorter players are compensating by being amazing in other ways. They’ve been distorted by the selection effects.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/23.png" alt="Let's do an example. Image this causal graph at the bottom. Imagine it's true that getting married is positively, causally associated with happiness, and age. Now our question is, is there any causal impact of age on happiness? Here's a simulation where it's totally spurious. " width="80%" />
-<p class="caption marginnote shownote">
-Let’s do an example. Image this causal graph at the bottom. Imagine it’s true that getting married is positively, causally associated with happiness, and age. Now our question is, is there any causal impact of age on happiness? Here’s a simulation where it’s totally spurious.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/24.png" alt="Here the simulation is slightly different to the usual `rnorm`. Here's the algorithm. Uniform happiness at birth. Distributed from 0 to 1. Reality is more complicated, even harder to figure out. At 18 years old, you're eligible to marry. Then you have your coin-flip chance to get married. The chance is proportional to your happiness, which is constant. Age itself doesn't cause marriage, but each year you're alive you have another chance to get married. Married people remain married unto death. Then everyone moves to Spain. 1300 people, 3 variables, over 1000 years." width="80%" />
-<p class="caption marginnote shownote">
-Here the simulation is slightly different to the usual <code>rnorm</code>. Here’s the algorithm. Uniform happiness at birth. Distributed from 0 to 1. Reality is more complicated, even harder to figure out. At 18 years old, you’re eligible to marry. Then you have your coin-flip chance to get married. The chance is proportional to your happiness, which is constant. Age itself doesn’t cause marriage, but each year you’re alive you have another chance to get married. Married people remain married unto death. Then everyone moves to Spain. 1300 people, 3 variables, over 1000 years.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/25.png" alt="Here's the system. Run a regression where we take happiness. Happiness is the outcome, then the linear model `mu`, the slope `a` which is age. That's the exposure we're interested in. And we know the marriage status, so perhaps we control for that. (No, that's the wrong thing to do, as we'll see.) Created an index variable. Then put that in as a control. We see that single people are less happy. Regression models don't have arrows. It's not in the Bayesian network; that's what the DAG does. `a[2]` is married individuals. Positive `mu`. The slope is solidly negative. But this is a spurious correlation by conditioning on a collider. " width="80%" />
-<p class="caption marginnote shownote">
-Here’s the system. Run a regression where we take happiness. Happiness is the outcome, then the linear model <code>mu</code>, the slope <code>a</code> which is age. That’s the exposure we’re interested in. And we know the marriage status, so perhaps we control for that. (No, that’s the wrong thing to do, as we’ll see.) Created an index variable. Then put that in as a control. We see that single people are less happy. Regression models don’t have arrows. It’s not in the Bayesian network; that’s what the DAG does. <code>a[2]</code> is married individuals. Positive <code>mu</code>. The slope is solidly negative. But this is a spurious correlation by conditioning on a collider.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/26.png" alt="We know that happiness doesn't change and doesn't decline with age, because that's how we coded it. But if we stratify by marriage status, it does. Each point is a person. Each year 20 individuals are born. Happiness is uniformly distributed and constant. Blue filled are married. Starting early on the blue points are only at the top. But over time, indiviuals who are less happy will also get married. By 65, most of the population in the simulation is married." width="80%" />
-<p class="caption marginnote shownote">
-We know that happiness doesn’t change and doesn’t decline with age, because that’s how we coded it. But if we stratify by marriage status, it does. Each point is a person. Each year 20 individuals are born. Happiness is uniformly distributed and constant. Blue filled are married. Starting early on the blue points are only at the top. But over time, indiviuals who are less happy will also get married. By 65, most of the population in the simulation is married.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/27.png" alt="Now if we draw regression lines, we can see there's a negative correlation. But the distribution of happiness has not changed for anybody." width="80%" />
-<p class="caption marginnote shownote">
-Now if we draw regression lines, we can see there’s a negative correlation. But the distribution of happiness has not changed for anybody.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/28.png" alt="If we condition on it, we allow information to flow from age to happiness. In reality we don't know, so we need to use information external to the data. " width="80%" />
-<p class="caption marginnote shownote">
-If we condition on it, we allow information to flow from age to happiness. In reality we don’t know, so we need to use information external to the data.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/29.png" alt="Another example. Colliders are so powerful they can even occur when you haven't measured the confounder. In my subfield, we're interested in allopaternal effects. What is the material benefit of having grandparents? There are resource and information flows, so we want to figure out how important they are. How do you figure this out empirically? Say you have triads, and you're looking at educational outcomes. Indirect path through P, say through books. But also a potential direct effects during say babysitting. But regressions can show that grandparents have a negative effect?" width="80%" />
-<p class="caption marginnote shownote">
-Another example. Colliders are so powerful they can even occur when you haven’t measured the confounder. In my subfield, we’re interested in allopaternal effects. What is the material benefit of having grandparents? There are resource and information flows, so we want to figure out how important they are. How do you figure this out empirically? Say you have triads, and you’re looking at educational outcomes. Indirect path through P, say through books. But also a potential direct effects during say babysitting. But regressions can show that grandparents have a negative effect?
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/30.png" alt="It's plausible that parents and children share unobserved confounds. Whenever you do observational studies, there are `U`s all over the place. e.g. the neighbourhood you live in. School and neighbourhood effects are really powerful. Makes parents into a collider. So if we condition on parents, it becomes a collider. " width="80%" />
-<p class="caption marginnote shownote">
-It’s plausible that parents and children share unobserved confounds. Whenever you do observational studies, there are <code>U</code>s all over the place. e.g. the neighbourhood you live in. School and neighbourhood effects are really powerful. Makes parents into a collider. So if we condition on parents, it becomes a collider.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/31.png" alt="So we simulate this. Assuming that the direct path is 0." width="80%" />
-<p class="caption marginnote shownote">
-So we simulate this. Assuming that the direct path is 0.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/32.png" alt="We end up concluding that grandparents hurt their kids. How does this work? Conditioning on a collider opens a path. It's closed by default. This oepns a path from G through U to see, which creates a spurious correlation." width="80%" />
-<p class="caption marginnote shownote">
-We end up concluding that grandparents hurt their kids. How does this work? Conditioning on a collider opens a path. It’s closed by default. This oepns a path from G through U to see, which creates a spurious correlation.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/33.png" alt="One way to think about this is on the left we have good neighbourhoods in blue. All filled in points are where the parents are in a particular stratum. Why is it negative? Focus only on parents in the narrow range of educational outcomes. Parents in the good neighbourhoods, to be within this range, they must have had less educated grandparents. There are two ways to become a highly-educated parent. Either you are in a good neighbourhood, or you had an educated parent yourself. Each end the P box. " width="80%" />
-<p class="caption marginnote shownote">
-One way to think about this is on the left we have good neighbourhoods in blue. All filled in points are where the parents are in a particular stratum. Why is it negative? Focus only on parents in the narrow range of educational outcomes. Parents in the good neighbourhoods, to be within this range, they must have had less educated grandparents. There are two ways to become a highly-educated parent. Either you are in a good neighbourhood, or you had an educated parent yourself. Each end the P box.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/34.png" alt="The back door criterion is that you want to figure out the true causal impact on some outcome, you need to shut all backdoor paths from the treatment to the outcome. We have to shut that arrow off to infer a true causal effect. In experiments you shut all the backdoor paths by randomising. But in observational studies, you want some set of criteria for what variables you should include to shut the paths." width="80%" />
-<p class="caption marginnote shownote">
-The back door criterion is that you want to figure out the true causal impact on some outcome, you need to shut all backdoor paths from the treatment to the outcome. We have to shut that arrow off to infer a true causal effect. In experiments you shut all the backdoor paths by randomising. But in observational studies, you want some set of criteria for what variables you should include to shut the paths.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L06/35.png" alt="These are the only ways that variables interact in these graphs. " width="80%" />
-<p class="caption marginnote shownote">
-These are the only ways that variables interact in these graphs.
-</p>
-</div>
-<p><img src="slides/L06/36.png" width="80%" /></p>
-<p><img src="slides/L06/37.png" width="80%" /></p>
-<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="6-2-post-treatment-bias.html#cb285-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L07&quot;</span>)</span></code></pre></div>
-<p><img src="slides/L07/01.png" width="80%" /></p>
-<div class="figure">
-<img src="slides/L07/02.png" alt="You can solve causal inference by assuming the DAG is true. There is a framework that unites all these examples: the **back-door criterion**. We need to shut all the back door paths into the exposure. There are only really three different ways they can meet in the DAG." width="80%" />
-<p class="caption marginnote shownote">
-You can solve causal inference by assuming the DAG is true. There is a framework that unites all these examples: the <strong>back-door criterion</strong>. We need to shut all the back door paths into the exposure. There are only really three different ways they can meet in the DAG.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L07/03.png" alt="Break the fork by conditioning on Z. Block the pipe by conditioning on Z. The collider only opens the path if you condition on it. Conditioning on a descendant of a collider is like conditioning on a collider, depending on how strong the relationship is. " width="80%" />
-<p class="caption marginnote shownote">
-Break the fork by conditioning on Z. Block the pipe by conditioning on Z. The collider only opens the path if you condition on it. Conditioning on a descendant of a collider is like conditioning on a collider, depending on how strong the relationship is.
-</p>
-</div>
-<p><img src="slides/L07/04.png" width="80%" /></p>
-<pre class="marginfigure"><code>The classic confound involves some exposure $E$. A lot of research goes into understanding what the returns on education are. There are a lot of confounds $U$. How do we de-confound this DAG using the back-door criterion? $E \leftarrow  U \rightarrow W$. How to shut this? It&#39;s a fork, and you close it by conditioning on $U$. But here it&#39;s unobserved, so we can&#39;t condition on it. You therefore can&#39;t get an unbiased estimate. But that&#39;s an achievement, because we&#39;ve wasted less time. </code></pre>
-<div class="figure">
-<img src="slides/L07/05.png" alt="If we want to estimate the direct causal influence from grandparents to kids, we see there are three paths from G to C. If we condition on $P$, that closes the second path through parents. Since that's a pipe, you condition on parents, but that opens the other path, because they're a collider between grandparents and unobserved neighbourhood effects. So we can't get a valid estimate unless we measure it. This is happy news, because we know we're being fooled." width="80%" />
-<p class="caption marginnote shownote">
-If we want to estimate the direct causal influence from grandparents to kids, we see there are three paths from G to C. If we condition on <span class="math inline">\(P\)</span>, that closes the second path through parents. Since that’s a pipe, you condition on parents, but that opens the other path, because they’re a collider between grandparents and unobserved neighbourhood effects. So we can’t get a valid estimate unless we measure it. This is happy news, because we know we’re being fooled.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L07/06.png" alt="We want to know the causal effect of $X$ on $Y$. We have an unobserved cause of $X$, then three covariates. What do you need to condition on, and what should you absolutely not condition on? The backdoor criterion is sufficient to figure it out. Find each backdoor path, and figure out which ones to open and close. Just three paths." width="80%" />
-<p class="caption marginnote shownote">
-We want to know the causal effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span>. We have an unobserved cause of <span class="math inline">\(X\)</span>, then three covariates. What do you need to condition on, and what should you absolutely not condition on? The backdoor criterion is sufficient to figure it out. Find each backdoor path, and figure out which ones to open and close. Just three paths.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L07/07.png" alt="What should we prefer between A or C? Just pick the one that's measured better. By the way, you need both good estimation, and a causal framework. Both are necessary." width="80%" />
-<p class="caption marginnote shownote">
-What should we prefer between A or C? Just pick the one that’s measured better. By the way, you need both good estimation, and a causal framework. Both are necessary.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L07/08.png" alt="Statistical assocation between Waffle Houses and divorce rate. What do we need to control for to remove spurious causation? Same elemental confounds as before. Backdoor into Waffle Houses through South. What do we have to do to estimate the causal impact of Waffles? Come out the backdoor of Waffle House, and find all the paths to get to D. It's sufficient to condition on A and M too. But it's sufficient to just condition on S." width="80%" />
-<p class="caption marginnote shownote">
-Statistical assocation between Waffle Houses and divorce rate. What do we need to control for to remove spurious causation? Same elemental confounds as before. Backdoor into Waffle Houses through South. What do we have to do to estimate the causal impact of Waffles? Come out the backdoor of Waffle House, and find all the paths to get to D. It’s sufficient to condition on A and M too. But it’s sufficient to just condition on S.
-</p>
-</div>
-<p><img src="slides/L07/09.png" width="80%" /></p>
-<div class="figure">
-<img src="slides/L07/10.png" alt="Good news. There are a number of packages where you give them the DAG, and then you can get it to algorithmically tell you things about the DAG. You can test your DAG, bu inspecting the implied conditional dependencies. The causal structure implies that some things are independent on others. A and W should have no correlation after conditioning on S. It's a fork from S. Parts of the DAG may be wrong. It's a good lesson that the answers require the data, but aren't in the data." width="80%" />
-<p class="caption marginnote shownote">
-Good news. There are a number of packages where you give them the DAG, and then you can get it to algorithmically tell you things about the DAG. You can test your DAG, bu inspecting the implied conditional dependencies. The causal structure implies that some things are independent on others. A and W should have no correlation after conditioning on S. It’s a fork from S. Parts of the DAG may be wrong. It’s a good lesson that the answers require the data, but aren’t in the data.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L07/11.png" alt="Hume did more to sort out causal inference than any other thinker. The whole approach of causal inference is Humian. We ahven't solved the problem, but he'd be proud of what we've built. It shows that experiments aren't necessary. We don't need them if we can close the backdoor paths. Often experiments in the human sciences are either impractical or unethical or both. Lots of progress can come from observational studies. Also, interventions influence many variables at once. e.g. experimentally manipulate obsesity. Choosing exercise or diet will affect what you're observing. Huge advantage of observational studies." width="80%" />
-<p class="caption marginnote shownote">
-Hume did more to sort out causal inference than any other thinker. The whole approach of causal inference is Humian. We ahven’t solved the problem, but he’d be proud of what we’ve built. It shows that experiments aren’t necessary. We don’t need them if we can close the backdoor paths. Often experiments in the human sciences are either impractical or unethical or both. Lots of progress can come from observational studies. Also, interventions influence many variables at once. e.g. experimentally manipulate obsesity. Choosing exercise or diet will affect what you’re observing. Huge advantage of observational studies.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L07/12.png" alt="The first alternative uses the existence of a mediator to remove a cofound between an exposure and an outcome. The second is used a lot in behavioural genetics and economics. We'll learn how to use these." width="80%" />
-<p class="caption marginnote shownote">
-The first alternative uses the existence of a mediator to remove a cofound between an exposure and an outcome. The second is used a lot in behavioural genetics and economics. We’ll learn how to use these.
-</p>
-</div>
-<div class="figure">
-<img src="slides/L07/13.png" alt="Shouldn't get cocky. DAGs are heuristic models. Still a lot of residual confounding. You can put measurement error into a DAG. We'll get there near the end. This is important if you're say an anthropologist, half your measurements are error. Phylogenetic trees: big nest of error. Last is that you shouldn't let DAGs stop you from making a real causal model. Physicists don't need DAGs because they have real models, with causal implications. That's what you want to drive towards." width="80%" />
-<p class="caption marginnote shownote">
-Shouldn’t get cocky. DAGs are heuristic models. Still a lot of residual confounding. You can put measurement error into a DAG. We’ll get there near the end. This is important if you’re say an anthropologist, half your measurements are error. Phylogenetic trees: big nest of error. Last is that you shouldn’t let DAGs stop you from making a real causal model. Physicists don’t need DAGs because they have real models, with causal implications. That’s what you want to drive towards.
-</p>
-</div>
-
-</div>
-<!-- </div> -->
 <p style="text-align: center;">
 <a href="6-1-multicollinearity.html"><button class="btn btn-default">Previous</button></a>
-<a href="7-ulysses-compass.html"><button class="btn btn-default">Next</button></a>
+<a href="6-3-collider-bias.html"><button class="btn btn-default">Next</button></a>
 </p>
 </div>
 </div>

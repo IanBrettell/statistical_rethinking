@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-06-20'
+date: '2021-06-22'
 output:
   html_document:
     toc: true
@@ -136,7 +136,7 @@ prod(1 + runif(12, 0, .1))
 ```
 
 ```
-## [1] 1.661893
+## [1] 1.805409
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
@@ -550,9 +550,9 @@ rethinking::precis(m4.1)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%
-## mu    154.606103 0.4119930 153.947659 155.264548
-## sigma   7.731304 0.2913833   7.265617   8.196991
+##             mean        sd      5.5%      94.5%
+## mu    154.607038 0.4119914 153.94860 155.265479
+## sigma   7.731272 0.2913803   7.26559   8.196954
 ```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
@@ -584,7 +584,7 @@ precis( m4.2 )
 ```
 ##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51755 0.9289218  23.03295  26.00214
+## sigma  24.51756 0.9289234  23.03296  26.00216
 ```
 
 ***4.3.6 Sampling from a `quap`***
@@ -636,12 +636,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 154.2431 7.965715
-## 2 154.4715 7.875032
-## 3 155.1764 7.885016
-## 4 154.8297 7.514147
-## 5 153.9091 7.694580
-## 6 154.2664 7.967946
+## 1 154.7514 7.759026
+## 2 154.6229 8.083139
+## 3 153.8394 7.347194
+## 4 154.4302 7.475443
+## 5 154.3320 7.717714
+## 6 154.7497 7.457487
 ```
 
 
@@ -650,9 +650,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd      5.5%     94.5%    histogram
-## mu    154.604552 0.4103304 153.95464 155.26089     ▁▁▁▅▇▂▁▁
-## sigma   7.730061 0.2875193   7.26772   8.18983 ▁▁▁▁▂▅▇▇▃▁▁▁
+##             mean        sd      5.5%      94.5%     histogram
+## mu    154.605229 0.4126342 153.94404 155.272806       ▁▁▅▇▂▁▁
+## sigma   7.726681 0.2877447   7.26865   8.193418 ▁▁▁▁▂▅▇▅▃▁▁▁▁
 ```
 
 Here's a peak under the motor of `extract.samples`:

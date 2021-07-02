@@ -70,29 +70,160 @@ knitr::include_graphics(file.path(slides_dir, '20.png'))
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-
+## The problem with parameters
 
 ```{r, echo = F, out.width='80%', fig.cap = "The basic problem is that models that are too simple don't know enough; and models that are too complex learn too much. On the extrmee, you can encrypt every data point as a parameter, but it will make terrible predictions. Want to learn the \"regular features\" of the sample. Multilevel models don't work like this because they're less liekly to overfit. I have a model with 27K parameters, and it overfits very little because of this hierarchical structure."}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-
+***7.1.1. More parameters (almost) always improve fit***
 
 ```{r, echo = F, out.width='80%', fig.cap = "Humans have big brains. If we look at body mass v brain volume, there is some association. What's the statistical relationship?"}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
 
+```{r 7.1}
+sppnames <- c( "afarensis","africanus","habilis","boisei","rudolfensis","ergaster","sapiens")
+brainvolcc <- c( 438 , 452 , 612, 521, 752, 871, 1350 )
+masskg <- c( 37.0 , 35.5 , 34.5 , 41.5 , 55.5 , 61.0 , 53.5 )
+d <- data.frame( species=sppnames , brain=brainvolcc , mass=masskg )
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "$R^2$ is one of the most over-used measures. If there's no variance in the residuals, $R^2$ = 1. It's trivial to get there. A bit of a joke, but I've seen it in _Nature_."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
+```{r 7.2}
+d$mass_std <- (d$mass - mean(d$mass))/sd(d$mass)
+d$brain_std <- d$brain / max(d$brain)
+```
+
+```{r 7.3}
+m7.1 <- quap(
+  alist(
+    brain_std ~ dnorm( mu , exp(log_sigma) ),
+    mu <- a + b*mass_std,
+    a ~ dnorm( 0.5 , 1 ),
+    b ~ dnorm( 0 , 10 ),
+    log_sigma ~ dnorm( 0 , 1 )
+  ), data=d )
+```
+
+I’ve used `exp(log_sigma)` in the likelihood, so that the result is always greater than zero.
+
+---
+
+**Rethinking:**
+
+You could use OLD to get posteriors for these brain size model, e.g. by using `lm`. But you won't get a posterior for `sigma`. 
+
+```{r 7.4}
+m7.1_OLS <- lm( brain_std ~ mass_std , data=d )
+post <- extract.samples( m7.1_OLS )
+```
+
+>Bayesian inference means approximating the posterior distribution. It does not specify how that approximation is done.
+
+---
+
+We'll compute $R^2$ ourselves by computing the variance of the residuals, and the variance of the outcome variable. This means the actual empirical variance, not the variance that R returns with the `var` function, which is a frequentist estimator and therefore has the wrong denominator. So we’ll compute variance the old fashioned way: the average squared deviation from the mean. `rethinking::var2` does this.
+
+```{r 7.5}
+set.seed(12)
+s <- sim( m7.1 )
+r <- apply(s,2,mean) - d$brain_std
+resid_var <- var2(r)
+outcome_var <- var2( d$brain_std )
+1 - resid_var/outcome_var
+```
+
+Let's write a function to do this again:
+
+```{r 7.6}
+R2_is_bad <- function( quap_fit ) {
+  s <- sim( quap_fit , refresh=0 )
+  r <- apply(s,2,mean) - d$brain_std
+  1 - var2(r)/var2(d$brain_std)
+}
+```
+
+Now we'll compare 5 models, each just a polynomial of higher degree.
+
+```{r 7.7}
+m7.2 <- quap(
+  alist(
+    brain_std ~ dnorm( mu , exp(log_sigma) ),
+    mu <- a + b[1]*mass_std + b[2]*mass_std^2,
+    a ~ dnorm( 0.5 , 1 ),
+    b ~ dnorm( 0 , 10 ),
+    log_sigma ~ dnorm( 0 , 1 )
+  ), data=d , start=list(b=rep(0,2)) )
+```
+
+```{r 7.8}
+m7.3 <- quap(
+  alist(
+    brain_std ~ dnorm( mu , exp(log_sigma) ),
+    mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+      b[3]*mass_std^3,
+    a ~ dnorm( 0.5 , 1 ),
+    b ~ dnorm( 0 , 10 ),
+    log_sigma ~ dnorm( 0 , 1 )
+  ), data=d , start=list(b=rep(0,3)) )
+  
+m7.4 <- quap(
+  alist(
+    brain_std ~ dnorm( mu , exp(log_sigma) ),
+    mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+      b[3]*mass_std^3 + b[4]*mass_std^4,
+    a ~ dnorm( 0.5 , 1 ),
+    b ~ dnorm( 0 , 10 ),
+    log_sigma ~ dnorm( 0 , 1 )
+  ), data=d , start=list(b=rep(0,4)) )
+  
+m7.5 <- quap(
+  alist(
+    brain_std ~ dnorm( mu , exp(log_sigma) ),
+    mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+    b[3]*mass_std^3 + b[4]*mass_std^4 +
+      b[5]*mass_std^5,
+    a ~ dnorm( 0.5 , 1 ),
+    b ~ dnorm( 0 , 10 ),
+    log_sigma ~ dnorm( 0 , 1 )
+  ), data=d , start=list(b=rep(0,5)) )
+```
+
+For the last one we replace the standard deviation with 0.001.
+
+```{r 7.9}
+m7.6 <- quap(
+  alist(
+    brain_std ~ dnorm( mu , 0.001 ),
+    mu <- a + b[1]*mass_std + b[2]*mass_std^2 +
+      b[3]*mass_std^3 + b[4]*mass_std^4 +
+      b[5]*mass_std^5 + b[6]*mass_std^6,
+    a ~ dnorm( 0.5 , 1 ),
+    b ~ dnorm( 0 , 10 )
+  ), data=d , start=list(b=rep(0,6)) )
+```
+
+```{r 7.10}
+post <- extract.samples(m7.1)
+mass_seq <- seq( from=min(d$mass_std) , to=max(d$mass_std) , length.out=100 )
+l <- link( m7.1 , data=list( mass_std=mass_seq ) )
+mu <- apply( l , 2 , mean )
+ci <- apply( l , 2 , PI )
+plot( brain_std ~ mass_std , data=d )
+lines( mass_seq , mu )
+shade( ci , mass_seq )
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "This isn't a bad model. $R^2$ is 0.5 - that's pretty good. But can you do better?"}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
+
 
 
 
@@ -136,7 +267,7 @@ knitr::include_graphics(file.path(slides_dir, '31.png'))
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-
+***7.1.2. Too few parameters hurts, too***
 
 ```{r, echo = F, out.width='80%', fig.cap="The model is overly sensitive. We can repeat the linear regression, removing one data point at a time. The lines don't move very much. Drops a lot when we drop _homo sapiens_."}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
@@ -148,6 +279,11 @@ knitr::include_graphics(file.path(slides_dir, '33.png'))
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
+```{r 7.11}
+#d_minus_i <- d[ -i , ]
+```
+
+## Entropy and accuracy
 
 
 ```{r, echo = F, out.width='80%', fig.cap="Multiple strategies. In Bayesian statistics, we regularise. Can be even omre aggressive. In non-Bayesian, it's mathematically identical to using a prior. Why do machine leanring people regularise? Because it makes better predictions. "}
@@ -160,7 +296,12 @@ knitr::include_graphics(file.path(slides_dir, '35.png'))
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
+***7.2.1. Firing the weatherperson***
 
+In defining a target, there are two major dimensions to worry about:
+
+1.  *Cost-benefit analysis*. How much does it cost when we're wrong? How much do we win when we're right? Most scientists never ask these questions in any formal way, but applied scientists must routinely answer them.
+2. *Accuracy in context*. Some prediction tasks are inherently easier than others. So even if we ignore costs and benefits, we still need a way to judge "accuracy" that accounts for how much a model could possibly improve prediction.
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
@@ -186,12 +327,31 @@ knitr::include_graphics(file.path(slides_dir, '02.png'))
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
 
+***7.2.2. Information and uncertainty***
 
+The basic insight is to ask: How much is our uncertainty reduced by learning an outcome? 
+
+>Information: The reduction in uncertainty when we learn an outcome.
+
+There are many possible ways to measure uncertainty. The most common way begins by naming some properties a measure of uncertainty should possess. These are the three intuitive desiderata:
+
+1. The measure of uncertainty should be continuous. 
+
+2. The measure of uncertainty should increase as the number of possible events increases.  
+
+3. The measure of uncertainty should be additive.
+
+There is only one function that satisfies these desiderata. This function is usually known as INFORMATION ENTROPY, and has a surprisingly simple definition.
 
 ```{r, echo = F, out.width='60%', fig.cap="Uncertainty $H$ of $p$, which is a vector of probability, is just the average log-probability of the event. This is a unique criterion. If you want a reasonable measure of surprise, you have to adopt something that is this or something proportional to this. Your mobile phones (3G and above) work because of this."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
+***7.2.3. From entropy to accuracy***
+
+How can we use information entropy to say how far a model is from the target? 
+
+> **Divergence**: The additional uncertainty induced by using probabilities from one distribution to describe another distribution.
 
 ```{r, echo = F, out.width='60%', fig.cap = "What's the **potential for surprise**?. We are interested in this. Want to calculate the entropy of our model, and then there's the entropy of the true distribution, of nature. And we want to minimise the difference between them. This is called the $D_{KL}$ divergence. Two probabilities $p$ and $q$. $p$ is nature, say the frequencies of weather events, and $q$ is our forecast. If we want to score $q$, we look at the divergence. K is for Kulbak. The distance from $p$ to $q$ is the sum (averaging) between $p$ and $q$. It's a distance, but it's not symmetric. "}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
@@ -203,7 +363,15 @@ knitr::include_graphics(file.path(slides_dir, '05.png'))
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
+Compute the information entropy for the weather:
 
+```{r 7.12}
+p <- c( 0.3 , 0.7 )
+-sum( p*log(p) )
+```
+
+Suppose instead we live in Abu Dhabi. Then the probabilities of rain and shine might be more like 
+$p_1 = 0.01 $ and $p_2 = 0.99$. Now the entropy would be approximately 0.06. Why has the uncertainty decreased? Because in Abu Dhabi it hardly ever rains. Therefore there’s much less uncertainty about any given day, compared to a place in which it rains 30% of the time. It’s in this way that information entropy measures the uncertainty inherent in a distribution of events. Similarly, if we add another kind of event to the distribution—forecasting into winter, so also predicting snow—entropy tends to increase, due to the added dimensionality of the prediction problem. 
 
 ```{r, echo = F, out.width='60%', fig.cap="Here's a cartoon version. You're heading to Mars, or a Mars-like planet, but you don't know much about it. You can't control your rocket and you want to predict whether you'll land on water or land. You'll use Earth as your only model. Earth is a high-entropy planet because it has a lot of water and land. So you won't be surprised whether you get land or water. "}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
@@ -215,10 +383,30 @@ knitr::include_graphics(file.path(slides_dir, '07.png'))
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
-
+***7.2.4. Estimating divergence***
 
 ```{r, echo = F, out.width='60%', fig.cap = "How to estimate this in practice: we want the gold standard way to score, but the problem is we can't score the truth. Turns out we don't need the truth part because it's just an additive term, so you can get the relative scores of the models without knowning the truth. THe log score is the gold standard, whether you're Bayesian or not. In practice, there's not a single log score, but a distribution of log scores. So we want the average log score, which unfortunately is called the *log-pointwise-predictive-density*. For each point `i`, we're taking the average probability of that observation conditional on the samples, and we average over the samples, and find the average probabiltiy that the model expects, then we take the log and sum across all observations in the model."}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
+```
+
+>This kind of score is a log-probability score, and it is the gold standard way to compare the predictive accuracy of different models. It is an estimate of $E\ log(q_i)$, just without the final step of dividing by the number of observations.
+
+Compute lppd for the first model we fit in this chapter:
+
+```{r 7.13}
+set.seed(1)
+rethinking::lppd( m7.1 , n=1e4 ) 
+```
+
+Larger values are better, because that indicates larger average accuracy.
+
+```{r 7.14}
+set.seed(1)
+logprob <- sim( m7.1 , ll=TRUE , n=1e4 )
+n <- ncol(logprob)
+ns <- nrow(logprob)
+f <- function( i ) log_sum_exp( logprob[,i] ) - log(ns)
+( lppd <- sapply( 1:n , f ) )
 ```
 
 
@@ -232,6 +420,17 @@ knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```{r, echo = F, out.width='60%', fig.cap = "We'll generate some samples based on a known \"truth\". The first is our intercept model. "}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
+
+***7.2.5. Scoring the right data***
+
+Let’s compute the log-score for each of the models from earlier in this chapter:
+
+```{r 7.15}
+set.seed(1) 
+sapply( list(m7.1,m7.2,m7.3,m7.4,m7.5,m7.6) , function(m) sum(lppd(m)) )
+```
+
+The more complex models have larger scores, but it is really the score on new data that interests us.
 
 
 
@@ -251,9 +450,58 @@ knitr::include_graphics(file.path(slides_dir, '13.png'))
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
+```{r 7.16, eval = F}
+# Note: this takes ages to run, so I reduced the number of samples from 1e4 to 1e3 
+N <- 20
+kseq <- 1:5
+dev <- sapply( kseq , function(k) {
+    print(k);
+    r <- replicate( 1000 , rethinking::sim_train_test( N=N, k=k ) );
+    c( mean(r[1,]) , mean(r[2,]) , sd(r[1,]) , sd(r[2,]) )
+  } )
+```
+
+```{r, eval = F, include = F}
+saveRDS(dev, here::here("data/07_dev.rds"))
+```
+
+```{r, include = F}
+dev = readRDS(here::here("data/07_dev.rds"))
+```
 
 
-```{r, echo = F, out.width='60%', fig.cap = "The first thing to do is regularize. We don't want to use flat priors. We have to be skeptical. We have to build scepticiism into the models. Choose priors that only give us possible outcomes. That helps to regularise - to reduce overfitting. "}
+Parallelize the simulations by replacing the replicate line with:
+
+```{r 7.17, eval = F}
+# Note: doesn't seem to work
+r <- mcreplicate( 1e4 , sim_train_test( N=N, k=k ) , mc.cores=2 )
+```
+
+```{r 7.18}
+# Add variables again
+N <- 20
+kseq <- 1:5
+
+plot( 1:5 , dev[1,] , ylim=c( min(dev[1:2,])-5 , max(dev[1:2,])+10 ) ,
+  xlim=c(1,5.1) , xlab="number of parameters" , ylab="deviance" ,
+  pch=16 , col=rangi2 )
+mtext( concat( "N = ",N ) )
+points( (1:5)+0.1 , dev[2,] )
+for ( i in kseq ) {
+  pts_in <- dev[1,i] + c(-1,+1)*dev[3,i]
+  pts_out <- dev[2,i] + c(-1,+1)*dev[4,i]
+  lines( c(i,i) , pts_in , col=rangi2 )
+  lines( c(i,i)+0.1 , pts_out )
+}
+```
+
+## Golem taming: regularization
+
+The root of overfitting is a model’s tendency to get overexcited by the training sample. When the priors are flat or nearly flat, the machine interprets this to mean that every parameter value is equally plausible. 
+
+One way to prevent a model from getting too excited by the training sample is to use a skeptical prior. By “skeptical,” I mean a prior that slows the rate of learning from the sample.
+
+```{r, echo = F, out.width='60%', fig.cap = "The first thing to do is regularize. We don't want to use flat priors. We have to be skeptical. We have to build scepticism into the models. Choose priors that only give us possible outcomes. That helps to regularise - to reduce overfitting. "}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
@@ -287,24 +535,25 @@ knitr::include_graphics(file.path(slides_dir, '19.png'))
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
+## Predicting predictive accuracy
 
 ```{r, echo = F, out.width='60%', fig.cap = "If we regularize correctly, we'll do better out-of-sample. We can actually predict the amount of overfitting, even when you don't have the out-of-sample. This is all small-world stuff, so be sceptical, but it gives us a principled way of talking about a model in terms of its overfitting risk. "}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-
+***7.4.1. Cross-validation***
 
 ```{r, echo = F, out.width='60%', fig.cap = "If you do this across lots of left-out bits from your sample, that turns out to be a really good approximation of your model. These prediction contests in industry. Motivated this on Monday talking about under- vs over-fitted model. There's a LOOCV function for `quap`. Huge literature about how many to leave out. But the general idea is to use this. "}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-
+The key trouble with leave-one-out cross-validation is that, if we have 1000 observations, that means computing 1000 posterior distributions. That can be time consuming. Luckily, there are clever ways to approximate the cross-validation score without actually running the model over and over again. One approach is to use the “importance” of each observation to the posterior distribution. What “importance” means here is that some observations have a larger impact on the posterior distribution—if we remove an important observation, the posterior changes more. Other observations have less impact. It is a benign aspect of the universe that this importance can be estimated without refitting the model. *The key intuition is that an observation that is relatively unlikely is more important than one that is relatively expected.*
 
 ```{r, echo = F, out.width='60%', fig.cap="These days you have too many data points. Really good analytical approximations, like Pareto-smoothed. Incredibly accurate. Pareto-smoothed is useful because you get a lot of diagnostic information."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
 
-
+***7.4.2. Information criteria***
 
 ```{r, echo = F, out.width='60%', fig.cap = "Other approach, stemming from Akaike. To get an analytical approximation, a lot of assumptions are made, including that you need a Gaussian distribution. If that's true, you can get a really nice approxiatmion of the performance of the log score out-of-sample. Just the training deviance time twice th enumber of parameters. Incredible acheivement."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
@@ -316,7 +565,58 @@ knitr::include_graphics(file.path(slides_dir, '24.png'))
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
+To see how WAIC works:
 
+Consider a simple regression fit with `quap`: 
+
+```{r 7.19}
+data(cars)
+m <- quap(
+  alist(
+    dist ~ dnorm(mu,sigma),
+    mu <- a + b*speed,
+    a ~ dnorm(0,100),
+    b ~ dnorm(0,10),
+    sigma ~ dexp(1)
+  ) , data=cars )
+set.seed(94)
+post <- extract.samples(m,n=1000)
+```
+
+Get the log-likelihood of each observation $i$ at each sample $s$ from the posterior:
+
+```{r 7.20}
+n_samples <- 1000
+logprob <- sapply( 1:n_samples ,
+  function(s) {
+    mu <- post$a[s] + post$b[s]*cars$speed
+    dnorm( cars$dist , mu , post$sigma[s] , log=TRUE )
+  } )
+```
+
+You end up with a 50-by-1000 matrix of log-likelihoods, with observations in rows and samples in columns. Now to compute lppd, the Bayesian deviance, we average the samples in each row, take the log, and add all of the logs together. However, to do this with precision, we need to do all of the averaging on the log scale. This is made easy with a function `log_sum_exp`, which computes the log of a sum of exponentiated terms. Then we can just subtract the log of the number of samples. This computes the log of the average.
+
+```{r 7.21}
+n_cases <- nrow(cars)
+lppd <- sapply( 1:n_cases , function(i) log_sum_exp(logprob[i,]) - log(n_samples) )
+```
+
+```{r 7.22}
+pWAIC <- sapply( 1:n_cases , function(i) var(logprob[i,]) )
+```
+
+And `sum(pWAIC)` returns pWAIC, as defined in the main text. To compute WAIC:
+
+```{r 7.23}
+-2*( sum(lppd) - sum(pWAIC) )
+```
+
+```{r 7.24}
+waic_vec <- -2*( lppd - pWAIC )
+sqrt( n_cases*var(waic_vec) )
+```
+
+***7.4.3. Comparing CV, PSIS, and WAIC***
 
 ```{r, echo = F, out.width='60%', fig.cap="Now we'll score them on their error. All are trying to estimate the prediction error. So how close do they get? Top are flat priors. Open circles and the actual generalisation errors. Each trend line is a different metric for calculating it. WAIC is getting closer, but the differences are really small. LOOIC is a really good approximation. At the bottom we have regularising priors. Everything does better, but the differences are about the same. Unit difference on the vertical is tiny."}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
@@ -334,10 +634,80 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
+## Model comparison
 
+Road so far:
+
+* When there are several plausible (and hopefully un-confounded) models for the same set of observations, how should we compare the accuracy of these models?
+* We need to somehow evaluate models out-of-sample. How can we do that? A meta-model of forecasting tells us two important things. First, flat priors produce bad predictions. Regularizing priors—priors which are skeptical of extreme parameter values—reduce fit to sample but tend to improve predictive accuracy. 
+* Second, we can get a useful guess of predictive accuracy with the criteria CV, PSIS, and WAIC. Regularizing priors and CV/PSIS/WAIC are complementary. Regularization reduces overfitting, and predictive criteria measure it.
+
+You should never just keep the model that scores the best, and discard the rest. This kind of selection procedure discards the information about relative model accuracy contained in the differences among the CV/PSIS/WAIC values. Why are the differences useful? Because sometimes the differences are large and sometimes they are small. Just as relative posterior probability provides advice about how confident we might be about parameters (conditional on the model), relative model accuracy provides advice about how confident we might be about models (conditional on the set of models compared).
 
 ```{r, echo = F, out.width='60%', fig.cap = "Avoid model selection. We want to score the expected overfitting models to understand their properties. In the sciences we usually have an inferential objective, rather than a predictive one. But if you intend to intervene in the world, then we don't want to use these criteria to select a model, but rather to compare them."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
+```
+
+***7.5.1. Model mis-selection***
+
+Remember: Inferring cause and making predictions are different tasks. Cross-validation and WAIC aim to find models that make good predictions.
+
+Run models from previous chapter again:
+
+```{r}
+set.seed(71)
+# number of plants
+N <- 100
+
+# simulate initial heights
+h0 <- rnorm(N,10,2)
+
+# assign treatments and simulate fungus and growth
+treatment <- rep( 0:1 , each=N/2 )
+fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4 )
+h1 <- h0 + rnorm(N, 5 - 3*fungus)
+
+# compose a clean data frame
+d <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+precis(d)
+
+m6.6 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0*p,
+    p ~ dlnorm( 0 , 0.25 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.6)
+
+m6.7 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0 * p,
+    p <- a + bt*treatment + bf*fungus,
+    a ~ dlnorm( 0 , 0.2 ) ,
+    bt ~ dnorm( 0 , 0.5 ),
+    bf ~ dnorm( 0 , 0.5 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.7)
+
+m6.8 <- quap(
+  alist(
+    h1 ~ dnorm( mu , sigma ),
+    mu <- h0 * p,
+    p <- a + bt*treatment,
+    a ~ dlnorm( 0 , 0.2 ),
+    bt ~ dnorm( 0 , 0.5 ),
+    sigma ~ dexp( 1 )
+  ), data=d )
+precis(m6.8)
+```
+
+
+```{r 7.25}
+set.seed(11)
+WAIC( m6.7 )
 ```
 
 
@@ -346,18 +716,130 @@ knitr::include_graphics(file.path(slides_dir, '29.png'))
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
-
+```{r 7.26}
+set.seed(77)
+rethinking::compare( m6.6 , m6.7 ,m6.8 , func=WAIC )
+```
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
+```{r 7.27}
+set.seed(91)
+waic_m6.7 <- WAIC( m6.7 , pointwise=TRUE )$WAIC
+waic_m6.8 <- WAIC( m6.8 , pointwise=TRUE )$WAIC
+n <- length(waic_m6.7)
+diff_m6.7_m6.8 <- waic_m6.7 - waic_m6.8
+sqrt( n*var( diff_m6.7_m6.8 ) )
+```
+
+
+```{r 7.28}
+40.0 + c(-1,1)*10.4*2.6
+```
 
 
 ```{r, echo = F, out.width='60%'}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
+```{r 7.29}
+plot( rethinking::compare( m6.6 , m6.7 , m6.8 ) )
+```
+
+```{r 7.30}
+set.seed(92)
+waic_m6.6 <- WAIC( m6.6 , pointwise=TRUE )$WAIC
+diff_m6.6_m6.8 <- waic_m6.6 - waic_m6.8
+sqrt( n*var( diff_m6.6_m6.8 ) )
+```
+
+```{r 7.31}
+set.seed(93)
+rethinking::compare( m6.6 , m6.7 , m6.8 )@dSE
+```
+
+***7.5.2. Outliers and other illusions***
+
+In the divorce example from Chapter 5, we saw in the posterior predictions that a few States were very hard for the model to retrodict. The State of Idaho in particular was something of an outlier. Individual points like Idaho tend to be very influential in ordinary regression models. Let’s see how PSIS and WAIC represent that importance.
+
+```{r 7.32}
+library(rethinking)
+data(WaffleDivorce)
+d <- WaffleDivorce
+d$A <- standardize( d$MedianAgeMarriage )
+d$D <- standardize( d$Divorce )
+d$M <- standardize( d$Marriage )
+
+m5.1 <- quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bA * A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+  
+m5.2 <- quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bM * M ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+  
+m5.3 <- quap(
+  alist(
+    D ~ dnorm( mu , sigma ) ,
+    mu <- a + bM*M + bA*A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+```
+
+Let's compare these models with PSIS
+
+```{r}
+set.seed(24071847)
+rethinking::compare( m5.1 , m5.2 , m5.3 , func=PSIS )
+```
+
+First note that the model that omits marriage rate, m5.1, lands on top. This is because marriage rate has very little association with the outcome. So the model that omits it has slightly better expected out-of-sample performance, even though it actually fits the sample slightly worse than m5.3, the model with both predictors. 
+
+`Some Pareto k values are very high (>1).` means that the smoothing approximation that PSIS uses is unreliable for some points.
+
+Let’s look at the individual States, to see which are causing the problem. We can do this by adding `pointwise=TRUE` to PSIS. When you do this, you get a matrix with each observation on a row and the PSIS information, including individual Pareto k values, in columns. 
+
+```{r 7.34}
+set.seed(24071847)
+PSIS_m5.3 <- PSIS(m5.3,pointwise=TRUE)
+set.seed(24071847)
+WAIC_m5.3 <- WAIC(m5.3,pointwise=TRUE)
+plot( PSIS_m5.3$k , WAIC_m5.3$penalty , xlab="PSIS Pareto k" ,
+  ylab="WAIC penalty" , col=rangi2 , lwd=2 )
+```
+
+One way to both use these extreme observations and reduce their influence is to employ some kind of ROBUST REGRESSION. A “robust regression” can mean many different things, but usually it indicates a linear model in which the influence of extreme observations is reduced. A common and useful kind of robust regression is to replace the Gaussian model with a thicker-tailed distribution like STUDENT’S T (or “Student-t”) distribution.
+
+Let’s re-estimate the divorce model using a Student-t distribution with $v = 2$.
+
+```{r 7.35}
+m5.3t <- quap(
+  alist(
+    D ~ dstudent( 2 , mu , sigma ) ,
+    mu <- a + bM*M + bA*A ,
+    a ~ dnorm( 0 , 0.2 ) ,
+    bM ~ dnorm( 0 , 0.5 ) ,
+    bA ~ dnorm( 0 , 0.5 ) ,
+    sigma ~ dexp( 1 )
+  ) , data = d )
+
+PSIS(m5.3t)
+```
 
 
 ```{r, echo = F, out.width='60%', fig.cap = "Incredibly clever and diabolical. Interested in life history evolution. Something to understand by looking at the whole field. Here's a dataset to consider. Why does lifespan vary so much? A typcial kind of conceptual model is this idea that body mass = fewer things kill you = living longer. And brain size = smart = avoiding danger. Should also season your DAG with some unobserved confounds."}
@@ -410,6 +892,6 @@ knitr::include_graphics(file.path(slides_dir, '41.png'))
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
-
+## Practice
 
 

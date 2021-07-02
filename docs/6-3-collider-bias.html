@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="6.3 Collider bias | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-06-22" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="6.3 Collider bias | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>6.3 Collider bias | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6-3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6-4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6-5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6-6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7-1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7-2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7-3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7-4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7-5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7-6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
+<li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
+<li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
+<li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="collider-bias" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> Collider bias</h2>
+<div class="figure">
+<img src="slides/L06/16.png" alt="This is where the selection effect comes from. Like the fork but in reverse. Here `Z` is a common result of `X` and `Y`. X and Y are really independent, but if you condition on Z, it creates a spurious causal connection between X and Y. There's this &quot;finding out&quot; effect. " width="80%" />
+<p class="caption marginnote shownote">
+This is where the selection effect comes from. Like the fork but in reverse. Here <code>Z</code> is a common result of <code>X</code> and <code>Y</code>. X and Y are really independent, but if you condition on Z, it creates a spurious causal connection between X and Y. There’s this “finding out” effect.
+</p>
+</div>
+<p><img src="slides/L06/17.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L06/18.png" alt="This is the finding out effect. Works for continuous variables as well. " width="80%" />
+<p class="caption marginnote shownote">
+This is the finding out effect. Works for continuous variables as well.
+</p>
+</div>
+<p><img src="slides/L06/19.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L06/20.png" alt="Both influence publication." width="80%" />
+<p class="caption marginnote shownote">
+Both influence publication.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/21.png" alt="So if it's been published in Nature and isn't trustworthy, can you tell me how newsworthy it is?" width="80%" />
+<p class="caption marginnote shownote">
+So if it’s been published in Nature and isn’t trustworthy, can you tell me how newsworthy it is?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/22.png" alt="There are lots of effects like this that happen all the time. Being tall is definitely causatively-speaking an advantage. The taller you are, the easier to score field goals. But conditional on being a professional player, there's no correlation between height and shooting percentage. Because the shorter players are compensating by being amazing in other ways. They've been distorted by the selection effects." width="80%" />
+<p class="caption marginnote shownote">
+There are lots of effects like this that happen all the time. Being tall is definitely causatively-speaking an advantage. The taller you are, the easier to score field goals. But conditional on being a professional player, there’s no correlation between height and shooting percentage. Because the shorter players are compensating by being amazing in other ways. They’ve been distorted by the selection effects.
+</p>
+</div>
+<p><strong><em>6.3.1. Collider of false sorrow</em></strong></p>
+<div class="figure">
+<img src="slides/L06/23.png" alt="Let's do an example. Image this causal graph at the bottom. Imagine it's true that getting married is positively, causally associated with happiness, and age. Now our question is, is there any causal impact of age on happiness? Here's a simulation where it's totally spurious. " width="80%" />
+<p class="caption marginnote shownote">
+Let’s do an example. Image this causal graph at the bottom. Imagine it’s true that getting married is positively, causally associated with happiness, and age. Now our question is, is there any causal impact of age on happiness? Here’s a simulation where it’s totally spurious.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/24.png" alt="Here the simulation is slightly different to the usual `rnorm`. Here's the algorithm. Uniform happiness at birth. Distributed from 0 to 1. Reality is more complicated, even harder to figure out. At 18 years old, you're eligible to marry. Then you have your coin-flip chance to get married. The chance is proportional to your happiness, which is constant. Age itself doesn't cause marriage, but each year you're alive you have another chance to get married. Married people remain married unto death. Then everyone moves to Spain. 1300 people, 3 variables, over 1000 years." width="80%" />
+<p class="caption marginnote shownote">
+Here the simulation is slightly different to the usual <code>rnorm</code>. Here’s the algorithm. Uniform happiness at birth. Distributed from 0 to 1. Reality is more complicated, even harder to figure out. At 18 years old, you’re eligible to marry. Then you have your coin-flip chance to get married. The chance is proportional to your happiness, which is constant. Age itself doesn’t cause marriage, but each year you’re alive you have another chance to get married. Married people remain married unto death. Then everyone moves to Spain. 1300 people, 3 variables, over 1000 years.
+</p>
+</div>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="6-3-collider-bias.html#cb315-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb315-2"><a href="6-3-collider-bias.html#cb315-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">sim_happiness</span>( <span class="at">seed=</span><span class="dv">1977</span> , <span class="at">N_years=</span><span class="dv">1000</span> )</span>
+<span id="cb315-3"><a href="6-3-collider-bias.html#cb315-3" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(d)</span></code></pre></div>
+<pre><code>##                    mean        sd      5.5%     94.5%     histogram
+## age        3.300000e+01 18.768883  4.000000 62.000000 ▇▇▇▇▇▇▇▇▇▇▇▇▇
+## married    3.007692e-01  0.458769  0.000000  1.000000    ▇▁▁▁▁▁▁▁▁▃
+## happiness -1.000070e-16  1.214421 -1.789474  1.789474      ▇▅▇▅▅▇▅▇</code></pre>
+<p>Rescale age so that the range from 18 to 65 is one unit, i.e. <code>A</code> ranges from 0 to 1, where 0 is age 18 and 1 is age 65:</p>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="6-3-collider-bias.html#cb317-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> d[ d<span class="sc">$</span>age<span class="sc">&gt;</span><span class="dv">17</span> , ] <span class="co"># only adults</span></span>
+<span id="cb317-2"><a href="6-3-collider-bias.html#cb317-2" aria-hidden="true" tabindex="-1"></a>d2<span class="sc">$</span>A <span class="ot">&lt;-</span> ( d2<span class="sc">$</span>age <span class="sc">-</span> <span class="dv">18</span> ) <span class="sc">/</span> ( <span class="dv">65</span> <span class="sc">-</span> <span class="dv">18</span> )</span></code></pre></div>
+<p>Approximate the posterior</p>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="6-3-collider-bias.html#cb318-1" aria-hidden="true" tabindex="-1"></a>d2<span class="sc">$</span>mid <span class="ot">&lt;-</span> d2<span class="sc">$</span>married <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb318-2"><a href="6-3-collider-bias.html#cb318-2" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.9</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb318-3"><a href="6-3-collider-bias.html#cb318-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb318-4"><a href="6-3-collider-bias.html#cb318-4" aria-hidden="true" tabindex="-1"></a>    happiness <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb318-5"><a href="6-3-collider-bias.html#cb318-5" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a[mid] <span class="sc">+</span> bA<span class="sc">*</span>A,</span>
+<span id="cb318-6"><a href="6-3-collider-bias.html#cb318-6" aria-hidden="true" tabindex="-1"></a>    a[mid] <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb318-7"><a href="6-3-collider-bias.html#cb318-7" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">2</span> ) ,</span>
+<span id="cb318-8"><a href="6-3-collider-bias.html#cb318-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb318-9"><a href="6-3-collider-bias.html#cb318-9" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d2 )</span>
+<span id="cb318-10"><a href="6-3-collider-bias.html#cb318-10" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.9</span>,<span class="at">depth=</span><span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##             mean         sd       5.5%      94.5%
+## a[1]  -0.2350877 0.06348986 -0.3365568 -0.1336186
+## a[2]   1.2585517 0.08495989  1.1227694  1.3943340
+## bA    -0.7490274 0.11320112 -0.9299447 -0.5681102
+## sigma  0.9897080 0.02255800  0.9536559  1.0257600</code></pre>
+<p>The model is quite sure that age is negatively associated with happiness. We’d like to compare the inferences from this model to a model that omits marriage status:</p>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="6-3-collider-bias.html#cb320-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.10</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb320-2"><a href="6-3-collider-bias.html#cb320-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb320-3"><a href="6-3-collider-bias.html#cb320-3" aria-hidden="true" tabindex="-1"></a>    happiness <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb320-4"><a href="6-3-collider-bias.html#cb320-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bA<span class="sc">*</span>A,</span>
+<span id="cb320-5"><a href="6-3-collider-bias.html#cb320-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ),</span>
+<span id="cb320-6"><a href="6-3-collider-bias.html#cb320-6" aria-hidden="true" tabindex="-1"></a>    bA <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">2</span> ),</span>
+<span id="cb320-7"><a href="6-3-collider-bias.html#cb320-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>(<span class="dv">1</span>)</span>
+<span id="cb320-8"><a href="6-3-collider-bias.html#cb320-8" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d2 )</span>
+<span id="cb320-9"><a href="6-3-collider-bias.html#cb320-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.10</span>)</span></code></pre></div>
+<pre><code>##                mean         sd       5.5%     94.5%
+## a      1.649248e-07 0.07675015 -0.1226614 0.1226617
+## bA    -2.728620e-07 0.13225976 -0.2113769 0.2113764
+## sigma  1.213188e+00 0.02766080  1.1689803 1.2573949</code></pre>
+<div class="figure">
+<img src="slides/L06/25.png" alt="Here's the system. Run a regression where we take happiness. Happiness is the outcome, then the linear model `mu`, the slope `a` which is age. That's the exposure we're interested in. And we know the marriage status, so perhaps we control for that. (No, that's the wrong thing to do, as we'll see.) Created an index variable. Then put that in as a control. We see that single people are less happy. Regression models don't have arrows. It's not in the Bayesian network; that's what the DAG does. `a[2]` is married individuals. Positive `mu`. The slope is solidly negative. But this is a spurious correlation by conditioning on a collider. " width="80%" />
+<p class="caption marginnote shownote">
+Here’s the system. Run a regression where we take happiness. Happiness is the outcome, then the linear model <code>mu</code>, the slope <code>a</code> which is age. That’s the exposure we’re interested in. And we know the marriage status, so perhaps we control for that. (No, that’s the wrong thing to do, as we’ll see.) Created an index variable. Then put that in as a control. We see that single people are less happy. Regression models don’t have arrows. It’s not in the Bayesian network; that’s what the DAG does. <code>a[2]</code> is married individuals. Positive <code>mu</code>. The slope is solidly negative. But this is a spurious correlation by conditioning on a collider.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/26.png" alt="We know that happiness doesn't change and doesn't decline with age, because that's how we coded it. But if we stratify by marriage status, it does. Each point is a person. Each year 20 individuals are born. Happiness is uniformly distributed and constant. Blue filled are married. Starting early on the blue points are only at the top. But over time, indiviuals who are less happy will also get married. By 65, most of the population in the simulation is married." width="80%" />
+<p class="caption marginnote shownote">
+We know that happiness doesn’t change and doesn’t decline with age, because that’s how we coded it. But if we stratify by marriage status, it does. Each point is a person. Each year 20 individuals are born. Happiness is uniformly distributed and constant. Blue filled are married. Starting early on the blue points are only at the top. But over time, indiviuals who are less happy will also get married. By 65, most of the population in the simulation is married.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/27.png" alt="Now if we draw regression lines, we can see there's a negative correlation. But the distribution of happiness has not changed for anybody." width="80%" />
+<p class="caption marginnote shownote">
+Now if we draw regression lines, we can see there’s a negative correlation. But the distribution of happiness has not changed for anybody.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/28.png" alt="If we condition on it, we allow information to flow from age to happiness. In reality we don't know, so we need to use information external to the data. " width="80%" />
+<p class="caption marginnote shownote">
+If we condition on it, we allow information to flow from age to happiness. In reality we don’t know, so we need to use information external to the data.
+</p>
+</div>
+<p><strong><em>6.3.2. The haunted DAG</em></strong></p>
+<div class="figure">
+<img src="slides/L06/29.png" alt="Another example. Colliders are so powerful they can even occur when you haven't measured the confounder. In my subfield, we're interested in allopaternal effects. What is the material benefit of having grandparents? There are resource and information flows, so we want to figure out how important they are. How do you figure this out empirically? Say you have triads, and you're looking at educational outcomes. Indirect path through P, say through books. But also a potential direct effects during say babysitting. But regressions can show that grandparents have a negative effect?" width="80%" />
+<p class="caption marginnote shownote">
+Another example. Colliders are so powerful they can even occur when you haven’t measured the confounder. In my subfield, we’re interested in allopaternal effects. What is the material benefit of having grandparents? There are resource and information flows, so we want to figure out how important they are. How do you figure this out empirically? Say you have triads, and you’re looking at educational outcomes. Indirect path through P, say through books. But also a potential direct effects during say babysitting. But regressions can show that grandparents have a negative effect?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/30.png" alt="It's plausible that parents and children share unobserved confounds. Whenever you do observational studies, there are `U`s all over the place. e.g. the neighbourhood you live in. School and neighbourhood effects are really powerful. Makes parents into a collider. So if we condition on parents, it becomes a collider. " width="80%" />
+<p class="caption marginnote shownote">
+It’s plausible that parents and children share unobserved confounds. Whenever you do observational studies, there are <code>U</code>s all over the place. e.g. the neighbourhood you live in. School and neighbourhood effects are really powerful. Makes parents into a collider. So if we condition on parents, it becomes a collider.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/31.png" alt="So we simulate this. Assuming that the direct path is 0." width="80%" />
+<p class="caption marginnote shownote">
+So we simulate this. Assuming that the direct path is 0.
+</p>
+</div>
+<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="6-3-collider-bias.html#cb322-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">200</span> <span class="co"># number of grandparent-parent-child triads</span></span>
+<span id="cb322-2"><a href="6-3-collider-bias.html#cb322-2" aria-hidden="true" tabindex="-1"></a>b_GP <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># direct effect of G on P</span></span>
+<span id="cb322-3"><a href="6-3-collider-bias.html#cb322-3" aria-hidden="true" tabindex="-1"></a>b_GC <span class="ot">&lt;-</span> <span class="dv">0</span> <span class="co"># direct effect of G on C</span></span>
+<span id="cb322-4"><a href="6-3-collider-bias.html#cb322-4" aria-hidden="true" tabindex="-1"></a>b_PC <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># direct effect of P on C</span></span>
+<span id="cb322-5"><a href="6-3-collider-bias.html#cb322-5" aria-hidden="true" tabindex="-1"></a>b_U <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="co"># direct effect of U on P and C</span></span></code></pre></div>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="6-3-collider-bias.html#cb323-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb323-2"><a href="6-3-collider-bias.html#cb323-2" aria-hidden="true" tabindex="-1"></a>U <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">rbern</span>( N , <span class="fl">0.5</span> ) <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb323-3"><a href="6-3-collider-bias.html#cb323-3" aria-hidden="true" tabindex="-1"></a>G <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N )</span>
+<span id="cb323-4"><a href="6-3-collider-bias.html#cb323-4" aria-hidden="true" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , b_GP<span class="sc">*</span>G <span class="sc">+</span> b_U<span class="sc">*</span>U )</span>
+<span id="cb323-5"><a href="6-3-collider-bias.html#cb323-5" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( N , b_PC<span class="sc">*</span>P <span class="sc">+</span> b_GC<span class="sc">*</span>G <span class="sc">+</span> b_U<span class="sc">*</span>U )</span>
+<span id="cb323-6"><a href="6-3-collider-bias.html#cb323-6" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">data.frame</span>( <span class="at">C=</span>C , <span class="at">P=</span>P , <span class="at">G=</span>G , <span class="at">U=</span>U )</span></code></pre></div>
+<div class="figure">
+<img src="slides/L06/32.png" alt="We end up concluding that grandparents hurt their kids. How does this work? Conditioning on a collider opens a path. It's closed by default. This oepns a path from G through U to see, which creates a spurious correlation." width="80%" />
+<p class="caption marginnote shownote">
+We end up concluding that grandparents hurt their kids. How does this work? Conditioning on a collider opens a path. It’s closed by default. This oepns a path from G through U to see, which creates a spurious correlation.
+</p>
+</div>
+<div class="sourceCode" id="cb324"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb324-1"><a href="6-3-collider-bias.html#cb324-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.11</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb324-2"><a href="6-3-collider-bias.html#cb324-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb324-3"><a href="6-3-collider-bias.html#cb324-3" aria-hidden="true" tabindex="-1"></a>    C <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb324-4"><a href="6-3-collider-bias.html#cb324-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b_PC<span class="sc">*</span>P <span class="sc">+</span> b_GC<span class="sc">*</span>G,</span>
+<span id="cb324-5"><a href="6-3-collider-bias.html#cb324-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ),</span>
+<span id="cb324-6"><a href="6-3-collider-bias.html#cb324-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(b_PC,b_GC) <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ),</span>
+<span id="cb324-7"><a href="6-3-collider-bias.html#cb324-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb324-8"><a href="6-3-collider-bias.html#cb324-8" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span>d )</span>
+<span id="cb324-9"><a href="6-3-collider-bias.html#cb324-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.11</span>)</span></code></pre></div>
+<pre><code>##             mean         sd       5.5%       94.5%
+## a     -0.1174752 0.09919574 -0.2760091  0.04105877
+## b_PC   1.7868915 0.04455355  1.7156863  1.85809664
+## b_GC  -0.8389537 0.10614045 -1.0085867 -0.66932077
+## sigma  1.4094891 0.07011139  1.2974375  1.52154063</code></pre>
+<div class="figure">
+<img src="slides/L06/33.png" alt="One way to think about this is on the left we have good neighbourhoods in blue. All filled in points are where the parents are in a particular stratum. Why is it negative? Focus only on parents in the narrow range of educational outcomes. Parents in the good neighbourhoods, to be within this range, they must have had less educated grandparents. There are two ways to become a highly-educated parent. Either you are in a good neighbourhood, or you had an educated parent yourself. Each end the P box. " width="80%" />
+<p class="caption marginnote shownote">
+One way to think about this is on the left we have good neighbourhoods in blue. All filled in points are where the parents are in a particular stratum. Why is it negative? Focus only on parents in the narrow range of educational outcomes. Parents in the good neighbourhoods, to be within this range, they must have had less educated grandparents. There are two ways to become a highly-educated parent. Either you are in a good neighbourhood, or you had an educated parent yourself. Each end the P box.
+</p>
+</div>
+<p>What can we do about this? We have to measure <span class="math inline">\(U\)</span>:</p>
+<div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="6-3-collider-bias.html#cb326-1" aria-hidden="true" tabindex="-1"></a>m6<span class="fl">.12</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb326-2"><a href="6-3-collider-bias.html#cb326-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb326-3"><a href="6-3-collider-bias.html#cb326-3" aria-hidden="true" tabindex="-1"></a>    C <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ),</span>
+<span id="cb326-4"><a href="6-3-collider-bias.html#cb326-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> b_PC<span class="sc">*</span>P <span class="sc">+</span> b_GC<span class="sc">*</span>G <span class="sc">+</span> b_U<span class="sc">*</span>U,</span>
+<span id="cb326-5"><a href="6-3-collider-bias.html#cb326-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ) ,</span>
+<span id="cb326-6"><a href="6-3-collider-bias.html#cb326-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(b_PC,b_GC,b_U) <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="dv">1</span> ),</span>
+<span id="cb326-7"><a href="6-3-collider-bias.html#cb326-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb326-8"><a href="6-3-collider-bias.html#cb326-8" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">data=</span>d )</span>
+<span id="cb326-9"><a href="6-3-collider-bias.html#cb326-9" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m6<span class="fl">.12</span>)</span></code></pre></div>
+<pre><code>##              mean         sd       5.5%        94.5%
+## a     -0.12197510 0.07192588 -0.2369265 -0.007023655
+## b_PC   1.01161103 0.06597258  0.9061741  1.117047948
+## b_GC  -0.04081373 0.09728716 -0.1962974  0.114669941
+## b_U    1.99648992 0.14770462  1.7604294  2.232550439
+## sigma  1.01959911 0.05080176  0.9384081  1.100790130</code></pre>
+<p>And those are the slopes we simulated with.</p>
+</div>
+<p style="text-align: center;">
+<a href="6-2-post-treatment-bias.html"><button class="btn btn-default">Previous</button></a>
+<a href="6-4-confronting-confounding.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

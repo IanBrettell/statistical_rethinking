@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="6.4 Confronting confounding | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-06-22" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="6.4 Confronting confounding | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>6.4 Confronting confounding | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6-3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6-4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6-5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6-6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7-1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7-2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7-3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7-4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7-5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7-6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
+<li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
+<li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
+<li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="confronting-confounding" class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> Confronting confounding</h2>
+<p><strong><em>6.4.1. Shutting the backdoor</em></strong></p>
+<div class="figure">
+<img src="slides/L06/34.png" alt="The back door criterion is that you want to figure out the true causal impact on some outcome, you need to shut all backdoor paths from the treatment to the outcome. We have to shut that arrow off to infer a true causal effect. In experiments you shut all the backdoor paths by randomising. But in observational studies, you want some set of criteria for what variables you should include to shut the paths." width="80%" />
+<p class="caption marginnote shownote">
+The back door criterion is that you want to figure out the true causal impact on some outcome, you need to shut all backdoor paths from the treatment to the outcome. We have to shut that arrow off to infer a true causal effect. In experiments you shut all the backdoor paths by randomising. But in observational studies, you want some set of criteria for what variables you should include to shut the paths.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L06/35.png" alt="These are the only ways that variables interact in these graphs. " width="80%" />
+<p class="caption marginnote shownote">
+These are the only ways that variables interact in these graphs.
+</p>
+</div>
+<p><img src="slides/L06/36.png" width="80%" /></p>
+<p><img src="slides/L06/37.png" width="80%" /></p>
+<div class="sourceCode" id="cb328"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb328-1"><a href="6-4-confronting-confounding.html#cb328-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L07&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L07/01.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L07/02.png" alt="You can solve causal inference by assuming the DAG is true. There is a framework that unites all these examples: the **back-door criterion**. We need to shut all the back door paths into the exposure. There are only really three different ways they can meet in the DAG." width="80%" />
+<p class="caption marginnote shownote">
+You can solve causal inference by assuming the DAG is true. There is a framework that unites all these examples: the <strong>back-door criterion</strong>. We need to shut all the back door paths into the exposure. There are only really three different ways they can meet in the DAG.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/03.png" alt="Break the fork by conditioning on Z. Block the pipe by conditioning on Z. The collider only opens the path if you condition on it. Conditioning on a descendant of a collider is like conditioning on a collider, depending on how strong the relationship is. " width="80%" />
+<p class="caption marginnote shownote">
+Break the fork by conditioning on Z. Block the pipe by conditioning on Z. The collider only opens the path if you condition on it. Conditioning on a descendant of a collider is like conditioning on a collider, depending on how strong the relationship is.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/04.png" alt="The classic confound involves some exposure $E$. A lot of research goes into understanding what the returns on education are. There are a lot of confounds $U$. How do we de-confound this DAG using the back-door criterion? $E \leftarrow  U \rightarrow W$. How to shut this? It's a fork, and you close it by conditioning on $U$. But here it's unobserved, so we can't condition on it. You therefore can't get an unbiased estimate. But that's an achievement, because we've wasted less time. " width="80%" />
+<p class="caption marginnote shownote">
+The classic confound involves some exposure <span class="math inline">\(E\)</span>. A lot of research goes into understanding what the returns on education are. There are a lot of confounds <span class="math inline">\(U\)</span>. How do we de-confound this DAG using the back-door criterion? <span class="math inline">\(E \leftarrow U \rightarrow W\)</span>. How to shut this? It’s a fork, and you close it by conditioning on <span class="math inline">\(U\)</span>. But here it’s unobserved, so we can’t condition on it. You therefore can’t get an unbiased estimate. But that’s an achievement, because we’ve wasted less time.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/05.png" alt="If we want to estimate the direct causal influence from grandparents to kids, we see there are three paths from G to C. If we condition on $P$, that closes the second path through parents. Since that's a pipe, you condition on parents, but that opens the other path, because they're a collider between grandparents and unobserved neighbourhood effects. So we can't get a valid estimate unless we measure it. This is happy news, because we know we're being fooled." width="80%" />
+<p class="caption marginnote shownote">
+If we want to estimate the direct causal influence from grandparents to kids, we see there are three paths from G to C. If we condition on <span class="math inline">\(P\)</span>, that closes the second path through parents. Since that’s a pipe, you condition on parents, but that opens the other path, because they’re a collider between grandparents and unobserved neighbourhood effects. So we can’t get a valid estimate unless we measure it. This is happy news, because we know we’re being fooled.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/06.png" alt="We want to know the causal effect of $X$ on $Y$. We have an unobserved cause of $X$, then three covariates. What do you need to condition on, and what should you absolutely not condition on? The backdoor criterion is sufficient to figure it out. Find each backdoor path, and figure out which ones to open and close. Just three paths." width="80%" />
+<p class="caption marginnote shownote">
+We want to know the causal effect of <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span>. We have an unobserved cause of <span class="math inline">\(X\)</span>, then three covariates. What do you need to condition on, and what should you absolutely not condition on? The backdoor criterion is sufficient to figure it out. Find each backdoor path, and figure out which ones to open and close. Just three paths.
+</p>
+</div>
+<p>Can get <code>dagitty</code> to do it for us:</p>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="6-4-confronting-confounding.html#cb329-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dagitty)</span>
+<span id="cb329-2"><a href="6-4-confronting-confounding.html#cb329-2" aria-hidden="true" tabindex="-1"></a>dag_6<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">dagitty</span>( <span class="st">&quot;dag {</span></span>
+<span id="cb329-3"><a href="6-4-confronting-confounding.html#cb329-3" aria-hidden="true" tabindex="-1"></a><span class="st">  U [unobserved]</span></span>
+<span id="cb329-4"><a href="6-4-confronting-confounding.html#cb329-4" aria-hidden="true" tabindex="-1"></a><span class="st">  X -&gt; Y</span></span>
+<span id="cb329-5"><a href="6-4-confronting-confounding.html#cb329-5" aria-hidden="true" tabindex="-1"></a><span class="st">  X &lt;- U &lt;- A -&gt; C -&gt; Y</span></span>
+<span id="cb329-6"><a href="6-4-confronting-confounding.html#cb329-6" aria-hidden="true" tabindex="-1"></a><span class="st">  U -&gt; B &lt;- C</span></span>
+<span id="cb329-7"><a href="6-4-confronting-confounding.html#cb329-7" aria-hidden="true" tabindex="-1"></a><span class="st">}&quot;</span>)</span>
+<span id="cb329-8"><a href="6-4-confronting-confounding.html#cb329-8" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>( dag_6<span class="fl">.1</span> , <span class="at">exposure=</span><span class="st">&quot;X&quot;</span> , <span class="at">outcome=</span><span class="st">&quot;Y&quot;</span> )</span></code></pre></div>
+<pre><code>## { C }
+## { A }</code></pre>
+<p>Conditioning on either <span class="math inline">\(C\)</span> or <span class="math inline">\(A\)</span> would suffice. Conditioning on <span class="math inline">\(C\)</span> is the better idea, from the perspective of efficiency, since it could also help with the precision of the estimate of <span class="math inline">\(X \rightarrow Y\)</span>.</p>
+<p>Now consider the second path, passing through <span class="math inline">\(B\)</span>. This path does contain a collider, <span class="math inline">\(U → B ← C\)</span> It is therefore already closed, which is why <code>adjustmentSets</code> did not mention <span class="math inline">\(B\)</span>.</p>
+<div class="figure">
+<img src="slides/L07/07.png" alt="What should we prefer between A or C? Just pick the one that's measured better. By the way, you need both good estimation, and a causal framework. Both are necessary." width="80%" />
+<p class="caption marginnote shownote">
+What should we prefer between A or C? Just pick the one that’s measured better. By the way, you need both good estimation, and a causal framework. Both are necessary.
+</p>
+</div>
+<p><strong><em>6.4.3. Backdoor waffles</em></strong></p>
+<div class="figure">
+<img src="slides/L07/08.png" alt="Statistical assocation between Waffle Houses and divorce rate. What do we need to control for to remove spurious causation? Same elemental confounds as before. Backdoor into Waffle Houses through South. What do we have to do to estimate the causal impact of Waffles? Come out the backdoor of Waffle House, and find all the paths to get to D. It's sufficient to condition on A and M too. But it's sufficient to just condition on S." width="80%" />
+<p class="caption marginnote shownote">
+Statistical assocation between Waffle Houses and divorce rate. What do we need to control for to remove spurious causation? Same elemental confounds as before. Backdoor into Waffle Houses through South. What do we have to do to estimate the causal impact of Waffles? Come out the backdoor of Waffle House, and find all the paths to get to D. It’s sufficient to condition on A and M too. But it’s sufficient to just condition on S.
+</p>
+</div>
+<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="6-4-confronting-confounding.html#cb331-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dagitty)</span>
+<span id="cb331-2"><a href="6-4-confronting-confounding.html#cb331-2" aria-hidden="true" tabindex="-1"></a>dag_6<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">dagitty</span>( <span class="st">&quot;dag {</span></span>
+<span id="cb331-3"><a href="6-4-confronting-confounding.html#cb331-3" aria-hidden="true" tabindex="-1"></a><span class="st">  A -&gt; D</span></span>
+<span id="cb331-4"><a href="6-4-confronting-confounding.html#cb331-4" aria-hidden="true" tabindex="-1"></a><span class="st">  A -&gt; M -&gt; D</span></span>
+<span id="cb331-5"><a href="6-4-confronting-confounding.html#cb331-5" aria-hidden="true" tabindex="-1"></a><span class="st">  A &lt;- S -&gt; M</span></span>
+<span id="cb331-6"><a href="6-4-confronting-confounding.html#cb331-6" aria-hidden="true" tabindex="-1"></a><span class="st">  S -&gt; W -&gt; D</span></span>
+<span id="cb331-7"><a href="6-4-confronting-confounding.html#cb331-7" aria-hidden="true" tabindex="-1"></a><span class="st">}&quot;</span>)</span>
+<span id="cb331-8"><a href="6-4-confronting-confounding.html#cb331-8" aria-hidden="true" tabindex="-1"></a><span class="fu">adjustmentSets</span>( dag_6<span class="fl">.2</span> , <span class="at">exposure=</span><span class="st">&quot;W&quot;</span>, <span class="at">outcome=</span><span class="st">&quot;D&quot;</span> )</span></code></pre></div>
+<pre><code>## { A, M }
+## { S }</code></pre>
+<p><img src="slides/L07/09.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L07/10.png" alt="Good news. There are a number of packages where you give them the DAG, and then you can get it to algorithmically tell you things about the DAG. You can test your DAG, bu inspecting the implied conditional dependencies. The causal structure implies that some things are independent on others. A and W should have no correlation after conditioning on S. It's a fork from S. Parts of the DAG may be wrong. It's a good lesson that the answers require the data, but aren't in the data." width="80%" />
+<p class="caption marginnote shownote">
+Good news. There are a number of packages where you give them the DAG, and then you can get it to algorithmically tell you things about the DAG. You can test your DAG, bu inspecting the implied conditional dependencies. The causal structure implies that some things are independent on others. A and W should have no correlation after conditioning on S. It’s a fork from S. Parts of the DAG may be wrong. It’s a good lesson that the answers require the data, but aren’t in the data.
+</p>
+</div>
+<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="6-4-confronting-confounding.html#cb333-1" aria-hidden="true" tabindex="-1"></a><span class="fu">impliedConditionalIndependencies</span>( dag_6<span class="fl">.2</span> )</span></code></pre></div>
+<pre><code>## A _||_ W | S
+## D _||_ S | A, M, W
+## M _||_ W | S</code></pre>
+<div class="figure">
+<img src="slides/L07/11.png" alt="Hume did more to sort out causal inference than any other thinker. The whole approach of causal inference is Humian. We ahven't solved the problem, but he'd be proud of what we've built. It shows that experiments aren't necessary. We don't need them if we can close the backdoor paths. Often experiments in the human sciences are either impractical or unethical or both. Lots of progress can come from observational studies. Also, interventions influence many variables at once. e.g. experimentally manipulate obsesity. Choosing exercise or diet will affect what you're observing. Huge advantage of observational studies." width="80%" />
+<p class="caption marginnote shownote">
+Hume did more to sort out causal inference than any other thinker. The whole approach of causal inference is Humian. We ahven’t solved the problem, but he’d be proud of what we’ve built. It shows that experiments aren’t necessary. We don’t need them if we can close the backdoor paths. Often experiments in the human sciences are either impractical or unethical or both. Lots of progress can come from observational studies. Also, interventions influence many variables at once. e.g. experimentally manipulate obsesity. Choosing exercise or diet will affect what you’re observing. Huge advantage of observational studies.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/12.png" alt="The first alternative uses the existence of a mediator to remove a cofound between an exposure and an outcome. The second is used a lot in behavioural genetics and economics. We'll learn how to use these." width="80%" />
+<p class="caption marginnote shownote">
+The first alternative uses the existence of a mediator to remove a cofound between an exposure and an outcome. The second is used a lot in behavioural genetics and economics. We’ll learn how to use these.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/13.png" alt="Shouldn't get cocky. DAGs are heuristic models. Still a lot of residual confounding. You can put measurement error into a DAG. We'll get there near the end. This is important if you're say an anthropologist, half your measurements are error. Phylogenetic trees: big nest of error. Last is that you shouldn't let DAGs stop you from making a real causal model. Physicists don't need DAGs because they have real models, with causal implications. That's what you want to drive towards." width="80%" />
+<p class="caption marginnote shownote">
+Shouldn’t get cocky. DAGs are heuristic models. Still a lot of residual confounding. You can put measurement error into a DAG. We’ll get there near the end. This is important if you’re say an anthropologist, half your measurements are error. Phylogenetic trees: big nest of error. Last is that you shouldn’t let DAGs stop you from making a real causal model. Physicists don’t need DAGs because they have real models, with causal implications. That’s what you want to drive towards.
+</p>
+</div>
+</div>
+<p style="text-align: center;">
+<a href="6-3-collider-bias.html"><button class="btn btn-default">Previous</button></a>
+<a href="6-5-summary.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
