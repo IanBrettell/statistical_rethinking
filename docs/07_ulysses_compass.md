@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-06-22'
+date: '2021-07-02'
 #output: html_notebook
 editor_options: 
   chunk_output_type: inline
@@ -157,7 +157,7 @@ outcome_var <- var2( d$brain_std )
 ```
 
 ```
-## [1] 0.477459
+## [1] 0.4774589
 ```
 
 Let's write a function to do this again:
@@ -443,7 +443,7 @@ rethinking::lppd( m7.1 , n=1e4 )
 ```
 
 ```
-## [1]  0.6098703  0.6483479  0.5496138  0.6234969  0.4648185  0.4347654 -0.8444745
+## [1]  0.6098669  0.6483439  0.5496093  0.6234934  0.4648143  0.4347605 -0.8444632
 ```
 
 Larger values are better, because that indicates larger average accuracy.
@@ -459,7 +459,7 @@ f <- function( i ) log_sum_exp( logprob[,i] ) - log(ns)
 ```
 
 ```
-## [1]  0.6098703  0.6483479  0.5496138  0.6234969  0.4648185  0.4347654 -0.8444745
+## [1]  0.6098669  0.6483439  0.5496093  0.6234934  0.4648143  0.4347605 -0.8444632
 ```
 
 
@@ -487,7 +487,7 @@ sapply( list(m7.1,m7.2,m7.3,m7.4,m7.5,m7.6) , function(m) sum(lppd(m)) )
 ```
 
 ```
-## [1]  2.490404  2.566165  3.707343  5.333750 14.090061 39.445390
+## [1]  2.490390  2.566165  3.707343  5.333750 14.090061 39.445390
 ```
 
 The more complex models have larger scores, but it is really the score on new data that interests us.

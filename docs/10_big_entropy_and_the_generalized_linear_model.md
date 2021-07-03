@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-06-22'
+date: '2021-07-02'
 #output: html_notebook
 editor_options: 
   chunk_output_type: inline
@@ -31,6 +31,24 @@ slides_dir = here::here("docs/slides/L11")
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L11/01.png" alt="We'll move conceptually at a slow rate, which will set up a bunch of different models for this week and next." width="80%" />
 <p class="caption">We'll move conceptually at a slow rate, which will set up a bunch of different models for this week and next.</p>
 </div>
+
+There are vastly more ways for cords to end up in a knot than for them to remain untied. Events that can happen vastly more ways are more likely.
+
+Statistical models force many choices upon us. Some of these choices are distributions that represent uncertainty. We must choose, for each parameter, a prior distribution. And we must choose a likelihood function, which serves as a distribution of data. There are conventional choices, such as wide Gaussian priors and the Gaussian likelihood of linear regression. These conventional choices work unreasonably well in many circumstances. But very often the conventional choices are not the best choices. Inference can be more powerful when we use all of the information, and doing so usually requires going beyond convention.
+
+Bet on the distribution with the biggest entropy. Why? There are three sorts of justifications:
+
+1. The distribution with the biggest entropy is the widest and least informative distribution. Choosing the distribution with the largest entropy means spreading probability as evenly as possible, while still remaining consistent with anything we think we know about a process.
+1. Nature tends to produce empirical distributions that have high entropy.
+1. Regardless of why it works, it tends to work.
+
+A generalized linear model (GLM) is much like the linear regressions of previous chapters. It is a model that replaces a parameter of a likelihood function with a linear model. But GLMs need not use Gaussian likelihoods. Any likelihood function can be used, and linear models can be attached to any or all of the parameters that describe its shape. The principle of maximum entropy helps us choose likelihood functions, by providing a way to use stated assumptions about constraints on the outcome variable to choose the likelihood function that is the most conservative distribution compatible with the known constraints.
+
+## Maximum entropy
+
+Maximum entropy principle:
+
+>The distribution that can happen the most ways is also the distribution with the biggest information entropy. The distribution with the biggest entropy is the most conservative distribution that obeys its constraints.
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L11/02.png" alt="Imagine you have buckets equidistant from you. At your feet you have 100 pebbles, each painted with a number. Unique pebbles. " width="80%" />
@@ -66,6 +84,40 @@ slides_dir = here::here("docs/slides/L11")
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L11/08.png" alt="This is called the multiplicity. It's the foundation of statistical inference. It gets big really fast when the Ns get equal. " width="80%" />
 <p class="caption">This is called the multiplicity. It's the foundation of statistical inference. It gets big really fast when the Ns get equal. </p>
 </div>
+
+Let’s put each distribution of pebbles in a list:
+
+
+```r
+p <- list()
+p$A <- c(0,0,10,0,0)
+p$B <- c(0,1,8,1,0)
+p$C <- c(0,2,6,2,0)
+p$D <- c(1,2,4,2,1)
+p$E <- c(2,2,2,2,2)
+```
+
+And let’s normalize each such that it is a probability distribution. 
+
+
+```r
+p_norm <- lapply( p , function(q) q/sum(q))
+```
+
+Since these are now probability distributions, we can compute the information entropy of each
+
+
+```r
+( H <- sapply( p_norm , function(q) -sum(ifelse(q==0,0,q*log(q))) ) )
+```
+
+```
+##         A         B         C         D         E 
+## 0.0000000 0.6390319 0.9502705 1.4708085 1.6094379
+```
+
+So distribution E, which can realized by far the greatest number of ways, also has the biggest entropy.
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L11/09.png" alt="Only one way to get all the pebbles in bucket 3. " width="80%" />
@@ -129,6 +181,98 @@ slides_dir = here::here("docs/slides/L11")
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L11/23.png" alt="Under some set of constraints, the distributions we use are maximum entropy distributions. Exponential distributions used for scale. They have a very clear maxent constraint. If a parameter is non-negative real, and has some mean value, then the exponential contains only that information." width="80%" />
 <p class="caption">Under some set of constraints, the distributions we use are maximum entropy distributions. Exponential distributions used for scale. They have a very clear maxent constraint. If a parameter is non-negative real, and has some mean value, then the exponential contains only that information.</p>
 </div>
+
+***10.1.1. Gaussian***
+
+To appreciate why the Gaussian shape has the biggest entropy for any continuous distribution with this variance, consider that entropy increases as we make a distribution flatter. So we could easily make up a probability distribution with larger entropy than the blue distribution in Figure 10.2: Just take probability from the center and put it in the tails. The more uniform the distribution looks, the higher its entropy will be. But there are limits on how much of this we can do and maintain the same variance, $\sigma^2 = 1$.
+
+Then the Gaussian distribution gets its shape by being as spread out as possible for a distribution with fixed variance.
+
+***10.1.2. Binomial***
+
+
+```r
+# build list of the candidate distributions
+p <- list()
+p[[1]] <- c(1/4,1/4,1/4,1/4)
+p[[2]] <- c(2/6,1/6,1/6,2/6)
+p[[3]] <- c(1/6,2/6,2/6,1/6)
+p[[4]] <- c(1/8,4/8,2/8,1/8)
+
+# compute expected value of each
+sapply( p , function(p) sum(p*c(0,1,1,2)) )
+```
+
+```
+## [1] 1 1 1 1
+```
+
+Compute the entropy of each distribution:
+
+
+```r
+# compute entropy of each distribution
+sapply( p , function(p) -sum( p*log(p) ) )
+```
+
+```
+## [1] 1.386294 1.329661 1.329661 1.213008
+```
+
+The binomial with this expected value is:
+
+
+```r
+p <- 0.7
+( A <- c( (1-p)^2 , p*(1-p) , (1-p)*p , p^2 ) )
+```
+
+```
+## [1] 0.09 0.21 0.21 0.49
+```
+
+This distribution is definitely not flat. So to appreciate how this distribution has maximum entropy—is the flattest distribution with expected value 1.4—we’ll simulate a bunch of distributions with the same expected value and then compare entropies. The entropy of the distribution above is just:
+
+
+```r
+-sum( A*log(A) )
+```
+
+```
+## [1] 1.221729
+```
+
+So if we randomly generate thousands of distributions with expected value 1.4, we expect that none will have a larger entropy than this.
+
+We can use a short R function to simulate random probability distributions that have any specified expected value. The code below will do the job. Don’t worry about how it works (unless you want to).
+
+
+```r
+sim.p <- function(G=1.4) {
+  x123 <- runif(3)
+  x4 <- ( (G)*sum(x123)-x123[2]-x123[3] )/(2-G)
+  z <- sum( c(x123,x4) )
+  p <- c( x123 , x4 )/z
+  list( H=-sum( p*log(p) ) , p=p )
+}
+```
+
+
+```r
+H <- replicate( 1e5 , sim.p(1.4) )
+dens( as.numeric(H[1,]) , adj=0.1 )
+```
+
+<img src="10_big_entropy_and_the_generalized_linear_model_files/figure-html/10.10-1.png" width="672" />
+
+Let’s split out the entropies and distributions, so that it’s easier to work with them:
+
+
+```r
+entropies <- as.numeric(H[1,])
+distributions <- H[2,]
+```
+
 
 <div class="figure">
 <img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L11/24.png" alt="Larger family of geocentric linear models. We want to connect a linear model to a mean to the distribution. Unreasonably effective given how geocentric it is. We pick an outcome distribution, then model the parameters using weird things called links, whcih link the distribution to some model. Can do all kinds of fancy things with the same basic strategy. Often if you don't want to play this game, when you write it down, it'll turn out to be a linear model anyway. In most cases, you probably want a GLM." width="80%" />

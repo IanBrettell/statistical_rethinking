@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="8.3 Continuous interactions | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-07-02" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="8.3 Continuous interactions | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>8.3 Continuous interactions | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6-3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6-4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6-5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6-6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7-1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7-2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7-3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7-4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7-5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7-6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8-1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8-2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8-3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9-1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9-2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9-3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9-4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9-5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10-1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+</ul></li>
+<li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
+<li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
+<li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="continuous-interactions" class="section level2" number="8.3">
+<h2><span class="header-section-number">8.3</span> Continuous interactions</h2>
+<p>Interpretation is much harder with continuous variables, even though the mathematics of the model are essentially the same.</p>
+<p><strong><em>8.3.1. A winter flower</em></strong></p>
+<div class="sourceCode" id="cb429"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb429-1"><a href="8-3-continuous-interactions.html#cb429-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb429-2"><a href="8-3-continuous-interactions.html#cb429-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(tulips)</span>
+<span id="cb429-3"><a href="8-3-continuous-interactions.html#cb429-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> tulips</span>
+<span id="cb429-4"><a href="8-3-continuous-interactions.html#cb429-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(d)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    27 obs. of  4 variables:
+##  $ bed   : Factor w/ 3 levels &quot;a&quot;,&quot;b&quot;,&quot;c&quot;: 1 1 1 1 1 1 1 1 1 2 ...
+##  $ water : int  1 1 1 2 2 2 3 3 3 1 ...
+##  $ shade : int  1 2 3 1 2 3 1 2 3 1 ...
+##  $ blooms: num  0 0 111 183.5 59.2 ...</code></pre>
+<div class="sourceCode" id="cb431"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb431-1"><a href="8-3-continuous-interactions.html#cb431-1" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>blooms_std <span class="ot">&lt;-</span> d<span class="sc">$</span>blooms <span class="sc">/</span> <span class="fu">max</span>(d<span class="sc">$</span>blooms)</span>
+<span id="cb431-2"><a href="8-3-continuous-interactions.html#cb431-2" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>water_cent <span class="ot">&lt;-</span> d<span class="sc">$</span>water <span class="sc">-</span> <span class="fu">mean</span>(d<span class="sc">$</span>water)</span>
+<span id="cb431-3"><a href="8-3-continuous-interactions.html#cb431-3" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>shade_cent <span class="ot">&lt;-</span> d<span class="sc">$</span>shade <span class="sc">-</span> <span class="fu">mean</span>(d<span class="sc">$</span>shade)</span></code></pre></div>
+<p>Now <code>blooms_std</code> ranges from 0 to 1, and both water_cent and shade_cent range from −1 to 1. I’ve scaled blooms by its maximum observed value, for three reasons. First, the large values on the raw scale will make optimization difficult. Second, it will be easier to assign a reasonable prior this way. Third, we don’t want to standardize blooms, because zero is a meaningful boundary we want to preserve.</p>
+<div class="figure">
+<img src="slides/L09/27.png" alt="Now here both predictors are continuous. Basically works the same way, but much harder to think about. Experimental example but works the same in observationals. 3 variables of interest plus the experimental block which you want to control for. We're going to leave out `block` and add that in later. Three levels of water and shade, with the outcome bloom area. " width="80%" />
+<p class="caption marginnote shownote">
+Now here both predictors are continuous. Basically works the same way, but much harder to think about. Experimental example but works the same in observationals. 3 variables of interest plus the experimental block which you want to control for. We’re going to leave out <code>block</code> and add that in later. Three levels of water and shade, with the outcome bloom area.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/28.png" alt="They're categorical, but in principle they're continuous. This is the conventional form of the interaction. When you add an interaction of continous variables, you multiply the predictors and add a third coefficient. First is to understand why this happens. " width="80%" />
+<p class="caption marginnote shownote">
+They’re categorical, but in principle they’re continuous. This is the conventional form of the interaction. When you add an interaction of continous variables, you multiply the predictors and add a third coefficient. First is to understand why this happens.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/29.png" alt="Here is the conventional form on top. " width="80%" />
+<p class="caption marginnote shownote">
+Here is the conventional form on top.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/30.png" alt="It means we replace one of these slopes with another linear model. Now $W$ will be the centered version, as with $S$ for shade. We've replaced the $\beta$ coefficient in front of water level with $\gamma$, and $\gamma$ isn't a parameter but a linear model. Another one. We can have as many as we want. And this linear model now tells us the slope. And the slope has two parameters in it. One is the ordinary slope, $\beta_W$, and the other $\beta_{WS}$, is the interaction. That parameter measures the marginal effect of changing shade on the impact of water. So we're directly assuming that the effect of water depends on shade. And we make the submodel, which is linear because we're still in geocentric world. " width="80%" />
+<p class="caption marginnote shownote">
+It means we replace one of these slopes with another linear model. Now <span class="math inline">\(W\)</span> will be the centered version, as with <span class="math inline">\(S\)</span> for shade. We’ve replaced the <span class="math inline">\(\beta\)</span> coefficient in front of water level with <span class="math inline">\(\gamma\)</span>, and <span class="math inline">\(\gamma\)</span> isn’t a parameter but a linear model. Another one. We can have as many as we want. And this linear model now tells us the slope. And the slope has two parameters in it. One is the ordinary slope, <span class="math inline">\(\beta_W\)</span>, and the other <span class="math inline">\(\beta_{WS}\)</span>, is the interaction. That parameter measures the marginal effect of changing shade on the impact of water. So we’re directly assuming that the effect of water depends on shade. And we make the submodel, which is linear because we’re still in geocentric world.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/31.png" alt="It doesnt' matter which one you pick, you get the same equation. Basically, this is where it comes from - assuming I want the association of each with the outcome to be dependent on the other's value, so let's make a linear model of that. Liek a regression within a regression. " width="80%" />
+<p class="caption marginnote shownote">
+It doesnt’ matter which one you pick, you get the same equation. Basically, this is where it comes from - assuming I want the association of each with the outcome to be dependent on the other’s value, so let’s make a linear model of that. Liek a regression within a regression.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/32.png" alt="Let's fit this. Contrasting one with and without an interaction. Main effect of water, main effect of shade. With priors. But we've already got the problem of how to visualise this." width="80%" />
+<p class="caption marginnote shownote">
+Let’s fit this. Contrasting one with and without an interaction. Main effect of water, main effect of shade. With priors. But we’ve already got the problem of how to visualise this.
+</p>
+</div>
+<div class="sourceCode" id="cb432"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb432-1"><a href="8-3-continuous-interactions.html#cb432-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( <span class="fl">1e4</span> , <span class="fl">0.5</span> , <span class="dv">1</span> ); <span class="fu">sum</span>( a <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">|</span> a <span class="sc">&gt;</span> <span class="dv">1</span> ) <span class="sc">/</span> <span class="fu">length</span>( a )</span></code></pre></div>
+<pre><code>## [1] 0.6166</code></pre>
+<p>If it’s 0.5 units from the mean to zero, then a standard deviation of 0.25 should put only 5% of the mass outside the valid internal. Let’s see:</p>
+<div class="sourceCode" id="cb434"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb434-1"><a href="8-3-continuous-interactions.html#cb434-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">rnorm</span>( <span class="fl">1e4</span> , <span class="fl">0.5</span> , <span class="fl">0.25</span> ); <span class="fu">sum</span>( a <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">|</span> a <span class="sc">&gt;</span> <span class="dv">1</span> ) <span class="sc">/</span> <span class="fu">length</span>( a )</span></code></pre></div>
+<pre><code>## [1] 0.0474</code></pre>
+<p>Much better.</p>
+<div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb436-1"><a href="8-3-continuous-interactions.html#cb436-1" aria-hidden="true" tabindex="-1"></a>m8<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb436-2"><a href="8-3-continuous-interactions.html#cb436-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb436-3"><a href="8-3-continuous-interactions.html#cb436-3" aria-hidden="true" tabindex="-1"></a>    blooms_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb436-4"><a href="8-3-continuous-interactions.html#cb436-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bw<span class="sc">*</span>water_cent <span class="sc">+</span> bs<span class="sc">*</span>shade_cent ,</span>
+<span id="cb436-5"><a href="8-3-continuous-interactions.html#cb436-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="fl">0.5</span> , <span class="fl">0.25</span> ) ,</span>
+<span id="cb436-6"><a href="8-3-continuous-interactions.html#cb436-6" aria-hidden="true" tabindex="-1"></a>    bw <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) ,</span>
+<span id="cb436-7"><a href="8-3-continuous-interactions.html#cb436-7" aria-hidden="true" tabindex="-1"></a>    bs <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) ,</span>
+<span id="cb436-8"><a href="8-3-continuous-interactions.html#cb436-8" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb436-9"><a href="8-3-continuous-interactions.html#cb436-9" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d )</span></code></pre></div>
+<p>Now with the interaction:</p>
+<div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb437-1"><a href="8-3-continuous-interactions.html#cb437-1" aria-hidden="true" tabindex="-1"></a>m8<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">quap</span>(</span>
+<span id="cb437-2"><a href="8-3-continuous-interactions.html#cb437-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">alist</span>(</span>
+<span id="cb437-3"><a href="8-3-continuous-interactions.html#cb437-3" aria-hidden="true" tabindex="-1"></a>    blooms_std <span class="sc">~</span> <span class="fu">dnorm</span>( mu , sigma ) ,</span>
+<span id="cb437-4"><a href="8-3-continuous-interactions.html#cb437-4" aria-hidden="true" tabindex="-1"></a>    mu <span class="ot">&lt;-</span> a <span class="sc">+</span> bw<span class="sc">*</span>water_cent <span class="sc">+</span> bs<span class="sc">*</span>shade_cent <span class="sc">+</span> bws<span class="sc">*</span>water_cent<span class="sc">*</span>shade_cent ,</span>
+<span id="cb437-5"><a href="8-3-continuous-interactions.html#cb437-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="fl">0.5</span> , <span class="fl">0.25</span> ) ,</span>
+<span id="cb437-6"><a href="8-3-continuous-interactions.html#cb437-6" aria-hidden="true" tabindex="-1"></a>    bw <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) ,</span>
+<span id="cb437-7"><a href="8-3-continuous-interactions.html#cb437-7" aria-hidden="true" tabindex="-1"></a>    bs <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) ,</span>
+<span id="cb437-8"><a href="8-3-continuous-interactions.html#cb437-8" aria-hidden="true" tabindex="-1"></a>    bws <span class="sc">~</span> <span class="fu">dnorm</span>( <span class="dv">0</span> , <span class="fl">0.25</span> ) ,</span>
+<span id="cb437-9"><a href="8-3-continuous-interactions.html#cb437-9" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> <span class="fu">dexp</span>( <span class="dv">1</span> )</span>
+<span id="cb437-10"><a href="8-3-continuous-interactions.html#cb437-10" aria-hidden="true" tabindex="-1"></a>  ) , <span class="at">data=</span>d )</span></code></pre></div>
+<p><strong><em>8.3.3. Plotting posterior predictions</em></strong></p>
+<div class="figure">
+<img src="slides/L09/33.png" alt="Related frames that tell a bigger story. Going to have graphs in triptych form. Nothing binding you to only three, but that's the minimum. You can do 20 if you think that's necessary." width="80%" />
+<p class="caption marginnote shownote">
+Related frames that tell a bigger story. Going to have graphs in triptych form. Nothing binding you to only three, but that’s the minimum. You can do 20 if you think that’s necessary.
+</p>
+</div>
+<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="8-3-continuous-interactions.html#cb438-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>)) <span class="co"># 3 plots in 1 row</span></span>
+<span id="cb438-2"><a href="8-3-continuous-interactions.html#cb438-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( s <span class="cf">in</span> <span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">1</span> ) {</span>
+<span id="cb438-3"><a href="8-3-continuous-interactions.html#cb438-3" aria-hidden="true" tabindex="-1"></a>  idx <span class="ot">&lt;-</span> <span class="fu">which</span>( d<span class="sc">$</span>shade_cent<span class="sc">==</span>s )</span>
+<span id="cb438-4"><a href="8-3-continuous-interactions.html#cb438-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>( d<span class="sc">$</span>water_cent[idx] , d<span class="sc">$</span>blooms_std[idx] , <span class="at">xlim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) , <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>) ,</span>
+<span id="cb438-5"><a href="8-3-continuous-interactions.html#cb438-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab=</span><span class="st">&quot;water&quot;</span> , <span class="at">ylab=</span><span class="st">&quot;blooms&quot;</span> , <span class="at">pch=</span><span class="dv">16</span> , <span class="at">col=</span>rangi2 )</span>
+<span id="cb438-6"><a href="8-3-continuous-interactions.html#cb438-6" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> <span class="fu">link</span>( m8<span class="fl">.4</span> , <span class="at">data=</span><span class="fu">data.frame</span>( <span class="at">shade_cent=</span>s , <span class="at">water_cent=</span><span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">1</span> ) )</span>
+<span id="cb438-7"><a href="8-3-continuous-interactions.html#cb438-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span> ) <span class="fu">lines</span>( <span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">1</span> , mu[i,] , <span class="at">col=</span><span class="fu">col.alpha</span>(<span class="st">&quot;black&quot;</span>,<span class="fl">0.3</span>) )</span>
+<span id="cb438-8"><a href="8-3-continuous-interactions.html#cb438-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><img src="08_conditional_manatees_files/figure-html/8.25-1.svg" width="672" /></p>
+<p><strong><em>8.3.4. Plotting prior predictions</em></strong></p>
+<div class="sourceCode" id="cb439"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb439-1"><a href="8-3-continuous-interactions.html#cb439-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb439-2"><a href="8-3-continuous-interactions.html#cb439-2" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">extract.prior</span>(m8<span class="fl">.5</span>)</span></code></pre></div>
+<div class="figure">
+<img src="slides/L09/34.png" alt="Here's the triptych for the prior predictions Just showing you that the outcomes are staying within the legal range. Don't want to predict negative outcomes. I'd make them even tighter. The black lines come from the same sample from the prior distribution. The slope is always the same, because there's no interaction." width="80%" />
+<p class="caption marginnote shownote">
+Here’s the triptych for the prior predictions Just showing you that the outcomes are staying within the legal range. Don’t want to predict negative outcomes. I’d make them even tighter. The black lines come from the same sample from the prior distribution. The slope is always the same, because there’s no interaction.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/35.png" alt="The posterior predictions are plotted as these lines. Same arrangement as the tritpych. Notice that we're missing the data in each case here. Why? Because the slope is the same in each graph. It's doing a pretty bad job a prediction. Water has no effect if you have no light, and vice versa. There's necessarily an interaction." width="80%" />
+<p class="caption marginnote shownote">
+The posterior predictions are plotted as these lines. Same arrangement as the tritpych. Notice that we’re missing the data in each case here. Why? Because the slope is the same in each graph. It’s doing a pretty bad job a prediction. Water has no effect if you have no light, and vice versa. There’s necessarily an interaction.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/36.png" alt="Now we've added the interaction term. You can't look at just `bws` because it depends on other parameters now, so you have to push things out through the predictions. Need to look at its behaviour." width="80%" />
+<p class="caption marginnote shownote">
+Now we’ve added the interaction term. You can’t look at just <code>bws</code> because it depends on other parameters now, so you have to push things out through the predictions. Need to look at its behaviour.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/37.png" alt="Now the slope changes across shade levels. Allows interactions." width="80%" />
+<p class="caption marginnote shownote">
+Now the slope changes across shade levels. Allows interactions.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/38.png" alt="On the left, shade is low, meaning there's a lot of light. Which means a big effect for water, because as you add water, you get a lot of growth. On the right the plant can't do much because it doesn't get much light." width="80%" />
+<p class="caption marginnote shownote">
+On the left, shade is low, meaning there’s a lot of light. Which means a big effect for water, because as you add water, you get a lot of growth. On the right the plant can’t do much because it doesn’t get much light.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/39.png" alt="In this data, we've cut all backdoors between shade and water because it's an experiment. This isn't the real knowledge we want to know how real plants grow. What's the difference? Shade influences water level because it reduces evaporation. So shady flowers can grow better because they retain more moisture. That's the backdoor path. Need to think about this when you're considering intervening. You can't just cut down the trees to give the flowers more light and let them dehydrate. Need to think carefully about these things." width="80%" />
+<p class="caption marginnote shownote">
+In this data, we’ve cut all backdoors between shade and water because it’s an experiment. This isn’t the real knowledge we want to know how real plants grow. What’s the difference? Shade influences water level because it reduces evaporation. So shady flowers can grow better because they retain more moisture. That’s the backdoor path. Need to think about this when you’re considering intervening. You can’t just cut down the trees to give the flowers more light and let them dehydrate. Need to think carefully about these things.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/40.png" alt="You can find the function, but you'd expect a non-linear effect." width="80%" />
+<p class="caption marginnote shownote">
+You can find the function, but you’d expect a non-linear effect.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/41.png" alt="There may be good scientific reasons to go beyond to further interactions. Slope times each predictor, then three two-way interactions, because they're all possible. Then there's a 3-way where the extent to which the first depends on the second depends on the third." width="80%" />
+<p class="caption marginnote shownote">
+There may be good scientific reasons to go beyond to further interactions. Slope times each predictor, then three two-way interactions, because they’re all possible. Then there’s a 3-way where the extent to which the first depends on the second depends on the third.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/42.png" alt="These things are really hard to understand. Tend to be small effects." width="80%" />
+<p class="caption marginnote shownote">
+These things are really hard to understand. Tend to be small effects.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/43.png" alt="Some will know about a famous wine judgment. New Jersey now grows a lot of good wine. In 2012 they arrranged a similar judgment and did very well. French judges can't tell the difference between good French and New Jersey wines. The outcome variable is the score. All these predictors can interact with each other." width="80%" />
+<p class="caption marginnote shownote">
+Some will know about a famous wine judgment. New Jersey now grows a lot of good wine. In 2012 they arrranged a similar judgment and did very well. French judges can’t tell the difference between good French and New Jersey wines. The outcome variable is the score. All these predictors can interact with each other.
+</p>
+</div>
+<p><img src="slides/L09/44.png" width="80%" /></p>
+<p><img src="slides/L09/45.png" width="80%" /></p>
+
+</div>
+<!-- </div> -->
+<p style="text-align: center;">
+<a href="8-2-symmetry-of-interactions.html"><button class="btn btn-default">Previous</button></a>
+<a href="9-markov-chain-monte-carlo.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
