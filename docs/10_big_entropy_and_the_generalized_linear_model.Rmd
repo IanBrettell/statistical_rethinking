@@ -43,6 +43,10 @@ A generalized linear model (GLM) is much like the linear regressions of previous
 
 ## Maximum entropy
 
+Maximum entropy principle:
+
+>The distribution that can happen the most ways is also the distribution with the biggest information entropy. The distribution with the biggest entropy is the most conservative distribution that obeys its constraints.
+
 ```{r, echo = F, out.width='80%', fig.cap="Imagine you have buckets equidistant from you. At your feet you have 100 pebbles, each painted with a number. Unique pebbles. "}
 knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
@@ -70,6 +74,32 @@ knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```{r, echo = F, out.width='80%', fig.cap="This is called the multiplicity. It's the foundation of statistical inference. It gets big really fast when the Ns get equal. "}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
+
+Let’s put each distribution of pebbles in a list:
+
+```{r 10.1}
+p <- list()
+p$A <- c(0,0,10,0,0)
+p$B <- c(0,1,8,1,0)
+p$C <- c(0,2,6,2,0)
+p$D <- c(1,2,4,2,1)
+p$E <- c(2,2,2,2,2)
+```
+
+And let’s normalize each such that it is a probability distribution. 
+
+```{r 10.2}
+p_norm <- lapply( p , function(q) q/sum(q))
+```
+
+Since these are now probability distributions, we can compute the information entropy of each
+
+```{r 10.3}
+( H <- sapply( p_norm , function(q) -sum(ifelse(q==0,0,q*log(q))) ) )
+```
+
+So distribution E, which can realized by far the greatest number of ways, also has the biggest entropy.
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Only one way to get all the pebbles in bucket 3. "}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
@@ -130,6 +160,79 @@ knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```{r, echo = F, out.width='80%', fig.cap="Under some set of constraints, the distributions we use are maximum entropy distributions. Exponential distributions used for scale. They have a very clear maxent constraint. If a parameter is non-negative real, and has some mean value, then the exponential contains only that information."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
+
+***10.1.1. Gaussian***
+
+To appreciate why the Gaussian shape has the biggest entropy for any continuous distribution with this variance, consider that entropy increases as we make a distribution flatter. So we could easily make up a probability distribution with larger entropy than the blue distribution in Figure 10.2: Just take probability from the center and put it in the tails. The more uniform the distribution looks, the higher its entropy will be. But there are limits on how much of this we can do and maintain the same variance, $\sigma^2 = 1$.
+
+Then the Gaussian distribution gets its shape by being as spread out as possible for a distribution with fixed variance.
+
+***10.1.2. Binomial***
+
+```{r 10.5}
+# build list of the candidate distributions
+p <- list()
+p[[1]] <- c(1/4,1/4,1/4,1/4)
+p[[2]] <- c(2/6,1/6,1/6,2/6)
+p[[3]] <- c(1/6,2/6,2/6,1/6)
+p[[4]] <- c(1/8,4/8,2/8,1/8)
+
+# compute expected value of each
+sapply( p , function(p) sum(p*c(0,1,1,2)) )
+```
+
+Compute the entropy of each distribution:
+
+```{r 10.6}
+# compute entropy of each distribution
+sapply( p , function(p) -sum( p*log(p) ) )
+```
+
+The binomial with this expected value is:
+
+```{r 10.7}
+p <- 0.7
+( A <- c( (1-p)^2 , p*(1-p) , (1-p)*p , p^2 ) )
+```
+
+This distribution is definitely not flat. So to appreciate how this distribution has maximum entropy—is the flattest distribution with expected value 1.4—we’ll simulate a bunch of distributions with the same expected value and then compare entropies. The entropy of the distribution above is just:
+
+```{r 10.8}
+-sum( A*log(A) )
+```
+
+So if we randomly generate thousands of distributions with expected value 1.4, we expect that none will have a larger entropy than this.
+
+We can use a short R function to simulate random probability distributions that have any specified expected value. The code below will do the job. Don’t worry about how it works (unless you want to).
+
+```{r 10.9}
+sim.p <- function(G=1.4) {
+  x123 <- runif(3)
+  x4 <- ( (G)*sum(x123)-x123[2]-x123[3] )/(2-G)
+  z <- sum( c(x123,x4) )
+  p <- c( x123 , x4 )/z
+  list( H=-sum( p*log(p) ) , p=p )
+}
+```
+
+```{r 10.10}
+H <- replicate( 1e5 , sim.p(1.4) )
+dens( as.numeric(H[1,]) , adj=0.1 )
+```
+
+Let’s split out the entropies and distributions, so that it’s easier to work with them:
+
+```{r 10.11}
+entropies <- as.numeric(H[1,])
+distributions <- H[2,]
+```
+
+Now we can ask what the largest observed entropy was:
+
+```{r 10.12}
+max(entropies)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Larger family of geocentric linear models. We want to connect a linear model to a mean to the distribution. Unreasonably effective given how geocentric it is. We pick an outcome distribution, then model the parameters using weird things called links, whcih link the distribution to some model. Can do all kinds of fancy things with the same basic strategy. Often if you don't want to play this game, when you write it down, it'll turn out to be a linear model anyway. In most cases, you probably want a GLM."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))

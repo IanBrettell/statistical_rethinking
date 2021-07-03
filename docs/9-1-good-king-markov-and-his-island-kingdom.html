@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="9.1 Good King Markov and his island kingdom | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-07-02" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="9.1 Good King Markov and his island kingdom | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>9.1 Good King Markov and his island kingdom | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2-1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2-2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2-3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li><a href="2-4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a></li>
+</ul></li>
+<li><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3-1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3-2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3-3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4-1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4-2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4-3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4-4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4-5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4-6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5-1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5-2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5-3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5-4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6-1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6-2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6-3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6-4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6-5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6-6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7-1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7-2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7-3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7-4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7-5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7-6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8-1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8-2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8-3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9-1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9-2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9-3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9-4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9-5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10-1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+</ul></li>
+<li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
+<li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
+<li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
+<li><a href="14-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">14</span> Adventures in Covariance</a></li>
+<li><a href="15-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">15</span> Missing Data and Other Opportunities</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="good-king-markov-and-his-island-kingdom" class="section level2" number="9.1">
+<h2><span class="header-section-number">9.1</span> Good King Markov and his island kingdom</h2>
+<div class="figure">
+<img src="slides/L10/04.png" alt="King Markov rules a bunch of islands." width="80%" />
+<p class="caption marginnote shownote">
+King Markov rules a bunch of islands.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/05.png" alt="There are 10, with different population sizes and densities." width="80%" />
+<p class="caption marginnote shownote">
+There are 10, with different population sizes and densities.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/06.png" alt="They'll let you tax them as long as you visit them. You must visit them in proportion to their population density. So you need some simple algorithm." width="80%" />
+<p class="caption marginnote shownote">
+They’ll let you tax them as long as you visit them. You must visit them in proportion to their population density. So you need some simple algorithm.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/07.png" alt="You start on a particular island. Now you're ready to move to another one. You flip a coin to decide on which island." width="80%" />
+<p class="caption marginnote shownote">
+You start on a particular island. Now you’re ready to move to another one. You flip a coin to decide on which island.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/08.png" alt="Then you send a servant across to the proposed island and they take a survey of how many people are on the island. You do the same for the island you're on. We'll call that $p_5$, and the current island $p_4$." width="80%" />
+<p class="caption marginnote shownote">
+Then you send a servant across to the proposed island and they take a survey of how many people are on the island. You do the same for the island you’re on. We’ll call that <span class="math inline">\(p_5\)</span>, and the current island <span class="math inline">\(p_4\)</span>.
+</p>
+</div>
+<p><img src="slides/L10/09.png" width="80%" /></p>
+<p><img src="slides/L10/10.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L10/11.png" alt="You want to compare these two numbers in a particular way." width="80%" />
+<p class="caption marginnote shownote">
+You want to compare these two numbers in a particular way.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/12.png" alt="You want to take the ratio of them, and that will be the probability of accepting the proposal of moving from island 4 to 5. If it's greater than 1, you'll move. " width="80%" />
+<p class="caption marginnote shownote">
+You want to take the ratio of them, and that will be the probability of accepting the proposal of moving from island 4 to 5. If it’s greater than 1, you’ll move.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/13.png" alt="So you move to the proposal island with that probability." width="80%" />
+<p class="caption marginnote shownote">
+So you move to the proposal island with that probability.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/14.png" alt="This is a valid way to fill the contract. It guarantees that in the long run, you will visit each island in proportion to its relative populations size. This is an example of Markov Chain Monte Carlo." width="80%" />
+<p class="caption marginnote shownote">
+This is a valid way to fill the contract. It guarantees that in the long run, you will visit each island in proportion to its relative populations size. This is an example of Markov Chain Monte Carlo.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/15.png" alt="It's the most famous, and the most primitive. The huge advantage is if you don't know the distribution of population sizes, you actually don't need to actually visit each of the islands in proportion to their population sizes. We don't know the posterior distribution, but we can visit each part of it in proportion to its relative probability. That's the magic: we can sample from the distribution that we don't know. Also going to introduce you to Stan. `ulam` is a simplified input that will make a custom Markov chain for you." width="80%" />
+<p class="caption marginnote shownote">
+It’s the most famous, and the most primitive. The huge advantage is if you don’t know the distribution of population sizes, you actually don’t need to actually visit each of the islands in proportion to their population sizes. We don’t know the posterior distribution, but we can visit each part of it in proportion to its relative probability. That’s the magic: we can sample from the distribution that we don’t know. Also going to introduce you to Stan. <code>ulam</code> is a simplified input that will make a custom Markov chain for you.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/16.png" alt="Here is the R script version of King Monty's royal tour. Metropolis was also a person. Let's walk through each line to get a sense of how simple it is. Positions is an empty vector. We'll store the islands the King is on here. Then we'll just put him on island 10 (`current`). Then we loop over the weeks, and record where the king is now. Then we'll flip a coin to generate the proposal. Finally there's the action. We've got the ratio, where we're asserting the relative popn size is the same as their number. " width="80%" />
+<p class="caption marginnote shownote">
+Here is the R script version of King Monty’s royal tour. Metropolis was also a person. Let’s walk through each line to get a sense of how simple it is. Positions is an empty vector. We’ll store the islands the King is on here. Then we’ll just put him on island 10 (<code>current</code>). Then we loop over the weeks, and record where the king is now. Then we’ll flip a coin to generate the proposal. Finally there’s the action. We’ve got the ratio, where we’re asserting the relative popn size is the same as their number.
+</p>
+</div>
+<p>Simulate it yourself:</p>
+<div class="sourceCode" id="cb442"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb442-1"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-1" aria-hidden="true" tabindex="-1"></a>num_weeks <span class="ot">&lt;-</span> <span class="fl">1e5</span></span>
+<span id="cb442-2"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-2" aria-hidden="true" tabindex="-1"></a>positions <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,num_weeks)</span>
+<span id="cb442-3"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-3" aria-hidden="true" tabindex="-1"></a>current <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb442-4"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>num_weeks ) {</span>
+<span id="cb442-5"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-5" aria-hidden="true" tabindex="-1"></a>  <span class="do">## record current position</span></span>
+<span id="cb442-6"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-6" aria-hidden="true" tabindex="-1"></a>    positions[i] <span class="ot">&lt;-</span> current</span>
+<span id="cb442-7"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-7" aria-hidden="true" tabindex="-1"></a>  <span class="do">## flip coin to generate proposal</span></span>
+<span id="cb442-8"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-8" aria-hidden="true" tabindex="-1"></a>    proposal <span class="ot">&lt;-</span> current <span class="sc">+</span> <span class="fu">sample</span>( <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) , <span class="at">size=</span><span class="dv">1</span> )</span>
+<span id="cb442-9"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-9" aria-hidden="true" tabindex="-1"></a>  <span class="do">## now make sure he loops around the archipelago</span></span>
+<span id="cb442-10"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ( proposal <span class="sc">&lt;</span> <span class="dv">1</span> ) proposal <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb442-11"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ( proposal <span class="sc">&gt;</span> <span class="dv">10</span> ) proposal <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb442-12"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-12" aria-hidden="true" tabindex="-1"></a>  <span class="do">## move?</span></span>
+<span id="cb442-13"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-13" aria-hidden="true" tabindex="-1"></a>    prob_move <span class="ot">&lt;-</span> proposal<span class="sc">/</span>current</span>
+<span id="cb442-14"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-14" aria-hidden="true" tabindex="-1"></a>    current <span class="ot">&lt;-</span> <span class="fu">ifelse</span>( <span class="fu">runif</span>(<span class="dv">1</span>) <span class="sc">&lt;</span> prob_move , proposal , current )</span>
+<span id="cb442-15"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb442-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="figure">
+<img src="slides/L10/17.png" alt="Run that code and plot it out, and you'll get this. You can see the King zig-zagging around. You can see he gets stuck on densely populated islands. In the long run, it's in the right proportions." width="80%" />
+<p class="caption marginnote shownote">
+Run that code and plot it out, and you’ll get this. You can see the King zig-zagging around. You can see he gets stuck on densely populated islands. In the long run, it’s in the right proportions.
+</p>
+</div>
+<div class="sourceCode" id="cb443"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb443-1"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb443-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span> , positions[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>] )</span></code></pre></div>
+<p><img src="09_markov_chain_monte_carlo_files/figure-html/9.2-1.png" width="672" /></p>
+<div class="sourceCode" id="cb444"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb444-1"><a href="9-1-good-king-markov-and-his-island-kingdom.html#cb444-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>( <span class="fu">table</span>( positions ) )</span></code></pre></div>
+<p><img src="09_markov_chain_monte_carlo_files/figure-html/9.3-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L10/18.png" alt="Chain is more obvious here." width="80%" />
+<p class="caption marginnote shownote">
+Chain is more obvious here.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/19.png" alt="Starting to emerge that he's visiting 10 more. After 2000 weeks, we're almost there. Guaranteed to work in the long run. What the 'long run' means is controversial." width="80%" />
+<p class="caption marginnote shownote">
+Starting to emerge that he’s visiting 10 more. After 2000 weeks, we’re almost there. Guaranteed to work in the long run. What the ‘long run’ means is controversial.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/20.png" alt="Summary slide. Not sensitive to initial conditions. In this algorithm you need symmetric proposals... there are other algorithms without this condition, which improves them. " width="80%" />
+<p class="caption marginnote shownote">
+Summary slide. Not sensitive to initial conditions. In this algorithm you need symmetric proposals… there are other algorithms without this condition, which improves them.
+</p>
+</div>
+</div>
+<p style="text-align: center;">
+<a href="9-markov-chain-monte-carlo.html"><button class="btn btn-default">Previous</button></a>
+<a href="9-2-metropolis-algorithm.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

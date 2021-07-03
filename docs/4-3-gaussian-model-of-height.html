@@ -13,7 +13,7 @@
 
 
 
-<meta name="date" content="2021-06-22" />
+<meta name="date" content="2021-07-02" />
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
@@ -165,9 +165,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="7-5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
 <li><a href="7-6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
 </ul></li>
-<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a></li>
-<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a></li>
-<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a></li>
+<li><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8-1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8-2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8-3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li><a href="9-markov-chain-monte-carlo.html#markov-chain-monte-carlo"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9-1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9-2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9-3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9-4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9-5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10-1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+</ul></li>
 <li><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a></li>
 <li><a href="12-monsters-and-mixtures.html#monsters-and-mixtures"><span class="toc-section-number">12</span> Monsters and Mixtures</a></li>
 <li><a href="13-models-with-memory.html#models-with-memory"><span class="toc-section-number">13</span> Models With Memory</a></li>
@@ -360,9 +375,9 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 </p>
 </div>
 <div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="4-3-gaussian-model-of-height.html#cb128-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">precis</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
-<pre><code>##             mean        sd      5.5%      94.5%
-## mu    154.607038 0.4119914 153.94860 155.265479
-## sigma   7.731272 0.2913803   7.26559   8.196954</code></pre>
+<pre><code>##             mean        sd       5.5%      94.5%
+## mu    154.607024 0.4119947 153.948576 155.265471
+## sigma   7.731333 0.2913860   7.265642   8.197024</code></pre>
 <p>These numbers provide Gaussian approximations for each parameter’s <em>marginal</em> distribution, meaning the plausibility of each value of <span class="math inline">\(\mu\)</span> after averaging over the plausibilities of each value of <span class="math inline">\(\sigma\)</span>.</p>
 <p><code>quap</code> estimates the posterior by climbing it like a hill. To do this, it has to start climbing someplace, at some combination of parameter values. But it’s possible to specify a starting value</p>
 <div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="4-3-gaussian-model-of-height.html#cb130-1" aria-hidden="true" tabindex="-1"></a>start <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
@@ -380,7 +395,7 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 <span id="cb131-7"><a href="4-3-gaussian-model-of-height.html#cb131-7" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>( m4<span class="fl">.2</span> )</span></code></pre></div>
 <pre><code>##            mean        sd      5.5%     94.5%
 ## mu    177.86375 0.1002354 177.70356 178.02395
-## sigma  24.51756 0.9289234  23.03296  26.00216</code></pre>
+## sigma  24.51756 0.9289235  23.03297  26.00216</code></pre>
 <p><strong><em>4.3.6 Sampling from a <code>quap</code></em></strong></p>
 <p>To this the matrix of variances and covariances among all paris of parameters:</p>
 <div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="4-3-gaussian-model-of-height.html#cb133-1" aria-hidden="true" tabindex="-1"></a>rethinking<span class="sc">::</span><span class="fu">vcov</span>(m4<span class="fl">.1</span>)</span></code></pre></div>
@@ -400,16 +415,16 @@ Grid approximation is useful for teaching, but now we’ll do a fancy approximat
 <div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="4-3-gaussian-model-of-height.html#cb139-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> rethinking<span class="sc">::</span><span class="fu">extract.samples</span>(m4<span class="fl">.1</span>, <span class="at">n =</span> <span class="fl">1e4</span>)</span>
 <span id="cb139-2"><a href="4-3-gaussian-model-of-height.html#cb139-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(post)</span></code></pre></div>
 <pre><code>##         mu    sigma
-## 1 154.7514 7.759026
-## 2 154.6229 8.083139
-## 3 153.8394 7.347194
-## 4 154.4302 7.475443
-## 5 154.3320 7.717714
-## 6 154.7497 7.457487</code></pre>
+## 1 154.4152 7.733374
+## 2 154.9531 7.504684
+## 3 154.4114 7.849243
+## 4 154.5232 7.972392
+## 5 154.6510 7.865142
+## 6 154.2659 7.790806</code></pre>
 <div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="4-3-gaussian-model-of-height.html#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(post)</span></code></pre></div>
-<pre><code>##             mean        sd      5.5%      94.5%     histogram
-## mu    154.605229 0.4126342 153.94404 155.272806       ▁▁▅▇▂▁▁
-## sigma   7.726681 0.2877447   7.26865   8.193418 ▁▁▁▁▂▅▇▅▃▁▁▁▁</code></pre>
+<pre><code>##             mean        sd       5.5%      94.5%     histogram
+## mu    154.609045 0.4181114 153.933038 155.281782      ▁▁▁▅▇▂▁▁
+## sigma   7.736225 0.2922611   7.278655   8.205688 ▁▁▁▁▂▅▇▇▃▁▁▁▁</code></pre>
 <p>Here’s a peak under the motor of <code>extract.samples</code>:</p>
 <div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="4-3-gaussian-model-of-height.html#cb143-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">=</span> MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="at">n =</span> <span class="fl">1e4</span>, <span class="at">mu =</span> <span class="fu">coef</span>(m4<span class="fl">.1</span>), <span class="at">Sigma =</span> <span class="fu">vcov</span>(m4<span class="fl">.1</span>))</span></code></pre></div>
 <div class="figure">
