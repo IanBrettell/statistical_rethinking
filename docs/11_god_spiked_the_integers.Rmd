@@ -21,6 +21,104 @@ source(here::here("code/scripts/source.R"))
 ```
 
 ```{r}
+slides_dir = here::here("docs/slides/L11")
+```
+
+>The essential problem is this: When what we wish to predict is a count, the scale of the parameters is never the same as the scale of the outcome.
+
+We will engineer complete examples of the two most common types of count model. 
+
+BINOMIAL REGRESSION is the name we’ll use for a family of related procedures that all model a binary classification — alive/dead, accept/reject, left/right—for which the total of both categories is known. This is like the marble and globe tossing examples from Chapter 2. But now you get to incorporate predictor variables. 
+
+POISSON REGRESSION is a GLM that models a count with an unknown maximum—number of elephants in Kenya, number of applications to a PhD program, number of significance tests in an issue of Psychological Science. As described in Chapter 10, the Poisson model is a special case of binomial. At the end, the chapter describes some other count regressions.
+
+## Binomial regression
+
+There are two common flavours of GLM that use binomial probability functions: 
+
+1. **Logistic regression**: data are organized into single-trial cases, such that the outcome variable can only take values 0 and 1.
+
+1. **Aggregated binomial regression**: When individual trials with the same covariate values are instead aggregated together. In this case, the outcome can take the value zero or any positive integer up to n, the number of trials.
+
+Both flavors use the same logit link function.
+
+***11.1.1. Logistic regression: Prosocial chimpanzees***
+
+```{r, echo = F, out.width='80%', fig.cap="Example dataset. Imagine you're a chimp on the close side. If you pull a lever, it's expand out on both sides. There may or may not be food in both trays. If you pull the right, they other chimp will get the snack too. Interested in whetehr chimps care about this distinction. It's not enough to do the experiment. They might pull the right because there's more food there. One of the treatments is to remove the partner from the other end. Also chimpanzees are handed, so you have to adjust for that. BUt you want to know the differnce - do they pulll the prosocial option more if there's a chimp on the other end. "}
+knitr::include_graphics(file.path(slides_dir, '52.png'))
+```
+
+```{r 11.1}
+library(rethinking)
+data(chimpanzees)
+d <- chimpanzees
+```
+
+
+```{r, echo = F, out.width='80%', fig.cap="Alone with no other chimp. Prosocial and asocial option is balanced across left and right. We want to predict the outcome as a function of the condition -the total treatment. "}
+knitr::include_graphics(file.path(slides_dir, '53.png'))
+```
+
+```{r 11.2}
+d$treatment <- 1 + d$prosoc_left + 2*d$condition
+```
+
+Now treatment contains the values 1 through 4, matching the numbers in the list above. You can verify by using cross-tabs:
+
+```{r 11.3}
+xtabs( ~ treatment + prosoc_left + condition , d )
+```
+
+
+```{r, echo = F, out.width='80%', fig.cap="Four possible distinct unordered treatments. Wnat to estimate the tendency to pull the lever. The linear model on teh left is the Binomial. $\alpha$ measures handedness. Then we have a vector of four $\\beta$ parameters$, one for each treatment. Note that the Bernoullli is just the Binomial with one trial."}
+knitr::include_graphics(file.path(slides_dir, '54.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="How to do priors? They behave in GLMs in very unpredictable ways. So need to do prior simulation. Let's consider a skeletal verison of Bionmal regression where the linear model is some alpha, some intercept, the average log odds across all trials. What kind of prior to set on that. Let's set a Gaussian. Centered on a half. But what about the scale? What happens when you pick $\\omega$."}
+knitr::include_graphics(file.path(slides_dir, '55.png'))
+```
+
+```{r, echo = F, out.width='80%', fig.cap="Let's try with $''omega = 10$. "}
+knitr::include_graphics(file.path(slides_dir, '56.png'))
+```
+
+
+
+We need to pick a value for $\omega$. To emphasize the madness of conventional flat priors, let’s start with something rather flat, like $\omega = 10$. 
+
+```{r 11.4}
+m11.1 <- quap(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a ,
+    a ~ dnorm( 0 , 10 )
+  ) , data=d )
+```
+
+Now let’s sample from the prior:
+
+```{r 11.5}
+set.seed(1999)
+prior <- extract.prior( m11.1 , n=1e4 )
+```
+
+One step remains. We need to convert the parameter to the outcome scale. This means using the INVERSE-LINK FUNCTION, as discussed in the previous chapter. In this case, the link function is logit, so the inverse link is `inv_logit`.
+
+
+```{r 11.6}
+p <- inv_logit( prior$a )
+dens( p , adj=0.1 )
+```
+
+The model thinks, before it sees the data, that chimpanzees either never or always pull the left lever.
+
+```{r, echo = F, out.width='80%', fig.cap="What happens is we have the prior proabability scale. THe black density curve is the prior hwere you assign alpha the normal 0,10. Because a Gaussian distribution has huge amount of mass beyond absolute 3. Most of the mass is outside the extremes. Because the range of the log-odds scale is -4,4. So when you change it to the probabilty scale, it puts a lot of probability in the tails. We can adopt this heuritsitc postiion of having something flat, which is normal with omega of 1.5"}
+knitr::include_graphics(file.path(slides_dir, '57.png'))
+```
+
+---
+
+```{r}
 slides_dir = here::here("docs/slides/L12")
 ```
 
@@ -44,6 +142,41 @@ knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```{r, echo = F, out.width='80%', fig.cap="We turn to these models. To remind you, we're processesing chimp lever-pulling data. We're dealing with getting sinsible priors. Last time it was about slope. Now we're also thinking about treatments. There are 4 treatments. Partner at the table or not, and whether the food is on the left or right. We want to measure unqiue log-odds for each of those. Flat prior on the logit scale is definitely not flat on the probability scale. Same problem for the treatment. For the prior predictives, we want to look at the distribution of differences."}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
+```{r 11.7}
+m11.2 <- quap(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a + b[treatment] ,
+    a ~ dnorm( 0 , 1.5 ),
+    b[treatment] ~ dnorm( 0 , 10 )
+  ) , data=d )
+set.seed(1999)
+prior <- extract.prior( m11.2 , n=1e4 )
+p <- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )
+```
+
+Plot the absolute prior difference between the first two treatments.
+
+```{r 11.8}
+dens( abs( p[,1] - p[,2] ) , adj=0.1 )
+```
+
+Use a $Normal(0.0.5)$ prior instead.
+
+```{r 11.9}
+m11.3 <- quap(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a + b[treatment] ,
+    a ~ dnorm( 0 , 1.5 ),
+    b[treatment] ~ dnorm( 0 , 0.5 )
+  ) , data=d )
+set.seed(1999)
+prior <- extract.prior( m11.3 , n=1e4 )
+p <- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )
+mean( abs( p[,1] - p[,2] ) )
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="I'm using `rnorm` to sample some parameter values and look at some differences. Left is simulating the intercept alpha. A flat prior transformed to the probability scale it puts all the mass at 0 and 1, so we use 1.5. On the right we have the difference. The biggest difference is 1, smallest is 0. Again if you iuse something large on the logit scale, on the probability scale assumes that the treatments are either 0 or 1. We want it to reflect that the differences probably aren't large. To be near 0 you need a tighter scale parameter."}
 knitr::include_graphics(file.path(slides_dir, '06.png'))
@@ -53,13 +186,67 @@ knitr::include_graphics(file.path(slides_dir, '06.png'))
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
+Let’s turn to Hamiltonian Monte Carlo to approximate the posterior, so you can get some practice with it.
+
+```{r 11.10}
+# trimmed data list
+dat_list <- list(
+  pulled_left = d$pulled_left,
+  actor = d$actor,
+  treatment = as.integer(d$treatment) )
+```
+
+Now start the Markov chain. Add `log_lik=TRUE` to the call, so that `ulam` computes the values necessary for PSIS and WAIC. 
+
+```{r 11.11}
+m11.4 <- ulam(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a[actor] + b[treatment] ,
+    a[actor] ~ dnorm( 0 , 1.5 ),
+    b[treatment] ~ dnorm( 0 , 0.5 )
+  ) , data=dat_list , chains=4 , log_lik=TRUE )
+precis( m11.4 , depth=2 )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Let's look at the individual difference parameters. Chimp 2 is 'lefty'. He never pulled the right lever. The others have some more variation, with a slight tnedency for handedness. 7 has no preference. So handedness adds noise. It's not technically a confound, but it makes measurement harder. Backdoor criterion doesn't tell you to control for handedness. We don't need it because this is an experiment."}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
+```
+
+```{r 11.12}
+post <- extract.samples(m11.4)
+p_left <- inv_logit( post$a )
+plot( precis( as.data.frame(p_left) ) , xlim=c(0,1) )
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap="N = no partner; P = partner. This is an example of how hard it is to figure out what happened in the experiment. The contrasts of interest are the interaction. We need them to choose the prosocial option more when there's a parter on the other end, not just because there's more food on that side. When the prosocial option is on the left, we'd expect higher estimates. For the other two treatments are on the right hand side, and they do, but there's not much of an interaction effect. The side of the prosocial option has more effect, but not as much of the handedness. "}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
+
+On the logit scale:
+
+```{r 11.13}
+labs <- c("R/N","L/N","R/P","L/P")
+plot( precis( m11.4 , depth=2 , pars="b" ) , labels=labs )
+```
+
+You can probably see already that there isn’t much evidence of prosocial intention in these data. But let’s calculate the differences between no-partner/partner and make sure.
+
+```{r 11.14}
+diffs <- list(
+  db13 = post$b[,1] - post$b[,3],
+  db24 = post$b[,2] - post$b[,4] )
+plot( precis(diffs) )
+```
+
+Now let’s consider a posterior prediction check. Let’s summarize the proportions of left pulls for each actor in each treatment and then plot against the posterior predictions. First, to calculate the proportion in each combination of `actor` and `treatment`:
+
+```{r 11.15}
+pl <- by( d$pulled_left , list( d$actor , d$treatment ) , mean )
+pl[1,]
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="It's much easier to just plot this stuff on the outcome scale. Just push the posterior distribution out through the model onto the prediction scale. This is the raw data, with some augmented lines. Each group is an actor, and I've taken all pulls and averaged them. The different treatment are points. Filled are partners. You can see that other than 2, they pull the left lever more when there is more food on that side. But the lines are pretty horizontal. If they titled more, you'd get a big change when you added a partner, but we don't see that consistently. That's the raw data. "}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
@@ -68,14 +255,100 @@ knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```{r, echo = F, out.width='80%', fig.cap="Now look at the posterior predictions. This is what it thinks. Sees that every chimp has the same partner effect. Can't vary based on actor. If anything, adding a partner reduced the tendency to pull left. Look at actor 2's predictions. The model is not sure that it would never pull it again. So even though the data has no variation in it, the model does. With 5-year-old kids, adding a partner changes everything."}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
+```{r 11.16}
+plot( NULL , xlim=c(1,28) , ylim=c(0,1) , xlab="" ,
+ ylab="proportion left lever", xaxt="n" , yaxt="n" )
+axis( 2 , at=c(0,0.5,1) , labels=c(0,0.5,1) )
+abline( h=0.5 , lty=2 )
+for ( j in 1:7 ) abline( v=(j-1)*4+4.5 , lwd=0.5 )
+for ( j in 1:7 ) text( (j-1)*4+2.5 , 1.1 , concat("actor",j) , xpd=TRUE )
+for ( j in (1:7)[-2] ) {
+  lines( (j-1)*4+c(1,3) , pl[j,c(1,3)] , lwd=2 , col=rangi2 )
+  lines( (j-1)*4+c(2,4) , pl[j,c(2,4)] , lwd=2 , col=rangi2 )
+}
+points( 1:28 , t(pl) , pch=16 , col="white" , cex=1.7 )
+points( 1:28 , t(pl) , pch=c(1,1,16,16) , col=rangi2 , lwd=2 )
+yoff <- 0.01
+text( 1 , pl[1,1]-yoff , "R/N" , pos=1 , cex=0.8 )
+text( 2 , pl[1,2]+yoff , "L/N" , pos=3 , cex=0.8 )
+text( 3 , pl[1,3]-yoff , "R/P" , pos=1 , cex=0.8 )
+text( 4 , pl[1,4]+yoff , "L/P" , pos=3 , cex=0.8 )
+mtext( "observed proportions\n" )
+```
+
+Compute the posterior predictions with `link`:
+
+```{r 11.17}
+dat <- list( actor=rep(1:7,each=4) , treatment=rep(1:4,times=7) )
+p_post <- link( m11.4 , data=dat )
+p_mu <- apply( p_post , 2 , mean )
+p_ci <- apply( p_post , 2 , PI )
+```
+
+The model expects almost no change when adding a partner. Most of the variation in predictions comes from the actor intercepts. Handedness seems to be the big story of this experiment.
+
+The data themselves show additional variation—some of the actors possibly respond more to the treatments than others do. We might consider a model that allows each unique actor to have unique treatment parameters. But we’ll leave such a model until we arrive at multilevel models, because we’ll need some additional tricks to do the model well.
+
+Let's confirm that a simpler model will do just fine, because there doesn't seem to be any evidence of an interaction between location of the prosocial option and the presence of a partner. 
+
+To confirm this, here are the new index variables we'll need:
+
+```{r 11.18}
+d$side <- d$prosoc_left + 1 # right 1, left 2
+d$cond <- d$condition + 1 # no partner 1, partner 2
+```
 
 ```{r, echo = F, out.width='80%', fig.cap="If you want to do model comparison, you'll have to add this `log_lik` which computes the log probability of each observation. Once you hav those, they get spit out of the chain. Have to do it optionally because it can exhaust the memory on your computer. So if you don't need it, don't add it. Here I'm using `LOO` to compare. There's no interaction because there's no unique parameter for that. Now we can confirm that the interaction is not doing any work, because the models are the same on the prediction scale."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
+```{r 11.19}
+dat_list2 <- list(
+  pulled_left = d$pulled_left,
+  actor = d$actor,
+  side = d$side,
+  cond = d$cond )
+m11.5 <- ulam(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a[actor] + bs[side] + bc[cond] ,
+    a[actor] ~ dnorm( 0 , 1.5 ),
+    bs[side] ~ dnorm( 0 , 0.5 ),
+    bc[cond] ~ dnorm( 0 , 0.5 )
+  ) , data=dat_list2 , chains=4 , log_lik=TRUE )
+```
+
+Comparing the two models with PSIS:
+
+```{r 11.20, eval = F}
+# Faulty code
+rethinking::loo_compare( m11.5 , m11.4 , func=PSIS )
+```
+
 ```{r, echo = F, out.width='80%', fig.cap="You'll get used to bionmial and logistical regression through examples. You can talk about effect scales in two different ways. And you need both. When you're looking at differences between parameters on the log-odds scale, they're relative. Why? Because you're not talking abou tthe probbaiblity of the event happening. But if you want to predict how it happens in the real world, then the base rate matters. That's absolute. Something can seem really big when the absolute effect is small. The proportional odds adjustment is 0.9. SO that's 90% of the preivous odds. If you switch the lever, you reduce the odds by 90%. The risk with this is that unimportant things  can seem super important on the relative scale... because of base rate effects."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
+
+```{r 11.21}
+post <- extract.samples( m11.4 , clean=FALSE )
+str(post)
+```
+
+The log_lik matrix at the top contains all of the log-probabilities needed to calculate WAIC and PSIS. 
+Finally, we loop over the observations and calculate the binomial probability of each, conditional on the parameters.
+ 
+```{r 11.22}
+m11.4_stan_code <- stancode(m11.4)
+m11.4_stan <- stan( model_code=m11.4_stan_code , data=dat_list , chains=4 )
+```
+
+```{r, eval = F}
+# Faulty code
+compare( m11.4_stan , m11.4 )
+```
+ 
+ 
+***11.1.2. Relative shark and absolute deer***
 
 ```{r, echo = F, out.width='80%', fig.cap="The parable of absolute shark and relative penguin. This says don't worry about sharks. Why is it easy to believe that more deer kill people than sharks? Because people aren't aquatic. There's an exposure effect. Each individual deer is less dangerous. THe absolute danger of a shark conditioning on the distibution of people acorss the earth is very small. But what if you're a penguin? HTen the absolute risk is much larger. "}
 knitr::include_graphics(file.path(slides_dir, '14.png'))
@@ -89,9 +362,78 @@ knitr::include_graphics(file.path(slides_dir, '15.png'))
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Bionial regression takes two flavours. Either Bernoulli as before, or here, 'aggregated bionmial'. Same kind of model with difference in how the data is coded. Graduate admissions data from Berkeley. Worried they might get sued for gender discrimination. See whether there's any evidence of gender bias. "}
+It is more common to see logistic regressions interpreted through RELATIVE EFFECTS. Relative effects are proportional changes in the odds of an outcome. If we change a variable and say the odds of an outcome double, then we are discussing relative effects. You can calculate these PROPORTIONAL ODDS relative effect sizes by simply exponentiating the parameter of interest. For example, to calculate the proportional odds of switching from treatment 2 to treatment 4 (adding a partner):
+
+```{r 11.23}
+post <- extract.samples(m11.4)
+mean( exp(post$b[,4]-post$b[,2]) )
+```
+
+***11.1.3. Aggregated binomial: Chimpanzees again, condensed***
+
+In the `chimpanzees` data context, the models all calculated the likelihood of observing either zero or one pulls of the left-hand lever. The models did so, because the data were organized such that each row describes the outcome of a single pull. But in principle the same data could be organized differently. As long as we don’t care about the order of the individual pulls, the same information is contained in a count of how many times each individual pulled the left-hand lever, for each combination of predictor variables.
+
+For example, to calculate the number of times each chimpanzee pulled the left-hand lever, for each combination of predictor values:
+
+```{r 11.24}
+data(chimpanzees)
+d <- chimpanzees
+d$treatment <- 1 + d$prosoc_left + 2*d$condition
+d$side <- d$prosoc_left + 1 # right 1, left 2
+d$cond <- d$condition + 1 # no partner 1, partner 2
+d_aggregated <- aggregate(
+  d$pulled_left ,
+  list( treatment=d$treatment , actor=d$actor ,
+    side=d$side , cond=d$cond ) ,
+  sum )
+colnames(d_aggregated)[5] <- "left_pulls"
+
+head(d_aggregated, 8)
+```
+
+```{r 11.25}
+dat <- with( d_aggregated , list(
+  left_pulls = left_pulls,
+  treatment = treatment,
+  actor = actor,
+  side = side,
+  cond = cond ) )
+  
+m11.6 <- ulam(
+  alist(
+    left_pulls ~ dbinom( 18 , p ) ,
+    logit(p) <- a[actor] + b[treatment] ,
+    a[actor] ~ dnorm( 0 , 1.5 ) ,
+    b[treatment] ~ dnorm( 0 , 0.5 )
+  ) , data=dat , chains=4 , log_lik=TRUE )
+```
+
+```{r 11.26, eval = F}
+# Faulty code
+compare( m11.6 , m11.4 , func=PSIS )
+```
+
+This makes the aggregated probabilities larger—there are more ways to see the data. So the PSIS/WAIC scores end up being smaller. Go ahead and try it with the simple example here:
+
+```{r 11.27}
+# deviance of aggregated 6-in-9
+-2*dbinom(6,9,0.2,log=TRUE)
+# deviance of dis-aggregated
+-2*sum(dbern(c(1,1,1,1,1,1,0,0,0),0.2,log=TRUE))
+```
+
+***11.1.4. Aggregated binomial: Graduate school admissions***
+
+```{r, echo = F, out.width='80%', fig.cap="Binomial regression takes two flavours. Either Bernoulli as before, or here, 'aggregated bionmial'. Same kind of model with difference in how the data is coded. Graduate admissions data from Berkeley. Worried they might get sued for gender discrimination. See whether there's any evidence of gender bias. "}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
+
+```{r 11.28}
+library(rethinking)
+data(UCBadmit)
+d <- UCBadmit
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="This is the whole dataset. Each application is like a coin flip, with a probabilityt htat the candidate is admitted. There are 6 anonymised departments. `admit` is total offered, `reject` is the complement, and `applications` is the total. You could disaggregate them but it would be a really long table with a row of applications. This is a nice compact way to represent it and run exactly the same model either way."}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
@@ -101,9 +443,47 @@ knitr::include_graphics(file.path(slides_dir, '18.png'))
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
+```{r 11.29}
+dat_list <- list(
+  admit = d$admit,
+  applications = d$applications,
+  gid = ifelse( d$applicant.gender=="male" , 1 , 2 )
+)
+m11.7 <- ulam(
+  alist(
+  admit ~ dbinom( applications , p ) ,
+  logit(p) <- a[gid] ,
+  a[gid] ~ dnorm( 0 , 1.5 )
+  ) , data=dat_list , chains=4 )
+precis( m11.7 , depth=2 )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Let's calculate the relative and absolute effect sizes. `diff_a` is the difference in log-odds between male and females. Summarise with `precis`. On the probability scale it's between 0.12 and 0.16. That's a huge advantage. If you could swithc your gender, you would get a 10% advantage in admission. That's a big effect. Very fewe things have equally big effects."}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
+
+The posterior for male applicants, `a[1]`, is higher than that of female applicants. How much higher? We need to compute the contrast. Let’s calculate the contrast on the logit scale (shark) as well as the contrast on the outcome scale (absolute deer):
+
+```{r 11.30}
+post <- extract.samples(m11.7)
+diff_a <- post$a[,1] - post$a[,2]
+diff_p <- inv_logit(post$a[,1]) - inv_logit(post$a[,2])
+precis( list( diff_a=diff_a , diff_p=diff_p ) )
+```
+
+```{r 11.31}
+postcheck( m11.7 )
+# draw lines connecting points from same dept
+for ( i in 1:6 ) {
+  x <- 1 + 2*(i-1)
+  y1 <- d$admit[x]/d$applications[x]
+  y2 <- d$admit[x+1]/d$applications[x+1]
+  lines( c(x,x+1) , c(y1,y2) , col=rangi2 , lwd=2 )
+  text( x+0.5 , (y1+y2)/2 + 0.05 , d$dept[x] , cex=0.8 , col=rangi2 )
+}
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Now push the posterior out through the model and get predictions. Ugly graph. Blue is raw data. Black is predictions. Open circle is posterior mean for each case in data (combination of department and gender). The posteriro predictions go down as you go from male to female, but at the department level, all except 1 are admitted at a higher rate. "}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
@@ -125,17 +505,51 @@ knitr::include_graphics(file.path(slides_dir, '24.png'))
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
+```{r 11.32}
+dat_list$dept_id <- rep(1:6,each=2)
+m11.8 <- ulam(
+  alist(
+    admit ~ dbinom( applications , p ) ,
+    logit(p) <- a[gid] + delta[dept_id] ,
+    a[gid] ~ dnorm( 0 , 1.5 ) ,
+    delta[dept_id] ~ dnorm( 0 , 1.5 )
+  ) , data=dat_list , chains=4 , iter=4000 )
+precis( m11.8 , depth=2 )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Again, same code. On the relative scale, codnitioning on department, is on averge -0.1. On the probability scale, it's on average a 2% disadvantage for males, but overlaps 0 a little bit. This is Simpson's paradox, where you add a variable and the effect flips. You can do this endlessly. It has to do with backdoor paths. It could be a spurious reversal, or it could be a causal one. "}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
+
+```{r}
+post <- extract.samples(m11.8)
+diff_a <- post$a[,1] - post$a[,2]
+diff_p <- inv_logit(post$a[,1]) - inv_logit(post$a[,2])
+precis( list( diff_a=diff_a , diff_p=diff_p ) )
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="In this case, the reversal tells us something about teh reason. The system is discrimintory, but the departments would not. "}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
+```{r 11.34}
+pg <- with( dat_list , sapply( 1:6 , function(k)
+  applications[dept_id==k]/sum(applications[dept_id==k]) ) )
+rownames(pg) <- c("male","female")
+colnames(pg) <- unique(d$dept)
+round( pg , 2 )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="I have a homework problem where you can explore other paths. It's very hard to make causal inference from these samples, because it's not experimental. If you're doing an intervention to fix this, you need more slots for social psychology."}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
+
+## Poisson regression
+
+Binomial GLMs are appropriate when the outcome is a count from zero to some known upper bound. If you can analogize the data to the globe tossing model, then you should use a binomial GLM. But often the upper bound isn’t known. Instead the counts never get close to any upper limit. For example, if we go fishing and return with 17 fish, what was the theoretical maximum? Whatever it is, it isn’t in our data. How do we model the fish counts?
 
 ```{r, echo = F, out.width='80%', fig.cap="Like binomial models, in whcih the number of trials is unknown and very large, but the probability the event happens is very small. lambda is the average number of events. The variance is also lambda."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
@@ -145,9 +559,27 @@ knitr::include_graphics(file.path(slides_dir, '29.png'))
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
+***11.2.1. Example: Oceanic tools complexity***
+
 ```{r, echo = F, out.width='80%', fig.cap="Michelle does ethnographic field work. Interestd in Oceania as a natural experiment in cultutral evolution. Theoretical model that says that cultural evolution is proportional to the logarithm of population size. Even these islands have a small population, they might have a high contact rate."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
+```{r 11.36}
+library(rethinking)
+data(Kline)
+d <- Kline
+d
+```
+
+We’ll want to use regularization to damp down overfitting, as always. But as you’ll see, a lot can still be learned from these data. Any rules you’ve been taught about minimum sample sizes for inference are just non-Bayesian superstitions. If you get the prior back, then the data aren’t enough. It’s that simple.
+
+First make some new columns with the standardized log of population and an index variable for contact:
+
+```{r 11.37}
+d$P <- scale( log(d$population) )
+d$contact_id <- ifelse( d$contact=="high" , 2 , 1 )
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="We'll use a Poisson GLM to model this. Our link is a log-link. This ensures that a parameter is positive. Lambda has to be positive because it's an expected count. "}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
@@ -161,17 +593,139 @@ knitr::include_graphics(file.path(slides_dir, '33.png'))
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
+```{r 11.38}
+curve( dlnorm( x , 0 , 10 ) , from=0 , to=100 , n=200 )
+```
+
+```{r 11.39}
+a <- rnorm(1e4,0,10)
+lambda <- exp(a)
+mean( lambda )
+```
+
+I encourage you to play around with the curve code above, trying different means and standard deviations. The fact to appreciate is that a log link puts half of the real numbers—the negative numbers—between 0 and 1 on the outcome scale. 
+
+Here's my weakly informative suggestion:
+
+```{r 11.40}
+curve( dlnorm( x , 3 , 0.5 ) , from=0 , to=100 , n=200 )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="On the left we have the slopes for the log population. If we put a normal(0,10) prior, it's explosive. That's a problem. Expect that you'll get a billion tools again. On the right something a lot tighter with 0.2, and a lot flatter on the outcome scale. WIth a GLM, if it's flat ont he linear model scale, it's not going to be falt on the outcome scale. But you hav ethe power of prior predictive simulation to sort this out."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
+
+```{r 11.41}
+N <- 100
+a <- rnorm( N , 3 , 0.5 )
+b <- rnorm( N , 0 , 10 )
+plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
+for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=grau() )
+```
+
+This prior is terrible. Of course you will be able to confirm, once we start fitting models, that even 10 observations can overcome these terrible priors. But please remember that we are practicing for when it does matter.
+
+So let's try something much tighter.
+
+```{r 11.42}
+set.seed(10)
+N <- 100
+a <- rnorm( N , 3 , 0.5 )
+b <- rnorm( N , 0 , 0.2 )
+plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
+for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=grau() )
+```
+
+```{r 11.43}
+x_seq <- seq( from=log(100) , to=log(200000) , length.out=100 )
+lambda <- sapply( x_seq , function(x) exp( a + b*x ) )
+plot( NULL , xlim=range(x_seq) , ylim=c(0,500) , xlab="log population" ,
+  ylab="total tools" )
+for ( i in 1:N ) lines( x_seq , lambda[i,] , col=grau() , lwd=1.5 )
+```
+
+Let's view them on the natural population scale:
+
+```{r 11.44}
+plot( NULL , xlim=range(exp(x_seq)) , ylim=c(0,500) , xlab="population" ,
+  ylab="total tools" )
+for ( i in 1:N ) lines( exp(x_seq) , lambda[i,] , col=grau() , lwd=1.5 )
+```
+
+
+
 
 ```{r, echo = F, out.width='80%', fig.cap="`dpois` is R's Poisson. The top model is intercept only. The model of interest at the bottom. "}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
+Okay, finally we can approximate some posterior distributions. 
+
+```{r 11.45}
+dat <- list(
+  T = d$total_tools ,
+  P = d$P ,
+  cid = d$contact_id )
+  
+# intercept only
+m11.9 <- ulam(
+  alist(
+    T ~ dpois( lambda ),
+    log(lambda) <- a,
+    a ~ dnorm( 3 , 0.5 )
+  ), data=dat , chains=4 , log_lik=TRUE )
+  
+# interaction model
+m11.10 <- ulam(
+  alist(
+    T ~ dpois( lambda ),
+    log(lambda) <- a[cid] + b[cid]*P,
+    a[cid] ~ dnorm( 3 , 0.5 ),
+    b[cid] ~ dnorm( 0 , 0.2 )
+  ), data=dat , chains=4 , log_lik=TRUE )
+```
+
+Let’s look at the PSIS model comparison quickly, just to flag two important facts.
+
+```{r 11.46, eval = F}
+# Faulty code
+compare( m11.9 , m11.10 , func=PSIS )
+```
+
+```{r 11.47}
+k <- PSIS( m11.10 , pointwise=TRUE )$k
+plot( dat$P , dat$T , xlab="log population (std)" , ylab="total tools" ,
+  col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
+  ylim=c(0,75) , cex=1+normalize(k) )
+  
+# set up the horizontal axis values to compute predictions at
+ns <- 100
+P_seq <- seq( from=-1.4 , to=3 , length.out=ns )
+  
+# predictions for cid=1 (low contact)
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( P_seq , lmu , lty=2 , lwd=1.5 )
+shade( lci , P_seq , xpd=TRUE )
+  
+# predictions for cid=2 (high contact)
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( P_seq , lmu , lty=1 , lwd=1.5 )
+shade( lci , P_seq , xpd=TRUE )
+```
+
 ```{r, echo = F, out.width='80%', fig.cap="We can compare the two. This shows that once you get into GLMs, the efffective number of parameters have very little to do with the actual parameter count. The law in GLMs. All that nice relationship in Gausssian, which is a measure of your overfitting risk, is correlated with yoiur paramter count. Why? Ceiling and floor effects. LOO will still measure your overfitting risk. The model with more parameters has less overfitting risk that the model with only one parameter."}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
+```{r, eval = F}
+# Fault code
+compare(m11.9, m11.10, func = LOO)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '38.png'))

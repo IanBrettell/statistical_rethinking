@@ -233,18 +233,59 @@ Now we can ask what the largest observed entropy was:
 max(entropies)
 ```
 
+```{r 10.13}
+distributions[ which.max(entropies) ]
+```
+
+And that’s almost exactly ${0.09, 0.21, 0.21, 0.49}$, the distribution we calculated earlier.
+The other distributions in Figure 10.4—B, C, and D—are all less even than A.
+
+There is no guarantee that the maximum entropy distribution is the best probability distribution for the real problem you are analyzing. But there is a guarantee that no other distribution more conservatively reflects your assumptions.
+
+That’s not everything, but nor is it nothing. Any other distribution implies hidden constraints that are unknown to us, reflecting phantom assumptions. A full and honest accounting of assumptions is helpful, because it aids in understanding how a model misbehaves. And since all models misbehave sometimes, it’s good to be able to anticipate those times before they happen, as well as to learn from those times when they inevitably do.
+
+**Rethinking: Conditional independence**
+
+What is usually meant by “independence” in a probability distribution is just that each observation is uncorrelated with the others, once we know the corresponding predictor values.
+
+## Generalized linear models
+
+For an outcome variable that is continuous and far from any theoretical maximum or minimum, this sort of Gaussian model has maximum entropy. But when the outcome variable is either discrete or bounded, a Gaussian likelihood is not the most powerful choice.
+
+Luckily, it’s easy to do better. By using all of our prior knowledge about the outcome variable, usually in the form of constraints on the possible values it can take, we can appeal to maximum entropy for the choice of distribution. Then all we have to do is generalize the linear regression strategy—replace a parameter describing the shape of the likelihood with a linear model—to probability distributions other than the Gaussian.
 
 ```{r, echo = F, out.width='80%', fig.cap="Larger family of geocentric linear models. We want to connect a linear model to a mean to the distribution. Unreasonably effective given how geocentric it is. We pick an outcome distribution, then model the parameters using weird things called links, whcih link the distribution to some model. Can do all kinds of fancy things with the same basic strategy. Often if you don't want to play this game, when you write it down, it'll turn out to be a linear model anyway. In most cases, you probably want a GLM."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
+Instead of building linear models that look like this:
+
+$$
+y_i \sim Normal(\mu_i, \sigma) \\
+\mu_i = \alpha + \beta x_i
+$$
+
+Replacing a parameter describing the shape of the likelihood with a linear model looks like this:
+
+$$
+y_i \sim Binomial(n, p_i) \\
+f(p_i) = \alpha + \beta(x_i - \bar{x})
+$$
+The $f$ is a **link function**, to be determined separately from the distribution. 
+
 ```{r, echo = F, out.width='80%', fig.cap="Distributions arise from natural processes. And resist histomancy. This doesn't make sense under any framework. You want to use knowledge of your constraints to figure it out. There's no statistical framework where the aggregate outcomes is going to have any particular distribution."}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
+Histomancy is a false god, because even perfectly good Gaussian variables may not look Gaussian when displayed as a histogram. Why? Because at most what a Gaussian likelihood assumes is not that the aggregated data look Gaussian, but rather that the residuals, after fitting the model, look Gaussian. So for example the combined histogram of male and female body weights is certainly not Gaussian. But it is (approximately) a mixture of Gaussian distributions. So after conditioning on sex, the residuals may be quite normal.
+
+***10.2.1. Meet the family***
+
 ```{r, echo = F, out.width='80%', fig.cap="Going to build GLMs with these different outcome distributions. Just an extension of what you've already been doing. Exponential is everyone's favourite because it only has 1 parameter. Lambda is a rate, and the mean is 1/lambda. Generatively it can arise from a machine with a number of parts. If one part breaks, the whole thing stops working. A fruit fly is the same. Bunch of parts inside the washing machine, and each part has a chance of breaking at a particular time, the waiting time until the washing machine stops is exponentially distributed. "}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
+
+*Exponential*: constrained to be 0 or positive. It is a fundamental distribution of distance and duration, kinds of measurements that represent displacement from some point of reference, either in time or space. If the probability of an event is constant in time or across space, then the distribution of events tends towards exponential.
 
 ```{r, echo = F, out.width='80%', fig.cap="If you count events arising from exponential distributions. Mortality rates of fruit flies is bionimal. Like coin flips. Each fly could or could not ascend. And the binomial is maxent. "}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
@@ -254,9 +295,15 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
+**Poisson**
+
+Practically, the Poisson distribution is used for counts that never get close to any theoretical maximum.
+
 ```{r, echo = F, out.width='80%', fig.cap="If you think about the time to the event of the exponential - how long did you wait until the washing machine broke, if you start adding up that time, those waiting times are distributed like Gamma. Also maxent. e.g. age of onset of cancer, perhaps because there are a lot of cellular defence mechanisms, and all of them need to fail. "}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
+
+**Gamma**: also constrained to be zero or positive. It too is a fundamental distribution of distance and duration. But unlike the exponential distribution, the gamma distribution can have a peak above zero. If an event can only happen after two or more exponentially distributed events happen, the resulting waiting times will be gamma distributed. Common in survival and event history analysis, as well as some contexts in which a continuous measurement is constrained to be positive.
 
 ```{r, echo = F, out.width='80%', fig.cap="If you get a Gamma with a really large mean, it converges to a Normal. But not the only way - all roads lead to normal. And it's hard to leave. So these are generative processes, based on the constraints. Doesn't mean that they're correct, but it's the betting part."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
@@ -270,11 +317,13 @@ knitr::include_graphics(file.path(slides_dir, '31.png'))
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
+***10.2.2. Linking linear models to distributions***
+
 ```{r, echo = F, out.width='80%', fig.cap="Consider the Gaussian linear regression. It's super benign, and that's because it has a special property: the scientific measurement units and the parameter for the mean are the same. "}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="The much more typical case is the binomial model. If you want to connect a linear model to $p$, it's a probability. Probability is unitless. They're divided out. But the outcome has counts. So now the units aren't the same, and we need something that connects the parameter to the outcome scale. We need some function to put in wehre the question mark is so that it obeys physics."}
+```{r, echo = F, out.width='80%', fig.cap="The much more typical case is the binomial model. If you want to connect a linear model to $p$, it's a probability. Probability is unitless. They're divided out. But the outcome has counts. So now the units aren't the same, and we need something that connects the parameter to the outcome scale. We need some function to put in where the question mark is so that it obeys physics."}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
@@ -290,7 +339,7 @@ knitr::include_graphics(file.path(slides_dir, '36.png'))
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="If you like to think about the rate of change in a linear regression, you take a partial slope. Do this with any GLM, and the chain rule kicks in. And you get a much less nice expression. In a logistic regression, that's the equation. If you take the partial derivative, you get this thing in teh right That's the rate of change. "}
+```{r, echo = F, out.width='80%', fig.cap="If you like to think about the rate of change in a linear regression, you take a partial slope. Do this with any GLM, and the chain rule kicks in. And you get a much less nice expression. In a logistic regression, that's the equation. If you take the partial derivative, you get this thing on the right. That's the rate of change. "}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
@@ -346,76 +395,7 @@ knitr::include_graphics(file.path(slides_dir, '50.png'))
 knitr::include_graphics(file.path(slides_dir, '51.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Example dataset. Imagien you're a chimp on the close side. If you pull a lever, it's expand out on both sides. There may or may not be food in both trays. If you pull the right, they other chimp will get the snack too. Interested in whetehr chimps care about this distinction. It's not enough to do the experiment. They might pull the right because there's more food there. One of the treatments is to remove the partner from the other end. Also chimpanzees are handed, so you have to adjust for that. BUt you want to know the differnce - do they pulll the prosocial option more if there's a chimp on the other end. "}
-knitr::include_graphics(file.path(slides_dir, '52.png'))
-```
+***10.2.3. Omitted variable bias again***
 
-```{r, echo = F, out.width='80%', fig.cap="Alone with no other chimp. Prosocial and asocial option is balanced across left and right. We want to predict the outcome as a function of the condition -the total treatment. "}
-knitr::include_graphics(file.path(slides_dir, '53.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Four possible distinct unordered treatments. Wnat to estimate the tendency to pull the lever. The linear model on teh left is the Binomial. $\alpha$ measures handedness. Then we have a vector of four $\\beta$ parameters$, one for each treatment. Note that the Bernoullli is just the Binomial with one trial."}
-knitr::include_graphics(file.path(slides_dir, '54.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="How to do priors? They behave in GLMs in very unpredictable ways. So need to do prior simulation. Let's consider a skeletal verison of Bionmal regression where the linear model is some alpha, some intercept, the average log odds across all trials. What kind of prior to set on that. Let's set a Gaussian. Centered on a half. But what about the scale? What happens when you pick $\\omega$."}
-knitr::include_graphics(file.path(slides_dir, '55.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Let's try with $''omega = 10$. "}
-knitr::include_graphics(file.path(slides_dir, '56.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="What happens is we have the prior proabability scale. THe black density curve is the prior hwere you assign alpha the normal 0,10. Because a Gaussian distribution has huge amount of mass beyond absolute 3. Most of the mass is outside the extremes. Because the range of the log-odds scale is -4,4. So when you change it to the probabilty scale, it puts a lot of probability in the tails. We can adopt this heuritsitc postiion of having something flat, which is normal with omega of 1.5"}
-knitr::include_graphics(file.path(slides_dir, '57.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap="Next we'll talk about slopes."}
-knitr::include_graphics(file.path(slides_dir, '58.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '59.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '60.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '61.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '62.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '63.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '64.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '65.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '66.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '67.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '68.png'))
-```
-
-```{r, echo = F, out.width='80%', fig.cap=""}
-knitr::include_graphics(file.path(slides_dir, '69.png'))
-```
 
 
