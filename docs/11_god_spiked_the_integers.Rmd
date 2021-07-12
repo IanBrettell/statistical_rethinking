@@ -718,11 +718,36 @@ lines( P_seq , lmu , lty=1 , lwd=1.5 )
 shade( lci , P_seq , xpd=TRUE )
 ```
 
+```{r 11.48}
+plot( d$population , d$total_tools , xlab="population", ylab="total tools" ,
+  col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
+  ylim=c(0,75) , cex=1+normalize(k) )
+  
+ns <- 100
+P_seq <- seq( from=-5 , to=3 , length.out=ns )
+# 1.53 is sd of log(population)
+# 9 is mean of log(population)
+pop_seq <- exp( P_seq*1.53 + 9 )
+  
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( pop_seq , lmu , lty=2 , lwd=1.5 )
+shade( lci , pop_seq , xpd=TRUE )
+
+lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
+lmu <- apply( lambda , 2 , mean )
+lci <- apply( lambda , 2 , PI )
+lines( pop_seq , lmu , lty=1 , lwd=1.5 )
+shade( lci , pop_seq , xpd=TRUE )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="We can compare the two. This shows that once you get into GLMs, the efffective number of parameters have very little to do with the actual parameter count. The law in GLMs. All that nice relationship in Gausssian, which is a measure of your overfitting risk, is correlated with yoiur paramter count. Why? Ceiling and floor effects. LOO will still measure your overfitting risk. The model with more parameters has less overfitting risk that the model with only one parameter."}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 ```{r, eval = F}
-# Fault code
+# Faulty code
 compare(m11.9, m11.10, func = LOO)
 ```
 
@@ -755,17 +780,265 @@ knitr::include_graphics(file.path(slides_dir, '43.png'))
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
+```{r 11.49}
+dat2 <- list( T=d$total_tools, P=d$population, cid=d$contact_id )
+m11.11 <- ulam(
+  alist(
+    T ~ dpois( lambda ),
+    lambda <- exp(a[cid])*P^b[cid]/g,
+    a[cid] ~ dnorm(1,1),
+    b[cid] ~ dexp(1),
+    g ~ dexp(1)
+  ), data=dat2 , chains=4 , log_lik=TRUE )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```
 
+***11.2.2. Negative binomial (gamma-Poisson) models***
+
+***11.2.3. Example: Exposure and the offset***
+
+
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
+The parameter $\lambda$ is the expected value of a Poisson model, but it’s also commonly thought of as a rate. Both interpretations are correct, and realizing this allows us to make Poisson models for which the EXPOSURE varies across cases `i`.
+
+Suppose you own a monastery. The data available to you about the rate at which manuscripts are completed is totaled up each day. Suppose the true rate is $\lambda = 1.5$ manuscripts per day. We can simulate a month of daily counts:
+
+```{r 11.50}
+num_days <- 30
+y <- rpois( num_days , 1.5 )
+```
+
+So now `y` holds 30 days of simulated counts of completed manuscripts.
+
+Also suppose that your monastery is turning a tidy profit, so you are considering purchasing another monastery. Before purchasing, you’d like to know how productive the new monastery might be. Unfortunately, the current owners don’t keep daily records, so a head-to-head comparison of the daily totals isn’t possible. Instead, the owners keep weekly totals. Suppose the daily rate at the new monastery is actually $\lambda = 0.5$ manuscripts per day. To simulate data on a weekly basis, we just multiply this average by 7, the exposure:
+
+```{r 11.51}
+num_weeks <- 4
+y_new <- rpois( num_weeks , 0.5*7 )
+```
+
+And new y_new holds four weeks of counts of completed manuscripts.
+
+To analyze both `y`, totaled up daily, and `y_new`, totaled up weekly, we just add the logarithm of the exposure to linear model. First, let’s build a data frame to organize the counts and help you see the exposure for each case:
+
+```{r 11.52}
+y_all <- c( y , y_new )
+exposure <- c( rep(1,30) , rep(7,4) )
+monastery <- c( rep(0,30) , rep(1,4) )
+d <- data.frame( y=y_all , days=exposure , monastery=monastery )
+```
+
+```{r 11.53}
+# compute the offset
+d$log_days <- log( d$days )
+
+# fit the model
+m11.12 <- quap(
+  alist(
+    y ~ dpois( lambda ),
+    log(lambda) <- log_days + a + b*monastery,
+    a ~ dnorm( 0 , 1 ),
+    b ~ dnorm( 0 , 1 )
+  ), data=d )
+```
+
+To compute the posterior distributions of λ in each monastery, we sample from the posterior and then just use the linear model, but without the offset now. We don’t use the offset again, when computing predictions, because the parameters are already on the daily scale, for both monasteries.
+
+```{r 11.54}
+post <- extract.samples( m11.12 )
+lambda_old <- exp( post$a )
+lambda_new <- exp( post$a + post$b )
+precis( data.frame( lambda_old , lambda_new ) )
+```
+
+## Multinomial and categorical models
+
+When more than two types of unordered events are possible, and the probability of each type of event is constant across trials, then the maximum entropy distribution is the **MULTI-NOMIAL DISTRIBUTION**.
 
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '47.png'))
 ```
+
+***11.3.1. Predictors matched to outcomes***
+
+For example, suppose you are modeling choice of career for a number of young adults. One of the relevant predictor variables is expected income. In that case, the same parameter βincome appears in each linear model, in order to estimate the impact of the income trait on the probability a career is chosen. But a different income value multiplies the parameter in each linear model.
+
+```{r 11.55}
+# simulate career choices among 500 individuals
+N <- 500  # number of individuals
+income <- c(1,2,5)  # expected income of each career
+score <- 0.5*income # scores for each career, based on income
+# next line converts scores to probabilities
+p <- softmax(score[1],score[2],score[3])
+
+# now simulate choice
+# outcome career holds event type values, not counts
+career <- rep(NA,N) # empty vector of choices for each individual
+# sample chosen career for each individual
+set.seed(34302)
+for ( i in 1:N ) career[i] <- sample( 1:3 , size=1 , prob=p )
+```
+
+To fit the model to these fake data, we use the `dcategorical` likelihood, which is the multinomial logistic regression distribution. It works when each value in the outcome variable, here `career`, contains the individual event types on each row. To convert all the scores to probabilities, we’ll use the multinomial logit link, which is called `softmax.` Then each possible career gets its own linear model with its own features. There are no intercepts in the simulation above. But if income doesn’t predict career choice, you still want an intercept to account for differences in frequency. Here’s the code:
+
+```{r 11.56}
+code_m11.13 <- "
+data{
+  int N; // number of individuals
+  int K; // number of possible careers
+  int career[N]; // outcome
+  vector[K] career_income;
+}
+parameters{
+  vector[K-1] a; // intercepts
+  real<lower=0> b; // association of income with choice
+}
+model{
+  vector[K] p;
+  vector[K] s;
+  a ~ normal( 0 , 1 );
+  b ~ normal( 0 , 0.5 );
+  s[1] = a[1] + b*career_income[1];
+  s[2] = a[2] + b*career_income[2];
+  s[3] = 0; // pivot
+  p = softmax( s );
+  career ~ categorical( p );
+}
+"
+```
+
+Then we set up the data list and invoke stan:
+
+```{r 11.57}
+dat_list <- list( N=N , K=3 , career=career , career_income=income )
+m11.13 <- stan( model_code=code_m11.13 , data=dat_list , chains=4 )
+precis( m11.13 , 2 )
+```
+
+You might have gotten some divergent transitions above. Can you figure out why?
+
+To conduct a counterfactual simulation, we can extract the samples and make our own. The goal is to compare a counterfactual career in which the income is changed. How much does the probability change, in the presence of these competing careers? This is a subtle kind of question, because the probability change always depends upon the other choices. So let’s imagine doubling the income of career 2 above:
+
+```{r}
+post <- extract.samples( m11.13 )
+
+# set up logit scores
+s1 <- with( post , a[,1] + b*income[1] )
+s2_orig <- with( post , a[,2] + b*income[2] )
+s2_new <- with( post , a[,2] + b*income[2]*2 )
+
+# compute probabilities for original and counterfactual
+p_orig <- sapply( 1:length(post$b) , function(i)
+  softmax( c(s1[i],s2_orig[i],0) ) )
+p_new <- sapply( 1:length(post$b) , function(i)
+  softmax( c(s1[i],s2_new[i],0) ) )
+
+# summarize
+p_diff <- p_new[2,] - p_orig[2,]
+precis( p_diff )
+```
+
+***11.3.2. Predictors matched to observations***
+
+```{r 11.59}
+N <- 500
+# simulate family incomes for each individual
+family_income <- runif(N)
+# assign a unique coefficient for each type of event
+b <- c(-2,0,2)
+career <- rep(NA,N) # empty vector of choices for each individual
+for ( i in 1:N ) {
+  score <- 0.5*(1:3) + b*family_income[i]
+  p <- softmax(score[1],score[2],score[3])
+  career[i] <- sample( 1:3 , size=1 , prob=p )
+}
+
+code_m11.14 <- "
+data{
+  int N; // number of observations
+  int K; // number of outcome values
+  int career[N]; // outcome
+  real family_income[N];
+}
+parameters{
+  vector[K-1] a; // intercepts
+  vector[K-1] b; // coefficients on family income
+}
+model{
+  vector[K] p;
+  vector[K] s;
+  a ~ normal(0,1.5);
+  b ~ normal(0,1);
+  for ( i in 1:N ) {
+    for ( j in 1:(K-1) ) s[j] = a[j] + b[j]*family_income[i];
+    s[K] = 0; // the pivot
+    p = softmax( s );
+    career[i] ~ categorical( p );
+  }
+}
+"
+
+dat_list <- list( N=N , K=3 , career=career , family_income=family_income )
+m11.14 <- stan( model_code=code_m11.14 , data=dat_list , chains=4 )
+precis( m11.14 , 2 )
+
+```
+
+***11.3.3. Multinomial in disguise as Poisson***
+
+Another way to fit a multinomial/categorical model is to refactor it into a series of Poisson likelihoods.180 That should sound a bit crazy. But it’s actually both principled and commonplace to model multinomial outcomes this way. It’s principled, because the mathematics justifies it. And it’s commonplace, because it is usually computationally easier to use Poisson rather than multinomial likelihoods. Here I’ll give an example of an implementation. For the mathematical details of the transformation, see the Overthinking box at the end.
+
+I appreciate that this kind of thing—modeling the same data different ways but getting the same inferences—is exactly the kind of thing that makes statistics maddening for scientists. So I’ll begin by taking a binomial example from earlier in the chapter and doing it over as a Poisson regression. Since the binomial is just a special case of the multinomial, the approach extrapolates to any number of event types. Think again of the UC Berkeley admissions data. Let’s load it again:
+
+```{r 11.60}
+library(rethinking)
+data(UCBadmit)
+d <- UCBadmit
+```
+
+Now let’s use a Poisson regression to model both the rate of admission and the rate of rejection. And we’ll compare the inference to the binomial model’s probability of admission. Here are both the binomial and Poisson models:
+
+```{r 11.61}
+# binomial model of overall admission probability
+m_binom <- quap(
+  alist(
+    admit ~ dbinom(applications,p),
+    logit(p) <- a,
+    a ~ dnorm( 0 , 1.5 )
+  ), data=d )
+  
+# Poisson model of overall admission rate and rejection rate
+# ‘reject’ is a reserved word in Stan, cannot use as variable name
+dat <- list( admit=d$admit , rej=d$reject )
+m_pois <- ulam(
+  alist(
+    admit ~ dpois(lambda1),
+    rej ~ dpois(lambda2),
+    log(lambda1) <- a1,
+    log(lambda2) <- a2,
+    c(a1,a2) ~ dnorm(0,1.5)
+  ), data=dat , chains=3 , cores=3 )
+```
+
+Let’s consider just the posterior means, for the sake of simplicity. But keep in mind that the entire posterior is what matters. First, the inferred binomial probability of admission, across the entire data set, is:
+
+```{r, 11.62}
+inv_logit(coef(m_binom))
+```
+
+```{r 11.63}
+k <- coef(m_pois)
+a1 <- k['a1']; a2 <- k['a2']
+exp(a1)/(exp(a1)+exp(a2))
+```
+
+That’s the same inference as in the binomial model.
 
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '48.png'))
