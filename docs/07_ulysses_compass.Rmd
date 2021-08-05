@@ -131,7 +131,7 @@ We'll compute $R^2$ ourselves by computing the variance of the residuals, and th
 
 ```{r 7.5}
 set.seed(12)
-s <- sim( m7.1 )
+s <- rethinking::sim( m7.1 )
 r <- apply(s,2,mean) - d$brain_std
 resid_var <- var2(r)
 outcome_var <- var2( d$brain_std )
@@ -142,7 +142,7 @@ Let's write a function to do this again:
 
 ```{r 7.6}
 R2_is_bad <- function( quap_fit ) {
-  s <- sim( quap_fit , refresh=0 )
+  s <- rethinking::sim( quap_fit , refresh=0 )
   r <- apply(s,2,mean) - d$brain_std
   1 - var2(r)/var2(d$brain_std)
 }
@@ -402,7 +402,7 @@ Larger values are better, because that indicates larger average accuracy.
 
 ```{r 7.14}
 set.seed(1)
-logprob <- sim( m7.1 , ll=TRUE , n=1e4 )
+logprob <- rethinking::sim( m7.1 , ll=TRUE , n=1e4 )
 n <- ncol(logprob)
 ns <- nrow(logprob)
 f <- function( i ) log_sum_exp( logprob[,i] ) - log(ns)
@@ -707,7 +707,7 @@ precis(m6.8)
 
 ```{r 7.25}
 set.seed(11)
-WAIC( m6.7 )
+rethinking::WAIC( m6.7 )
 ```
 
 

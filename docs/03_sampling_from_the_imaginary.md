@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-07-02'
+date: '2021-08-05'
 output:
   html_document:
     toc: true
@@ -110,7 +110,7 @@ sum(samples < 0.5) / 1e4
 ```
 
 ```
-## [1] 0.1748
+## [1] 0.1672
 ```
 
 <div class="figure">
@@ -126,7 +126,7 @@ sum(samples > 0.5 & samples < 0.75) / 1e4
 ```
 
 ```
-## [1] 0.6021
+## [1] 0.6019
 ```
 
 This is shown in the upper right of Figure 3.2.
@@ -144,7 +144,7 @@ quantile (samples, .8)
 
 ```
 ##       80% 
-## 0.7607608
+## 0.7647648
 ```
 
 This is shown in the bottom-left of Figure 3.2. Similarly, the middle 80% interval lies between the 10th percentile and the 90th percentile.
@@ -156,7 +156,7 @@ quantile(samples, c(.1, .9))
 
 ```
 ##       10%       90% 
-## 0.4464464 0.8098098
+## 0.4523524 0.8138138
 ```
 
 This is shown in the bottom-right of Figure 3.2.
@@ -192,7 +192,7 @@ rethinking::PI(samples, prob = .5)
 
 ```
 ##       25%       75% 
-## 0.7047047 0.9289289
+## 0.7067067 0.9309309
 ```
 
 In this example, it ends up excluding the most probable parameter values, near $p$ = 1.
@@ -204,7 +204,7 @@ rethinking::HPDI(samples, prob = 0.5)
 
 ```
 ##      |0.5      0.5| 
-## 0.8388388 1.0000000
+## 0.8398398 1.0000000
 ```
 
 Here the HPDI has an advantage over the PI, but in most cases, the two are very similar. That's because the posterior is skewed. When the posterior is bell-shaped, it hardly matters whate type of interval you use. 
@@ -230,7 +230,7 @@ rethinking::chainmode(samples, adj = 0.01)
 ```
 
 ```
-## [1] 0.9789051
+## [1] 0.9879601
 ```
 
 
@@ -239,7 +239,7 @@ mean(samples)
 ```
 
 ```
-## [1] 0.7985784
+## [1] 0.8005432
 ```
 
 ```r
@@ -247,7 +247,7 @@ median(samples)
 ```
 
 ```
-## [1] 0.8388388
+## [1] 0.8398398
 ```
 
 We care about uncertainty, and we want to summarise that. To use a point estimate, you need to provide a cost-benefit analysis. e.g. conservation or forecasting. 
@@ -292,7 +292,7 @@ median(samples)
 ```
 
 ```
-## [1] 0.8388388
+## [1] 0.8398398
 ```
 
 Usually it's better to communicate as much as you can about the posterior distribution, as well as the data and the model itself. 
@@ -328,7 +328,7 @@ rbinom(1, size = 2, prob = 0.7)
 ```
 
 ```
-## [1] 1
+## [1] 0
 ```
 
 That 1 means "1 water in 2 tosses." You can simulate a set of 10:
@@ -339,7 +339,7 @@ rbinom(10, size = 2, prob = 0.7)
 ```
 
 ```
-##  [1] 1 2 0 2 1 2 1 2 2 1
+##  [1] 2 1 2 1 2 1 1 2 1 1
 ```
 
 Let's generate 10,000 just to verify 0, 1 and 2 appear in proportion to their likelihoods:
@@ -353,7 +353,7 @@ table(dummy_w) / 1e5
 ```
 ## dummy_w
 ##       0       1       2 
-## 0.08939 0.42189 0.48872
+## 0.08908 0.42016 0.49076
 ```
 
 Let's now simulate the sample size as before, with 9 tosses

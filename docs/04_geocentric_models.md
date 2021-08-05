@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-07-02'
+date: '2021-08-05'
 output:
   html_document:
     toc: true
@@ -136,7 +136,7 @@ prod(1 + runif(12, 0, .1))
 ```
 
 ```
-## [1] 2.044579
+## [1] 1.838227
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
@@ -449,7 +449,7 @@ rethinking::PI(sample.sigma)
 
 ```
 ##       5%      94% 
-## 7.323232 8.252525
+## 7.323232 8.272727
 ```
 
 <div class="figure">
@@ -551,8 +551,8 @@ rethinking::precis(m4.1)
 
 ```
 ##             mean        sd       5.5%      94.5%
-## mu    154.607024 0.4119947 153.948576 155.265471
-## sigma   7.731333 0.2913860   7.265642   8.197024
+## mu    154.607539 0.4120445 153.949012 155.266065
+## sigma   7.732266 0.2914740   7.266435   8.198098
 ```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
@@ -636,12 +636,12 @@ head(post)
 
 ```
 ##         mu    sigma
-## 1 154.4152 7.733374
-## 2 154.9531 7.504684
-## 3 154.4114 7.849243
-## 4 154.5232 7.972392
-## 5 154.6510 7.865142
-## 6 154.2659 7.790806
+## 1 154.7190 7.713903
+## 2 154.3774 7.244616
+## 3 154.2377 7.529040
+## 4 154.3205 7.889569
+## 5 154.4571 7.026012
+## 6 155.1806 7.586552
 ```
 
 
@@ -650,9 +650,9 @@ precis(post)
 ```
 
 ```
-##             mean        sd       5.5%      94.5%     histogram
-## mu    154.609045 0.4181114 153.933038 155.281782      ▁▁▁▅▇▂▁▁
-## sigma   7.736225 0.2922611   7.278655   8.205688 ▁▁▁▁▂▅▇▇▃▁▁▁▁
+##             mean        sd      5.5%      94.5%   histogram
+## mu    154.613331 0.4090841 153.96450 155.268311    ▁▁▁▅▇▂▁▁
+## sigma   7.734756 0.2921769   7.26726   8.199919 ▁▁▁▂▅▇▇▃▁▁▁
 ```
 
 Here's a peak under the motor of `extract.samples`:
@@ -1122,7 +1122,7 @@ Whatever model you find yourself with, this approach can be used to generate pos
 
 
 ```r
-sim.height = sim(m4.3, data = list(weight = weight.seq))
+sim.height = rethinking::sim(m4.3, data = list(weight = weight.seq))
 str(sim.height)
 ```
 
@@ -1161,7 +1161,7 @@ shade( height.PI , weight.seq )
 If the rough shaded interval bothers you, increase the number of samples from the posterior distribution.
 
 ```r
-sim.height <- sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
+sim.height <- rethinking::sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
 height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
 ```
 
@@ -1296,7 +1296,7 @@ pred_dat <- list( weight_s=weight.seq , weight_s2=weight.seq^2 )
 mu <- link( m4.5 , data=pred_dat )
 mu.mean <- apply( mu , 2 , mean )
 mu.PI <- apply( mu , 2 , PI , prob=0.89 )
-sim.height <- sim( m4.5 , data=pred_dat )
+sim.height <- rethinking::sim( m4.5 , data=pred_dat )
 height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
 ```
 
