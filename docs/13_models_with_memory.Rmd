@@ -32,9 +32,15 @@ knitr::include_graphics(file.path(slides_dir, '01.png'))
 knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
 
+Any of the models from previous chapters that used dummy variables to handle categories are programmed for amnesia. These models implicitly assume that nothing learned about any one category informs estimates for the other categories — the parameters are independent of one another and learn from completely separate portions of the data.
+
+Anterograde amnesia is bad for learning about the world.
+
 ```{r, echo = F, out.width='80%', fig.cap="In statistical language, they've all been fixed effects models. They have amnesia in that every time you move to a new cluster (indivdual, pond, block), it forgets everything it's seen about the thigns they visited previously. Learning develops expectations and lets us learn. MLMs develop expectations about all clusters in the data. They learn in a way that's invariant to the order that they miight visit them. That's the optimal way to learn. Some metaphors to latch onto..."}
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
+
+As the robot observes waiting times, it updates everything: the estimates for each café as well as the estimates for the population. If the population seems highly variable, then the prior is flat and uninformative and, as a consequence, the observations at any one café do very little to the estimate at another. If instead the population seems to contain little variation, then the prior is narrow and highly informative. An observation at any one café will have a big impact on estimates at any other café.
 
 ```{r, echo = F, out.width='80%', fig.cap="Imagine you're visiting some cafes. The experience is largely the same. Here we're contrasting Paris and Berlin. Let's focus on one aspect of ordering - how long you wait for your cofffee. If you've never been to a cafe, you have no expectation of how long it takes. Then you go to Paris, and it takes 5 minutes. Then when you go to Berlin, you don't forget that experience, but you also don't think it's going to be exactly the same. A remmbering model treats a cafe as a population. And you can transfer infomration among units in that population. And that allows for better estaimtes for every cafe. Other thing to think is if it takes 10 minutes in Berlin, you had your 5 mintue prior, you update that with Bayesian updating, but the time order should be irrelevant to your learning. Now you need to update Paris too, because you have a limited sample in Paris, and you've got data from Berlin. So data from both are relevant to updating both of them. "}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
@@ -44,11 +50,23 @@ knitr::include_graphics(file.path(slides_dir, '04.png'))
 knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="In this course, we have to wage our statistical battles on two fronts: causal inference. Avoid causal salad - they typical way it's done. Having a DAG you believe in is a small victory, but not the only thing. Getting precise estiamates is a whole separate technology. Today we'll be talking about the second. If we can use the data in more powerful ways, that's what we'll do. "}
+In this chapter, you’ll see the formal version of this argument and how it leads us to MULTILEVEL MODELS. These models remember features of each cluster in the data as they learn about all of the clusters. Depending upon the variation among clusters, which is learned from the data as well, the model pools information across clusters. This pooling tends to improve estimates about each cluster. This improved estimation leads to several, more pragmatic sounding, benefits of the multilevel approach. I mentioned them in Chapter 1. They are worth repeating.
+
+1. *Improved estimates for repeat sampling*. When more than one observation arises from the same individual, location, or time, then traditional, single-level models either maximally underfit or overfit the data.
+
+1. *Improved estimates for imbalance in sampling*. When some individuals, locations, or times are sampled more than others, multilevel models automatically cope with differing uncertainty across these clusters. This prevents over-sampled clusters from unfairly dominating inference.
+
+1. *Estimates of variation*. If our research questions include variation among individuals or other groups within the data, then multilevel models are a big help, because they model variation explicitly.
+
+1. *Avoid averaging, retain variation*. Frequently, scholars pre-average some data to construct variables. This can be dangerous, because averaging removes variation, and there are also typically several different ways to perform the averaging. Averaging therefore both manufactures false confidence and introduces arbitrary data transformations. Multilevel models allow us to preserve the uncertainty and avoid data transformations.
+
+It is better to begin to build a multilevel analysis, and then realize it’s unnecessary, than to overlook it.
+
+```{r, echo = F, out.width='80%', fig.cap="In this course, we have to wage our statistical battles on two fronts: causal inference. Avoid causal salad - they typical way it's done. Having a DAG you believe in is a small victory, but not the only thing. Getting precise estimates is a whole separate technology. Today we'll be talking about the second. If we can use the data in more powerful ways, that's what we'll do. "}
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="There are some really good defaults. Unfortuatnely they're not currently. As a default, you should always use multi-level regression. Single-level is always a bad idea. This is my favourite example of defaults. In some countries you are automatically. In others you have to opt in. In Germany, if you ask them if you should dontate your organs, most say yes. But the defaults are powerful, and MLMs are like that."}
+```{r, echo = F, out.width='80%', fig.cap="There are some really good defaults. Unfortunately they're not currently. As a default, you should always use multi-level regression. Single-level is always a bad idea. This is my favourite example of defaults. In some countries you are automatically. In others you have to opt in. In Germany, if you ask them if you should dontate your organs, most say yes. But the defaults are powerful, and MLMs are like that."}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
@@ -68,13 +86,32 @@ knitr::include_graphics(file.path(slides_dir, '10.png'))
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond). "}
+## Example: Multilevel tadpoles
+
+```{r, echo = F, out.width='80%', fig.cap="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond)."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
+
+```{r 13.1}
+library(rethinking)
+data(reedfrogs)
+d <- reedfrogs
+str(d)
+```
+
+```{r 13.1 b}
+d %>% 
+  pillar::glimpse() %>% 
+  DT::datatable(.)
+```
+
+Each row is a 'tank', and there are lots of unmeasured things peculiar to each tank which create variation in survival across tanks.
 
 ```{r, echo = F, out.width='80%', fig.cap="We have tadpoles in tanks (buckets). They're at different densities. Different maximums can survive. This will be binomial regression. Number at start and end. Dummy variable is what we've done before. Now MLM with different intercepts."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
+
+VARYING INTERCEPTS are the simplest kind of VARYING EFFECTS. For each cluster, we use a unique intercept parameter. 
 
 ```{r, echo = F, out.width='80%', fig.cap="This is what we've done before. We have na index variable for tank. Different alpha. Regularising prior. Extreme mortality or survival will be viewed skeptivcally because of that 1.5. This is a fine model, but not a multi-level model. It has amnesia as you move from tank to tank. The only data in the dataset that informs each alpha is the data for that tank only. It learns about tank 1, using 7 tadpoles, estimates the alpha, then moves to the next tank and forgets all about it.  "}
 knitr::include_graphics(file.path(slides_dir, '14.png'))
@@ -84,6 +121,44 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
+```{r 13.2}
+# make the tank cluster variable
+d$tank <- 1:nrow(d)
+
+dat <- list(
+  S = d$surv,
+  N = d$density,
+  tank = d$tank )
+  
+# approximate posterior
+m13.1 <- ulam(
+  alist(
+    S ~ dbinom( N , p ) ,
+    logit(p) <- a[tank] ,
+    a[tank] ~ dnorm( 0 , 1.5 )
+  ), data=dat , chains=4 , log_lik=TRUE )
+```
+
+```{r 13.2 b, eval = F}
+b13.1 <- 
+  brms::brm(data = d, 
+            family = binomial,
+            surv | trials(density) ~ 0 + factor(tank),
+            prior(normal(0, 1.5), class = b),
+            iter = 2000, warmup = 1000, chains = 4, cores = 4,
+            seed = 13,
+            file = "fits/b13.01")
+```
+
+
+```{r}
+DT::datatable(precis(m13.1, depth = 2))
+```
+
+To get each tank’s expected survival probability, just take one of the a intercept values and then use the logistic transform. So far there is nothing new here.
+
+Now let’s do the multilevel model, which adaptively pools information across tanks. All that is required to enable adaptive pooling is to make the prior for the a parameters a function of some new parameters. 
+
 ```{r, echo = F, out.width='80%', fig.cap="Now let's try something different. Added some stuff in blue. Let's step through. "}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
@@ -91,6 +166,9 @@ knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```{r, echo = F, out.width='80%', fig.cap="$\\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). $\\bar{\\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\\alpha$. Then $\\sigma$, which is the SD in this population. So each $\\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\\bar{\\alpha}$ our regularizing prior, same with $\\sigma$."}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
+
+$\bar{\alpha}$ and $\sigma$ are **HYPERPARAMETERS**. They create the second level. In the top level, the outcome is $S$, and in the second, the outcome is the vector of intercept parameters, $\alpha$.
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives better predictions. Now we'll learn it from the data itself, and it's like visiting cafés. As you learn the variation among them, you pool the information across. "}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
@@ -108,9 +186,26 @@ knitr::include_graphics(file.path(slides_dir, '20.png'))
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
+```{r 13.3}
+m13.2 <- ulam(
+  alist(
+    S ~ dbinom( N , p ) ,
+    logit(p) <- a[tank] ,
+    a[tank] ~ dnorm( a_bar , sigma ) ,
+    a_bar ~ dnorm( 0 , 1.5 ) ,
+    sigma ~ dexp( 1 )
+  ), data=dat , chains=4 , log_lik=TRUE )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="If you focus on the model structure, you can understand things. If you focus on terminology, you'll get confused. Let's compare these models. Want to show you something about flexibilty in random effects 13.1 is fixed effects. 13.2 is MLM. In terms of WAIC, they're very similar. Not much of a difference. But look at the effective number of parameters. 131. has 48 paramaters because there are 48 tanks. One parameter for each. It ends up with 25 effective. Why? Because of the regularising prior. It wasn't flat. That means there are tank where all the tadploles survived. What's the log-odds of that? Infinite. But because of the piror, you don't end up with an alpha of infinity. What's happening with 13.2 is we've addedd two more parameters  ($\\bar{\\alpha}$ and $\\sigma$). But fewer effective parameters. When teaching you about overfitting, the caveat was that every time you add a paramter the fit in-sample imporoves. *Other than* with MLMs. They learn how regular to be from the data itself. The regularising prior ends up being narrower. One of the coolest facts in statistics. Deep learning works because it's deep. Parameters stacked on parameters.  "}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
+
+```{r 13.4, eval = F}
+compare( m13.1 , m13.2 )
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Graphically, we'll compare the two models. Across the horizontal is all 48 tanks. They come in three sizes. You'll see that experimentally they were set up to be small, medium and large. Very cool experiment. Small have smaller initial density. Medium and large likewise. On the vertical, we're looking at the proportion survive. The outcome scale. Or the probability of survival. Blue dots are raw data. So you'll see the 1s on top. That's where all the lucky tadpoles lived. The open cricles are the multi-level estimates. THere's a pattern here - shrinkage. The model is not retrodicting the sample, but that's why it's a good model. Wnat to learn the regular features to make better predictions. The regularizing prior was learned from teh data so it knows how to treat all the data. The dashed line is the popoulation mean, $\\bar{\\alpha}$that we have estimated from the data."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))

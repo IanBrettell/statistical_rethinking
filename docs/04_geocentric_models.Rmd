@@ -856,7 +856,7 @@ knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
 ```{r 4.59}
-sim.height = sim(m4.3, data = list(weight = weight.seq))
+sim.height = rethinking::sim(m4.3, data = list(weight = weight.seq))
 str(sim.height)
 ```
 
@@ -886,7 +886,7 @@ shade( height.PI , weight.seq )
 
 If the rough shaded interval bothers you, increase the number of samples from the posterior distribution.
 ```{r 4.62}
-sim.height <- sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
+sim.height <- rethinking::sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
 height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
 ```
 
@@ -997,7 +997,7 @@ pred_dat <- list( weight_s=weight.seq , weight_s2=weight.seq^2 )
 mu <- link( m4.5 , data=pred_dat )
 mu.mean <- apply( mu , 2 , mean )
 mu.PI <- apply( mu , 2 , PI , prob=0.89 )
-sim.height <- sim( m4.5 , data=pred_dat )
+sim.height <- rethinking::sim( m4.5 , data=pred_dat )
 height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
 ```
 
