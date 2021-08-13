@@ -139,7 +139,7 @@ m13.1 <- ulam(
   ), data=dat , chains=4 , log_lik=TRUE )
 ```
 
-```{r 13.2 b, eval = F}
+```{r 13.2 b}
 b13.1 <- 
   brms::brm(data = d, 
             family = binomial,
@@ -154,6 +154,11 @@ b13.1 <-
 ```{r}
 DT::datatable(precis(m13.1, depth = 2))
 ```
+
+```{r}
+print(b13.1)
+```
+
 
 To get each tank’s expected survival probability, just take one of the a intercept values and then use the logistic transform. So far there is nothing new here.
 
@@ -197,6 +202,19 @@ m13.2 <- ulam(
   ), data=dat , chains=4 , log_lik=TRUE )
 ```
 
+```{r 13.3 b}
+b13.2 <- 
+  brm(data = d, 
+      family = binomial,
+      surv | trials(density) ~ 1 + (1 | tank),
+      prior = c(prior(normal(0, 1.5), class = Intercept),  # bar alpha
+                prior(exponential(1), class = sd)),        # sigma
+      iter = 5000, warmup = 1000, chains = 4, cores = 4,
+      sample_prior = "yes",
+      seed = 13,
+      file = "fits/b13.02")
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="If you focus on the model structure, you can understand things. If you focus on terminology, you'll get confused. Let's compare these models. Want to show you something about flexibilty in random effects 13.1 is fixed effects. 13.2 is MLM. In terms of WAIC, they're very similar. Not much of a difference. But look at the effective number of parameters. 131. has 48 paramaters because there are 48 tanks. One parameter for each. It ends up with 25 effective. Why? Because of the regularising prior. It wasn't flat. That means there are tank where all the tadploles survived. What's the log-odds of that? Infinite. But because of the piror, you don't end up with an alpha of infinity. What's happening with 13.2 is we've addedd two more parameters  ($\\bar{\\alpha}$ and $\\sigma$). But fewer effective parameters. When teaching you about overfitting, the caveat was that every time you add a paramter the fit in-sample imporoves. *Other than* with MLMs. They learn how regular to be from the data itself. The regularising prior ends up being narrower. One of the coolest facts in statistics. Deep learning works because it's deep. Parameters stacked on parameters.  "}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
@@ -206,8 +224,73 @@ knitr::include_graphics(file.path(slides_dir, '22.png'))
 compare( m13.1 , m13.2 )
 ```
 
+```{r 13.4 b}
+b13.1 <- brms::add_criterion(b13.1, "waic")
+b13.2 <- brms::add_criterion(b13.2, "waic")
 
-```{r, echo = F, out.width='80%', fig.cap="Graphically, we'll compare the two models. Across the horizontal is all 48 tanks. They come in three sizes. You'll see that experimentally they were set up to be small, medium and large. Very cool experiment. Small have smaller initial density. Medium and large likewise. On the vertical, we're looking at the proportion survive. The outcome scale. Or the probability of survival. Blue dots are raw data. So you'll see the 1s on top. That's where all the lucky tadpoles lived. The open cricles are the multi-level estimates. THere's a pattern here - shrinkage. The model is not retrodicting the sample, but that's why it's a good model. Wnat to learn the regular features to make better predictions. The regularizing prior was learned from teh data so it knows how to treat all the data. The dashed line is the popoulation mean, $\\bar{\\alpha}$that we have estimated from the data."}
+w <- brms::loo_compare(b13.1, b13.2, criterion = "waic")
+
+print(w, simplify = F)
+```
+
+There are 28 fewer effective parameters than actual parameters, because the prior assigned to each intercept shrinks them all towards the mean $\bar{\alpha}$. In this case, the prior is reasonably strong. This is a REGULARIZING PRIOR, like you’ve used in previous chapters, but now the amount of regularization has been learned from the data itself.
+
+To appreciate the impact of this adaptive regularization, let’s plot and compare the posterior means from models `m13.1` and `m13.2`. 
+
+```{r 13.5}
+# extract Stan samples
+post <- extract.samples(m13.2)
+
+# compute mean intercept for each tank
+# also transform to probability with logistic
+d$propsurv.est <- logistic( apply( post$a , 2 , mean ) )
+
+# display raw proportions surviving in each tank
+plot( d$propsurv , ylim=c(0,1) , pch=16 , xaxt="n" ,
+  xlab="tank" , ylab="proportion survival" , col=rangi2 )
+axis( 1 , at=c(1,16,32,48) , labels=c(1,16,32,48) )
+
+# overlay posterior means
+points( d$propsurv.est )
+
+# mark posterior mean probability across tanks
+abline( h=mean(inv_logit(post$a_bar)) , lty=2 )
+
+# draw vertical dividers between tank densities
+abline( v=16.5 , lwd=0.5 )
+abline( v=32.5 , lwd=0.5 )
+text( 8 , 0 , "small tanks" )
+text( 16+8 , 0 , "medium tanks" )
+text( 32+8 , 0 , "large tanks" )
+```
+
+First, notice that in every case, the multilevel estimate is closer to the dashed line than the raw empirical estimate is. It’s as if the entire distribution of black circles has been shrunk towards the dashed line at the center of the data, leaving the blue points behind on the outside.
+
+Second, notice that the estimates for the smaller tanks have shrunk farther from the blue points.
+
+Third, note that the farther a blue point is from the dashed line, the greater the distance between it and the corresponding multilevel estimate.
+
+All three of these phenomena arise from a common cause: pooling information across clusters (tanks) to improve estimates.
+
+First we’ll plot 100 Gaussian distributions, one for each of the first 100 samples from the posterior distribution of both α and σ. Then we’ll sample 8000 new log-odds of survival for individual tanks. 
+
+```{r 13.6}
+# show first 100 populations in the posterior
+plot( NULL , xlim=c(-3,4) , ylim=c(0,0.35) ,
+  xlab="log-odds survive" , ylab="Density" )
+for ( i in 1:100 )
+  curve( dnorm(x,post$a_bar[i],post$sigma[i]) , add=TRUE ,
+  col=col.alpha("black",0.2) )
+
+# sample 8000 imaginary tanks from the posterior distribution
+sim_tanks <- rnorm( 8000 , post$a_bar , post$sigma )
+
+# transform to probability and visualize
+dens( inv_logit(sim_tanks) , lwd=2 , adj=0.1 )
+```
+
+
+```{r, echo = F, out.width='80%', fig.cap="Graphically, we'll compare the two models. Across the horizontal is all 48 tanks. They come in three sizes. You'll see that experimentally they were set up to be small, medium and large. Very cool experiment. Small have smaller initial density. Medium and large likewise. On the vertical, we're looking at the proportion survive. The outcome scale. Or the probability of survival. Blue dots are raw data. So you'll see the 1s on top. That's where all the lucky tadpoles lived. The open cricles are the multi-level estimates. THere's a pattern here - shrinkage. The model is not retrodicting the sample, but that's why it's a good model. Wnat to learn the regular features to make better predictions. The regularizing prior was learned from the data so it knows how to treat all the data. The dashed line is the popoulation mean, $\\bar{\\alpha}$that we have estimated from the data."}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
 
@@ -227,9 +310,13 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
+## Varying effects and the underfitting/overfitting trade-off
+
 ```{r, echo = F, out.width='80%', fig.cap="All of this is really dealing with over/under-fitting. No pooling because there's no information being excahnged among clusters. How much pooling? Depends on variation among clusters. "}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
+
+***13.2.1. The model***
 
 ```{r, echo = F, out.width='80%', fig.cap="Try to back this up with a picture. MLM at the top. Focus on $\\sigma$. If this was the cafes, it's the variation in wait times. "}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
@@ -255,6 +342,125 @@ knitr::include_graphics(file.path(slides_dir, '33.png'))
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
+***13.2.2. Assign values to the parameters***
+
+```{r 13.7}
+a_bar <- 1.5
+sigma <- 1.5
+nponds <- 60
+Ni <- as.integer( rep( c(5,10,25,35) , each=15 ) )
+```
+
+I’ve chosen 60 ponds, with 15 each of initial tadpole density 5, 10, 25, and 35. 
+
+```{r 13.8}
+set.seed(5005)
+a_pond <- rnorm( nponds , mean=a_bar , sd=sigma )
+```
+
+```{r 13.9}
+dsim <- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )
+```
+
+Go ahead and inspect the contents of dsim, the simulated data. The first column is the pond index, 1 through 60. The second column is the initial tadpole count in each pond. The third column is the true log-odds survival for each pond.
+
+```{r 13.10}
+class(1:3)
+class(c(1,2,3))
+```
+
+***13.2.3. Simulate survivors***
+
+Now we’re ready to simulate the binomial survival process. Each pond i has ni potential survivors, and nature flips each tadpole’s coin, so to speak, with probability of survival $p_i$.
+
+```{r 13.11}
+dsim$Si <- rbinom( nponds , prob=logistic(dsim$true_a) , size=dsim$Ni )
+```
+
+***13.2.4. Compute the no-pooling estimates***
+
+```{r 13.12}
+dsim$p_nopool <- dsim$Si / dsim$Ni
+```
+
+***13.2.5. Compuate the partial-pooling estimates***
+
+```{r 13.13}
+dat <- list( Si=dsim$Si , Ni=dsim$Ni , pond=dsim$pond )
+m13.3 <- ulam(
+  alist(
+    Si ~ dbinom( Ni , p ),
+    logit(p) <- a_pond[pond],
+    a_pond[pond] ~ dnorm( a_bar , sigma ),
+    a_bar ~ dnorm( 0 , 1.5 ),
+    sigma ~ dexp( 1 )
+  ), data=dat , chains=4 )
+```
+
+Take a look at the estimates for $\bar{\alpha}$ and $\sigma$.
+
+```{r 13.14}
+precis( m13.3 , depth=2 )
+```
+
+Compute the survival proportions and add them to our growing simulation data frame.
+
+```{r 13.15}
+post <- extract.samples( m13.3 )
+dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
+```
+
+Compare to the true per-pond survival probabilities.
+
+```{r 13.16}
+dsim$p_true <- inv_logit( dsim$true_a )
+```
+
+```{r 13.17}
+nopool_error <- abs( dsim$p_nopool - dsim$p_true )
+partpool_error <- abs( dsim$p_partpool - dsim$p_true )
+```
+
+Now plot
+
+```{r 13.18}
+plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" ,
+  col=rangi2 , pch=16 )
+points( 1:60 , partpool_error )
+```
+
+```{r 13.19}
+nopool_avg <- aggregate(nopool_error,list(dsim$Ni),mean)
+partpool_avg <- aggregate(partpool_error,list(dsim$Ni),mean)
+```
+
+Once you've compiled `m13.3` once, you can use this codee to re-simulate ponds and sample from the new posterior, without waiting for the model to compile again:
+
+```{r 13.20, eval = F}
+# Faulty code
+# This line thows an error
+# m13.3new <- stan( fit=m13.3@stanfit , data=newdat , chains=4 )
+a <- 1.5
+sigma <- 1.5
+nponds <- 60
+Ni <- as.integer( rep( c(5,10,25,35) , each=15 ) )
+a_pond <- rnorm( nponds , mean=a , sd=sigma )
+dsim <- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )
+dsim$Si <- rbinom( nponds,prob=inv_logit( dsim$true_a ),size=dsim$Ni )
+dsim$p_nopool <- dsim$Si / dsim$Ni
+newdat <- list(Si=dsim$Si,Ni=dsim$Ni,pond=1:nponds)
+m13.3new <- stan( fit=m13.3@stanfit , data=newdat , chains=4 )
+
+post <- extract.samples( m13.3new )
+dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
+dsim$p_true <- inv_logit( dsim$true_a )
+nopool_error <- abs( dsim$p_nopool - dsim$p_true )
+partpool_error <- abs( dsim$p_partpool - dsim$p_true )
+plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" , col=rangi2 , pch=16 )
+points( 1:60 , partpool_error )
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="On the left we have tiny ponds. The blue points are the raw proportions survived. The open points are the partial pooling estimates. The error is the absolute error from the true value. 0 is totally correct. A lot of error here because you've only got 5 tadpoles. Hard to estimate the probability of heads if you only flip the coin 5 times. THe blue horizontal bar is the average of the raw estimates, the dashed is for the MLM. They're not perfect, but they're better. THis is all shrinkage. "}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
@@ -277,6 +483,10 @@ slides_dir = here::here("docs/slides/L16")
 knitr::include_graphics(file.path(slides_dir, '01.png'))
 ```
 
+## More than one type of cluster
+
+We can use and often should use more than one type of cluster in the same model. Each pull is within a cluster of pulls belonging to an individual chimpanzee. But each pull is also within an experimental block, which represents a collection of observations that happened on the same day.
+
 ```{r, echo = F, out.width='80%', fig.cap="Experiment with a small number of chimps. Replicated on each. 4 treatments with prosocial option. Question is do they intepret it that way? "}
 knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```
@@ -284,6 +494,8 @@ knitr::include_graphics(file.path(slides_dir, '02.png'))
 ```{r, echo = F, out.width='80%', fig.cap="Want to use it to learn how to build a more complex vasrying effects model when we have more than one type of cluster. Called cross-classfication. The indivdual chimps are cross-classified, as is experimental day. In this dataset everything is balanced. All the chimps in all the blocks. Going to use both these types of clusters. Actors is a clsuter so we can estimate parameters specific to the chimp, like handedness. Also have repeated observations inside blocks. You can just design them liek a varying intercept model. "}
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
+
+***13.3.1. Multilevel chimpanzees***
 
 ```{r, echo = F, out.width='80%', fig.cap="Here's the MLM with both actor and block intercepts. Alpha for each actor, gamma for each block, and beta for each treatment. Ordinary fixed effects, regularising, not adaptive. Just like tank effects. Interpretation is the handedness. Adaptive prior, with alpha bar. And a sigma alpha. So the model will learn the prior from the data."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
@@ -297,6 +509,36 @@ knitr::include_graphics(file.path(slides_dir, '05.png'))
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
+```{r 13.21}
+library(rethinking)
+data(chimpanzees)
+d <- chimpanzees
+d$treatment <- 1 + d$prosoc_left + 2*d$condition
+
+dat_list <- list(
+  pulled_left = d$pulled_left,
+  actor = d$actor,
+  block_id = d$block,
+  treatment = as.integer(d$treatment) )
+  
+set.seed(13)
+m13.4 <- ulam(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a[actor] + g[block_id] + b[treatment] ,
+    b[treatment] ~ dnorm( 0 , 0.5 ),
+  ## adaptive priors
+    a[actor] ~ dnorm( a_bar , sigma_a ),
+    g[block_id] ~ dnorm( 0 , sigma_g ),
+  ## hyper-priors
+    a_bar ~ dnorm( 0 , 1.5 ),
+    sigma_a ~ dexp(1),
+    sigma_g ~ dexp(1)
+  ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+```
+
+In this case, you should see a warning about DIVERGENT TRANSITIONS. In the next section, I’ll show you how to fix this. For now, we can keep moving and interpret the posterior.
+
 ```{r, echo = F, out.width='80%', fig.cap="`a` for each actor. Vector of those. They each have a common prior, with two parameters inside it. Conditional on other parameters (which makes it adaptive.) Then at the bottom it gives it shape. "}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
@@ -305,13 +547,43 @@ knitr::include_graphics(file.path(slides_dir, '07.png'))
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
+This is easily the most complicated model we’ve used in the book so far. So let’s look at the posterior and take note of a few important features:
+
+```{r 13.22}
+precis( m13.4 , depth=2 )
+#plot( precis(m13.4,depth=2) ) # also plot
+```
+
 ```{r, echo = F, out.width='80%', fig.cap="Run this model at home. WOn't encounter any problems. Plot the precis on the left. Treatment parameters. No new story here. Atraacted to the prosocial option, but not more when there's a partner. `a[2]` has a big intecetpt. Why such a wide marginal posterior for left? `g` are block effects. All very small, around 0. Which means there's not much variation among blocks. Then down the bottom we have alpha bar, which is lslightly left-handed. THen the two sigmas teell the same story. The variation among actor and block, you cna see the actors vary more, and the sigmas are picking them up. For actor, sigma of 2 is very big. sigma[g] is practically 0. Plotted the two densities for the sigma variables. The consequence of this is there's a lot more shrinkage among blocks. The actors had very little shrinkage, becuase lefty proves that indibvdiuals are indiviuals, with personality."}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Natural to ask then, should we even have varying intercepts on bllock. Doesn't matter. Levae them out and get the same inference. Nice feature of varying effects is if there's not much vasriation, not harmful to add varying effects. Here's the sam emodel, but we've taken out the block effects eentirely, but with varying intercepts on indviuals, and can compare with WAIC or LOO, and see that they're very similar models. Effectively the same. Notice the parameter counts have a small difference. 2 effective parameter difference, even though it has 7 more parameters. Lots of machine learning works this way.  "}
+First, notice that the number of effective samples, `n_eff`, varies quite a lot across parameters. This is common in complex models. Why? There are many reasons for this. But in this sort of model a common reason is that some parameter spends a lot of time near a boundary. Here, that parameter is `sigma_g.` It spends a lot of time near its minimum of zero. Some Rhat values are also slightly above 1.00 now. All of this is a sign of inefficient sampling, which we’ll fix in the next section.
+
+```{r, echo = F, out.width='80%', fig.cap="Natural to ask then, should we even have varying intercepts on block. Doesn't matter. Leave them out and get the same inference. Nice feature of varying effects is if there's not much vasriation, not harmful to add varying effects. Here's the same model, but we've taken out the block effects entirely, but with varying intercepts on individuals, and can compare with WAIC or LOO, and see that they're very similar models. Effectively the same. Notice the parameter counts have a small difference. 2 effective parameter difference, even though it has 7 more parameters. Lots of machine learning works this way.  "}
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
+
+```{r 13.23}
+set.seed(14)
+m13.5 <- ulam(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a[actor] + b[treatment] ,
+    b[treatment] ~ dnorm( 0 , 0.5 ),
+    a[actor] ~ dnorm( a_bar , sigma_a ),
+    a_bar ~ dnorm( 0 , 1.5 ),
+    sigma_a ~ dexp(1)
+  ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+```
+
+```{r 13.24, eval = F}
+rethinking::compare( m13.4 , m13.5 )
+```
+
+There is nothing to gain here by selecting either model. The comparison of the two models tells a richer story—whether we include block or not hardly matters, and the g and sigma_g estimates tell us why.
+
+***13.3.2. Even more clusters***
 
 ```{r, echo = F, out.width='80%', fig.cap="Let's add some more random effects. Synonym of varying effects. Rnadom has a tendency to interpret effects in a stronger way. Just a statistcal way to regularise inference. Source of clusters is irrelevant to whethr to add random effects or not. Wnat to regularise, but not adaptively. If you care about mroe accurate inferences, use adaptive priors. All we have ot do is add a sigma beta. Give it a parameter and we learn it. "}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
@@ -321,6 +593,35 @@ knitr::include_graphics(file.path(slides_dir, '11.png'))
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
+```{r 13.25}
+set.seed(15)
+m13.6 <- ulam(
+  alist(
+    pulled_left ~ dbinom( 1 , p ) ,
+    logit(p) <- a[actor] + g[block_id] + b[treatment] ,
+    b[treatment] ~ dnorm( 0 , sigma_b ),
+    a[actor] ~ dnorm( a_bar , sigma_a ),
+    g[block_id] ~ dnorm( 0 , sigma_g ),
+    a_bar ~ dnorm( 0 , 1.5 ),
+    sigma_a ~ dexp(1),
+    sigma_g ~ dexp(1),
+    sigma_b ~ dexp(1)
+  ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+coeftab( m13.4 , m13.6 )@coefs[1:4, ]
+```
+
+And there is a lot of data in each treatment, so they don’t get pooled much in any event. If you compare model m13.6 with m13.4, using either WAIC or PSIS, you’ll see they are no different on purely predictive criteria. This is the typical result, when each cluster (each treatment here) has a lot of data to inform its parameters.
+
+## Divergent transitions and non-centered priors
+
+In a purely mathematical system, the energy is always conserved correctly. It’s just a fact about the physics.
+
+But in a numerical system, it might not be. Sometimes the total energy is not the same at the end as it was at the start. In these cases, the energy is divergent. How can this happen? It tends to happen when the posterior distribution is very steep in some region of parameter space. Steep changes in probability are hard for a discrete physics simulation to follow. When that happens, the algorithm notices by comparing the energy at the start to the energy at the end. When they don’t match, it indicates numerical problems exploring that part of the posterior distribution.
+
+Divergent transitions are rejected. They don’t directly damage your approximation of the posterior distribution. But they do hurt it indirectly, because the region where divergent transitions happen is hard to explore correctly. And even when there aren’t any divergent transitions, distributions with steep regions are hard to explore. The chains will be less efficient. And unfortunately this happens quite often in multilevel models.
+
+There are two easy tricks for reducing the impact of divergent transitions. The first is to tune the simulation so that it doesn’t overshoot the valley wall. This means doing more warmup with a higher target acceptance rate, Stan’s adapt_delta. But for many models, you can never tune the sampler enough to remove the divergent transitions. The second trick is to write the statistical model in a new way, to REPARAMETERIZE it.
+
 ```{r, echo = F, out.width='80%', fig.cap="You will get these warnings. Divergent transitions. They are your friend, in the sense that they are telling you something numerically inefficient about ht emodel. Easy to get rid of them. Teaches you someting really important. Even though mathematiclaly equivalent, the Markvov Chain will see them as quite different. Need to swtich between different ways of writing the same model. Gives you advice to increase `adapt_delta`. But sometimes that won't save you, and you just need to re-parameterise the modeo."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
@@ -329,7 +630,19 @@ knitr::include_graphics(file.path(slides_dir, '13.png'))
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Divergent transitions are when your rollercoaster pops off the track. In Hamiltonian dynamics, it is the total energy in the system. If energy isn't conserved in the chain, something is wrong. We have little steps, we calculate the gradient, find a step, and get a piecewise approximation. When the rollercoaster track bends really biolently, or the stepsize is big, it can happen. Divergent means it pops off the true surface. On the right is a posterior distribution that tends towards divergent transitions. It happens when you have parameters that is conditional on other parameters. Gibbs and Metropolis experience the same thing, but don't tell you when it's happening. Hamiltonian just works better especially in high dimensions, but also gives you diagnostic information."}
+***13.4.1. The Devil's Funnel***
+
+```{r 13.26}
+m13.7 <- ulam(
+  alist(
+    v ~ normal(0,3),
+    x ~ normal(0,exp(v))
+  ), data=list(N=1) , chains=4 )
+precis( m13.7 )
+```
+
+
+```{r, echo = F, out.width='80%', fig.cap="Divergent transitions are when your rollercoaster pops off the track. In Hamiltonian dynamics, it is the total energy in the system. If energy isn't conserved in the chain, something is wrong. We have little steps, we calculate the gradient, find a step, and get a piecewise approximation. When the rollercoaster track bends really violently, or the stepsize is big, it can happen. Divergent means it pops off the true surface. On the right is a posterior distribution that tends towards divergent transitions. It happens when you have parameters that is conditional on other parameters. Gibbs and Metropolis experience the same thing, but don't tell you when it's happening. Hamiltonian just works better especially in high dimensions, but also gives you diagnostic information."}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
