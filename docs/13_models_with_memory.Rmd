@@ -92,24 +92,24 @@ knitr::include_graphics(file.path(slides_dir, '11.png'))
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
-```{r 13.1}
-library(rethinking)
-data(reedfrogs)
+```{r 13.1 b}
+data(reedfrogs, package = "rethinking")
 d <- reedfrogs
-str(d)
+rm(reedfrogs)
+
+# Take a look
+d %>%
+  glimpse()
 ```
 
-```{r 13.1 b}
-d %>% 
-  pillar::glimpse() %>% 
-  DT::datatable(.)
-```
 
 Each row is a 'tank', and there are lots of unmeasured things peculiar to each tank which create variation in survival across tanks.
 
 ```{r, echo = F, out.width='80%', fig.cap="We have tadpoles in tanks (buckets). They're at different densities. Different maximums can survive. This will be binomial regression. Number at start and end. Dummy variable is what we've done before. Now MLM with different intercepts."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
+
+
 
 VARYING INTERCEPTS are the simplest kind of VARYING EFFECTS. For each cluster, we use a unique intercept parameter. 
 
@@ -121,42 +121,48 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
-```{r 13.2}
-# make the tank cluster variable
-d$tank <- 1:nrow(d)
+```{r, 13.2 b}
+# Make tank cluster variable
+d <- 
+  d %>%
+  mutate(tank = 1:nrow(d))
 
-dat <- list(
-  S = d$surv,
-  N = d$density,
-  tank = d$tank )
-  
-# approximate posterior
-m13.1 <- ulam(
-  alist(
-    S ~ dbinom( N , p ) ,
-    logit(p) <- a[tank] ,
-    a[tank] ~ dnorm( 0 , 1.5 )
-  ), data=dat , chains=4 , log_lik=TRUE )
-```
+d %>% 
+  count(density)
 
-```{r 13.2 b}
+# Now fit binomial model like in Chapter 11
 b13.1 <- 
-  brms::brm(data = d, 
-            family = binomial,
-            surv | trials(density) ~ 0 + factor(tank),
-            prior(normal(0, 1.5), class = b),
-            iter = 2000, warmup = 1000, chains = 4, cores = 4,
-            seed = 13,
-            file = "fits/b13.01")
-```
+  brm(data = d, 
+      family = binomial,
+      surv | trials(density) ~ 0 + factor(tank),
+      prior(normal(0, 1.5), class = b),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 13,
+      file = "fits/b13.01")
 
-
-```{r}
-DT::datatable(precis(m13.1, depth = 2))
-```
-
-```{r}
 print(b13.1)
+```
+
+Look at the distribution of the $\alpha_j$ parameters in density plots, in both log-odds and probability metrics.
+
+```{r}
+# change the default
+theme_set(theme_gray() + theme_fivethirtyeight())
+
+tibble(estimate = fixef(b13.1)[, 1]) %>% 
+  mutate(p = inv_logit_scaled(estimate)) %>% 
+  pivot_longer(estimate:p) %>% 
+  mutate(name = if_else(name == "p", "expected survival probability", "expected survival log-odds")) %>% 
+  
+  ggplot(aes(x = value, fill = name)) +
+  stat_dots(size = 0) +
+  scale_fill_manual(values = c("orange1", "orange4")) +
+  scale_y_continuous(breaks = NULL) +
+  labs(title = "Tank-level intercepts from the no-pooling model",
+       subtitle = "Notice now inspecting the distributions of the posterior means can offer insights you\nmight not get if you looked at them one at a time.") +
+  theme(legend.position = "none",
+        panel.grid = element_blank()) +
+  facet_wrap(~ name, scales = "free_x")
 ```
 
 
@@ -191,16 +197,6 @@ knitr::include_graphics(file.path(slides_dir, '20.png'))
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
 
-```{r 13.3}
-m13.2 <- ulam(
-  alist(
-    S ~ dbinom( N , p ) ,
-    logit(p) <- a[tank] ,
-    a[tank] ~ dnorm( a_bar , sigma ) ,
-    a_bar ~ dnorm( 0 , 1.5 ) ,
-    sigma ~ dexp( 1 )
-  ), data=dat , chains=4 , log_lik=TRUE )
-```
 
 ```{r 13.3 b}
 b13.2 <- 
@@ -220,9 +216,7 @@ b13.2 <-
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-```{r 13.4, eval = F}
-compare( m13.1 , m13.2 )
-```
+Compute the WAIC comparisons:
 
 ```{r 13.4 b}
 b13.1 <- brms::add_criterion(b13.1, "waic")
@@ -233,36 +227,63 @@ w <- brms::loo_compare(b13.1, b13.2, criterion = "waic")
 print(w, simplify = F)
 ```
 
+The se_diff is small relative to the elpd_diff. If we convert the elpd difference to the WAIC metric, the message stays the same.
+
+```{r}
+cbind(waic_diff = w[, 1] * -2,
+      se        = w[, 2] *  2)
+```
+
+Here are the WAIC weights:
+```{r}
+brms::model_weights(b13.1, b13.2, weights = "waic") %>% 
+  round(digits = 2)
+```
+
+Compare number of effective parameters:
+
+```{r}
+w[, "p_waic"]
+```
+
+```{r}
+print(b13.2)
+```
+
+
 There are 28 fewer effective parameters than actual parameters, because the prior assigned to each intercept shrinks them all towards the mean $\bar{\alpha}$. In this case, the prior is reasonably strong. This is a REGULARIZING PRIOR, like you’ve used in previous chapters, but now the amount of regularization has been learned from the data itself.
 
 To appreciate the impact of this adaptive regularization, let’s plot and compare the posterior means from models `m13.1` and `m13.2`. 
 
-```{r 13.5}
-# extract Stan samples
-post <- extract.samples(m13.2)
+```{r 13.5 b}
+post <- posterior_samples(b13.2)
 
-# compute mean intercept for each tank
-# also transform to probability with logistic
-d$propsurv.est <- logistic( apply( post$a , 2 , mean ) )
+post_mdn <- 
+  coef(b13.2, robust = T)$tank[, , ] %>% 
+  data.frame() %>% 
+  bind_cols(d) %>%
+  mutate(post_mdn = inv_logit_scaled(Estimate))
 
-# display raw proportions surviving in each tank
-plot( d$propsurv , ylim=c(0,1) , pch=16 , xaxt="n" ,
-  xlab="tank" , ylab="proportion survival" , col=rangi2 )
-axis( 1 , at=c(1,16,32,48) , labels=c(1,16,32,48) )
+head(post_mdn) %>% 
+  DT::datatable(.)
 
-# overlay posterior means
-points( d$propsurv.est )
-
-# mark posterior mean probability across tanks
-abline( h=mean(inv_logit(post$a_bar)) , lty=2 )
-
-# draw vertical dividers between tank densities
-abline( v=16.5 , lwd=0.5 )
-abline( v=32.5 , lwd=0.5 )
-text( 8 , 0 , "small tanks" )
-text( 16+8 , 0 , "medium tanks" )
-text( 32+8 , 0 , "large tanks" )
+# Reproduce Figure 13.1
+post_mdn %>%
+  ggplot(aes(x = tank)) +
+  geom_hline(yintercept = inv_logit_scaled(median(post$b_Intercept)), linetype = 2, size = 1/4) +
+  geom_vline(xintercept = c(16.5, 32.5), size = 1/4, color = "grey25") +
+  geom_point(aes(y = propsurv), color = "orange2") +
+  geom_point(aes(y = post_mdn), shape = 1) +
+  annotate(geom = "text", 
+           x = c(8, 16 + 8, 32 + 8), y = 0, 
+           label = c("small tanks", "medium tanks", "large tanks")) +
+  scale_x_continuous(breaks = c(1, 16, 32, 48)) +
+  scale_y_continuous(breaks = 0:5 / 5, limits = c(0, 1)) +
+  labs(title = "Multilevel shrinkage!",
+       subtitle = "The empirical proportions are in orange while the model-\nimplied proportions are the black circles. The dashed line is\nthe model-implied average survival proportion.") +
+  theme(panel.grid.major = element_blank())
 ```
+
 
 First, notice that in every case, the multilevel estimate is closer to the dashed line than the raw empirical estimate is. It’s as if the entire distribution of black circles has been shrunk towards the dashed line at the center of the data, leaving the blue points behind on the outside.
 
@@ -274,20 +295,45 @@ All three of these phenomena arise from a common cause: pooling information acro
 
 First we’ll plot 100 Gaussian distributions, one for each of the first 100 samples from the posterior distribution of both α and σ. Then we’ll sample 8000 new log-odds of survival for individual tanks. 
 
-```{r 13.6}
-# show first 100 populations in the posterior
-plot( NULL , xlim=c(-3,4) , ylim=c(0,0.35) ,
-  xlab="log-odds survive" , ylab="Density" )
-for ( i in 1:100 )
-  curve( dnorm(x,post$a_bar[i],post$sigma[i]) , add=TRUE ,
-  col=col.alpha("black",0.2) )
+```{r 13.6 b}
+# this makes the output of `slice_sample()` reproducible
+set.seed(13)
 
-# sample 8000 imaginary tanks from the posterior distribution
-sim_tanks <- rnorm( 8000 , post$a_bar , post$sigma )
+p1 <-
+  post %>% 
+  mutate(iter = 1:n()) %>% 
+  slice_sample(n = 100) %>% 
+  tidyr::expand(nesting(iter, b_Intercept, sd_tank__Intercept),
+         x = seq(from = -4, to = 5, length.out = 100)) %>%
+  mutate(density = dnorm(x, mean = b_Intercept, sd = sd_tank__Intercept)) %>% 
+    
+  ggplot(aes(x = x, y = density, group = iter)) +
+  geom_line(alpha = .2, color = "orange2") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = "Population survival distribution",
+       subtitle = "log-odds scale") +
+  coord_cartesian(xlim = c(-3, 4))
 
-# transform to probability and visualize
-dens( inv_logit(sim_tanks) , lwd=2 , adj=0.1 )
+set.seed(13)
+
+p2 <-
+  post %>% 
+  slice_sample(n = 8000, replace = T) %>% 
+  mutate(sim_tanks = rnorm(n(), mean = b_Intercept, sd = sd_tank__Intercept)) %>% 
+  
+  ggplot(aes(x = inv_logit_scaled(sim_tanks))) +
+  geom_density(size = 0, fill = "orange2", adjust = 0.1) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = "Probability of survival",
+       subtitle = "transformed by the inverse-logit function")
+
+library(patchwork)
+
+(p1 + p2) &
+  theme(plot.title = element_text(size = 12),
+        plot.subtitle = element_text(size = 10))
 ```
+
 
 
 ```{r, echo = F, out.width='80%', fig.cap="Graphically, we'll compare the two models. Across the horizontal is all 48 tanks. They come in three sizes. You'll see that experimentally they were set up to be small, medium and large. Very cool experiment. Small have smaller initial density. Medium and large likewise. On the vertical, we're looking at the proportion survive. The outcome scale. Or the probability of survival. Blue dots are raw data. So you'll see the 1s on top. That's where all the lucky tadpoles lived. The open cricles are the multi-level estimates. THere's a pattern here - shrinkage. The model is not retrodicting the sample, but that's why it's a good model. Wnat to learn the regular features to make better predictions. The regularizing prior was learned from the data so it knows how to treat all the data. The dashed line is the popoulation mean, $\\bar{\\alpha}$that we have estimated from the data."}
@@ -310,6 +356,57 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
+**Overthinking: prior for variance components**
+
+```{r, eval = F}
+# Error in unserialize(socklist[[n]]) : error reading from connection
+b13.2b <- 
+  update(b13.2,
+         prior = c(prior(normal(0, 1.5), class = Intercept),
+                   prior(normal(0, 1), class = sd)),
+         iter = 5000, warmup = 1000, chains = 4, cores = 2,
+         sample_prior = "yes",
+         seed = 13,
+         file = "fits/b13.02b")
+
+print(b13.2b)
+```
+
+Then compare:
+
+```{r, eval = F}
+# for annotation
+text <-
+  tibble(value        = c(0.5, 2.4),
+         density      = c(1, 1.85),
+         distribution = factor(c("prior", "posterior"), levels = c("prior", "posterior")),
+         prior        = "Exponential(1)")
+
+# gather and wrangle the prior and posterior draws
+tibble(`prior_Exponential(1)`        = prior_samples(b13.2) %>% pull(sd_tank),
+       `posterior_Exponential(1)`    = posterior_samples(b13.2) %>% pull(sd_tank__Intercept),
+       `prior_Half-Normal(0, 1)`     = prior_samples(b13.2b) %>% pull(sd_tank),
+       `posterior_Half-Normal(0, 1)` = posterior_samples(b13.2b) %>% pull(sd_tank__Intercept)) %>% 
+  pivot_longer(everything(),
+               names_sep = "_",
+               names_to = c("distribution", "prior")) %>% 
+  mutate(distribution = factor(distribution, levels = c("prior", "posterior"))) %>% 
+  
+  # plot!
+  ggplot(aes(x = value, fill = distribution)) +
+  geom_density(size = 0, alpha = 2/3, adjust = 0.25) +
+  geom_text(data = text,
+            aes(y = density, label = distribution, color = distribution)) +
+  scale_fill_manual(NULL, values = c("orange4", "orange2")) +
+  scale_color_manual(NULL, values = c("orange4", "orange2")) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression(Hierarchical~sigma~parameter)) +
+  coord_cartesian(xlim = c(0, 4)) +
+  theme(legend.position = "none") +
+  facet_wrap(~ prior)
+```
+
+
 ## Varying effects and the underfitting/overfitting trade-off
 
 ```{r, echo = F, out.width='80%', fig.cap="All of this is really dealing with over/under-fitting. No pooling because there's no information being excahnged among clusters. How much pooling? Depends on variation among clusters. "}
@@ -330,7 +427,7 @@ knitr::include_graphics(file.path(slides_dir, '30.png'))
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="In this paritcular model, you estimate sigma for the data, and it turns out to be this posterior here. Can get an almost Gaussian posterior. And that's the extreme amount of variation. What does this population look like? Not a real population, but a statistical one."}
+```{r, echo = F, out.width='80%', fig.cap="In this particular model, you estimate sigma for the data, and it turns out to be this posterior here. Can get an almost Gaussian posterior. And that's the extreme amount of variation. What does this population look like? Not a real population, but a statistical one."}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
@@ -344,121 +441,163 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 
 ***13.2.2. Assign values to the parameters***
 
-```{r 13.7}
-a_bar <- 1.5
-sigma <- 1.5
-nponds <- 60
-Ni <- as.integer( rep( c(5,10,25,35) , each=15 ) )
-```
+
 
 I’ve chosen 60 ponds, with 15 each of initial tadpole density 5, 10, 25, and 35. 
 
-```{r 13.8}
-set.seed(5005)
-a_pond <- rnorm( nponds , mean=a_bar , sd=sigma )
-```
-
-```{r 13.9}
-dsim <- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )
-```
 
 Go ahead and inspect the contents of dsim, the simulated data. The first column is the pond index, 1 through 60. The second column is the initial tadpole count in each pond. The third column is the true log-odds survival for each pond.
 
-```{r 13.10}
-class(1:3)
-class(c(1,2,3))
+```{r 13.7b}
+a_bar   <-  1.5
+sigma   <-  1.5
+n_ponds <- 60
+
+set.seed(5005)
+
+dsim <- 
+  tibble(pond   = 1:n_ponds,
+         ni     = rep(c(5, 10, 25, 35), each = n_ponds / 4) %>% as.integer(),
+         true_a = rnorm(n = n_ponds, mean = a_bar, sd = sigma))
+
+head(dsim)
+
+# Plot
+dsim %>% 
+  mutate(ni = factor(ni)) %>% 
+  
+  ggplot(aes(x = true_a, y = ni)) +
+  stat_dotsinterval(fill = "orange2", slab_size = 0, .width = .5) +
+  ggtitle("Log-odds varying by # tadpoles per pond") +
+  theme(plot.title = element_text(size = 14))
 ```
+
 
 ***13.2.3. Simulate survivors***
 
 Now we’re ready to simulate the binomial survival process. Each pond i has ni potential survivors, and nature flips each tadpole’s coin, so to speak, with probability of survival $p_i$.
 
-```{r 13.11}
-dsim$Si <- rbinom( nponds , prob=logistic(dsim$true_a) , size=dsim$Ni )
+```{r 13.11 b}
+set.seed(5005)
+
+dsim <-
+  dsim %>%
+  mutate(si = rbinom(n = n(), prob = inv_logit_scaled(true_a), size = ni))
+
+dsim %>% 
+  DT::datatable(.)
 ```
+
 
 ***13.2.4. Compute the no-pooling estimates***
 
-```{r 13.12}
-dsim$p_nopool <- dsim$Si / dsim$Ni
+```{r 13.12 b}
+dsim <-
+  dsim %>%
+  mutate(p_nopool = si / ni)
+
+dsim %>% 
+  DT::datatable(.)
 ```
 
-***13.2.5. Compuate the partial-pooling estimates***
 
-```{r 13.13}
-dat <- list( Si=dsim$Si , Ni=dsim$Ni , pond=dsim$pond )
-m13.3 <- ulam(
-  alist(
-    Si ~ dbinom( Ni , p ),
-    logit(p) <- a_pond[pond],
-    a_pond[pond] ~ dnorm( a_bar , sigma ),
-    a_bar ~ dnorm( 0 , 1.5 ),
-    sigma ~ dexp( 1 )
-  ), data=dat , chains=4 )
+***13.2.5. Compute the partial-pooling estimates***
+
+
+```{r 13.13 b}
+b13.3 <- 
+  brms::brm(data = dsim, 
+            family = binomial,
+            si | trials(ni) ~ 1 + (1 | pond),
+            prior = c(prior(normal(0, 1.5), class = Intercept),
+                      prior(exponential(1), class = sd)),
+            iter = 2000, warmup = 1000, chains = 4, cores = 4,
+            seed = 13,
+            file = "fits/b13.03")
+
+print(b13.3)
 ```
+
+
 
 Take a look at the estimates for $\bar{\alpha}$ and $\sigma$.
 
-```{r 13.14}
-precis( m13.3 , depth=2 )
+```{r 13.14 b}
+b13.3$fit
 ```
+
 
 Compute the survival proportions and add them to our growing simulation data frame.
 
-```{r 13.15}
-post <- extract.samples( m13.3 )
-dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
+```{r}
+# we could have included this step in the block of code below, if we wanted to
+p_partpool <- 
+  coef(b13.3)$pond[, , ] %>% 
+  data.frame() %>%
+  transmute(p_partpool = inv_logit_scaled(Estimate))
+
+dsim <- 
+  dsim %>%
+  bind_cols(p_partpool) %>% 
+  mutate(p_true = inv_logit_scaled(true_a)) %>%
+  mutate(nopool_error   = abs(p_nopool   - p_true),
+         partpool_error = abs(p_partpool - p_true))
+
+dsim %>% 
+  glimpse()
 ```
 
 Compare to the true per-pond survival probabilities.
 
-```{r 13.16}
-dsim$p_true <- inv_logit( dsim$true_a )
-```
-
-```{r 13.17}
-nopool_error <- abs( dsim$p_nopool - dsim$p_true )
-partpool_error <- abs( dsim$p_partpool - dsim$p_true )
-```
 
 Now plot
 
-```{r 13.18}
-plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" ,
-  col=rangi2 , pch=16 )
-points( 1:60 , partpool_error )
+
+```{r 13.18 b}
+dfline <- 
+  dsim %>%
+  dplyr::select(ni, nopool_error:partpool_error) %>%
+  tidyr::pivot_longer(-ni) %>%
+  dplyr::group_by(name, ni) %>%
+  dplyr::summarise(mean_error = mean(value)) %>%
+  dplyr::mutate(x    = c( 1, 16, 31, 46),
+                xend = c(15, 30, 45, 60))
+  
+dsim %>% 
+  ggplot(aes(x = pond)) +
+  geom_vline(xintercept = c(15.5, 30.5, 45.4), 
+             color = "white", size = 2/3) +
+  geom_point(aes(y = nopool_error), color = "orange2") +
+  geom_point(aes(y = partpool_error), shape = 1) +
+  geom_segment(data = dfline, 
+               aes(x = x, xend = xend, 
+                   y = mean_error, yend = mean_error),
+               color = rep(c("orange2", "black"), each = 4),
+               linetype = rep(1:2, each = 4)) +
+  annotate(geom = "text", 
+           x = c(15 - 7.5, 30 - 7.5, 45 - 7.5, 60 - 7.5), y = .45, 
+           label = c("tiny (5)", "small (10)", "medium (25)", "large (35)")) +
+  scale_x_continuous(breaks = c(1, 10, 20, 30, 40, 50, 60)) +
+  labs(title = "Estimate error by model type",
+       subtitle = "The horizontal axis displays pond number. The vertical axis measures\nthe absolute error in the predicted proportion of survivors, compared to\nthe true value used in the simulation. The higher the point, the worse\nthe estimate. No-pooling shown in orange. Partial pooling shown in black.\nThe orange and dashed black lines show the average error for each kind\nof estimate, across each initial density of tadpoles (pond size).",
+       y = "absolute error") +
+  theme(panel.grid.major = element_blank(),
+        plot.subtitle = element_text(size = 10))
 ```
 
-```{r 13.19}
-nopool_avg <- aggregate(nopool_error,list(dsim$Ni),mean)
-partpool_avg <- aggregate(partpool_error,list(dsim$Ni),mean)
+Or quantify the difference in simple summaries:
+```{r}
+dsim %>%
+  dplyr::select(ni, nopool_error:partpool_error) %>%
+  tidyr::pivot_longer(-ni) %>%
+  dplyr::group_by(name) %>%
+  dplyr::summarise(mean_error   = mean(value) %>% round(digits = 3),
+            median_error = median(value) %>% round(digits = 3))
 ```
 
-Once you've compiled `m13.3` once, you can use this codee to re-simulate ponds and sample from the new posterior, without waiting for the model to compile again:
 
-```{r 13.20, eval = F}
-# Faulty code
-# This line thows an error
-# m13.3new <- stan( fit=m13.3@stanfit , data=newdat , chains=4 )
-a <- 1.5
-sigma <- 1.5
-nponds <- 60
-Ni <- as.integer( rep( c(5,10,25,35) , each=15 ) )
-a_pond <- rnorm( nponds , mean=a , sd=sigma )
-dsim <- data.frame( pond=1:nponds , Ni=Ni , true_a=a_pond )
-dsim$Si <- rbinom( nponds,prob=inv_logit( dsim$true_a ),size=dsim$Ni )
-dsim$p_nopool <- dsim$Si / dsim$Ni
-newdat <- list(Si=dsim$Si,Ni=dsim$Ni,pond=1:nponds)
-m13.3new <- stan( fit=m13.3@stanfit , data=newdat , chains=4 )
+Once you've compiled `m13.3` once, you can use this code to re-simulate ponds and sample from the new posterior, without waiting for the model to compile again:
 
-post <- extract.samples( m13.3new )
-dsim$p_partpool <- apply( inv_logit(post$a_pond) , 2 , mean )
-dsim$p_true <- inv_logit( dsim$true_a )
-nopool_error <- abs( dsim$p_nopool - dsim$p_true )
-partpool_error <- abs( dsim$p_partpool - dsim$p_true )
-plot( 1:60 , nopool_error , xlab="pond" , ylab="absolute error" , col=rangi2 , pch=16 )
-points( 1:60 , partpool_error )
-```
 
 
 ```{r, echo = F, out.width='80%', fig.cap="On the left we have tiny ponds. The blue points are the raw proportions survived. The open points are the partial pooling estimates. The error is the absolute error from the true value. 0 is totally correct. A lot of error here because you've only got 5 tadpoles. Hard to estimate the probability of heads if you only flip the coin 5 times. THe blue horizontal bar is the average of the raw estimates, the dashed is for the MLM. They're not perfect, but they're better. THis is all shrinkage. "}
@@ -472,6 +611,39 @@ knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```{r, echo = F, out.width='80%', fig.cap="The other tanks. The pattern holds as you go across. The amount of error declines, because we have more data. The difference, the advantage of MLMs, shrinks. But still estimates the popualtion, which is important for prediction. So even when it doesn't give you bettre predictions, it allows you to make them in the right way because it takes account of populations. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
+
+**Overthinking::repeating the pond simulation**
+
+```{r 13.20 b, eval = F}
+# Error in unserialize(socklist[[n]]) : error reading from connection
+
+# Simulate new data
+a_bar   <-  1.5
+sigma   <-  1.5
+n_ponds <- 60
+
+set.seed(1999)  # for new data, set a new seed
+
+new_dsim <- 
+  tibble(pond   = 1:n_ponds,
+         ni     = rep(c(5, 10, 25, 35), each = n_ponds / 4) %>% as.integer(),
+         true_a = rnorm(n = n_ponds, mean = a_bar, sd = sigma)) %>% 
+  mutate(si = rbinom(n = n(), prob = inv_logit_scaled(true_a), size = ni)) %>% 
+  mutate(p_nopool = si / ni)
+
+glimpse(new_dsim)
+
+# Fit the new model
+b13.3_new <- 
+  update(b13.3,
+         newdata = new_dsim,
+         chains = 4, cores = 4,
+         seed = 13,
+      file = "fits/b13.03_new")
+
+print(b13.3_new)
+```
+
 
 -----
 
@@ -497,6 +669,7 @@ knitr::include_graphics(file.path(slides_dir, '03.png'))
 
 ***13.3.1. Multilevel chimpanzees***
 
+
 ```{r, echo = F, out.width='80%', fig.cap="Here's the MLM with both actor and block intercepts. Alpha for each actor, gamma for each block, and beta for each treatment. Ordinary fixed effects, regularising, not adaptive. Just like tank effects. Interpretation is the handedness. Adaptive prior, with alpha bar. And a sigma alpha. So the model will learn the prior from the data."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
@@ -509,33 +682,6 @@ knitr::include_graphics(file.path(slides_dir, '05.png'))
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
 
-```{r 13.21}
-library(rethinking)
-data(chimpanzees)
-d <- chimpanzees
-d$treatment <- 1 + d$prosoc_left + 2*d$condition
-
-dat_list <- list(
-  pulled_left = d$pulled_left,
-  actor = d$actor,
-  block_id = d$block,
-  treatment = as.integer(d$treatment) )
-  
-set.seed(13)
-m13.4 <- ulam(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a[actor] + g[block_id] + b[treatment] ,
-    b[treatment] ~ dnorm( 0 , 0.5 ),
-  ## adaptive priors
-    a[actor] ~ dnorm( a_bar , sigma_a ),
-    g[block_id] ~ dnorm( 0 , sigma_g ),
-  ## hyper-priors
-    a_bar ~ dnorm( 0 , 1.5 ),
-    sigma_a ~ dexp(1),
-    sigma_g ~ dexp(1)
-  ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
-```
 
 In this case, you should see a warning about DIVERGENT TRANSITIONS. In the next section, I’ll show you how to fix this. For now, we can keep moving and interpret the posterior.
 
@@ -549,14 +695,83 @@ knitr::include_graphics(file.path(slides_dir, '08.png'))
 
 This is easily the most complicated model we’ve used in the book so far. So let’s look at the posterior and take note of a few important features:
 
-```{r 13.22}
-precis( m13.4 , depth=2 )
-#plot( precis(m13.4,depth=2) ) # also plot
+```{r 13.21 b}
+data(chimpanzees, package = "rethinking")
+d <- chimpanzees
+rm(chimpanzees)
+
+d <-
+  d %>% 
+  mutate(actor     = factor(actor),
+         block     = factor(block),
+         treatment = factor(1 + prosoc_left + 2 * condition))
+
+glimpse(d)
+
+b13.4 <- 
+  brm(data = d, 
+      family = binomial,
+      bf(pulled_left | trials(1) ~ a + b,
+         a ~ 1 + (1 | actor) + (1 | block), 
+         b ~ 0 + treatment,
+         nl = TRUE),
+      prior = c(prior(normal(0, 0.5), nlpar = b),
+                prior(normal(0, 1.5), class = b, coef = Intercept, nlpar = a),
+                prior(exponential(1), class = sd, group = actor, nlpar = a),
+                prior(exponential(1), class = sd, group = block, nlpar = a)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 13,
+      file = "fits/b13.04")
 ```
+
+
+Check the trace plots:
+
+```{r}
+bayesplot::color_scheme_set("orange")
+
+post <- brms::posterior_samples(b13.4, add_chain = T)
+
+post %>% 
+  bayesplot::mcmc_trace(pars = vars(-iter, -lp__),
+                        facet_args = list(ncol = 4), 
+                        size = .15) +
+  theme(legend.position = "none")
+```
+
+```{r}
+print(b13.4)
+```
+
+```{r}
+posterior_summary(b13.4) %>% round(digits = 2)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Run this model at home. WOn't encounter any problems. Plot the precis on the left. Treatment parameters. No new story here. Atraacted to the prosocial option, but not more when there's a partner. `a[2]` has a big intecetpt. Why such a wide marginal posterior for left? `g` are block effects. All very small, around 0. Which means there's not much variation among blocks. Then down the bottom we have alpha bar, which is lslightly left-handed. THen the two sigmas teell the same story. The variation among actor and block, you cna see the actors vary more, and the sigmas are picking them up. For actor, sigma of 2 is very big. sigma[g] is practically 0. Plotted the two densities for the sigma variables. The consequence of this is there's a lot more shrinkage among blocks. The actors had very little shrinkage, becuase lefty proves that indibvdiuals are indiviuals, with personality."}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
+
+```{r 13.22 b}
+mcmc_plot(b13.4, pars = c("^r_", "^b_", "^sd_")) +
+  theme(axis.text.y = element_text(hjust = 0))
+```
+Now use `post` to compare the group-level $\sigma$ parameters:
+
+```{r}
+post %>%
+  pivot_longer(starts_with("sd")) %>% 
+  
+  ggplot(aes(x = value, fill = name)) +
+  geom_density(size = 0, alpha = 3/4, adjust = 2/3, show.legend = F) +
+  annotate(geom = "text", x = 0.67, y = 2, label = "block", color = "orange4") +
+  annotate(geom = "text", x = 2.725, y = 0.5, label = "actor", color = "orange1") +
+  scale_fill_manual(values = str_c("orange", c(1, 4))) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle(expression(sigma["<group>"])) +
+  coord_cartesian(xlim = c(0, 4))
+```
+
 
 First, notice that the number of effective samples, `n_eff`, varies quite a lot across parameters. This is common in complex models. Why? There are many reasons for this. But in this sort of model a common reason is that some parameter spends a lot of time near a boundary. Here, that parameter is `sigma_g.` It spends a lot of time near its minimum of zero. Some Rhat values are also slightly above 1.00 now. All of this is a sign of inefficient sampling, which we’ll fix in the next section.
 
@@ -564,22 +779,35 @@ First, notice that the number of effective samples, `n_eff`, varies quite a lot 
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
-```{r 13.23}
-set.seed(14)
-m13.5 <- ulam(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a[actor] + b[treatment] ,
-    b[treatment] ~ dnorm( 0 , 0.5 ),
-    a[actor] ~ dnorm( a_bar , sigma_a ),
-    a_bar ~ dnorm( 0 , 1.5 ),
-    sigma_a ~ dexp(1)
-  ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
+```{r 13.23 b}
+b13.5 <- 
+  brm(data = d, 
+      family = binomial,
+      bf(pulled_left | trials(1) ~ a + b,
+         a ~ 1 + (1 | actor), 
+         b ~ 0 + treatment,
+         nl = TRUE),
+      prior = c(prior(normal(0, 0.5), nlpar = b),
+                prior(normal(0, 1.5), class = b, coef = Intercept, nlpar = a),
+                prior(exponential(1), class = sd, group = actor, nlpar = a)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 13,
+      file = "fits/b13.05")
 ```
 
-```{r 13.24, eval = F}
-rethinking::compare( m13.4 , m13.5 )
+Compare WAICs
+
+```{r 13.24 b}
+b13.4 <- add_criterion(b13.4, "waic")
+b13.5 <- add_criterion(b13.5, "waic")
+
+loo_compare(b13.4, b13.5, criterion = "waic") %>% 
+  print(simplify = F)
+
+model_weights(b13.4, b13.5, weights = "waic") %>% 
+  round(digits = 2)
 ```
+
 
 There is nothing to gain here by selecting either model. The comparison of the two models tells a richer story—whether we include block or not hardly matters, and the g and sigma_g estimates tell us why.
 
@@ -593,24 +821,55 @@ knitr::include_graphics(file.path(slides_dir, '11.png'))
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
-```{r 13.25}
-set.seed(15)
-m13.6 <- ulam(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a[actor] + g[block_id] + b[treatment] ,
-    b[treatment] ~ dnorm( 0 , sigma_b ),
-    a[actor] ~ dnorm( a_bar , sigma_a ),
-    g[block_id] ~ dnorm( 0 , sigma_g ),
-    a_bar ~ dnorm( 0 , 1.5 ),
-    sigma_a ~ dexp(1),
-    sigma_g ~ dexp(1),
-    sigma_b ~ dexp(1)
-  ) , data=dat_list , chains=4 , cores=4 , log_lik=TRUE )
-coeftab( m13.4 , m13.6 )@coefs[1:4, ]
+```{r 13.25 b}
+b13.6 <- 
+  brm(data = d, 
+      family = binomial,
+      pulled_left | trials(1) ~ 1 + (1 | actor) + (1 | block) + (1 | treatment),
+      prior = c(prior(normal(0, 1.5), class = Intercept),
+                prior(exponential(1), class = sd)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,  
+      seed = 13,
+      file = "fits/b13.06")
+
+# Compare coefficients
+tibble(parameter = str_c("b[", 1:4, "]"),
+       `b13.4`   = fixef(b13.4)[2:5, 1],
+       `b13.6`   = ranef(b13.6)$treatment[, 1, "Intercept"]) %>% 
+  mutate_if(is.double, round, digits = 2)
 ```
 
+
 And there is a lot of data in each treatment, so they don’t get pooled much in any event. If you compare model m13.6 with m13.4, using either WAIC or PSIS, you’ll see they are no different on purely predictive criteria. This is the typical result, when each cluster (each treatment here) has a lot of data to inform its parameters.
+
+Compare group-level $\sigma$ parameters with a plot:
+
+```{r}
+posterior_samples(b13.6) %>% 
+  pivot_longer(starts_with("sd")) %>% 
+  mutate(group = str_remove(name, "sd_") %>% str_remove(., "__Intercept")) %>% 
+  mutate(parameter = str_c("sigma[", group,"]")) %>% 
+  
+  ggplot(aes(x = value, y = parameter)) +
+  stat_halfeye(.width = .95, size = 1, fill = "orange", adjust = 0.1) +
+  scale_y_discrete(labels = ggplot2:::parse_safe) +
+  labs(subtitle = "The variation among treatment levels is small, but the\nvariation among the levels of block is still the smallest.") +
+  coord_cartesian(ylim = c(1.5, 3)) +
+  theme(axis.text.y = element_text(hjust = 0))
+```
+
+Now compare `b13.6` with the last two models:
+
+```{r}
+b13.6 <- add_criterion(b13.6, "waic")
+
+brms::loo_compare(b13.4, b13.5, b13.6, criterion = "waic") %>% 
+  print(simplify = F)
+
+model_weights(b13.4, b13.5, b13.6, weights = "loo") %>% 
+  round(digits = 2)
+```
+
 
 ## Divergent transitions and non-centered priors
 
@@ -632,13 +891,53 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 
 ***13.4.1. The Devil's Funnel***
 
-```{r 13.26}
-m13.7 <- ulam(
-  alist(
-    v ~ normal(0,3),
-    x ~ normal(0,exp(v))
-  ), data=list(N=1) , chains=4 )
-precis( m13.7 )
+```{r 13.26 b}
+m13.7 <- 
+  ulam(
+    data = list(N = 1),
+    alist(
+      v ~ normal(0, 3),
+      x ~ normal(0, exp(v))
+    ), 
+    chains = 4 
+  )
+```
+
+```{r}
+set.seed(13)
+
+tibble(v = rnorm(1e3, mean = 0, sd = 3)) %>% 
+  mutate(x = rnorm(1e3, mean = 0, sd = exp(v))) %>% 
+  
+  ggplot(aes(x = x)) +
+  geom_histogram(binwidth = 1, fill = "orange2") +
+  annotate(geom = "text",
+           x = -100, y = 490, hjust = 0,
+           label = expression(italic(v)%~%Normal(0, 3))) +
+  annotate(geom = "text",
+           x = -100, y = 440, hjust = 0,
+           label = expression(italic(x)%~%Normal(0, exp(italic(v))))) +
+  coord_cartesian(xlim = c(-100, 100)) +
+  scale_y_continuous(breaks = NULL)
+```
+
+```{r}
+# define the parameter space
+parameter_space <- seq(from = -4, to = 4, length.out = 200)
+
+# simulate
+crossing(v = parameter_space,
+         x = parameter_space) %>% 
+  mutate(likelihood_v = dnorm(v, mean = 0, sd = 3),
+         likelihood_x = dnorm(x, mean = 0, sd = exp(v))) %>% 
+  mutate(joint_likelihood = likelihood_v * likelihood_x) %>% 
+  
+  # plot!
+  ggplot(aes(x = x, y = v, fill = joint_likelihood)) +
+  geom_raster(interpolate = T) +
+  scale_fill_viridis_c(option = "B") +
+  labs(subtitle = "Centered parameterization") +
+  theme(legend.position = "none")
 ```
 
 
@@ -682,6 +981,17 @@ knitr::include_graphics(file.path(slides_dir, '23.png'))
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
+
+All is well. If you plot x against v, you will see the funnel. We managed to sample it by sampling a different variable and then transforming it.
+
+***13.4.2. Non-centered chimpanzees***
+
+Before reparameterizing, the first thing you can try is to increase Stan’s target acceptance rate. This is controlled by the `adapt_delta` control parameter. The ulam default is 0.95, which means that it aims to attain a 95% acceptance rate. It tries this during the warmup phase, adjusting the step size of each leapfrog step (go back to Chapter 9 if these terms aren’t familiar). When adapt_delta is set high, it results in a smaller step size, which means a more accurate approximation of the curved surface. It can also mean slower exploration of the distribution.
+
+Increasing `adapt_delta` will often, but not always, help with divergent transitions. 
+
+So that did help. But sometimes this won’t be enough. And while the divergent transitions are gone, the chain still isn’t very efficient — look at the `precis` output and notice that many of the `n_eff` values are still far below the true number of samples (2000 in this case: 4 chains, 500 from each).
+
 ```{r, echo = F, out.width='80%', fig.cap="This is what it looks like in a real model. As before, it's a centered model because it has paramters insdie the adaptive priors. And it sampled fine. But if we de-center it, it'll be more efficient.  "}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
@@ -702,9 +1012,34 @@ knitr::include_graphics(file.path(slides_dir, '28.png'))
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
+```{r}
+posterior_samples(b13.4) %>% 
+  summarise_draws() %>% 
+
+  ggplot(aes(x = ess_bulk, y = ess_tail)) +
+  geom_abline(linetype = 2) +
+  geom_point(color = "blue") +
+  xlim(0, 4700) +
+  ylim(0, 4700) +
+  ggtitle("Effective sample size summaries for b13.4",
+          subtitle = "ess_bulk is on the x and ess_tail is on the y") +
+  theme(plot.subtitle = element_text(size = 10),
+        plot.title = element_text(size = 11.5),
+        plot.title.position = "plot")
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="What does this get us? Going to compare the effective number of sample. Going to compare the effective number of samples per parameter for both models. Same posterior distribution, and the precis shows they're basically the same. `neff_c` is centered. Per parameter, those numbers are always bigger for the non-centered model. Means you don't need to run the model for that long. "}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
+
+
+
+All but two parameters lie above the diagonal, indicating better sampling for the non-centered parameterization.
+
+## Multilevel posterior predictions
+
+***13.5.1. Posterior prediction for same clusters***
 
 ```{r, echo = F, out.width='80%', fig.cap="Last thing to talk about is how to do posterior predictions. You have to make some choices. You get to decide how to think about the generalisation of the model. The most direct way to consider the choices is, when you generalise inferences, are you interested in new units, or the same chimps. If you interested in new ones, you wouldn't get to use the alphas. However the other parameters are definitely relevant, because you've learned about the variation in a popoulation of chimps, which would give you a prior. So here's an example."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
@@ -714,9 +1049,40 @@ knitr::include_graphics(file.path(slides_dir, '31.png'))
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
+***13.5.1. Posterior prediction for same clusters***
+
+Construct posterior predictions with a link function and compute predictions:
+
+```{r}
+chimp <- 2
+
+nd <-
+  d %>% 
+  distinct(treatment) %>% 
+  mutate(actor = chimp,
+         block = 1)
+
+labels <- c("R/N", "L/N", "R/P", "L/P")
+
+f <-
+  fitted(b13.4,
+         newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  mutate(treatment = factor(treatment, labels = labels))
+
+f
+```
+
+
+***13.5.2. Posterior prediction for new clusters***
+
+One way to grasp the task of constructing posterior predictions for new clusters is to imagine leaving out one of the clusters when you fit the model to the data. For example, suppose we leave out actor number 7 when we fit the chimpanzees model. Now how can we assess the model’s accuracy for predicting actor number 7’s behavior? We can’t use any of the a parameter estimates, because those apply to other individuals. But we can make good use of the a_bar and sigma_a parameters. These parameters describe a statistical population of actors, and we can simulate new actors from it.
+
 ```{r, echo = F, out.width='80%', fig.cap="Chimp with alpha bar. All we have to do is replace all the intercepts with 0, then we can use link. Extract the samples, then put in a big matrix of 0s and run the link. "}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Here's the average actor. There's uncertainty about it. "}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
@@ -726,13 +1092,26 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
+To show the variation among actors, we’ll need to use sigma_a in the calculation. 
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Why wider? Because chimps vary a lto. "}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
+
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Finally, sample a bunch of chimps and draw them. One of the things that happens is because there's a posterior distribution for each parameter, the model things it's possible to get completely right-handed chimps. But the treatment effect is still there. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
+
+***13.5.3. Post-stratification***
+
+A common problem is how to use a non-representative sample of a population to generate representative predictions for the same population. For example, we might survey potential voters, asking about their voting intentions. Such samples are biased—different groups respond to such surveys at different rates. So if we just use the survey average, we’ll make the wrong prediction about the election. How can we do better?
+One technique is POST-STRATIFICATION.
+
+How does it work? Supposing you have estimates $p_i$ for each demographic category $i$, then the post-stratified prediction for the whole population (not the sample) just re-weights these estimates using the number of individuals $N_i$ in each category:
 
 ```{r, echo = F, out.width='80%', fig.cap="Focus on the variation that adds to the tanks. Look at the sigma across different models, and there will be a pattern. The second dataset is a historical Bangladeshi dataset. Also will be a varying interecepts model, but now youll be exploring shrinkage. "}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
