@@ -36,13 +36,19 @@ knitr::include_graphics(file.path(slides_dir, '02.png'))
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Statistically, the major conceptual innovation is that with varying slopes is you could treat them the same as varying intercepts. But you can do even better than that by noticing that the intercepts adn slopes are related in the population. When you learn about the intercetpp, you often get informatyion about the slope. Why? Because tye're lines, adn when you change the slope, you change the intercept. Now think about a single prior that has botht eh intercepts and slopes inside it. We'lll have a popualtion of features. There's a correlation structure among those features, which lets you transfer infomraiton across the features. Think about your friends or family, There is a correlation structure. There are now other things you expect Brendan to like when you find out he likes Death Metal. That's correlation structure."}
+## Varying slopes by construction
+
+```{r, echo = F, out.width='80%', fig.cap="Statistically, the major conceptual innovation is that with varying slopes is you could treat them the same as varying intercepts. But you can do even better than that by noticing that the intercepts and slopes are related in the population. When you learn about the intercetpp, you often get informatyion about the slope. Why? Because tye're lines, adn when you change the slope, you change the intercept. Now think about a single prior that has both the intercepts and slopes inside it. We'lll have a popualtion of features. There's a correlation structure among those features, which lets you transfer infomraiton across the features. Think about your friends or family, There is a correlation structure. There are now other things you expect Brendan to like when you find out he likes Death Metal. That's correlation structure."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap="Think back to the cafe example. Before you order your coffee in Berlin, you should update your estimate for Paris even though you left it behind. Now let's extend it. Your robot is your model. How do you get it to learn by visiting cafes. Now it keeps track of the time of day. Average wait time at 9am is longer than at 2pm. So we want to make that distinction. Code it as the difference between afternoon and evening. These two things are related by teh causal properties of cafes. This is toy data. Top is a popular cafe, with a big drop in wait time between morning and afternoon. Cafe B has a much smaller diffference in wait time because there's no morning saturation."}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
+
+***14.1.1. Simulate the population***
+
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Now we have some statistical population, and there's a negative correlation between the intercepts (average wait time in the morning, standardsied), and the slope (dfiference between morning and afternooon). Higher intercepts = lower slopes. So there are two sets of parameteres, and we could treat them as completely separate."}
 knitr::include_graphics(file.path(slides_dir, '06.png'))
@@ -56,6 +62,131 @@ knitr::include_graphics(file.path(slides_dir, '07.png'))
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
+```{r 14.1 b}
+a       <-  3.5  # average morning wait time
+b       <- -1    # average difference afternoon wait time
+sigma_a <-  1    # std dev in intercepts
+sigma_b <-  0.5  # std dev in slopes
+rho     <- -.7   # correlation between intercepts and slopes
+
+# the next three lines of code simply combine the terms, above
+mu     <- c(a, b)
+
+cov_ab <- sigma_a * sigma_b * rho
+sigma  <- matrix(c(sigma_a^2, cov_ab, 
+                   cov_ab, sigma_b^2), ncol = 2)
+```
+
+```{r}
+matrix(1:4, nrow = 2, ncol = 2)
+```
+
+```{r, 14.7 b}
+sigmas <- c(sigma_a, sigma_b)          # standard deviations
+rho    <- matrix(c(1, rho,             # correlation matrix
+                   rho, 1), nrow = 2)
+
+# now matrix multiply to get covariance matrix
+sigma <- diag(sigmas) %*% rho %*% diag(sigmas)
+
+# how many cafes would you like?
+n_cafes <- 20
+
+set.seed(5)  # used to replicate example
+
+vary_effects <- 
+  MASS::mvrnorm(n_cafes, mu, sigma) %>% 
+  data.frame() %>% 
+  set_names("a_cafe", "b_cafe")
+
+head(vary_effects)
+```
+
+Set theme:
+
+```{r}
+theme_pearl_earring <- function(light_color = "#E8DCCF", 
+                                dark_color = "#100F14", 
+                                my_family = "Courier",
+                                ...) {
+  
+  theme(line = element_line(color = light_color),
+        text = element_text(color = light_color, family = my_family),
+        axis.line = element_blank(),
+        axis.text = element_text(color = light_color),
+        axis.ticks = element_line(color = light_color),
+        legend.background = element_rect(fill = dark_color, color = "transparent"),
+        legend.key = element_rect(fill = dark_color, color = "transparent"),
+        panel.background = element_rect(fill = dark_color, color = light_color),
+        panel.grid = element_blank(),
+        plot.background = element_rect(fill = dark_color, color = dark_color),
+        strip.background = element_rect(fill = dark_color, color = "transparent"),
+        strip.text = element_text(color = light_color, family = my_family),
+        ...)
+  
+}
+
+# now set `theme_pearl_earring()` as the default theme
+theme_set(theme_pearl_earring())
+```
+
+```{r}
+vary_effects %>% 
+  ggplot(aes(x = a_cafe, y = b_cafe)) +
+  geom_point(color = "#80A0C7") +
+  geom_rug(color = "#8B9DAF", size = 1/7)
+```
+Note these are not "data", but rather a distribution of *parameters*. Here's their correlation coefficient:
+
+```{r}
+cor(vary_effects$a_cafe, vary_effects$b_cafe)
+```
+
+***14.1.2. Simulate observations***
+
+```{r 14.10 b}
+n_visits <- 10
+sigma    <-  0.5  # std dev within cafes
+
+set.seed(22)  # used to replicate example
+
+d <-
+  vary_effects %>% 
+  dplyr::mutate(cafe = 1:n_cafes) %>% 
+  tidyr::expand(nesting(cafe, a_cafe, b_cafe), visit = 1:n_visits) %>% 
+  mutate(afternoon = rep(0:1, times = n() / 2)) %>% 
+  mutate(mu = a_cafe + b_cafe * afternoon) %>% 
+  mutate(wait = rnorm(n = n(), mean = mu, sd = sigma))
+```
+
+```{r}
+d %>%
+  glimpse()
+```
+
+Now make Figure 14.1:
+
+```{r}
+d %>%
+  mutate(afternoon = ifelse(afternoon == 0, "M", "A"),
+         day       = rep(rep(1:5, each = 2), times = n_cafes)) %>%
+  filter(cafe %in% c(3, 5)) %>%
+  mutate(cafe = str_c("café #", cafe)) %>% 
+  
+  ggplot(aes(x = visit, y = wait, group = day)) +
+  geom_point(aes(color = afternoon), size = 2) +
+  geom_line(color = "#8B9DAF") +
+  scale_color_manual(values = c("#80A0C7", "#EEDA9D")) +
+  scale_x_continuous(NULL, breaks = 1:10, labels = rep(c("M", "A"), times = 5)) +
+  scale_y_continuous("wait time in minutes", limits = c(0, NA)) +
+  theme_pearl_earring(axis.ticks.x = element_blank(),
+                      legend.position = "none") +
+  facet_wrap(~ cafe, ncol = 1)
+```
+
+
+***14.1.3. The varying slopes model***
+
 ```{r, echo = F, out.width='80%', fig.cap="This is your robot's brain. Step by step: Outcome variabes $W$ is the wait time for some cafe $i$. "}
 knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
@@ -64,7 +195,7 @@ knitr::include_graphics(file.path(slides_dir, '09.png'))
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Here's the action. Wehn we wnat to pool across alphas and betas, we have this 2D prior. For each cafe, there's a pair of parameters, alpha and beta, and they're distributed as a 2D normal They're averages are alpha and beta. Then they have this $S$, which si the covariance matrix. "}
+```{r, echo = F, out.width='80%', fig.cap="Here's the action. When we want to pool across alphas and betas, we have this 2D prior. For each cafe, there's a pair of parameters, alpha and beta, and they're distributed as a 2D normal They're averages are alpha and beta. Then they have this $S$, which is the covariance matrix. "}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
@@ -72,11 +203,11 @@ knitr::include_graphics(file.path(slides_dir, '11.png'))
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Where does this covariance matrix come from? 5 slides on matrix multiplication. Thing to understand is they're matrixes, way sof working with systems of equations. Just a compact form to do things faster. It's compressed. That's all it is. Let's think about our covariance matrix, shuffle it around to put priors on the parameters. $m$ is some dimension (2, going to be 4 by the end of the day). That means you need $m$ standard deviations. And you need the correlations. Just a formula for how many unordered pairs there are. Still a very small number of parameters relative to varying effects."}
+```{r, echo = F, out.width='80%', fig.cap="Where does this covariance matrix come from? 5 slides on matrix multiplication. Thing to understand is they're matrixes, ways of working with systems of equations. Just a compact form to do things faster. It's compressed. That's all it is. Let's think about our covariance matrix, shuffle it around to put priors on the parameters. $m$ is some dimension (2, going to be 4 by the end of the day). That means you need $m$ standard deviations. And you need the correlations. Just a formula for how many unordered pairs there are. Still a very small number of parameters relative to varying effects."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="So how to put priors on all these parameters. Lots of different conventions. There's a big litereature on what's wrong with the inverse-Wishart. We can do much better in practical terms. Want ot assign priors independently to each sigma and correlation coefficient. So we'll decompose our covariance matrix into three different matrices. Turns out it's a  product of a diagonal matrix with the two sigmas, times a correlation matrix, times the diagonal matrix again."}
+```{r, echo = F, out.width='80%', fig.cap="So how to put priors on all these parameters. Lots of different conventions. There's a big litereature on what's wrong with the inverse-Wishart. We can do much better in practical terms. Want to assign priors independently to each sigma and correlation coefficient. So we'll decompose our covariance matrix into three different matrices. Turns out it's a  product of a diagonal matrix with the two sigmas, times a correlation matrix, times the diagonal matrix again."}
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
@@ -132,13 +263,75 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="How do you put a prior on a matrix? In ngeratl the matrix could be very big. You can't assign priors independnetly, because there are contstraints. The values can constrain one another. If you only have one correlation, it can vary between 1 and -1. If you have two values with a really strong correlation, that constrains the other values because they're also correlated with those two. As the matrix gets really big, the constraints get really strong. And in a big correlation matrix, it's really hard to get strong correlations. You can, but then all the others have to be really small. So you need a family of priors that deal with this problem. "}
+```{r, echo = F, out.width='80%', fig.cap="How do you put a prior on a matrix? In general the matrix could be very big. You can't assign priors independently, because there are contstraints. The values can constrain one another. If you only have one correlation, it can vary between 1 and -1. If you have two values with a really strong correlation, that constrains the other values because they're also correlated with those two. As the matrix gets really big, the constraints get really strong. And in a big correlation matrix, it's really hard to get strong correlations. You can, but then all the others have to be really small. So you need a family of priors that deal with this problem. "}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="So there's this really nice family of priors. Present in almos tall recent textbooks. LKJ named after the authors. There's one parameter that determines the shape, which specifies how concentrated it is relative to the identify matrix, which has no correlations. So if *eta* is higher, there are no correaltions. If lower, then flatter, and many more correaltions are possible. Eta = 1 is uniform. As you increase eta, you get more concentration around 0, which is the identity matrix. Usually you want to use somethign that is regularizing, sceptical of high correlations."}
+```{r, echo = F, out.width='80%', fig.cap="So there's this really nice family of priors. Present in almost all recent textbooks. LKJ named after the authors. There's one parameter that determines the shape, which specifies how concentrated it is relative to the identify matrix, which has no correlations. So if *eta* is higher, there are no correaltions. If lower, then flatter, and many more correaltions are possible. Eta = 1 is uniform. As you increase eta, you get more concentration around 0, which is the identity matrix. Usually you want to use something that is regularizing, skeptical of high correlations."}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
+
+```{r}
+n_sim <- 1e4
+
+set.seed(14)
+r_1 <- 
+  rlkjcorr(n_sim, K = 2, eta = 1) %>%
+  data.frame()
+
+set.seed(14)
+r_2 <- 
+  rlkjcorr(n_sim, K = 2, eta = 2) %>%
+  data.frame()
+
+set.seed(14)
+r_4 <- 
+  rlkjcorr(n_sim, K = 2, eta = 4) %>%
+  data.frame()
+```
+
+```{r, fig.cap="Figure 14.3"}
+# for annotation
+text <-
+  tibble(x     = c(.83, .625, .45),
+         y     = c(.56, .75, 1.07),
+         label = c("eta = 1", "eta = 2", "eta = 4"))
+
+# plot
+r_1 %>% 
+  ggplot(aes(x = X2)) +
+  geom_density(color = "transparent", fill = "#394165", alpha = 2/3, adjust = 1/2) +
+  geom_density(data = r_2,
+               color = "transparent", fill = "#DCA258", alpha = 2/3, adjust = 1/2) +
+  geom_density(data = r_4,
+               color = "transparent", fill = "#FCF9F0", alpha = 2/3, adjust = 1/2) +
+  geom_text(data = text,
+            aes(x = x, y = y, label = label),
+            color = "#A65141", family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(LKJcorr(eta)),
+       x = "correlation")
+```
+
+It's sensitive to both $\eta$ and $K$ dimensions of the correlation matrix, so let's tkae a look:
+
+```{r}
+crossing(k   = 2:5,
+         eta = 1:4) %>% 
+  mutate(prior = str_c("lkjcorr_marginal(", k, ", ", eta, ")"),
+         strip = str_c("K==", k)) %>% 
+  parse_dist(prior) %>%
+  
+  ggplot(aes(y = eta, dist = .dist, args = .args)) +
+  stat_dist_halfeye(.width = c(.5, .95),
+                    color = "#FCF9F0", fill = "#A65141") +
+  scale_x_continuous(expression(rho), limits = c(-1, 1),
+                     breaks = c(-1, -.5, 0, .5, 1), labels = c("-1", "-.5", "0", ".5", "1")) +
+  scale_y_continuous(expression(eta), breaks = 1:4) +
+  ggtitle(expression("Marginal correlation for the LKJ prior relative to K and "*eta)) +
+  facet_wrap(~ strip, labeller = label_parsed, ncol = 4)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
@@ -156,9 +349,44 @@ knitr::include_graphics(file.path(slides_dir, '32.png'))
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
+```{r 14.12 b}
+b14.1 <- 
+  brm(data = d, 
+      family = gaussian,
+      wait ~ 1 + afternoon + (1 + afternoon | cafe),
+      prior = c(prior(normal(5, 2), class = Intercept),
+                prior(normal(-1, 0.5), class = b),
+                prior(exponential(1), class = sd),
+                prior(exponential(1), class = sigma),
+                prior(lkj(2), class = cor)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 867530,
+      file = "fits/b14.01")
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Run the posterior distribution for the correlation. Extract the posterior and plot the density for the correlation matrix. [1,1] is always  1. [1,2] and [2,1] is the same value. The black dashed density is the prior. The blue is the posterior. Almost all the mass is below 0. What's the consequence of this? You get shrinkage."}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
+
+```{r 14.13 b}
+post <- posterior_samples(b14.1)
+
+post %>%
+  ggplot() +
+  geom_density(data = r_2, aes(x = X2),
+               color = "transparent", fill = "#EEDA9D", alpha = 3/4) +
+  geom_density(aes(x = cor_cafe__Intercept__afternoon),
+               color = "transparent", fill = "#A65141", alpha = 9/10) +
+  annotate(geom = "text", 
+           x = c(-0.15, 0), y = c(2.21, 0.85), 
+           label = c("posterior", "prior"), 
+           color = c("#A65141", "#EEDA9D"), family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = "Correlation between intercepts\nand slopes, prior and posterior",
+  x = "correlation")
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Horizontal are the intercept estimates for each cafe. Vertical are th slope estimates. Drawn like a statistical population. Blue points are the raw data values. Fixed effect estimates. Raw, unregularised fixed effects estimate. Open circles are varying effects estimates."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
@@ -172,13 +400,169 @@ knitr::include_graphics(file.path(slides_dir, '36.png'))
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
+```{r}
+coef(b14.1)
+```
+
+Extract relevant elements from `coef()`, convert them to a tibble, and add the `cafe` index:
+
+```{r}
+partially_pooled_params <-
+  # with this line we select each of the 20 cafe's posterior mean (i.e., Estimate)
+  # for both `Intercept` and `afternoon`
+  coef(b14.1)$cafe[ , 1, 1:2] %>%
+  data.frame() %>%              # convert the two vectors to a data frame
+  rename(Slope = afternoon) %>%
+  mutate(cafe = 1:nrow(.)) %>%  # add the `cafe` index
+  dplyr::select(cafe, everything())    # simply moving `cafe` to the leftmost position
+```
+
+Compute unpooled estimates directly from the data:
+
+```{r 14.14 b}
+# compute unpooled estimates directly from data
+un_pooled_params <-
+  d %>%
+  # with these two lines, we compute the mean value for each cafe's wait time 
+  # in the morning and then the afternoon
+  group_by(afternoon, cafe) %>%
+  summarise(mean = mean(wait)) %>%
+  ungroup() %>%  # ungrouping allows us to alter afternoon, one of the grouping variables
+  mutate(afternoon = ifelse(afternoon == 0, "Intercept", "Slope")) %>%
+  spread(key = afternoon, value = mean) %>%  # use `spread()` just as in the previous block
+  mutate(Slope = Slope - Intercept)          # finally, here's our slope!
+
+# here we combine the partially-pooled and unpooled means into a single data object, 
+# which will make plotting easier.
+params <-
+  # `bind_rows()` will stack the second tibble below the first
+  bind_rows(partially_pooled_params, un_pooled_params) %>%
+  # index whether the estimates are pooled
+  mutate(pooled = rep(c("partially", "not"), each = nrow(.)/2)) 
+
+# here's a glimpse at what we've been working for
+params %>%
+  slice(c(1:5, 36:40))
+```
+
+Then plot:
+
+```{r 14.16 b7}
+p1 <-
+  ggplot(data = params, aes(x = Intercept, y = Slope)) +
+  stat_ellipse(geom = "polygon", type = "norm", level = 1/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 2/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 3/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 4/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 5/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 6/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 7/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 8/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = 9/10, size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  stat_ellipse(geom = "polygon", type = "norm", level = .99,  size = 0, alpha = 1/20, fill = "#E7CDC2") +
+  geom_point(aes(group = cafe, color = pooled)) +
+  geom_line(aes(group = cafe), size = 1/4) +
+  scale_color_manual("Pooled?", values = c("#80A0C7", "#A65141")) +
+  coord_cartesian(xlim = range(params$Intercept),
+                  ylim = range(params$Slope))
+p1
+```
+
+Prep for Figure 4.5b:
+
+```{r}
+# retrieve the partially-pooled estimates with `coef()`
+partially_pooled_estimates <-
+  coef(b14.1)$cafe[ , 1, 1:2] %>%
+  # convert the two vectors to a data frame
+  data.frame() %>%
+  # the Intercept is the wait time for morning (i.e., `afternoon == 0`)
+  rename(morning = Intercept) %>%
+  # `afternoon` wait time is the `morning` wait time plus the afternoon slope
+  mutate(afternoon = morning + afternoon,
+         cafe      = 1:n()) %>%  # add the `cafe` index
+  dplyr::select(cafe, everything()) 
+
+# compute unpooled estimates directly from data
+un_pooled_estimates <-
+  d %>%
+  # as above, with these two lines, we compute each cafe's mean wait value by time of day
+  group_by(afternoon, cafe) %>% 
+  summarise(mean = mean(wait)) %>%
+  # ungrouping allows us to alter the grouping variable, afternoon
+  ungroup() %>% 
+  mutate(afternoon = ifelse(afternoon == 0, "morning", "afternoon")) %>%
+  # this separates out the values into morning and afternoon columns
+  spread(key = afternoon, value = mean)
+
+estimates <-
+  bind_rows(partially_pooled_estimates, un_pooled_estimates) %>%
+  mutate(pooled = rep(c("partially", "not"), each = n() / 2))
+```
+
+Figure 14.5b:
+
+```{r}
+p2 <-
+  ggplot(data = estimates, aes(x = morning, y = afternoon)) +
+  # nesting `stat_ellipse()` within `mapply()` is a less redundant way to produce the 
+  # ten-layered semitransparent ellipses we did with ten lines of `stat_ellipse()` 
+  # functions in the previous plot
+  mapply(function(level) {
+    stat_ellipse(geom  = "polygon", type = "norm",
+                 size  = 0, alpha = 1/20, fill = "#E7CDC2",
+                 level = level)
+    }, 
+    # enter the levels here
+    level = c(1:9 / 10, .99)) +
+  geom_point(aes(group = cafe, color = pooled)) +
+  geom_line(aes(group = cafe), size = 1/4) +
+  scale_color_manual("Pooled?", values = c("#80A0C7", "#A65141")) +
+  labs(x = "morning wait (mins)",
+       y = "afternoon wait (mins)") +
+  coord_cartesian(xlim = range(estimates$morning),
+                  ylim = range(estimates$afternoon))
+```
+
+```{r}
+library(patchwork)
+
+(p1 + theme(legend.position = "none")) + 
+  p2 + 
+  plot_annotation(title = "Shrinkage in two dimensions")
+```
+
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Exploting multi-dimensional shrinkage here. Even better than pooling wihtin. Depends upon the correaltion between effects. "}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
+## Advanced varying slopes
+
 ```{r, echo = F, out.width='80%', fig.cap="Grown up version of this. Many effects, many types of clusters. Back to the chimp data. Four treatments. Trying to estimate theaverage behaviour in each of these treatments. Howw often the left lever is pulled can vary by treatment. TID is treatment IDs 1 to 4, and for ecah there's an avergae rate of pulling the leve. BUt each chimp and blcok has a deviation from that mean. Alpha sub actor i, TID[i] measn the alpha deviation from the mean in this treatment, for actor[i]. Each actor gets four parameters. 7 actors. 7 x 4 parameters. RThen beta parameters for the block effects - deviations for the gamma means for each block. 4 parameters, times 6 blocks. Want to do some shrinkage. Rawest empirical descrption for this dataset yet. For eery little box, that has a unique idnetity, there's a uknique treatment and blocka dn actor that has its own deviation. But we'll need to do some shrinkage to deal with overfitting."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
+
+```{r}
+data(chimpanzees, package = "rethinking")
+d <- chimpanzees
+rm(chimpanzees)
+
+# wrangle
+d <-
+  d %>% 
+  mutate(actor     = factor(actor),
+         block     = factor(block),
+         treatment = factor(1 + prosoc_left + 2 * condition),
+         # this will come in handy, later
+         labels    = factor(treatment,
+                            levels = 1:4,
+                            labels = c("r/n", "l/n", "r/p", "l/p")))
+
+glimpse(d)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="One matrix for each cluster type. So 28 actors, 24 blocks. Means are all 0. Then the covariance matrix."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
@@ -208,7 +592,7 @@ knitr::include_graphics(file.path(slides_dir, '45.png'))
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Why do we care? We've got this correlation matrix, and we need to somehow blend it with a vector of z scores. This is the cnon-centered prior business - you have independnet z-scores, and blend them with a correaltkno matrix ot get thisngs back on the right scale. This is what his technqiue lets us do. Imagine you wanted to simulated two vectors with a particular correlations. You could siulate independent random numbers. And you want their correlation to be 0.6. z1 is just a nuch of z scores, like z2. Then we can get `a1` as a funtion by multiplyign by sigma to put it on the normal scale. The last things is the Cholesky factor. This works for any size matrix. We'll pick up the rest in the next lecture."}
+```{r, echo = F, out.width='80%', fig.cap="Why do we care? We've got this correlation matrix, and we need to somehow blend it with a vector of z scores. This is the non-centered prior business - you have independent z-scores, and blend them with a correaltion matrix to get things back on the right scale. This is what his technqiue lets us do. Imagine you wanted to simulated two vectors with a particular correlations. You could simulate independent random numbers. And you want their correlation to be 0.6. `z1` is just a bunch of z scores, like `z2`. Then we can get `a1` as a funtion by multiplying by sigma to put it on the normal scale. The last things is the Cholesky factor. This works for any size matrix. We'll pick up the rest in the next lecture."}
 knitr::include_graphics(file.path(slides_dir, '47.png'))
 ```
 
@@ -228,9 +612,78 @@ knitr::include_graphics(file.path(slides_dir, '50.png'))
 knitr::include_graphics(file.path(slides_dir, '51.png'))
 ```
 
+```{r 14.19}
+b14.3 <- 
+  brm(data = d, 
+      family = binomial,
+      pulled_left | trials(1) ~ 0 + treatment + (0 + treatment | actor) + (0 + treatment | block),
+      prior = c(prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sd, group = actor),
+                prior(exponential(1), class = sd, group = block),
+                prior(lkj(2), class = cor, group = actor),
+                prior(lkj(2), class = cor, group = block)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,  
+      seed = 4387510,
+      file = "fits/b14.03")
+```
+
+Check out the trank plot:
+
+```{r}
+# give the parameters fancy names
+names <- 
+  c(str_c("treatment[", 1:4, "]"), 
+    str_c("sigma['actor[", 1:4, "]']"), 
+    str_c("sigma['block[", 1:4, "]']"), 
+    str_c("rho['actor:treatment[", c(1, 1:2, 1:3), ",", rep(2:4, times = 1:3), "]']"), 
+    str_c("rho['block:treatment[", c(1, 1:2, 1:3), ",", rep(2:4, times = 1:3), "]']"), 
+    "chain")
+
+# wrangle
+posterior_samples(b14.3, add_chain = T) %>% 
+  dplyr::select(b_treatment1:`cor_block__treatment3__treatment4`, chain) %>% 
+  set_names(names) %>% 
+  
+  # plot
+  mcmc_rank_overlay() +
+  scale_color_manual(values = c("#80A0C7", "#B1934A", "#A65141", "#EEDA9D")) +
+  scale_x_continuous(breaks = 0:4 * 1e3, labels = c(0, str_c(1:4, "K"))) +
+  coord_cartesian(ylim = c(30, NA)) +
+  theme(legend.position = "bottom") +
+  facet_wrap(~ parameter, labeller = label_parsed, ncol = 4)
+```
+
+```{r 14.20 b}
+library(posterior)
+
+posterior_samples(b14.3) %>% 
+  summarise_draws() %>% 
+  pivot_longer(starts_with("ess")) %>% 
+  
+  ggplot(aes(x = value)) +
+  geom_histogram(binwidth = 250, fill = "#EEDA9D", color = "#DCA258") +
+  xlim(0, NA) +
+  facet_wrap(~ name)
+```
+
+
+
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '52.png'))
 ```
+
+```{r 14.21 b}
+print(b14.3)
+```
+
+Compute the WAIC estimate:
+
+```{r}
+b14.3 <- add_criterion(b14.3, "waic")
+
+waic(b14.3)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '53.png'))
@@ -239,6 +692,58 @@ knitr::include_graphics(file.path(slides_dir, '53.png'))
 ```{r, echo = F, out.width='80%', fig.cap=" "}
 knitr::include_graphics(file.path(slides_dir, '54.png'))
 ```
+
+```{r 14.22 b}
+# for annotation
+text <-
+  distinct(d, labels) %>% 
+  mutate(actor = 1,
+         prop  = c(.07, .8, .08, .795))
+
+nd <-
+  d %>% 
+  distinct(actor, condition, labels, prosoc_left, treatment) %>% 
+  mutate(block = 5)
+
+# compute and wrangle the posterior predictions
+fitted(b14.3,
+       newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  # add the empirical proportions
+  left_join(
+    d %>%
+      group_by(actor, treatment) %>%
+      mutate(proportion = mean(pulled_left)) %>% 
+      distinct(actor, treatment, proportion),
+    by = c("actor", "treatment")
+  ) %>% 
+  mutate(condition = factor(condition)) %>% 
+  
+  # plot!
+  ggplot(aes(x = labels)) +
+  geom_hline(yintercept = .5, color = "#E8DCCF", alpha = 1/2, linetype = 2) +
+  # empirical proportions
+  geom_line(aes(y = proportion, group = prosoc_left),
+            size = 1/4, color = "#394165") +
+  geom_point(aes(y = proportion, shape = condition),
+             color = "#394165", fill = "#100F14", size = 2.5, show.legend = F) + 
+  # posterior predictions
+  geom_line(aes(y = Estimate, group = prosoc_left),
+            size = 3/4, color = "#80A0C7") +
+  geom_pointrange(aes(y = Estimate, ymin = Q2.5, ymax = Q97.5, shape = condition),
+                  color = "#80A0C7", fill = "#100F14", fatten = 8, size = 1/3, show.legend = F) + 
+  # annotation for the conditions
+  geom_text(data = text,
+            aes(y = prop, label = labels), 
+            color = "#DCA258", family = "Courier", size = 3) +
+  scale_shape_manual(values = c(21, 19)) +
+  scale_x_discrete(NULL, breaks = NULL) +
+  scale_y_continuous("proportion left lever", breaks = 0:2 / 2, labels = c("0", ".5", "1")) +
+  labs(subtitle = "Posterior predictions, in light blue, against the raw data, in dark blue, for\nmodel b14.3, the cross-classified varying effects model.") +
+  facet_wrap(~ actor, nrow = 1, labeller = label_both)
+```
+
 
 ----
 
@@ -286,6 +791,10 @@ knitr::include_graphics(file.path(slides_dir, '09.png'))
 knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
+## Instruments and causal designs
+
+***14.3.1. Instrumental variables***
+
 ```{r, echo = F, out.width='80%', fig.cap="This is a cool technqiue that goes beyond the backdoor crioterion. Sometimes it tells you you can't remove the confounding. But all is not lost - you can still deconfound. Imagine this classic case where we're interested in some E for education, and W for wages. Many people are interested in measuring the ffect of education on wages. Unviersity funding hinges on it. The problem is that there are a huge umber of confounds, labelled U. Could just be personality effects, like your laziness. There are going to be lots like this in any observational system. Can't condition on you because we don't have it measured. "}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
@@ -302,7 +811,7 @@ knitr::include_graphics(file.path(slides_dir, '13.png'))
 knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Often these are called natural experiments in biology. If we fould experiemntally maniputlate education, we woudl do that, but can't. We'd satisfy the backdoor criterion. Not ethical to do that. The birthday is random, so now it's liek a weak experiemnt, where we've partially closed the backdoor. Like an experiemnt that doesn't always take. Q is suggesting to indiviuals they should do more or less education. The tendencies to follow the experiemnt give you information about the confound. If you follow up on the litereature, many experiements are actually like this, because we only suggest treatments to poeple. Epidemiologicla experiments are like this, becuase you only suggest treatment - they walk out the door and some take it and some don't. This is called *intent to treat*, and you have to estimate it. Really famous case with anti-retroviral trials. People taking them knew there was a control arm, so they blended up their medications. Turns out this isn't rare. This instrumental variable analysis is the correct way to anlysis an epxeriemtbn where the treatment is not enforced, but only suggested. Happens in psychology. Did they really look at the stimulus?  "}
+```{r, echo = F, out.width='80%', fig.cap="Often these are called natural experiments in biology. If we fould experimentally maniputlate education, we woudl do that, but can't. We'd satisfy the backdoor criterion. Not ethical to do that. The birthday is random, so now it's liek a weak experiemnt, where we've partially closed the backdoor. Like an experiemnt that doesn't always take. Q is suggesting to indiviuals they should do more or less education. The tendencies to follow the experiemnt give you information about the confound. If you follow up on the litereature, many experiements are actually like this, because we only suggest treatments to poeple. Epidemiologicla experiments are like this, becuase you only suggest treatment - they walk out the door and some take it and some don't. This is called *intent to treat*, and you have to estimate it. Really famous case with anti-retroviral trials. People taking them knew there was a control arm, so they blended up their medications. Turns out this isn't rare. This instrumental variable analysis is the correct way to anlysis an epxeriemtbn where the treatment is not enforced, but only suggested. Happens in psychology. Did they really look at the stimulus?  "}
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
@@ -326,9 +835,49 @@ knitr::include_graphics(file.path(slides_dir, '19.png'))
 knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
+```{r 14.23 b}
+# make a standardizing function
+standardize <- function(x) {
+  (x - mean(x)) / sd(x)
+}
+
+# simulate
+set.seed(73) 
+
+n <- 500
+
+dat_sim <-
+  tibble(u_sim = rnorm(n, mean = 0, sd = 1),
+         q_sim = sample(1:4, size = n, replace = T)) %>% 
+  mutate(e_sim = rnorm(n, mean = u_sim + q_sim, sd = 1)) %>% 
+  mutate(w_sim = rnorm(n, mean = u_sim + 0 * e_sim, sd = 1)) %>% 
+  mutate(w = standardize(w_sim),
+         e = standardize(e_sim),
+         q = standardize(q_sim))
+
+dat_sim
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Rn the naive regression. Strong and reliable effect. Purely the confound. Can't interpret these things."}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
 ```
+
+```{r 14.24 b}
+b14.4 <-
+  brm(data = dat_sim,
+      family = gaussian,
+      w ~ 1 + e,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,  
+      seed = 14,
+      file = "fits/b14.04")
+
+print(b14.4)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Now add the instrument. And you could estimate all the $U$s as parameters, one for each of the 500 individuals in the sample. But the way better way to do that, is to use the MVNOrmal as your outcome distribution. So now as the likelihood, the top part of the model, we're going to say that $W$ and $E$ are drawn from a common distribtuion with some correlation. Where does the correlation come from? From the confound."}
 knitr::include_graphics(file.path(slides_dir, '22.png'))
@@ -350,13 +899,148 @@ knitr::include_graphics(file.path(slides_dir, '25.png'))
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="This works. First thignnto look at are the regression effects. No confound there. Now look at our unconfounded education. Notice that `Rho[1,2]` is the correlation between education and wages, after having conditioned on the instrument - so it's the effect of the confound. Positive correlations, which give you clues about what it could be. "}
+Now see what happens when we also condition directly on $Q$, as in $Q \rightarrow W \leftarrow E$.
+
+```{r 14.25 b}
+b14.5 <-
+  brm(data = dat_sim,
+      family = gaussian,
+      w ~ 1 + e + q,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,  
+      seed = 14,
+      file = "fits/b14.05")
+```
+
+```{r}
+print(b14.5)
+```
+
+Holy smokes that's a mess. This model suggests both $E$ and $Q$ have moderate to strong effects on $W$, even though we know neither do based on the true data-generating model. 
+
+The statistical solution is as follows:
+
+```{r 14.26 b}
+e_model <- bf(e ~ 1 + q)
+w_model <- bf(w ~ 1 + e)
+
+b14.6 <-
+  brm(data = dat_sim, 
+      family = gaussian,
+      e_model + w_model + set_rescor(TRUE),
+      prior = c(# E model
+                prior(normal(0, 0.2), class = Intercept, resp = e),
+                prior(normal(0, 0.5), class = b, resp = e),
+                prior(exponential(1), class = sigma, resp = e),
+                
+                # W model
+                prior(normal(0, 0.2), class = Intercept, resp = w),
+                prior(normal(0, 0.5), class = b, resp = w),
+                prior(exponential(1), class = sigma, resp = w),
+                
+                # rho
+                prior(lkj(2), class = rescor)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 14,
+      file = "fits/b14.06")
+```
+
+```{r}
+print(b14.6)
+```
+
+
+Now the parameter for $E \rightarrow W$, `w_e`, is just where it should be -- near zero. The residual correlation between $E$ and $Q$ is positive and large in magnitude, indicating their common influence from the unmeasured variable $U$.
+
+```{r, echo = F, out.width='80%', fig.cap="This works. First thing to look at are the regression effects. No confound there. Now look at our unconfounded education. Notice that `Rho[1,2]` is the correlation between education and wages, after having conditioned on the instrument - so it's the effect of the confound. Positive correlations, which give you clues about what it could be. "}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Instruments are limited. THe hardest part is finding a plausible instrument. Cannot test whetehr seomethig is a good instrument! DAG depends upon scientific infomratyion, not the data alone. Weak instruments maybe not useful. Try some simulations from the chapters. Now we'll instoduce other things likwe the front door criterions."}
+Now adjust the simulation and try a scenario in which education has a positive influence but the confound hides it:
+
+```{r 14.28 b}
+set.seed(73) 
+
+n <- 500
+
+dat_sim <-
+  tibble(u_sim = rnorm(n, mean = 0, sd = 1),
+         q_sim = sample(1:4, size = n, replace = T)) %>% 
+  mutate(e_sim = rnorm(n, mean = u_sim + q_sim, sd = 1)) %>% 
+  mutate(w_sim = rnorm(n, mean = -u_sim + 0.2 * e_sim, sd = 1)) %>% 
+  mutate(w = standardize(w_sim),
+         e = standardize(e_sim),
+         q = standardize(q_sim))
+
+dat_sim
+```
+
+Update the models:
+
+```{r 14.27 b}
+b14.4x <-
+  update(b14.4,
+         newdata = dat_sim,
+         iter = 2000, warmup = 1000, chains = 4, cores = 4,  
+         seed = 14,
+         file = "fits/b14.04x")
+
+b14.6x <-
+  update(b14.6,
+         newdata = dat_sim,
+         iter = 2000, warmup = 1000, chains = 4, cores = 4,  
+         seed = 14, 
+         file = "fits/b14.06x")
+```
+
+Examine the effects with a coefficient plot
+```{r}
+text <-
+  tibble(Estimate = c(fixef(b14.4x)[2, 3], fixef(b14.6x)[4, 4]),
+         y        = c(4.35, 3.65),
+         hjust    = c(0, 1),
+         fit      = c("b14.4x", "b14.6x"))
+
+bind_rows(
+  # b_14.4x
+  posterior_summary(b14.4x)[1:3, ] %>% 
+    data.frame() %>% 
+    mutate(param = c("alpha[W]", "beta[EW]", "sigma[W]"),
+           fit = "b14.4x"),
+  # b_14.6x
+  posterior_summary(b14.6x)[1:7, ] %>%  
+    data.frame() %>% 
+    mutate(param = c("alpha[E]", "alpha[W]", "beta[QE]", "beta[EW]", "sigma[E]", "sigma[W]", "rho"),
+           fit = "b14.6x")) %>% 
+  mutate(param = factor(param,
+                        levels = c("rho", "sigma[W]", "sigma[E]", "beta[EW]", "beta[QE]", "alpha[W]", "alpha[E]"))) %>%
+  
+  ggplot(aes(x = param, y = Estimate, color = fit)) +
+  geom_hline(yintercept = 0, color = "#E8DCCF", alpha = 1/4) +
+  geom_pointrange(aes(ymin = Q2.5, ymax = Q97.5),
+                  fatten = 2, position = position_dodge(width = 0.5)) +
+  geom_text(data = text,
+            aes(x = y, label = fit, hjust = hjust)) +
+  scale_color_manual(NULL, values = c("#E7CDC2", "#A65141")) +
+  scale_x_discrete(NULL, labels = ggplot2:::parse_safe) +
+  ylab("marginal posterior") +
+  coord_flip() +
+  theme(axis.text.y = element_text(hjust = 0),
+        axis.ticks.y = element_blank(),
+        legend.position = "none")
+```
+
+With the help from `b14.6x`, we found "that E and W have a negative correlation in their residual variance, because the confound positively influences one and negatively influences the other" (p. 459).
+
+***14.3.2. Other designs***
+
+```{r, echo = F, out.width='80%', fig.cap="Instruments are limited. THe hardest part is finding a plausible instrument. Cannot test whether something is a good instrument! DAG depends upon scientific information, not the data alone. Weak instruments may not be useful. Try some simulations from the chapters. Now we'll introduce other things like the front door criterions."}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
+
+## Social relations as correlated varying effects
 
 ```{r, echo = F, out.width='80%', fig.cap="One of my favourite types of models. Often in the social sciences and organismal biology, we're interested in dyadic interactionsb etween units. Complicated because there's a field of interactions. Pulling apart can be difficult. "}
 knitr::include_graphics(file.path(slides_dir, '29.png'))
@@ -366,15 +1050,62 @@ knitr::include_graphics(file.path(slides_dir, '29.png'))
 knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```
 
+```{r 14.30 b}
+library(rethinking)
+data(KosterLeckie)
+```
+
+```{r}
+kl_dyads %>% glimpse()
+```
+
+```{r}
+kl_dyads %>% 
+  ggplot(aes(x = hidA, y = hidB, label = did)) +
+  geom_tile(aes(fill = did),
+            show.legend = F) +
+  geom_text(size = 2.25, family = "Courier") +
+  geom_vline(xintercept = 0:24 + 0.5, color = "#394165", size = 1/5) +
+  geom_hline(yintercept = 1:25 + 0.5, color = "#394165", size = 1/5) +
+  scale_fill_gradient(low = "#DCA258", high = "#EEDA9D", limits = c(1, NA)) +
+  scale_x_continuous(breaks = 1:24) +
+  scale_y_continuous(breaks = 2:25) +
+  theme(axis.text = element_text(size = 9),
+        axis.ticks = element_blank())
+```
+
+
+Figure 14.8
+
+```{r}
+kl_dyads %>% 
+  ggplot(aes(x = giftsAB, y = giftsBA)) +
+  geom_hex(bins = 70) +
+  geom_abline(color = "#DCA258", linetype = 3) +
+  scale_fill_gradient(low = "#E7CDC2", high = "#A65141", limits = c(1, NA)) +
+  scale_x_continuous("gifts household A to household B", limits = c(0, 113)) +
+  scale_y_continuous("gifts from B to A", limits = c(0, 113)) +
+  ggtitle("Distribution of dyadic gifts") +
+  coord_equal()
+```
+
+Pearson's correlation coefficient, collapsing across grouping levels.
+
+```{r}
+cor(kl_dyads$giftsAB, kl_dyads$giftsBA) %>% round(digits = 3)
+```
+
+However, it would be a mistake to take this correlation seriously. It is a disentangled mixture of various kinds of associations, none of which are guaranteed to be even close to $r=.24$. Remember this as we move along with the analyses and let the consequences burn a methodological mark into your soul.
+
 ```{r, echo = F, out.width='80%', fig.cap="Here's the problem. TThe 0.24 correlation is produced both by generalised effects, and household-specific (or dyadic) effects. Also a lot of predictors like kinship in the datsaaaset. We're going to ignore it. We think about the count from A to B. There's some average $\\alpha$. There's also a generosity rate. Some households are more generous to others. There's also generalised receiving, $r_B$. These generalised effects are contaminating. Then there are dyad effects, consdiering only the household A and B, how much does A give to B, and how is that correlation to how much B gives to A. "}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="How to model it? We need covariances! One covariance matrix for the generalised effects. For each hosuefhold $i$, you have two parameters, $g$ - gleneralised offset, as in how much it's giving on average, offset, adn $r$, which is how much more than alpha it tends to receive. They're going to be correlated. We set upt this 2x2 covariance matrix as before. Variation in the givingness offset, and variation in the recivingness offset. Nothing new here really.  "}
+```{r, echo = F, out.width='80%', fig.cap="How to model it? We need covariances! One covariance matrix for the generalised effects. For each hosuefhold $i$, you have two parameters, $g$ - gleneralised offset, as in how much it's giving on average, offset, adn $r$, which is how much more than alpha it tends to receive. They're going to be correlated. We set upt this 2x2 covariance matrix as before. Variation in the givingness offset, and variation in the receivingness offset. Nothing new here really.  "}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="Next we have the dyad effects. FOr each dyad $i$ and $j$, they're donation offsets in both directions. A can tend to give a lot to B, and B gives little to A, then these d parameters willh have low correaltion. If they're neggative, the pairs end up in depednence relationships. We capture these effects iwth this covariance matrix. It's new, and special, beacuse it only has one sigma isndie of it. Why? Because it's symmetrical. A and B are th same type of parameter. Like judo - blue and read shorts are random, so the variance between their wins must be the same because it's randomised."}
+```{r, echo = F, out.width='80%', fig.cap="Next we have the dyad effects. For each dyad $i$ and $j$, they're donation offsets in both directions. A can tend to give a lot to B, and B gives little to A, then these `d` parameters will have low correaltion. If they're negative, the pairs end up in depednence relationships. We capture these effects iwth this covariance matrix. It's new, and special, because it only has one sigma inside of it. Why? Because it's symmetrical. A and B are th same type of parameter. Like judo - blue and read shorts are random, so the variance between their wins must be the same because it's randomised."}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
@@ -382,9 +1113,76 @@ knitr::include_graphics(file.path(slides_dir, '33.png'))
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
+```{r 14.31 b}
+kl_data <- 
+  list(
+    N            = nrow(kl_dyads),
+    N_households = max(kl_dyads$hidB), 
+    did          = kl_dyads$did,
+    hidA         = kl_dyads$hidA,
+    hidB         = kl_dyads$hidB,
+    giftsAB      = kl_dyads$giftsAB, 
+    giftsBA      = kl_dyads$giftsBA
+  )
+
+m14.7 <- 
+  ulam( 
+    alist(
+      giftsAB ~ poisson(lambdaAB),
+      giftsBA ~ poisson(lambdaBA),
+      log(lambdaAB) <- a + gr[hidA, 1] + gr[hidB, 2] + d[did, 1] , 
+      log(lambdaBA) <- a + gr[hidB, 1] + gr[hidA, 2] + d[did, 2] , 
+      a ~ normal(0, 1),
+      
+      ## gr matrix of varying effects
+      vector[2]:gr[N_households] ~ multi_normal(0, Rho_gr, sigma_gr), 
+      Rho_gr ~ lkj_corr(4),
+      sigma_gr ~ exponential(1),
+      
+      ## dyad effects
+      transpars> matrix[N,2]:d <-
+        compose_noncentered(rep_vector(sigma_d, 2), L_Rho_d, z), 
+      matrix[2,N]:z ~ normal(0, 1),
+      cholesky_factor_corr[2]:L_Rho_d ~ lkj_corr_cholesky(8), 
+      sigma_d ~ exponential(1),
+      
+      ## compute correlation matrix for dyads
+      gq> matrix[2, 2]:Rho_d <<- Chol_to_Corr(L_Rho_d)
+    ), 
+    data = kl_data, 
+    chains = 4, cores = 4, iter = 2000
+  )
+```
+
+
+
+```{r 14.32 b}
+precis(m14.7, depth = 3, pars = c("Rho_gr", "sigma_gr"))
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Correlation matrix for the GR effects and the two SDs for it. Look at the correaltion: -0.4."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
+
+```{r 14.33 b}
+post <- extract.samples(m14.7)
+
+tibble(`sigma[italic(g)]`          = post$sigma_gr[, 1],
+       `sigma[italic(r)]`          = post$sigma_gr[, 2],
+       `rho[italic(g)][italic(r)]` = post$Rho_gr[, 2, 1]) %>% 
+  pivot_longer(everything()) %>% 
+  
+  ggplot(aes(x = value, y = name, fill = name)) +
+  geom_vline(xintercept = 0, color = "#FCF9F0", alpha = 1/3) +
+  stat_halfeye(.width = .89, color = "#FCF9F0", height = 1.5) + 
+  scale_fill_manual(values = c("#80A0C7", "#EEDA9D", "#DCA258")) +
+  scale_y_discrete(NULL, labels = ggplot2:::parse_safe) +
+  xlab("marginal posterior") +
+  coord_cartesian(ylim = c(1.5, 3.9)) +
+  theme(legend.position = "none")
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Generalised giving  for each household against generalised receiving. Negative correlation meaning that generous households receive less, because thy're rich. Then poor households on the left. Having conditioned on dyad effects. Can see the needs-based structure. Parameters on both axes. Drawn an ellipss. "}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
@@ -394,9 +1192,79 @@ knitr::include_graphics(file.path(slides_dir, '36.png'))
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
 
+Try `plot(exp(g[,1]),exp(r[,1]))` to show the posterior distribution of giving/receiving for household 1.
+
+```{r}
+g <- sapply( 1:25 , function(i) post$a + post$gr[,i,1] ) 
+r <- sapply( 1:25 , function(i) post$a + post$gr[,i,2] ) 
+
+tibble(g = exp(g[, 1]),
+       r = exp(r[, 1])) %>% 
+  ggplot(aes(x = g, y = r)) +
+  geom_abline(color = "#FCF9F0", linetype = 2, alpha = 1/3) + # white "#FCF9F0" # gold "#B1934A"
+  geom_point(color = "#B1934A", alpha = 1/3, size = 1/4) +
+  stat_ellipse(type = "norm", level = .5, size = 1/2, color = "#80A0C7") +
+  stat_ellipse(type = "norm", level = .9, size = 1/2, color = "#80A0C7") +
+  labs(x = expression(giving[italic(i)==1]),
+       y = expression(receiving[italic(i)==1])) +
+  coord_equal(xlim = c(0, 5),
+              ylim = c(0, 5))
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Some of these devaitions are small. 0s are very balanced. Reciprocity on 0s, and also for kinships. "}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
+
+Figure 14.9a:
+
+```{r 14.34 b}
+rbind(exp(g), exp(r)) %>% 
+  data.frame() %>% 
+  set_names(1:25) %>% 
+  mutate(parameter = rep(c("g", "r"), each = n() / 2),
+         iter      = rep(1:4000, times = 2)) %>% 
+  pivot_longer(-c(parameter, iter), names_to = "household") %>% 
+  pivot_wider(names_from = parameter, values_from = value) %>% 
+  group_by(household) %>% 
+  mutate(mu_g = mean(g),
+         mu_r = mean(r)) %>% 
+  nest(data = c("g", "r", "iter")) %>% 
+  
+  ggplot(aes(group = household)) +
+  geom_abline(color = "#FCF9F0", linetype = 2, alpha = 1/3) +
+  stat_ellipse(data = . %>% unnest(data),
+               aes(x = g, y = r),
+               type = "norm", level = .5, size = 1/2, alpha = 1/2, color = "#80A0C7") +
+  geom_point(aes(x = mu_g, y = mu_r),
+             color = "#DCA258") +
+  labs(x = "generalized giving",
+       y = "generalized receiving") +
+  coord_equal(xlim = c(0, 8.5),
+              ylim = c(0, 8.5))
+```
+
+Figure 14.9b
+
+```{r}
+tibble(dy1 = apply(post$d[, , 1], 2, mean),
+       dy2 = apply(post$d[, , 2], 2, mean)) %>% 
+  
+  ggplot(aes(x = dy1, y = dy2)) +
+  geom_abline(color = "#FCF9F0", linetype = 2, alpha = 1/3) +
+  geom_vline(xintercept = 0, color = "#FCF9F0", linetype = 2, alpha = 1/3) +
+  geom_hline(yintercept = 0, color = "#FCF9F0", linetype = 2, alpha = 1/3) +
+  geom_point(color = "#8B9DAF", alpha = 1/2, size = 1/2) +
+  geom_text(x = mean(post$d[, 1, 1]),
+            y = mean(post$d[, 1, 2]),
+            label = "1",
+            color = "#EEDA9D", family = "Courier") +
+  labs(x = "household A in dyad",
+       y = "household B in dyad") +
+  coord_equal(xlim = c(-2, 3.5),
+              ylim = c(-2, 3.5))
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Very pleased with this homework set. Going to go back to the Bangladesh data, going to do random slopes, then adding predictor variables: the woman's age, and the number of kids she already has. Big effects on contrcetpive use. Draw a DAG and use it to anlayse the causal influence of age and kids on contreption."}
 knitr::include_graphics(file.path(slides_dir, '39.png'))
@@ -405,6 +1273,18 @@ knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```{r}
 slides_dir = here::here("docs/slides/L19")
 ```
+
+## Continuous categories and the Gaussian process
+
+All of the varying effects so far, whether they were intercepts or slopes, have been defined over discrete, unordered categories. For example, cafés are unique places, and there is no sense in which café 1 comes before café 2.
+
+But what about continuous dimensions of variation like age or income or stature? Individuals of the same age share some of the same exposures. They listened to some of the same music, heard about the same politicians, and experienced the same weather events. And individuals of similar ages also experienced some of these same exposures, but to a lesser extent than individuals of the same age.
+
+It doesn’t make sense to estimate a unique varying intercept for all individuals of the same age, ignoring the fact that individuals of similar ages should have more similar intercepts.
+
+Luckily, there is a way to apply the varying effects approach to continuous categories of this kind. This will allow us to estimate a unique intercept (or slope) for any age, while still regarding age as a continuous dimension in which similar ages have more similar intercepts (or slopes). The general approach is known as GAUSSIAN PROCESS REGRESSION.
+
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Get to take everything we've learned and put it together."}
 knitr::include_graphics(file.path(slides_dir, '01.png'))
@@ -422,13 +1302,51 @@ knitr::include_graphics(file.path(slides_dir, '03.png'))
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
+
+***14.5.1. Example: Spatial autocorrelation in Oceanic tools***
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Two examples with code on how to do this. First is with spatial autocorrelation, where shared space is a proxy for unmeasured confounds. Let's go back to tools. Interested in predicting number of tools based on size of population. One of the problems is that islands that are close to others can just go and get the tools rather than inventing them. Certainly down near Tonga there were a lo tof effects. So distance between islands is a proxy for contact. "}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
 
+```{r, 14.37b}
+# load the distance matrix
+library(rethinking)
+data(islandsDistMatrix)
+
+# display (measured in thousands of km)
+d_mat <- islandsDistMatrix
+colnames(d_mat) <- c("Ml", "Ti", "SC", "Ya", "Fi", "Tr", "Ch", "Mn", "To", "Ha")
+
+round(d_mat, 1)
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="Here's the idea. You construct a distance matrix. Could probably do better than this based on sailing routes, but this will suffice here. This is like our map of confoud threats. What could make the tools counts similar is correlation between islands that are closer together. "}
 knitr::include_graphics(file.path(slides_dir, '06.png'))
 ```
+
+```{r}
+d_mat %>%
+  data.frame() %>% 
+  rownames_to_column("row") %>% 
+  gather(column, distance, -row) %>% 
+  mutate(column = factor(column, levels = colnames(d_mat)),
+         row    = factor(row,    levels = rownames(d_mat)) %>% fct_rev(),
+         label  = formatC(distance, format = 'f', digits = 2)) %>%
+  
+  ggplot(aes(x = column, y = row)) + 
+  geom_raster(aes(fill = distance)) + 
+  geom_text(aes(label = label),
+            size = 3, family = "Courier", color = "#100F14") +
+  scale_fill_gradient(low = "#FCF9F0", high = "#A65141") +
+  scale_x_discrete(NULL, position = "top", expand = c(0, 0)) +
+  scale_y_discrete(NULL, expand = c(0, 0)) +
+  theme_pearl_earring(axis.text.y = element_text(hjust = 0)) +
+  theme(axis.ticks = element_blank())
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Let's build the matrix into the model. We've got expected tools $\\lambda$. $\\alpha$ is the propoertinaly constant, i..e number of tools per member, then $\\beta$ is elasticity, then $\\gamma$ is the loss rate."}
 knitr::include_graphics(file.path(slides_dir, '07.png'))
@@ -454,6 +1372,23 @@ knitr::include_graphics(file.path(slides_dir, '11.png'))
 knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
+```{r 14.38 b}
+tibble(x       = seq(from = 0, to = 4, by = .01),
+       linear  = exp(-1 * x),
+       squared = exp(-1 * x^2)) %>%
+  
+  ggplot(aes(x = x)) +
+  geom_line(aes(y = linear),
+            color = "#B1934A", linetype = 2) +
+  geom_line(aes(y = squared),
+            color = "#DCA258") +
+  scale_x_continuous("distance", expand = c(0, 0)) +
+  scale_y_continuous("correlation", 
+                     breaks = c(0, .5, 1),
+                     labels = c(0, ".5", 1))
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="All we're doing is all in the prior. Varying effects drawn from one giant Gaussian. Rest of the model is what we've done before. You could have all the pariwise differece between ages, and all the particular effects.  Vector of $k$s. Priors from eta nd rho, both squared. Don't have to be squared, by why? Convention. Want to simulate from these priors and see what they imply. "}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
@@ -478,9 +1413,200 @@ knitr::include_graphics(file.path(slides_dir, '17.png'))
 knitr::include_graphics(file.path(slides_dir, '18.png'))
 ```
 
+```{r}
+data(Kline2) # load the ordinary data, now with coordinates
+
+d <- 
+  Kline2 %>%
+  mutate(society = 1:10)
+
+rm(Kline2)
+
+d %>% glimpse()
+```
+
+Transform `lat` and `lon2` into 1000 km units by multiplying each by 0.11132. 
+
+```{r}
+d <-
+  d %>% 
+  mutate(lat_adj  = lat  * 0.11132,
+         lon2_adj = lon2 * 0.11132)
+
+d %>% 
+  dplyr::select(culture, lat, lon2, lat_adj:lon2_adj)
+```
+
+```{r 14.39 b}
+b14.8 <-
+  brm(data = d, 
+      family = poisson(link = "identity"),
+      bf(total_tools ~ exp(a) * population^b / g,
+         a ~ 1 + gp(lat_adj, lon2_adj, scale = FALSE),
+         b + g ~ 1,
+         nl = TRUE),
+      prior = c(prior(normal(0, 1), nlpar = a),
+                prior(exponential(1), nlpar = b, lb = 0),
+                prior(exponential(1), nlpar = g, lb = 0),
+                prior(inv_gamma(2.874624, 2.941204), class = lscale, coef = gplat_adjlon2_adj, nlpar = a),
+                prior(exponential(1), class = sdgp, coef = gplat_adjlon2_adj, nlpar = a)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 14,
+      sample_prior = T,
+      file = "fits/b14.08")
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="What happens? This is wholly uninterpretable. Tide prediction enginge agian. So we want to plot thigns. PUsh the posterior back trhough is and get retrodictions. `k` values are exponentitated. Any island with a 0 is exactly as the model expected. If negative, drageged down by some negibouir. If higher, dragged up by some neighbour beyond the expectation of the model. `zetasq` and `rhosq` are uniterpretable for a reason to be explained."}
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
+
+```{r}
+print(b14.8)
+```
+
+```{r 14.40 b}
+posterior_summary(b14.8)[1:15, ] %>% round(digits = 2)
+```
+
+Let’s focus on our three non-linear parameters, first. Happily, both our b_b_Intercept and b_g_Intercept summaries look a lot like those for McElreath’s `b` and `g`, respectively. Our `b_a_Intercept` might look distressingly small, but that’s just because of how we parameterized our model. It’s actually very close to McElreath’s a after you exponentiate.
+
+```{r}
+fixef(b14.8, probs = c(.055, .945))["a_Intercept", c(1, 3:4)] %>% 
+  exp() %>% 
+  round(digits = 2)
+```
+
+```{r}
+post <-
+  posterior_samples(b14.8) %>% 
+  mutate(etasq = sdgp_a_gplat_adjlon2_adj^2)
+
+post %>% 
+  mean_hdi(etasq, .width = .89) %>% 
+  mutate_if(is.double, round, digits = 3)
+```
+```{r}
+p1 <-
+  tibble(`rho^2` = seq(from = 0, to = 11, by = 0.01)) %>% 
+  mutate(lscale = sqrt(1 / (2 * `rho^2`))) %>%
+  
+  ggplot(aes(x = `rho^2`, y = lscale)) +
+  geom_hline(yintercept = 0, color = "#FCF9F0", size = 1/4, linetype = 2) +
+  geom_vline(xintercept = 0, color = "#FCF9F0", size = 1/4, linetype = 2) +
+  geom_line(color = "#A65141") +
+  xlab(expression(rho^2)) +
+  coord_cartesian(xlim = c(0, 10),
+                  ylim = c(0, 10))
+
+p2 <-
+  tibble(lscale = seq(from = 0, to = 11, by = 0.01)) %>% 
+  mutate(`rho^2` = 1 / (2 * lscale^2)) %>%
+  
+  ggplot(aes(x = lscale, y = `rho^2`)) +
+  geom_hline(yintercept = 0, color = "#FCF9F0", size = 1/4, linetype = 2) +
+  geom_vline(xintercept = 0, color = "#FCF9F0", size = 1/4, linetype = 2) +
+  geom_line(color = "#80A0C7") +
+  ylab(expression(rho^2)) +
+  coord_cartesian(xlim = c(0, 10),
+                  ylim = c(0, 10))
+
+p1 + p2
+```
+
+Let’s see how our posterior for $lscale$ looks when we convert it to the scale of McElreath’s $\rho^2$.
+
+```{r}
+post <-
+  post %>% 
+  mutate(rhosq = 1 / (2 * lscale_a_gplat_adjlon2_adj^2))
+
+post %>% 
+  mean_hdi(rhosq, .width = .89) %>% 
+  mutate_if(is.double, round, digits = 3)
+```
+
+The plot deepends. We used a very different prior for `lscale`. Use `get_prior()` to discover where that came from.
+
+```{r}
+get_prior(data = d, 
+          family = poisson(link = "identity"),
+          bf(total_tools ~ exp(a) * population^b / g,
+             a  ~ 1 + gp(lat_adj, lon2_adj, scale = FALSE),
+             b + g ~ 1,
+             nl = TRUE))
+```
+
+```{r}
+tibble(lscale = seq(from = 0.01, to = 9, by = 0.01)) %>% 
+  mutate(density = invgamma::dinvgamma(lscale, 2.874624, 2.941204)) %>% 
+  
+  ggplot(aes(x = lscale, y = density)) +
+  geom_area(fill = "#80A0C7") +
+  annotate(geom = "text", 
+           x = 4.75, y = 0.75,
+           label = "inverse gamma(2.874624, 2.941204)",
+           color = "#8B9DAF", family = "Courier") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  coord_cartesian(xlim = c(0, 8))
+```
+
+Figure 14.11 
+```{r 14.41 b}
+# for `slice_sample()`
+set.seed(14)
+
+# wrangle
+p1 <-
+  prior_samples(b14.8) %>% 
+  mutate(iter  = 1:n(),
+         etasq = sdgp_a_gplat_adjlon2_adj^2,
+         rhosq = 1 / (2 * lscale_a_1_gplat_adjlon2_adj^2)) %>% 
+  slice_sample(n = 100) %>%
+  tidyr::expand(nesting(iter, etasq, rhosq),
+         x = seq(from = 0, to = 10, by = .05)) %>% 
+  mutate(covariance = etasq * exp(-rhosq * x^2)) %>% 
+  
+  # plot
+  ggplot(aes(x = x, y = covariance)) +
+  geom_line(aes(group = iter),
+            size = 1/4, alpha = 1/4, color = "#EEDA9D") +
+  scale_x_continuous("distance (thousand km)", expand = c(0, 0),
+                     breaks = 0:5 * 2) +
+  coord_cartesian(xlim = c(0, 10),
+                  ylim = c(0, 2)) +
+  labs(subtitle = "Gaussian process prior")
+
+# for `slice_sample()`
+set.seed(14)
+
+# wrangle
+p2 <-
+  post %>% 
+  transmute(iter  = 1:n(),
+            etasq = sdgp_a_gplat_adjlon2_adj^2,
+         rhosq = 1 / (2 * lscale_a_gplat_adjlon2_adj^2)) %>% 
+  slice_sample(n = 50) %>% 
+  tidyr::expand(nesting(iter, etasq, rhosq),
+         x = seq(from = 0, to = 10, by = .05)) %>% 
+  mutate(covariance = etasq * exp(-rhosq * x^2)) %>% 
+  
+  # plot
+  ggplot(aes(x = x, y = covariance)) +
+  geom_line(aes(group = iter),
+            size = 1/4, alpha = 1/4, color = "#EEDA9D") +
+  stat_function(fun = function(x) mean(post$sdgp_a_gplat_adjlon2_adj)^2 *
+                  exp(-(1 / (2 * mean(post$lscale_a_gplat_adjlon2_adj)^2)) * x^2),
+                color = "#DCA258", size = 1) +
+  scale_x_continuous("distance (thousand km)", expand = c(0, 0),
+                     breaks = 0:5 * 2) +
+  coord_cartesian(xlim = c(0, 10),
+                  ylim = c(0, 2)) +
+  labs(subtitle = "Gaussian process posterior")
+
+p1 | p2
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="On the left we're repeating the piror. Ont her right, 50 samples form the posterior. Relatively small, but declines more slowly. SO there's some long-distance effects driving the tools around. Can't figure out the shpaes from etasq and rhosq because they're correlated. "}
 knitr::include_graphics(file.path(slides_dir, '20.png'))
@@ -494,6 +1620,142 @@ knitr::include_graphics(file.path(slides_dir, '21.png'))
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
+Push the parameters back through the function for $\mathbf{K}$, the covariance matrix.
+
+```{r 14.42 b}
+# compute posterior median covariance among societies
+k <- matrix(0, nrow = 10, ncol = 10)
+for (i in 1:10)
+    for (j in 1:10)
+        k[i, j] <- median(post$etasq) * 
+  exp(-median(post$rhosq) * islandsDistMatrix[i, j]^2)
+
+diag(k) <- median(post$etasq) + 0.01
+
+k %>% round(2)
+```
+
+Change these to a correlation matrix:
+
+```{r 14.43 b}
+# convert to correlation matrix
+rho <- round(cov2cor(k), 2)
+
+# add row/col names for convenience
+colnames(rho) <- c("Ml", "Ti", "SC", "Ya", "Fi", "Tr", "Ch", "Mn", "To", "Ha")
+rownames(rho) <- colnames(rho)
+
+rho %>% round(2)
+```
+
+Plot the correlations:
+
+```{r}
+rho %>%
+  data.frame() %>% 
+  mutate(row = d$culture) %>% 
+  pivot_longer(-row, values_to = "distance") %>% 
+  mutate(column = factor(name, levels = colnames(d_mat)),
+         row    = factor(row, levels = rownames(d_mat)) %>% fct_rev(),
+         label  = formatC(distance, format = 'f', digits = 2) %>% str_replace(., "0.", ".")) %>%
+  # omit this line to keep the diagonal of 1's
+  filter(distance != 1) %>% 
+  
+  ggplot(aes(x = column, y = row)) + 
+  geom_raster(aes(fill = distance)) + 
+  geom_text(aes(label = label),
+            size = 2.75, family = "Courier", color = "#100F14") +
+  scale_fill_gradient(expression(rho), low = "#FCF9F0", high = "#A65141", limits = c(0, 1)) +
+  scale_x_discrete(NULL, position = "top", expand = c(0, 0)) +
+  scale_y_discrete(NULL, expand = c(0, 0)) +
+  theme_pearl_earring(axis.text.y = element_text(hjust = 0)) +
+  theme(axis.ticks = element_blank())
+```
+
+Get `rho` into a tidy data frame:
+
+```{r}
+tidy_rho <-
+  rho %>%
+  data.frame() %>% 
+  rownames_to_column() %>% 
+  bind_cols(d %>% dplyr::select(culture, logpop, total_tools, lon2, lat)) %>% 
+  pivot_longer(Ml:Ha,
+               names_to = "colname", 
+               values_to = "correlation") %>%
+  mutate(group = str_c(pmin(rowname, colname), pmax(rowname, colname))) %>%
+  dplyr::select(rowname, colname, group, culture, everything())  
+
+head(tidy_rho)
+```
+
+Figure 14.12a
+```{r 14.44 b}
+library(ggrepel)
+
+p1 <-
+  tidy_rho %>%       
+  ggplot(aes(x = lon2, y = lat)) +
+  geom_point(data = d, 
+             aes(size = logpop), color = "#DCA258") +
+  geom_line(aes(group = group, alpha = correlation^2),
+            color = "#EEDA9D") +
+  geom_text_repel(data = d, aes(label = culture), 
+                  seed = 14, point.padding = .2, size = 2.75, color = "#FCF9F0", family = "Courier") +
+  scale_alpha_continuous(range = c(0, 1)) +
+  labs(subtitle = "Among societies in geographic space\n",
+       x = "longitude",
+       y = "latitude") +
+  coord_cartesian(xlim = range(d$lon2),
+                  ylim = range(d$lat)) +
+  theme(legend.position = "none")
+```
+
+Figure 14.12b
+```{r 14.45 b}
+# compute the average posterior predictive relationship between 
+# log population and total tools, summarized by the median and 80% interval
+f <-
+  post %>% 
+  tidyr::expand(logpop = seq(from = 6, to = 14, length.out = 30),
+         nesting(b_a_Intercept, b_b_Intercept, b_g_Intercept)) %>%
+  mutate(population = exp(logpop)) %>% 
+  mutate(lambda = exp(b_a_Intercept) * population^b_b_Intercept / b_g_Intercept) %>%
+  group_by(logpop) %>% 
+  median_qi(lambda, .width = .8)
+
+# plot
+p2 <-
+  tidy_rho %>% 
+  ggplot(aes(x = logpop)) +
+  geom_smooth(data = f,
+              aes(y = lambda, ymin = .lower, ymax = .upper),
+              stat = "identity",
+              fill = "#394165", color = "#100F14", alpha = .5, size = 1.1) +
+  geom_point(data = d, 
+             aes(y = total_tools, size = logpop), 
+             color = "#DCA258") +
+  geom_line(aes(y = total_tools, group = group, alpha = correlation^2),
+            color = "#EEDA9D") +
+  geom_text_repel(data = d, 
+                  aes(y = total_tools, label = culture), 
+                  seed = 14, point.padding = .2, size = 2.75, color = "#FCF9F0", family = "Courier") +
+  scale_alpha_continuous(range = c(0, 1)) +
+  labs(subtitle = "Shown against the relation between\ntotal tools and log pop",
+       x = "log population",
+       y = "total tools") +
+  coord_cartesian(xlim = range(d$logpop),
+                  ylim = range(d$total_tools)) +
+  theme(legend.position = "none")
+```
+
+Then combine
+```{r}
+p1 + p2 + 
+  plot_annotation(title = "Posterior median correlations")
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="On a map, this is what it looks like. LIke the world's least high-tech map of the pacific ocean. Size of each point is the population size. Line setgments are the correlations. Triad of Santa Cruz, Tikopia and Malekula. Tool counts are more similar, and deviate more because of their popualtions sizes. Tonga correlated with Fiji. "}
 knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```
@@ -502,9 +1764,12 @@ knitr::include_graphics(file.path(slides_dir, '23.png'))
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="SOmetimes called Bayesian non-parametric regression. Non-parametirc meaning infinte number of functions being considerd. They consider an infinite number of splines taht pass along continuos categories than select among them with regularisatino. Very popular with machine learning. Lots of really diverse applications. There are lots of periodic datasets, like seasonality datasets in ecology or social science, where the covariance function has cosigns in it to measure the periodicity in it. e.g. human births - cool analysis by Gelman et al using Gaussian process regression. Phylogenetic distances are like this as well. All are special cases, with particular stratgeies for building the covariance matrix. Then don't need to make assumpotions about the regression shape, you can do that with regularisation. Finally there's automatic relevance determination - terrible machien learnign term = jestimating the importane of each kind of distance in the covariance between the items."}
+
+```{r, echo = F, out.width='80%', fig.cap="Sometimes called Bayesian non-parametric regression. Non-parametric meaning infinte number of functions being considerd. They consider an infinite number of splines that pass along continuos categories than select among them with regularisation. Very popular with machine learning. Lots of really diverse applications. There are lots of periodic datasets, like seasonality datasets in ecology or social science, where the covariance function has cosines in it to measure the periodicity in it. e.g. human births - cool analysis by Gelman et al using Gaussian process regression. Phylogenetic distances are like this as well. All are special cases, with particular stratgeies for building the covariance matrix. Then don't need to make assumptions about the regression shape, you can do that with regularisation. Finally there's automatic relevance determination -- terrible machine learning term -- estimating the importance of each kind of distance in the covariance between the items."}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
+
+***14.5.2. Example: Phylogenetic distance***
 
 ```{r, echo = F, out.width='80%', fig.cap="In evo bio, you worry about how long ago this pair of species diverged. Concerned about shared common history. This introduces a lot of back doors. Like a proxy of shared exposures. e.g. comon genes, kinds of ecologies, etc. YOu may not have measured all of those things. Then time since divergence is a proxy for those common exposures. We're going to use this to see how flexible it is. Lots of way st o smuggle it in. One way is Brownian motion model Simplest but also goofiest evolutionary model because no trait evolves this way. Other processes like the OU, like Brownian but variance constrained. Some attractor that pulls back traits. Any particular phylogency implies a covariance structure.  "}
 knitr::include_graphics(file.path(slides_dir, '26.png'))
@@ -513,6 +1778,19 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```{r, echo = F, out.width='80%', fig.cap="Let's use this primates dataset. "}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
+
+```{r 14.47 b}
+data(Primates301, package = "rethinking") 
+data(Primates301_nex)
+
+# devtools::install_github("GuangchuangYu/ggtree")
+library(ggtree)
+
+Primates301_nex %>%
+  ggtree(layout = "circular", color = "#394165", size = 1/4) + 
+  geom_tiplab(size = 5/3, color = "#100F14")
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Apes are the losers of the pirmates. Old World are the winners - recent diversification. Galagos and Lorises adre small and recently diverged. Tarisers tiny andvery differnt from each other. New World are Americas. A lot of them as well. "}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
@@ -530,6 +1808,21 @@ knitr::include_graphics(file.path(slides_dir, '30.png'))
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
+First format the data:
+
+```{r 14.48 b}
+d <-
+  Primates301 %>% 
+  mutate(name = as.character(name)) %>% 
+  drop_na(group_size, body, brain) %>% 
+  mutate(m = log(body) %>% standardize(),
+         b = log(brain) %>% standardize(),
+         g = log(group_size) %>% standardize())
+
+glimpse(d)
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="To get here, this is an ordinary regression but weirded. All of the outcomes for all species is one outcome, a single big vector of group sizes, a log groupsize as a function of log body size and log brian size. Think of sampling all tips of the tree simultaneously at the smae time. Bold G is all the group sizes. Some vector mu. Then this covariance matrix S. In standard linear regression it las sigma squared along the diagonal and 0 everywhere else. So toconstrust S is by multiplying sigma squared by I. If you mutpily the scalar sigma 2 with this, there's no correaltions, and you're back to a linear regression. Why do this? We'll get back to a linear regression by replacing S. "}
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
@@ -538,17 +1831,153 @@ knitr::include_graphics(file.path(slides_dir, '32.png'))
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
+Make the naïve model, exploring the conditional relations of log(body mass) and log(group size) on log(brain size) without accounting for phylogenetic relationships.
+
+```{r 14.49 b}
+b14.9 <-
+  brm(data = d,
+      family = gaussian,
+      b ~ 1 + m + g,
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 14,
+      file = "fits/b14.09")
+```
+
+```{r}
+print(b14.9)
+```
+
+
+If you want $\sigma$ in the $\sigma^2$ metric, you can square that by hand:
+
+```{r}
+posterior_samples(b14.9) %>% 
+  mutate(sigma_sq = sigma^2) %>% 
+  mean_qi(sigma_sq) %>% 
+  mutate_if(is.double, round, digits = 2)
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="The inferentail threat is this haunting phylogeny. It gives us a tool, and instrument if you will, to measure these things. To get increased covariance for recently separated species. "}
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="The traits just wander randomly. When this hapnpens, the covariance is expected to decline in a linear function since the time they divergd. We cmopute the impolied covarance matrix then plot htat against phylogenetic distance. How to get phylogenetic distance? Total branch length. No one really likes this model, but it's easy to use. "}
+```{r, echo = F, out.width='80%', fig.cap="The traits just wander randomly. When this happens, the covariance is expected to decline in a linear function since the time they diverged. We compute the implied covariance matrix then plot that against phylogenetic distance. How to get phylogenetic distance? Total branch length. No one really likes this model, but it's easy to use. "}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
+
+Make the covariance matrix (`V`) and the distance matrix (`Dmat`).
+
+```{r}
+library(ape)
+
+spp_obs <- d$name
+
+tree_trimmed <- keep.tip(Primates301_nex, spp_obs)
+Rbm <- corBrownian(phy = tree_trimmed)
+
+V <- vcv(Rbm)
+Dmat <- cophenetic( tree_trimmed )
+```
+
+Distance by covariance scatter plot
+```{r}
+full_join(
+  Dmat %>% 
+    as_tibble(rownames = "row") %>% 
+    pivot_longer(-row,
+                 names_to = "col",
+                 values_to = "distance"),
+  V %>% 
+    as_tibble(rownames = "row") %>% 
+    pivot_longer(-row,
+                 names_to = "col",
+                 values_to = "covariance"),
+  by = c("row", "col")
+) %>% 
+  
+  ggplot(aes(x = distance, y = covariance)) +
+  geom_point(color = "#80A0C7", alpha = 1/10) +
+  labs(subtitle = "These variables are the\ninverse of one another.",
+       x = "phylogenetic distance", 
+       y = "covariance")
+```
+
+Plot heatmaps of each matrix:
+
+```{r}
+# headmap of Dmat
+p1 <-
+  Dmat %>% 
+  as_tibble(rownames = "row") %>% 
+  pivot_longer(-row,
+               names_to = "col",
+               values_to = "distance") %>%
+  
+  ggplot(aes(x = col, y = row, fill = distance)) +
+  geom_tile() +
+  scale_fill_gradient(low = "#100F14", high = "#EEDA9D") +
+  scale_x_discrete(NULL, breaks = NULL) +
+  scale_y_discrete(NULL, breaks = NULL) +
+  theme(legend.position = "top")
+
+# headmap of V
+p2 <-
+  V %>% 
+  as_tibble(rownames = "row") %>% 
+  pivot_longer(-row,
+               names_to = "col",
+               values_to = "covariance") %>% 
+  
+  ggplot(aes(x = col, y = row, fill = covariance)) +
+  geom_tile() +
+  scale_fill_gradient(low = "#100F14", high = "#EEDA9D") +
+  scale_x_discrete(NULL, breaks = NULL) +
+  scale_y_discrete(NULL, breaks = NULL) +
+  theme(legend.position = "top")
+
+# combine
+(p1 | p2) + plot_annotation(subtitle = "Again, distance is the inverse of covariance.")
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="So you can get the covariance matrix by inverting the phylogenetic distance matrix. Then once you have that, make it into a correlation matrix so we can fit the residual variance. Then just pass it in = replace the identity matrix with this correlation matrix. That's the Brownian motion model. Run this model. Things change a lot. Brain size is nothing now. Body size is now positive, because all that baackdoor throug brain is knocked out. This says the correlation etween brian size and and group size si that closely related species have similar brains and body sizes. "}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
+
+
+```{r 14.51 b}
+R <- V[spp_obs, spp_obs] / max(V)
+
+b14.10 <-
+  brm(data = d,
+      data2 = list(R = R),
+      family = gaussian,
+      b ~ 1 + m + g + fcor(R),
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 14,
+      file = "fits/b14.10")
+```
+
+```{r}
+print(b14.10)
+```
+
+Since our residual variance is still in the $\sigma$ metric, it will be easier to compare it to McElreath’s `sigma_sq` parameter after transforming the posterior samples.
+
+```{r}
+posterior_samples(b14.10) %>% 
+  transmute(sigma_sq = sigma^2) %>% 
+  mean_hdi(sigma_sq, .width = .89) %>% 
+  mutate_if(is.double, round, 2)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="Swap the tip labels for group sizes. At the bottom we have prosimians. Gibbons in the upper left. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
@@ -562,11 +1991,156 @@ knitr::include_graphics(file.path(slides_dir, '38.png'))
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
+Need to use `rethinking` for the next model:
+
+```{r}
+dat_list <- 
+  list(
+    N_spp = nrow(d),
+    M     = standardize(log(d$body)),
+    B     = standardize(log(d$brain)),
+    G     = standardize(log(d$group_size)), Imat = diag(nrow(d)),
+    V     = V[spp_obs, spp_obs],
+    R     = V[spp_obs, spp_obs] / max(V[spp_obs, spp_obs]),
+    Dmat  = Dmat[spp_obs, spp_obs] / max(Dmat)
+  )
+```
+
+```{r 14.52}
+m14.11 <- 
+  ulam( 
+    alist(
+      B ~ multi_normal(mu, SIGMA),
+      mu <- a + bM * M + bG * G,
+      matrix[N_spp,N_spp]: SIGMA <- cov_GPL1(Dmat, etasq, rhosq, 0.01), 
+      a ~ normal(0, 1),
+      c(bM,bG) ~ normal(0, 0.5),
+      etasq ~ half_normal(1, 0.25),
+      rhosq ~ half_normal(3, 0.25)
+    ), 
+    data = dat_list, 
+    chains = 4, cores = 4)
+```
+
+```{r}
+precis(m14.11)
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="We plot the covariance matrix here. Definitely faster than linear. 1 is the maximum phylogenetic distance. The evidence is for closely related species, there's a lot pf correlation of group size. But it declines very fast as you move away. "}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
+```{r 14.53 b, fig.cap = "Figure 14.14"}
+post <- extract.samples(m14.11)
+
+set.seed(14)
+
+left_join(
+  # posterior
+  post %>% 
+    data.frame() %>% 
+    slice_sample(n = 30) %>% 
+    mutate(iter = 1:n()) %>% 
+    tidyr::expand(nesting(iter, etasq, rhosq),
+                  d_seq = seq(from = 0, to = 1, length.out = 50)),
+  # prior
+  tibble(eta = abs(rnorm(1e5, mean = 1, sd = 0.25)),
+         rho = abs(rnorm(1e5, mean = 3, sd = 0.25))) %>% 
+    tidyr::expand(nesting(eta, rho), 
+                  d_seq = seq(from = 0, to = 1, length.out = 50)) %>% 
+    mutate(k = eta * exp(-rho * d_seq)) %>% 
+    group_by(d_seq) %>% 
+    mean_hdi(k, .width = .89),
+  # join them
+  by = "d_seq") %>% 
+  
+  # plot!
+  ggplot(aes(x = d_seq)) +
+  geom_line(aes(y = etasq * exp(-rhosq * d_seq), group = iter),
+            color = "#80A0C7", alpha = 1/2) +
+  geom_lineribbon(data = . %>% filter(iter == 1),
+            aes(y = k, ymin = .lower, ymax = .upper),
+            color = "#A65141", fill = "#E7CDC2") +
+  annotate(geom = "text",
+           x = c(0.2, 0.5), y = c(0.1, 0.5),
+           label = c("posterior", "prior"),
+           color = c("#80A0C7", "#E7CDC2"),
+           family = "Courier") +
+  labs(x = "phylogenetic distance", 
+       y = "covariance") +
+  ylim(0, 1.5)
+```
+
+
 ```{r, echo = F, out.width='80%', fig.cap="One of the interesting thing is variables rates in branches. Think about apes. Some have envolved faster (like us). Other pseices are weird too, but other linearages are more conservative. Gorillas are more diverged from one another than bonobos and chimps. Hemiplasy is incomplete lineage sorting. Where no trait fits the tree because species don't splitin an instance. There's this long period where they're not bifrucating. So at different loci you can be more closely related to one species (.ike chimps) and for other loci more closely related to antoher (gorillas). Big thing to try to jreconstruct nodes. Many equilibria as well. How do all of these things trade off? Want to see group size as an emergent outcome of all these different strategies. There's no unique null in evolutionary biology. "}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
+```
+
+## Bonus: Multilevel growth models and the MELSM
+
+One of the two goals of this bonus section to provide a brief introduction multilevel models designed to express *change over time*. The particular brand of multilevel models we’ll focus on are often called multilevel growth models. Though we will focus on simple linear models, this basic framework can be generalized along many lines. The second goal is to build on our appreciation of covariance structures by introducing a class of multilevel models designed to investigate variation in variation called the mixed-effects location scale models (MELSM). For our final model, we get a little fancy and fit a multivariate MELSM.
+
+Load the data:
+
+```{r}
+dat <- 
+  readr::read_csv("https://raw.githubusercontent.com/ASKurz/Statistical_Rethinking_with_brms_ggplot2_and_the_tidyverse_2_ed/master/data/m_melsm_dat.csv") %>% 
+  dplyr::rename(X1 = `...1`) %>% 
+  dplyr::mutate(day01 = (day - 2) / max((day - 2)))
+
+glimpse(dat)
+```
+
+These data are from 193 participants:
+```{r}
+distinct(dat, record_id) %>% 
+  count()
+```
+
+Participants were asked to complete self-report ratings once a day for a few months.
+
+```{r}
+dat %>% 
+  count(record_id) %>% 
+  summarise(median = median(n),
+            min = min(n),
+            max = max(n))
+```
+
+How many days they participated in the study:
+```{r}
+dat %>% 
+  count(record_id) %>% 
+  
+  ggplot(aes(x = n)) +
+  geom_bar(fill = "#B1934A") +
+  scale_x_continuous("number of days", limits = c(0, NA)) +
+  theme_pearl_earring()
+```
+
+In this study, participants completed the PANAS (Positive and Negative Affect Schedule) once a day by endorsing the extent to which they experienced various positive (e.g., excited, inspired) and negative (e.g., upset, afraid) emotional states.
+
+In the current data, the standardized versions of these scores are in the `P_A.std` and `N_A.std` columns, respectively.
+
+```{r}
+set.seed(14)
+
+dat %>% 
+  nest(data = c(X1, P_A.std, day, P_A.lag, N_A.lag, steps.pm, steps.pmd, N_A.std, day01)) %>% 
+  slice_sample(n = 16) %>% 
+  unnest(data) %>% 
+  
+  ggplot(aes(x = day, y = N_A.lag)) +
+  geom_line(color = "#80A0C7") +
+  geom_point(color = "#FCF9F0", size = 1/2) +
+  ylab("negative affect (standardized)") +
+  facet_wrap(~ record_id)
+```
+
+***14.6.2. Conventional multilevel growth model***
+
+```{r}
+
 ```
 

@@ -637,7 +637,7 @@ glimpse(new_dsim)
 b13.3_new <- 
   update(b13.3,
          newdata = new_dsim,
-         chains = 4, cores = 4,
+         chains = 4, cores = 1,
          seed = 13,
       file = "fits/b13.03_new")
 
@@ -1012,7 +1012,7 @@ knitr::include_graphics(file.path(slides_dir, '28.png'))
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-```{r}
+```{r 13.30 b}
 posterior_samples(b13.4) %>% 
   summarise_draws() %>% 
 
@@ -1074,6 +1074,110 @@ f <-
 f
 ```
 
+Empirical probabilities computed directly from the data (i.e. no pooling)
+```{r}
+chimp_2_d <-
+  d %>% 
+  filter(actor == chimp) %>% 
+  group_by(treatment) %>% 
+  summarise(prob = mean(pulled_left)) %>% 
+  ungroup() %>% 
+  mutate(treatment = factor(treatment, labels = labels))
+
+chimp_2_d
+```
+
+And the corresponding plot:
+```{r}
+f %>%
+  # if you want to use `geom_line()` or `geom_ribbon()` with a factor on the x-axis,
+  # you need to code something like `group = 1` in `aes()`
+  ggplot(aes(x = treatment, y = Estimate, group = 1)) +
+  geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5), fill = "orange1") +
+  geom_line(color = "blue") +
+  geom_point(data = chimp_2_d,
+             aes(y = prob),
+             color = "grey25") +
+  ggtitle("Chimp #2",
+          subtitle = "The posterior mean and 95%\nintervals are the blue line\nand orange band, respectively.\nThe empirical means are\nthe charcoal dots.") +
+  coord_cartesian(ylim = c(.75, 1)) +
+  theme(plot.subtitle = element_text(size = 10))
+```
+
+Extract the posterior samples and look at the structure of the data:
+
+```{r}
+post <- posterior_samples(b13.4)
+
+glimpse(post)
+```
+
+```{r 13.33 b}
+post %>%
+  transmute(actor_5 = `r_actor__a[5,Intercept]`) %>% 
+  
+  ggplot(aes(x = actor_5)) +
+  geom_density(size = 0, fill = "blue") +
+  scale_y_continuous(breaks = NULL) +
+  ggtitle("Chimp #5's density")
+```
+
+```{r 13.35 b}
+f <-
+  post %>% 
+  pivot_longer(b_b_treatment1:b_b_treatment4) %>% 
+  mutate(fitted = inv_logit_scaled(b_a_Intercept + value + `r_actor__a[1,Intercept]` + `r_block__a[1,Intercept]`)) %>% 
+  mutate(treatment = factor(str_remove(name, "b_b_treatment"),
+                            labels = labels)) %>% 
+  dplyr::select(name:treatment)
+
+f
+```
+
+Now summarise:
+
+```{r 13.35 b}
+# the posterior summaries
+(
+  f <-
+  f %>%
+  group_by(treatment) %>%
+  tidybayes::mean_qi(fitted)
+)
+```
+
+
+```{r}
+# the empirical summaries
+chimp <- 5
+
+(
+  chimp_5_d <-
+  d %>% 
+  filter(actor == chimp) %>% 
+  group_by(treatment) %>% 
+  summarise(prob = mean(pulled_left)) %>% 
+  ungroup() %>% 
+  mutate(treatment = factor(treatment, labels = labels))
+)
+```
+
+
+Now see how good at retrodicting the `pulled_left` probabilities for `actor == 5`:
+```{r}
+f %>%
+  ggplot(aes(x = treatment, y = fitted, group = 1)) +
+  geom_ribbon(aes(ymin = .lower, ymax = .upper), fill = "orange1") +
+  geom_line(color = "blue") +
+  geom_point(data = chimp_5_d,
+             aes(y = prob),
+             color = "grey25") +
+  ggtitle("Chimp #5",
+          subtitle = "This plot is like the last except\nwe did more by hand.") +
+  coord_cartesian(ylim = 0:1) +
+  theme(plot.subtitle = element_text(size = 10))
+```
+
 
 ***13.5.2. Posterior prediction for new clusters***
 
@@ -1105,6 +1209,109 @@ knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```{r, echo = F, out.width='80%', fig.cap="Finally, sample a bunch of chimps and draw them. One of the things that happens is because there's a posterior distribution for each parameter, the model things it's possible to get completely right-handed chimps. But the treatment effect is still there. "}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
+
+```{r 13.37 b}
+f <-
+  post %>% 
+  pivot_longer(b_b_treatment1:b_b_treatment4) %>% 
+  dplyr::mutate(fitted = inv_logit_scaled(b_a_Intercept + value)) %>% 
+  dplyr::mutate(treatment = factor(str_remove(name, "b_b_treatment"),
+                                   labels = labels)) %>% 
+  dplyr::select(name:treatment) %>%
+  dplyr::group_by(treatment) %>%
+  # note we're using 80% intervals
+  mean_qi(fitted, .width = .8)
+
+f
+```
+
+```{r}
+# Make Figure 13.7a
+p1 <-
+  f %>%
+  ggplot(aes(x = treatment, y = fitted, group = 1)) +
+  geom_ribbon(aes(ymin = .lower, ymax = .upper), fill = "orange1") +
+  geom_line(color = "blue") +
+  ggtitle("Average actor") +
+  coord_cartesian(ylim = 0:1) +
+  theme(plot.title = element_text(size = 14, hjust = .5))
+
+p1
+```
+
+Average over `block`
+```{r}
+set.seed(13)
+
+f <-
+  post %>% 
+  # simulated chimpanzees
+  mutate(a_sim = rnorm(n(), mean = b_a_Intercept, sd = sd_actor__a_Intercept)) %>% 
+  pivot_longer(b_b_treatment1:b_b_treatment4) %>% 
+  mutate(fitted = inv_logit_scaled(a_sim + value)) %>% 
+  mutate(treatment = factor(str_remove(name, "b_b_treatment"),
+                            labels = labels)) %>% 
+  group_by(treatment) %>%
+  # note we're using 80% intervals
+  mean_qi(fitted, .width = .8)
+
+f
+```
+
+Figure 13.7b
+
+```{r 13.38 b}
+p2 <-
+  f %>%
+  ggplot(aes(x = treatment, y = fitted, group = 1)) +
+  geom_ribbon(aes(ymin = .lower, ymax = .upper), fill = "orange1") +
+  geom_line(color = "blue") +
+  ggtitle("Marginal of actor") +
+  coord_cartesian(ylim = 0:1) +
+  theme(plot.title = element_text(size = 14, hjust = .5))
+
+p2
+```
+
+```{r}
+# how many simulated chimps would you like?
+n_chimps <- 100
+
+set.seed(13)
+
+f <-
+  post %>% 
+  mutate(iter = 1:n()) %>% 
+  slice_sample(n = n_chimps) %>% 
+  # simulated chimpanzees
+  mutate(a_sim = rnorm(n(), mean = b_a_Intercept, sd = sd_actor__a_Intercept)) %>% 
+  pivot_longer(b_b_treatment1:b_b_treatment4) %>% 
+  mutate(fitted = inv_logit_scaled(a_sim + value)) %>% 
+  mutate(treatment = factor(str_remove(name, "b_b_treatment"),
+                            labels = labels)) %>% 
+  dplyr::select(iter:treatment)
+
+f
+```
+
+```{r 13.39 b}
+p3 <-
+  f %>%
+  ggplot(aes(x = treatment, y = fitted, group = iter)) +
+  geom_line(alpha = 1/2, color = "orange3") +
+  ggtitle("100 simulated actors") +
+  coord_cartesian(ylim = 0:1) +
+  theme(plot.title = element_text(size = 14, hjust = .5))
+
+p3
+```
+
+```{r}
+library(patchwork)
+
+p1 | p2 | p3
+```
+
 
 ***13.5.3. Post-stratification***
 
