@@ -1,26 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    dev: 'svg'
-    number_sections: false
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-#output: html_notebook
-#editor_options: 
-#  chunk_output_type: inline
-#output:
-#  bookdown::tufte_html_book:
-#    toc: yes
-#    css: toc.css
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
-#    link-citations: yes
----
-
 # Geocentric Models
 
 ```{r, message = F, warning=F}
@@ -106,6 +83,73 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```
 
+```{r}
+# we set the seed to make the results of `runif()` reproducible.
+set.seed(4)
+
+pos <- 
+  # make data with 100 people, 16 steps each with a starting point of `step == 0` (i.e., 17 rows per person)
+  crossing(person = 1:100,
+           step   = 0:16) %>% 
+  # for all steps above `step == 0` simulate a `deviation`
+  mutate(deviation = map_dbl(step, ~if_else(. == 0, 0, runif(1, -1, 1)))) %>% 
+  # after grouping by `person`, compute the cumulative sum of the deviations, then `ungroup()`
+  group_by(person) %>%
+  mutate(position = cumsum(deviation)) %>% 
+  ungroup() 
+
+ggplot(data = pos, 
+       aes(x = step, y = position, group = person)) +
+  geom_vline(xintercept = c(4, 8, 16), linetype = 2) +
+  geom_line(aes(color = person < 2, alpha  = person < 2)) +
+  scale_color_manual(values = c("skyblue4", "black")) +
+  scale_alpha_manual(values = c(1/5, 1)) +
+  scale_x_continuous("step number", breaks = c(0, 4, 8, 12, 16)) +
+  theme(legend.position = "none")
+```
+
+```{r}
+# Figure 4.2.a.
+p1 <-
+  pos %>%
+  filter(step == 4) %>%
+  ggplot(aes(x = position)) +
+  geom_line(stat = "density", color = "dodgerblue1") +
+  labs(title = "4 steps")
+
+# Figure 4.2.b.
+p2 <-
+  pos %>%
+  filter(step == 8) %>%
+  ggplot(aes(x = position)) +
+  geom_density(color = "dodgerblue2", outline.type = "full") +
+  labs(title = "8 steps")
+
+# this is an intermediary step to get an SD value
+sd <-
+  pos %>%
+  filter(step == 16) %>%
+  summarise(sd = sd(position)) %>% 
+  pull(sd)
+
+# Figure 4.2.c.
+p3 <-
+  pos %>%
+  filter(step == 16) %>%
+  ggplot(aes(x = position)) +
+  stat_function(fun = dnorm, 
+                args = list(mean = 0, sd = sd),
+                linetype = 2) +
+  geom_density(color = "transparent", fill = "dodgerblue3", alpha = 1/2) +
+  labs(title = "16 steps",
+       y = "density")
+
+library(patchwork)
+
+# combine the ggplots
+(p1 | p2 | p3) & coord_cartesian(xlim = c(-6, 6))
+```
+
 ```{r, echo = F, out.width='80%', fig.cap = "That's why a bunch of natural systems are normally distributed. We don't need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you're left with are particular shapes, called *maximum entropy distributions*. For the Gaussian, **addition** is our friend. One of the things about it is that products of deviations are actually addition. So lots of multiplicative interactions also produce Gaussian distributions. You can measure things on logarithmic scales."}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
@@ -121,14 +165,21 @@ knitr::include_graphics(file.path(slides_dir, '18.png'))
 This code just samples 12 random numbers between 1.0 and 1.1, each representing a proportional increase in growth. Thus 1.0 means no additional growth and 1.1 means a 10% increase.
 
 ```{r 4.2}
+set.seed(4)
+
 prod(1 + runif(12, 0, .1))
 ```
 
 Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:
 
 ```{r 4.3, fig.margin = T}
-growth = replicate(1e4, prod(1 + runif(12, 0, 0.1)))
-rethinking::dens(growth, norm.comp = T)
+set.seed(4)
+
+growth <- 
+  tibble(growth = map_dbl(1:10000, ~ prod(1 + runif(12, 0, 0.1))))
+
+ggplot(data = growth, aes(x = growth)) +
+  geom_density()
 ```
 
 Multiplying small numbers if approximately the same as addition.
@@ -138,11 +189,21 @@ The smaller the effect of each locus, the better this additive approximation wil
 Verify by comparing:
 
 ```{r 4.4, fig.margin = T}
-big = replicate(1e4, prod(1 + runif(12, 0, .5)))
-small = replicate(1e4, prod(1 + runif(12, 0, 0.01)))
+# simulate
+set.seed(4)
 
-rethinking::dens(big, norm.comp = T)
-rethinking::dens(small, norm.comp = T)
+samples <-
+  tibble(big   = map_dbl(1:10000, ~ prod(1 + runif(12, 0, 0.5))),
+         small = map_dbl(1:10000, ~ prod(1 + runif(12, 0, 0.01))))
+
+# wrangle
+samples %>% 
+  pivot_longer(everything(), values_to = "samples") %>% 
+  
+  # plot
+  ggplot(aes(x = samples)) +
+  geom_density(fill = "black") +
+  facet_wrap(~ name, scales = "free") 
 ```
 
 ***4.1.3 Normal by log-multiplication***
@@ -150,8 +211,12 @@ rethinking::dens(small, norm.comp = T)
 Large deviates that are multiplied together do not produce Gaussian distributions, but they do tend to produce Gaussian distributions on the log scale. e.g.:
 
 ```{r 4.5, fig.margin = T}
-log.big = replicate(1000, log(prod(1 + runif(12, 0, .5))))
-rethinking::dens(log.big, norm.comp = T)
+samples %>% 
+  mutate(log_big = log(big)) %>% 
+  
+  ggplot(aes(x = log_big)) +
+  geom_density(fill = "gray33") +
+  xlab("the log of the big")
 ```
 
 Adding logs is equivalent to multiplying the original numbers. 
@@ -181,13 +246,30 @@ knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
 ```{r 4.6, fig.margin = T}
-w = 6; n = 9
-p_grid = seq(from = 0, to = 1, length.out = 100)
-posterior = dbinom(w, n, p_grid) * dunif(p_grid, 0, 1)
-posterior = posterior / sum(posterior)
+# how many `p_grid` points would you like?
+n_points <- 100
 
-samples = sample(p_grid, 1e5, prob = posterior, replace = T)
-rethinking::dens(samples)
+d <-
+  tibble(p_grid = seq(from = 0, to = 1, length.out = n_points),
+         w      = 6, 
+         n      = 9) %>% 
+  mutate(prior      = dunif(p_grid, 0, 1),
+         likelihood = dbinom(w, n, p_grid)) %>% 
+  mutate(posterior = likelihood * prior / sum(likelihood * prior))
+
+head(d)
+
+d %>% 
+  pivot_longer(prior:posterior) %>% 
+  # this line allows us to dictate the order in which the panels will appear
+  mutate(name = factor(name, levels = c("prior", "likelihood", "posterior"))) %>% 
+  
+  ggplot(aes(x = p_grid, y = value, fill = name)) +
+  geom_area() +
+  scale_fill_manual(values = c("blue", "red", "purple")) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  theme(legend.position = "none") +
+  facet_wrap(~ name, scales = "free")
 ```
 
 ## Gaussian model of height
@@ -202,11 +284,12 @@ knitr::include_graphics(file.path(slides_dir, '23.png'))
 
 ```{r 4.7}
 data(Howell1)
-d = Howell1
+d <- Howell1
 ```
 
 ```{r 4.8}
-str(d)
+d %>% 
+  str()
 ```
 
 ```{r 4.9}
@@ -239,13 +322,31 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 Whatever the prior, it's a very good idea to plot your priors:
 
 ```{r 4.12, fig.margin = T}
-curve(dnorm(x, 178, 20), from = 100, to = 250)
+p1 <-
+  tibble(x = seq(from = 100, to = 250, by = .1)) %>% 
+  
+  ggplot(aes(x = x, y = dnorm(x, mean = 178, sd = 20))) +
+  geom_line() +
+  scale_x_continuous(breaks = seq(from = 100, to = 250, by = 75)) +
+  labs(title = "mu ~ dnorm(178, 20)",
+       y = "density")
+
+p1
 ```
 
 The $\sigma$ prior is a truly flat prior.
 
 ```{r 4.13, fig.margin = T}
-curve(dunif(x, 0, 50), from = -10, to = 60)
+p2 <-
+  tibble(x = seq(from = -10, to = 60, by = .1)) %>%
+  
+  ggplot(aes(x = x, y = dunif(x, min = 0, max = 50))) +
+  geom_line() +
+  scale_x_continuous(breaks = c(0, 50)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle("sigma ~ dunif(0, 50)")
+
+p2
 ```
 
 A standard deviation like $\sigma$ must be positive, so bounding it at zero makes sense.
@@ -255,10 +356,24 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
 ```{r 4.14, fig.margin = T}
-sample_mu = rnorm(1e4, 178, 20)
-sample_sigma = runif(1e4, 0, 50)
-prior_h = rnorm(1e4, sample_mu, sample_sigma)
-rethinking::dens(prior_h)
+n <- 1e4
+
+set.seed(4)
+
+sim <-
+  tibble(sample_mu    = rnorm(n, mean = 178, sd  = 20),
+         sample_sigma = runif(n, min = 0, max = 50)) %>% 
+  mutate(height = rnorm(n, mean = sample_mu, sd = sample_sigma))
+  
+p3 <- sim %>% 
+  ggplot(aes(x = height)) +
+  geom_density(fill = "grey33") +
+  scale_x_continuous(breaks = c(0, 73, 178, 283)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle("height ~ dnorm(mu, sigma)") +
+  theme(panel.grid = element_blank())
+
+p3
 ```
 
 This is not a normal distribution. It's a t-distribution because you have uncertainty about variance, which gives it fat tails. There are some really really tall individuals in this prior. But at least we don't have any negative heights. 
@@ -266,10 +381,48 @@ This is not a normal distribution. It's a t-distribution because you have uncert
 Let's see the implied heights with a flatter and less informative prior for $\mu$.:
 
 ```{r 4.15, fig.margin = T}
-sample_mu = rnorm(1e4, 178, 100)
-prior_h = rnorm(1e4, sample_mu, sample_sigma)
-rethinking::dens(prior_h)
+# simulate
+set.seed(4)
+
+sim <-
+  tibble(sample_mu    = rnorm(n, mean = 178, sd = 100),
+         sample_sigma = runif(n, min = 0, max = 50)) %>% 
+  mutate(height = rnorm(n, mean = sample_mu, sd = sample_sigma))
+
+# compute the values we'll use to break on our x axis
+breaks <-
+  c(mean(sim$height) - 3 * sd(sim$height), 0, mean(sim$height), mean(sim$height) + 3 * sd(sim$height)) %>% 
+  round(digits = 0)
+
+# this is just for aesthetics
+text <-
+  tibble(height = 272 - 25,
+         y      = .0013,
+         label  = "tallest man",
+         angle  = 90)
+
+# plot
+p4 <-
+  sim %>% 
+  ggplot(aes(x = height)) +
+  geom_density(fill = "black", size = 0) +
+  geom_vline(xintercept = 0, color = "grey92") +
+  geom_vline(xintercept = 272, color = "grey92", linetype = 3) +
+  geom_text(data = text,
+            aes(y = y, label = label, angle = angle),
+            color = "grey92") +
+  scale_x_continuous(breaks = breaks) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle("height ~ dnorm(mu, sigma)\nmu ~ dnorm(178, 100)") +
+  theme(panel.grid = element_blank())
+
+p4
 ```
+
+```{r}
+(p1 + xlab("mu") | p2 + xlab("sigma")) / (p3 | p4)
+```
+
 
 Before it even sees the data, it expects 4% of people to have negative height, and also some giants. Does it matter? In this case we have so much data that the silly prior is harmless. But that won't always be the case. There are plenty of inference problems for which the data alone are not sufficient, no matter how numerous. Bayes lets us proceed in these cases, but only if we use our scientific knowledge to construct sensible priors. *The important thing is that your prior not be based on the values in the data, but only on what you know about the data before you see it.*
 
@@ -293,49 +446,108 @@ knitr::include_graphics(file.path(slides_dir, '30.png'))
 Here are the guts of the golem:
 
 ```{r 4.16}
-mu.list <- seq( from=150, to=160 , length.out=100 )
-sigma.list <- seq( from=7 , to=9 , length.out=100 )
-post <- expand.grid( mu=mu.list , sigma=sigma.list )
-post$LL <- sapply( 1:nrow(post) , function(i) sum(
-  dnorm( d2$height , post$mu[i] , post$sigma[i] , log=TRUE ) ) )
-post$prod <- post$LL + dnorm( post$mu , 178 , 20 , TRUE ) +
-  dunif( post$sigma , 0 , 50 , TRUE )
-post$prob <- exp( post$prod - max(post$prod) )
+d2 <- 
+  d %>%
+  filter(age >= 18)
+
+n <- 200
+
+d_grid <-
+  # we'll accomplish with `tidyr::crossing()` what McElreath did with base R `expand.grid()`
+  tidyr::crossing(mu    = seq(from = 140, to = 160, length.out = n),
+                  sigma = seq(from = 4, to = 9, length.out = n))
+
+glimpse(d_grid)
 ```
+
+`d_grid` contains every combination of `mu` and `sigma` across their specified values. 
+
+Create custom function:
+
+```{r}
+grid_function <- function(mu, sigma) {
+  
+  dnorm(d2$height, mean = mu, sd = sigma, log = T) %>% 
+    sum()
+  
+}
+```
+
+```{r}
+d_grid <-
+  d_grid %>% 
+  mutate(log_likelihood = purrr::map2(mu, sigma, grid_function)) %>%
+  unnest(log_likelihood) %>% 
+  mutate(prior_mu    = dnorm(mu, mean = 178, sd = 20, log = T),
+         prior_sigma = dunif(sigma, min = 0, max = 50, log = T)) %>% 
+  mutate(product = log_likelihood + prior_mu + prior_sigma) %>% 
+  mutate(probability = exp(product - max(product)))
+  
+head(d_grid)
+```
+
 
 Inspect the posterior distribution
 
 ```{r 4.17, fig.margin = T}
-rethinking::contour_xyz(post$mu, post$sigma, post$prob)
+d_grid %>% 
+  ggplot(aes(x = mu, y = sigma, z = probability)) + 
+  geom_contour() +
+  labs(x = expression(mu),
+       y = expression(sigma)) +
+  coord_cartesian(xlim = range(d_grid$mu),
+                  ylim = range(d_grid$sigma)) +
+  theme(panel.grid = element_blank())
 ```
 
 ```{r 4.18, fig.margin = T}
-rethinking::image_xyz(post$mu, post$sigma, post$prob)
+d_grid %>% 
+  ggplot(aes(x = mu, y = sigma, fill = probability)) + 
+  geom_raster(interpolate = T) +
+  scale_fill_viridis_c(option = "B") +
+  labs(x = expression(mu),
+       y = expression(sigma)) +
+  theme(panel.grid = element_blank())
 ```
 
 ***4.3.4 Sampling from the posterior***
 
 
 ```{r 4.19}
-sample.rows <- sample( 1:nrow(post) , size=1e4 , replace=TRUE , prob=post$prob )
-sample.mu <- post$mu[ sample.rows ]
-sample.sigma <- post$sigma[ sample.rows ]
-```
+set.seed(4)
 
-```{r 4.20, fig.margin = T}
-plot( sample.mu , sample.sigma , cex=0.5 , pch=16 , col=rethinking::col.alpha(rangi2,0.1) )
+d_grid_samples <- 
+  d_grid %>% 
+  sample_n(size = 1e4, replace = T, weight = probability)
+
+d_grid_samples %>% 
+  ggplot(aes(x = mu, y = sigma)) + 
+  geom_point(size = .9, alpha = 1/15) +
+  scale_fill_viridis_c() +
+  labs(x = expression(mu[samples]),
+       y = expression(sigma[samples])) +
+  theme(panel.grid = element_blank())
 ```
 
 ```{r 4.21, fig.margin = T}
-rethinking::dens(sample.mu)
-rethinking::dens(sample.sigma)
+d_grid_samples %>% 
+  pivot_longer(mu:sigma) %>% 
+
+  ggplot(aes(x = value)) + 
+  geom_density(fill = "grey33") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab(NULL) +
+  theme(panel.grid = element_blank()) +
+  facet_wrap(~ name, scales = "free", labeller = label_parsed)
 ```
 
 Summarise the widths:
 
 ```{r 4.22, fig.margin = T}
-rethinking::PI(sample.mu)
-rethinking::PI(sample.sigma)
+d_grid_samples %>% 
+  pivot_longer(mu:sigma) %>% 
+  group_by(name) %>% 
+  tidybayes::mode_hdi(value)
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "Once you have the samples, you just work with the data frame. You can look at cross-sections of this."}
