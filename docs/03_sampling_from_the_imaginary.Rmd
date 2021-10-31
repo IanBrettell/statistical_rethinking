@@ -281,13 +281,13 @@ knitr::include_graphics(file.path(slides_dir, '52.png'))
 ```
 
 ```{r 3.12}
-rethinking::PI(samples, prob = .5)
+rethinking::PI(samples$p_grid, prob = .5)
 ```
 
 In this example, it ends up excluding the most probable parameter values, near $p$ = 1.
 
 ```{r 3.13}
-rethinking::HPDI(samples, prob = 0.5)
+rethinking::HPDI(samples$p_grid, prob = 0.5)
 ```
 
 Here the HPDI has an advantage over the PI, but in most cases, the two are very similar. That's because the posterior is skewed. When the posterior is bell-shaped, it hardly matters what type of interval you use. 
@@ -342,45 +342,98 @@ knitr::include_graphics(file.path(slides_dir, '53.png'))
 ```
 
 ```{r 3.14}
-p_grid[which.max(posterior)]
-```
-
-```{r 3.15}
-rethinking::chainmode(samples, adj = 0.01)
+d %>% 
+  arrange(desc(posterior)) %>% 
+  slice(1)
 ```
 
 ```{r}
-mean(samples)
-median(samples)
+samples %>% 
+  summarise(mean   = mean(p_grid),
+            median = median(p_grid))
+```
+
+```{r}
+(
+  point_estimates <-
+  dplyr::bind_rows(samples %>% tidybayes::mean_qi(p_grid),
+                   samples %>% tidybayes::median_qi(p_grid),
+                   samples %>% tidybayes::mode_qi(p_grid)) %>% 
+  dplyr::select(p_grid, .point) %>% 
+  # these last two columns will help us annotate  
+  dplyr::mutate(x = p_grid + c(-.03, .03, -.03),
+                y = c(.0005, .0012, .002))
+)
+```
+
+```{r}
+d %>% 
+  ggplot(aes(x = p_grid)) +
+  geom_area(aes(y = posterior),
+            fill = "grey75") +
+  geom_vline(xintercept = point_estimates$p_grid) +
+  geom_text(data = point_estimates,
+            aes(x = x, y = y, label = .point),
+            angle = 90) +
+  labs(x = "proportion of water (p)",
+       y = "density") +
+  theme(panel.grid = element_blank())
 ```
 
 We care about uncertainty, and we want to summarise that. To use a point estimate, you need to provide a cost-benefit analysis. e.g. conservation or forecasting. 
 
 One principles way to go beyond using the entire posterior as the estimate is to choose a **Loss Function**: a rule that tells you the cost assoicated with using any particular point estimate. 
 
->Tell me which value of $p$, the proportion of water on the Earth, you think is correct, and if you get it exactly right, I will pay you $100. But I will subtract money from your gain, proportional to the distance fo your decision from the correct value. Now that you have the posterior distribution in hand, how should you use it to maximise your expected winnings?
+>Tell me which value of $p$, the proportion of water on the Earth, you think is correct, and if you get it exactly right, I will pay you $100. But I will subtract money from your gain, proportional to the distance of your decision from the correct value. Now that you have the posterior distribution in hand, how should you use it to maximise your expected winnings?
 
 ```{r}
 # The expected loss will be:
-sum(posterior*abs(.5 - p_grid))
+d %>% 
+  summarise(`expected loss` = sum(posterior * abs(0.5 - p_grid)))
 ```
 
 We can repeat this for every possible decision:
 
 ```{r 3.18}
-loss = sapply(p_grid, function(d) sum(posterior*abs(d - p_grid)))
+make_loss <- function(our_d) {
+  d %>% 
+    mutate(loss = posterior * abs(our_d - p_grid)) %>% 
+    summarise(weighted_average_loss = sum(loss))
+}
+
+(
+  l <-
+  d %>% 
+  dplyr::select(p_grid) %>% 
+  dplyr::rename(decision = p_grid) %>% 
+  dplyr::mutate(weighted_average_loss = purrr::map(decision, make_loss)) %>% 
+  tidyr::unnest(weighted_average_loss) 
+)
 ```
 
 Now it's easy to find the parameter value that minimises that loss:
 
 ```{r}
-p_grid[which.min(loss)]
+# this will help us find the x and y coordinates for the minimum value
+min_loss <-
+  l %>% 
+  filter(weighted_average_loss == min(weighted_average_loss)) %>% 
+  as.numeric()
+# the plot
+l %>%   
+  ggplot(aes(x = decision, y = weighted_average_loss)) +
+  geom_area(fill = "grey75") +
+  geom_vline(xintercept = min_loss[1], color = "white", linetype = 3) +
+  geom_hline(yintercept = min_loss[2], color = "white", linetype = 3) +
+  ylab("expected proportional loss") +
+  theme(panel.grid = element_blank())
 ```
 
 And this is actually the posterior median.
 
 ```{r}
-median(samples)
+samples %>% 
+  summarise(posterior_median = median(p_grid))
 ```
 
 Usually it's better to communicate as much as you can about the posterior distribution, as well as the data and the model itself. 
@@ -404,7 +457,10 @@ We've got the model and now we want to know what it expects. So we get it to sim
 Suppose $N$ = 2, two tosses, then there are only three possible observations: 0, 1 and 2 water. You can compute the probability of each for any given value of $p$. Let's use $p$ = 0.7, about the true proportion of water on the Earth.
 
 ```{r 3.20}
-dbinom(0:2, size = 2, prob = .7)
+tibble(n      = 2,
+       `p(w)` = .7,
+       w      = 0:2) %>% 
+  mutate(density = dbinom(w, size = n, prob = `p(w)`))
 ```
 
 Now we'll simulate observations using these probabilities.
@@ -416,21 +472,74 @@ rbinom(1, size = 2, prob = 0.7)
 That 1 means "1 water in 2 tosses." You can simulate a set of 10:
 
 ```{r 3.22}
+set.seed(3)
 rbinom(10, size = 2, prob = 0.7)
 ```
 
 Let's generate 10,000 just to verify 0, 1 and 2 appear in proportion to their likelihoods:
 
 ```{r 3.23}
-dummy_w = rbinom(1e5, size = 2, prob = .7)
-table(dummy_w) / 1e5
+# how many would you like?
+n_draws <- 1e5
+
+set.seed(3)
+
+d <- tibble(draws = rbinom(n_draws, size = 2, prob = .7))
+
+d %>% 
+  count(draws) %>% 
+  mutate(proportion = n / nrow(d))
 ```
 
 Let's now simulate the sample size as before, with 9 tosses
 
 ```{r 3.24, fig.margin = T}
-dummy_w = rbinom(1e5, size = 9, prob = .7)
-simplehist(dummy_w, xlab = "dummy water count")
+set.seed(3)
+d <- tibble(draws = rbinom(n_draws, size = 9, prob = .7))
+
+# the histogram
+d %>% 
+  ggplot(aes(x = draws)) +
+  geom_histogram(binwidth = 1, center = 0,
+                 color = "grey92", size = 1/10) +
+  scale_x_continuous("dummy water count",
+                     breaks = seq(from = 0, to = 9, by = 2)) +
+  ylab("frequency") +
+  coord_cartesian(xlim = c(0, 9)) +
+  theme(panel.grid = element_blank())
+```
+
+Play around with different values of `size` and `prob`:
+
+```{r}
+n_draws <- 1e5
+
+simulate_binom <- function(n, probability) {
+  set.seed(3)
+  rbinom(n_draws, size = n, prob = probability) 
+}
+
+d <-
+  crossing(n           = c(3, 6, 9),
+           probability = c(.3, .6, .9)) %>% 
+  mutate(draws = map2(n, probability, simulate_binom)) %>% 
+  ungroup() %>% 
+  mutate(n           = str_c("n = ", n),
+         probability = str_c("p = ", probability)) %>% 
+  unnest(draws)
+
+head(d)
+
+d %>% 
+  ggplot(aes(x = draws)) +
+  geom_histogram(binwidth = 1, center = 0,
+                 color = "grey92", size = 1/10) +
+  scale_x_continuous("dummy water count",
+                     breaks = seq(from = 0, to = 9, by = 2)) +
+  ylab("frequency") +
+  coord_cartesian(xlim = c(0, 9)) +
+  theme(panel.grid = element_blank()) +
+  facet_grid(n ~ probability)
 ```
 
 ***3.3.2 Model checking***
@@ -490,6 +599,26 @@ knitr::include_graphics(file.path(slides_dir, '62.png'))
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '63.png'))
 ```
+
+## Let's practice with brms
+
+```{r}
+b3.1 <-
+  brm(data = list(w = 6), 
+      family = binomial(link = "identity"),
+      w | trials(9) ~ 0 + Intercept,
+      # this is a flat prior
+      prior(beta(1, 1), class = b, lb = 0, ub = 1),
+      iter = 5000, warmup = 1000,
+      seed = 3,
+      file = "fits/b03.01")
+```
+
+```{r}
+brms::posterior_summary(b3.1)["b_Intercept", ] %>% 
+  round(digits = 2)
+```
+
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '64.png'))
