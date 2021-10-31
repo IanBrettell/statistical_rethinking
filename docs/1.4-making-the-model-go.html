@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="1.4 Making the model go | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-10-31" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="1.4 Making the model go | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>1.4 Making the model go | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="1-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">1</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="1.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">1.1</span> The garden of forking data</a></li>
+<li><a href="1.2-building-a-model.html#building-a-model"><span class="toc-section-number">1.2</span> Building a model</a></li>
+<li><a href="1.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">1.3</span> Components of the model</a></li>
+<li><a href="1.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">1.4</span> Making the model go</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="making-the-model-go" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> Making the model go</h2>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-53"></span>
+<p class="caption marginnote shownote">
+Figure 1.29: The code looks a little different. What you must do mechanically is compute the posterior. Your target is always a posterior distribution. Nice not to have a choice.
+</p>
+<img src="slides/L02/27.png" alt="The code looks a little different. What you must do mechanically is compute the posterior. Your target is always a posterior distribution. Nice not to have a choice." width="80%"  />
+</div>
+<p><label for="tufte-mn-7" class="margin-toggle">⊕</label><input type="checkbox" id="tufte-mn-7" class="margin-toggle"><span class="marginnote"><span style="display: block;">You use Bayes theorem. We’re multiplying the prior by the number of ways the data could have arisen, then standardising. Normalise by summing up the numerators. Its job is to count up the relative number of ways that you could see the data.</span></span></p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-55"></span>
+<p class="caption marginnote shownote">
+Figure 1.30: The model we just updated looks like this. I want to emphasise the multiplication. You take each value, a vertical slice, through each point. In the model we just did, the data are running the show. The prior is not doing any work. We could do better.
+</p>
+<img src="slides/L02/28.png" alt="The model we just updated looks like this. I want to emphasise the multiplication. You take each value, a vertical slice, through each point. In the model we just did, the data are running the show. The prior is not doing any work. We could do better." width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-56"></span>
+<p class="caption marginnote shownote">
+Figure 1.31: We could use our knowledge that more than half of the Earth is covered by water. YOu can embody that in the prior and that lets you get to the answer faster.
+</p>
+<img src="slides/L02/29.png" alt="We could use our knowledge that more than half of the Earth is covered by water. YOu can embody that in the prior and that lets you get to the answer faster." width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-57"></span>
+<p class="caption marginnote shownote">
+Figure 1.32: Posterior distributions are always: the relative number of ways each value you have could be true, given the data and the prior probability.
+</p>
+<img src="slides/L02/30.png" alt="Posterior distributions are always: the relative number of ways each value you have could be true, given the data and the prior probability." width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-58"></span>
+<p class="caption marginnote shownote">
+Figure 1.33: You have a choice about how to approximate that posterior. Today we’ll use grid approximation, because it forces you to see we’re just counting up. Markov chains solve a whole lot of important problems.
+</p>
+<img src="slides/L02/31.png" alt="You have a choice about how to approximate that posterior. Today we'll use grid approximation, because it forces you to see we're just counting up. Markov chains solve a whole lot of important problems." width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-59"></span>
+<p class="caption marginnote shownote">
+Figure 1.34: Instead of considering every infinitesimal possibility and integrating over them, we’re only going to consider a finite number. Grid approximation works well here, but not with more than a few variables.
+</p>
+<img src="slides/L02/32.png" alt="Instead of considering every infinitesimal possibility and integrating over them, we're only going to consider a finite number. Grid approximation works well here, but not with more than a few variables." width="80%"  />
+</div>
+<p><img src="slides/L02/33.png" width="80%"  /></p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-61"></span>
+<p class="caption marginnote shownote">
+Figure 1.35: We immediately rule of 0 and 1. If your grid is only 3, we already have some information. Let’s consider 5.
+</p>
+<img src="slides/L02/34.png" alt="We immediately rule of 0 and 1. If your grid is only 3, we already have some information. Let's consider 5." width="80%"  />
+</div>
+<p><img src="slides/L02/35.png" width="80%"  /></p>
+<p><img src="slides/L02/36.png" width="80%"  /></p>
+<p><img src="slides/L02/37.png" width="80%"  /></p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-65"></span>
+<p class="caption marginnote shownote">
+Figure 1.36: This is still a finite grid. But this is just an approximation, but it’s a very good one.
+</p>
+<img src="slides/L02/38.png" alt="This is still a finite grid. But this is just an approximation, but it's a very good one." width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-66"></span>
+<p class="caption marginnote shownote">
+Figure 1.37: Here’s the code.
+</p>
+<img src="slides/L02/39.png" alt="Here's the code." width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-67"></span>
+<p class="caption marginnote shownote">
+Figure 1.38: Step one: define the grid.
+</p>
+<img src="slides/L02/40.png" alt="Step one: define the grid." width="80%"  />
+</div>
+<p><img src="slides/L02/41.png" width="80%"  /></p>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-69"></span>
+<p class="caption marginnote shownote">
+Figure 1.39: Then define the prior probability <span class="math inline">\(p\)</span>.
+</p>
+<img src="slides/L02/42.png" alt="Then define the prior probability $p$. " width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-70"></span>
+<p class="caption marginnote shownote">
+Figure 1.40: Now the probability of the data. We put the whole <code>p_grid</code> in.
+</p>
+<img src="slides/L02/43.png" alt="Now the probability of the data. We put the whole `p_grid` in." width="80%"  />
+</div>
+<div class="figure"><span style="display:block;" id="fig:unnamed-chunk-71"></span>
+<p class="caption marginnote shownote">
+Figure 1.41: Then finally standardise it. Here nothing happens. The important thing is the multiplication step.
+</p>
+<img src="slides/L02/44.png" alt="Then finally standardise it. Here nothing happens. The important thing is the multiplication step." width="80%"  />
+</div>
+<p>
+<span class="marginnote shownote">
+<!--
+<div class="figure">-->
+<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-72-1.png" alt=" " width="672"  />
+<!--
+<p class="caption marginnote">--> <!--</p>-->
+<!--</div>--></span>
+</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="1.4-making-the-model-go.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define grid</span></span>
+<span id="cb8-2"><a href="1.4-making-the-model-go.html#cb8-2" aria-hidden="true" tabindex="-1"></a>p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> <span class="dv">20</span>)</span>
+<span id="cb8-3"><a href="1.4-making-the-model-go.html#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="1.4-making-the-model-go.html#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define prior</span></span>
+<span id="cb8-5"><a href="1.4-making-the-model-go.html#cb8-5" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">20</span>)</span>
+<span id="cb8-6"><a href="1.4-making-the-model-go.html#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="1.4-making-the-model-go.html#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb8-8"><a href="1.4-making-the-model-go.html#cb8-8" aria-hidden="true" tabindex="-1"></a>likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb8-9"><a href="1.4-making-the-model-go.html#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="1.4-making-the-model-go.html#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb8-11"><a href="1.4-making-the-model-go.html#cb8-11" aria-hidden="true" tabindex="-1"></a>unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb8-12"><a href="1.4-making-the-model-go.html#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="1.4-making-the-model-go.html#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb8-14"><a href="1.4-making-the-model-go.html#cb8-14" aria-hidden="true" tabindex="-1"></a>posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb8-15"><a href="1.4-making-the-model-go.html#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="1.4-making-the-model-go.html#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb8-17"><a href="1.4-making-the-model-go.html#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb8-18"><a href="1.4-making-the-model-go.html#cb8-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb8-19"><a href="1.4-making-the-model-go.html#cb8-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb8-20"><a href="1.4-making-the-model-go.html#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">&quot;20 points&quot;</span>)</span></code></pre></div>
+<p>With four different grid sizes.</p>
+<p>
+<span class="marginnote shownote">
+<!--
+<div class="figure">-->
+<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-1.png" alt=" " width="672"  />
+<!--
+<p class="caption marginnote">--> <!--</p>-->
+<!--</div>--></span>
+</p>
+<p>
+<span class="marginnote shownote">
+<!--
+<div class="figure">-->
+<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-2.png" alt=" " width="672"  />
+<!--
+<p class="caption marginnote">--> <!--</p>-->
+<!--</div>--></span>
+</p>
+<p>
+<span class="marginnote shownote">
+<!--
+<div class="figure">-->
+<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-3.png" alt=" " width="672"  />
+<!--
+<p class="caption marginnote">--> <!--</p>-->
+<!--</div>--></span>
+</p>
+<p>
+<span class="marginnote shownote">
+<!--
+<div class="figure">-->
+<img src="02_small_worlds_and_large_worlds_files/figure-html/unnamed-chunk-73-4.png" alt=" " width="672"  />
+<!--
+<p class="caption marginnote">--> <!--</p>-->
+<!--</div>--></span>
+</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="1.4-making-the-model-go.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="fl">1e5</span>), <span class="cf">function</span>(grid_size){</span>
+<span id="cb9-2"><a href="1.4-making-the-model-go.html#cb9-2" aria-hidden="true" tabindex="-1"></a>  p_grid <span class="ot">=</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">length.out =</span> grid_size)</span>
+<span id="cb9-3"><a href="1.4-making-the-model-go.html#cb9-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-4"><a href="1.4-making-the-model-go.html#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># define prior</span></span>
+<span id="cb9-5"><a href="1.4-making-the-model-go.html#cb9-5" aria-hidden="true" tabindex="-1"></a>  prior <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span>, grid_size)</span>
+<span id="cb9-6"><a href="1.4-making-the-model-go.html#cb9-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-7"><a href="1.4-making-the-model-go.html#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute likelihood at each value in grid</span></span>
+<span id="cb9-8"><a href="1.4-making-the-model-go.html#cb9-8" aria-hidden="true" tabindex="-1"></a>  likelihood <span class="ot">=</span> <span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">9</span>, <span class="at">prob =</span> p_grid)</span>
+<span id="cb9-9"><a href="1.4-making-the-model-go.html#cb9-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-10"><a href="1.4-making-the-model-go.html#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute product of likelihood and prior</span></span>
+<span id="cb9-11"><a href="1.4-making-the-model-go.html#cb9-11" aria-hidden="true" tabindex="-1"></a>  unstd.posterior <span class="ot">=</span> likelihood <span class="sc">*</span> prior</span>
+<span id="cb9-12"><a href="1.4-making-the-model-go.html#cb9-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-13"><a href="1.4-making-the-model-go.html#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># standardise the posterior, so it susms to 1</span></span>
+<span id="cb9-14"><a href="1.4-making-the-model-go.html#cb9-14" aria-hidden="true" tabindex="-1"></a>  posterior <span class="ot">=</span> unstd.posterior <span class="sc">/</span> <span class="fu">sum</span>(unstd.posterior)</span>
+<span id="cb9-15"><a href="1.4-making-the-model-go.html#cb9-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-16"><a href="1.4-making-the-model-go.html#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb9-17"><a href="1.4-making-the-model-go.html#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(p_grid, posterior, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb9-18"><a href="1.4-making-the-model-go.html#cb9-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">&quot;probability of water&quot;</span>,</span>
+<span id="cb9-19"><a href="1.4-making-the-model-go.html#cb9-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylab =</span> <span class="st">&quot;posterior probability&quot;</span>)</span>
+<span id="cb9-20"><a href="1.4-making-the-model-go.html#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(grid_size)  </span>
+<span id="cb9-21"><a href="1.4-making-the-model-go.html#cb9-21" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div>
+<pre><code>## [[1]]
+## NULL
+## 
+## [[2]]
+## NULL
+## 
+## [[3]]
+## NULL
+## 
+## [[4]]
+## NULL</code></pre>
+</div>
+<!-- </div> -->
+<p style="text-align: center;">
+<a href="1.3-components-of-the-model.html"><button class="btn btn-default">Previous</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

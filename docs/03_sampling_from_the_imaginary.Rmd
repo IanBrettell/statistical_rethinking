@@ -2,16 +2,12 @@
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
 date: '`r format(Sys.Date())`'
 output:
-  html_document:
-    toc: true
-    toc_float: true
-    dev: 'svg'
-    number_sections: false
+  bookdown::tufte_html_book:
+    toc: yes
+    css: toc.css
     pandoc_args: --lua-filter=color-text.lua
     highlight: pygments
-#output: html_notebook
-#editor_options: 
-#  chunk_output_type: inline
+    link-citations: yes
 ---
 
 # Sampling from the Imaginary
@@ -47,25 +43,64 @@ knitr::include_graphics(file.path(slides_dir, '48.png'))
 Generate the samples. First compute the posterior.
 
 ```{r 3.2}
-p_grid = seq(from = 0, to = 1, length.out = 1000)
-prob_p = rep(1, 1000)
-prob_data = dbinom(6, size = 9, prob = p_grid)
-posterior = prob_data * prob_p
-posterior = posterior / sum(posterior)
+# how many grid points would you like?
+n <- 1000
+n_success <- 6
+n_trials  <- 9
+
+(
+  d <-
+  tibble(p_grid = seq(from = 0, to = 1, length.out = n),
+         # note we're still using a flat uniform prior
+         prior  = 1) %>% 
+  mutate(likelihood = dbinom(n_success, size = n_trials, prob = p_grid)) %>% 
+  mutate(posterior = (likelihood * prior) / sum(likelihood * prior))
+)
 ```
 
 Now draw 10,000 samples from this posterior. Scoop out 10,000 values from the bucket containing parameter values that exist in proportion to the posterior probability.
 
 ```{r 3.3}
-samples = sample(p_grid, prob = posterior, size = 1e4, replace = T)
+# how many samples would you like?
+n_samples <- 1e4
+
+# make it reproducible
+set.seed(3)
+
+samples <-
+  d %>% 
+  slice_sample(n = n_samples, weight_by = posterior, replace = T)
+
+glimpse(samples)
 ```
 
 ```{r 3.4, fig.margin = T}
-plot(samples)
+samples %>% 
+  mutate(sample_number = 1:n()) %>% 
+  
+  ggplot(aes(x = sample_number, y = p_grid)) +
+  geom_point(alpha = 1/10) +
+  scale_y_continuous("proportion of water (p)", limits = c(0, 1)) +
+  xlab("sample number")
 ```
 
 ```{r 3.5, fig.margin = T}
-dens(samples)
+samples %>% 
+  ggplot(aes(x = p_grid)) +
+  geom_density(fill = "black") +
+  scale_x_continuous("proportion of water (p)", limits = c(0, 1))
+```
+
+Here's what it looks like with `1e6`:
+
+```{r}
+set.seed(3)
+
+d %>% 
+  slice_sample(n = 1e6, weight_by = posterior, replace = T) %>% 
+  ggplot(aes(x = p_grid)) +
+  geom_density(fill = "black") +
+  scale_x_continuous("proportion of water (p)", limits = c(0, 1))
 ```
 
 >All you’ve done so far is crudely replicate the posterior density you had already computed. That isn’t of much value. But next it is time to use these samples to describe and understand the posterior. That is of great value.
@@ -82,7 +117,9 @@ What's the posterior probability that the proportion of water is less than 0.5?
 
 ```{r 3.6}
 # add up posterior probability where p < 0.5
-sum(posterior[ p_grid < 0.5])
+d %>% 
+  filter(p_grid < .5) %>% 
+  summarise(sum = sum(posterior))
 ```
 
 But since grid approximation isn't practical in general, it won't always be so easy. Once there is more than one parameter in the posterior distribution, even this simple sum is no longer very simple. 
@@ -91,8 +128,18 @@ So let's see how to perform it using samples from the posterior.
 
 ```{r 3.7}
 # Add up all the samples under .5, divided by the total number of samples
-sum(samples < 0.5) / 1e4
+samples %>%
+  filter(p_grid < .5) %>% 
+  summarise(sum = n() / n_samples)
 ```
+Do the same but using `count()`:
+
+```{r}
+samples %>% 
+  count(p_grid < .5) %>% 
+  mutate(probability = n / sum(n))
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals."}
 knitr::include_graphics(file.path(slides_dir, '50.png'))
@@ -101,10 +148,37 @@ knitr::include_graphics(file.path(slides_dir, '50.png'))
 Using the same approach, how much posterior probability lies between 0.5 and 0.75?
 
 ```{r 3.8}
-sum(samples > 0.5 & samples < 0.75) / 1e4
+samples %>% 
+  filter(p_grid > .5 & p_grid < .75) %>% 
+  summarise(sum = n() / n_samples)
 ```
 
 This is shown in the upper right of Figure 3.2.
+
+```{r}
+# upper left panel
+p1 <-
+  d %>% 
+  ggplot(aes(x = p_grid, y = posterior)) +
+  geom_line() +
+  geom_area(data = d %>% filter(p_grid < .5)) +
+  labs(x = "proportion of water (p)",
+       y = "density")
+
+# upper right panel
+p2 <-
+  d %>% 
+  ggplot(aes(x = p_grid, y = posterior)) +
+  geom_line() +
+  # note this next line is the only difference in code from the last plot
+  geom_area(data = d %>% filter(p_grid < .75 & p_grid > .5)) +
+  labs(x = "proportion of water (p)",
+       y = "density")
+
+library(patchwork)
+p1 + p2
+```
+
 
 ***3.2.2 Intervals of defined mass***
 
@@ -113,16 +187,53 @@ What a compatibility interval indicates is a range of parameter values compatibl
 Where does the 80th percentile lie? i.e. the boundaries fo the lower 80% posterior probability. 
 
 ```{r 3.9}
-quantile (samples, .8)
+(q_80 <- quantile(samples$p_grid, prob = .8))
 ```
 
 This is shown in the bottom-left of Figure 3.2. Similarly, the middle 80% interval lies between the 10th percentile and the 90th percentile.
 
 ```{r 3.10}
-quantile(samples, c(.1, .9))
+samples %>% 
+  summarise(`10th percentile` = quantile(p_grid, p = .1),
+            `90th percentile` = quantile(p_grid, p = .9))
+```
+
+For quick indexing:
+
+```{r}
+(q_10_and_90 <- quantile(samples$p_grid, prob = c(.1, .9)))
 ```
 
 This is shown in the bottom-right of Figure 3.2.
+
+```{r}
+# lower left panel
+p1 <-
+  d %>% 
+  ggplot(aes(x = p_grid, y = posterior)) +
+  geom_line() +
+  geom_area(data = d %>% filter(p_grid < q_80)) +
+  annotate(geom = "text",
+           x = .25, y = .0025,
+           label = "lower 80%") +
+  labs(x = "proportion of water (p)",
+       y = "density")
+
+# lower right panel
+p2 <-
+  d %>% 
+  ggplot(aes(x = p_grid, y = posterior)) +
+  geom_line() +
+  geom_area(data = d %>% filter(p_grid > q_10_and_90[1] & p_grid < q_10_and_90[2])) +
+  annotate(geom = "text",
+           x = .25, y = .0025,
+           label = "middle 80%") +
+  labs(x = "proportion of water (p)",
+       y = "density")
+
+p1 + p2
+```
+
 
 Intervals of this sort are very common in the scientific literature. We'll call them **Percentile Intervals** (PI). These do a good job of communicating the shape of a distribution, as long as it's not too asymmetrical. 
 
@@ -131,14 +242,35 @@ But in terms of supporting inferences about which parameters are consistent with
 Consider the posterior distribution consistent with observing three waters in three tosses, and a flat prior. 
 
 ```{r 3.11}
-n_grid = 1000
-p_grid = seq(from = 0, to = 1, length.out = n_grid)
-prior = rep(1, n_grid)
-likelihood = dbinom(3, size = 3, prob = p_grid)
-posterior = likelihood * prior
-posterior = posterior / sum(posterior)
-samples = sample(p_grid, size = 1e4, replace = T, prob = posterior)
+# here we update the `dbinom()` parameters
+n_success <- 3
+n_trials  <- 3
+
+# update `d`
+d <-
+  d %>% 
+  mutate(likelihood = dbinom(n_success, size = n_trials, prob = p_grid)) %>% 
+  mutate(posterior  = (likelihood * prior) / sum(likelihood * prior))
+
+# make the next part reproducible
+set.seed(3)
+
+# here's our new samples tibble
+(
+  samples <-
+    d %>% 
+    slice_sample(n = n_samples, weight_by = posterior, replace = T)
+)
 ```
+
+The `rethinking::PI()` function works like a nice shorthand for `quantile()`.
+
+```{r}
+quantile(samples$p_grid, prob = c(.25, .75))
+
+rethinking::PI(samples$p_grid, prob = .5)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They're not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries."}
 knitr::include_graphics(file.path(slides_dir, '51.png'))
@@ -158,9 +290,50 @@ In this example, it ends up excluding the most probable parameter values, near $
 rethinking::HPDI(samples, prob = 0.5)
 ```
 
-Here the HPDI has an advantage over the PI, but in most cases, the two are very similar. That's because the posterior is skewed. When the posterior is bell-shaped, it hardly matters whate type of interval you use. 
+Here the HPDI has an advantage over the PI, but in most cases, the two are very similar. That's because the posterior is skewed. When the posterior is bell-shaped, it hardly matters what type of interval you use. 
 
 > Often, all compatibility intervals do is communicate the shape of a distribution.
+
+`tidybayes` makes it easy to request multiple types of intervals:
+
+```{r}
+tidybayes::median_qi(samples$p_grid, .width = c(.5, .8, .99))
+```
+
+It also supports HPDIs:
+
+```{r}
+tidybayes::mode_hdi(samples$p_grid, .width = .5)
+```
+```{r}
+# lower left panel
+p1 <-
+  d %>% 
+  ggplot(aes(x = p_grid, y = posterior)) +
+  # check out our sweet `qi()` indexing
+  geom_area(data = d %>% filter(p_grid > tidybayes::qi(samples$p_grid, .width = .5)[1] & 
+                                  p_grid < tidybayes::qi(samples$p_grid, .width = .5)[2]),
+            fill = "grey75") +
+  geom_line() +
+  labs(subtitle = "50% Percentile Interval",
+       x = "proportion of water (p)",
+       y = "density")
+
+# lower right panel
+p2 <-
+  d %>% 
+  ggplot(aes(x = p_grid, y = posterior)) +
+  geom_area(data = . %>% filter(p_grid > tidybayes::hdi(samples$p_grid, .width = .5)[1] & 
+                                  p_grid < tidybayes::hdi(samples$p_grid, .width = .5)[2]),
+            fill = "grey75") +
+  geom_line() +
+  labs(subtitle = "50% HPDI",
+       x = "proportion of water (p)",
+       y = "density")
+# combine!
+p1 | p2
+```
+
 
 ***3.2.3 Point estimates***
 
