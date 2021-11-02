@@ -559,31 +559,63 @@ Note that this isn't perfectly symmetrical for sigma - the right tail is longer.
 Let's analyze only 20 of the heights from the height data to reveal this issue.
 
 ```{r 4.23}
-d3 = sample(d2$height, size = 20)
+set.seed(4)
+(d3 <- sample(d2$height, size = 20))
 ```
 
 Now repeat the code from the previous subsection, modified to focus on the 20 heights in `d3` rather than the original data.
 
 ```{r 4.24}
-mu.list <- seq( from=150, to=170 , length.out=200 )
-sigma.list <- seq( from=4 , to=20 , length.out=200 )
-post2 <- expand.grid( mu=mu.list , sigma=sigma.list )
-post2$LL <- sapply( 1:nrow(post2) , function(i)
-  sum( dnorm( d3 , mean=post2$mu[i] , sd=post2$sigma[i] ,
-              log=TRUE ) ) )
-post2$prod <- post2$LL + dnorm( post2$mu , 178 , 20 , TRUE ) +
-  dunif( post2$sigma , 0 , 50 , TRUE )
-post2$prob <- exp( post2$prod - max(post2$prod) )
-sample2.rows <- sample( 1:nrow(post2) , size=1e4 , replace=TRUE , prob=post2$prob )
-sample2.mu <- post2$mu[ sample2.rows ]
-sample2.sigma <- post2$sigma[ sample2.rows ]
-plot( sample2.mu , sample2.sigma , cex=0.5 ,
-      col=col.alpha(rangi2,0.1) ,
-      xlab="mu" , ylab="sigma" , pch=16 )
+n <- 200
+
+# note we've redefined the ranges of `mu` and `sigma`
+d_grid <-
+  crossing(mu    = seq(from = 150, to = 170, length.out = n),
+           sigma = seq(from = 4, to = 20, length.out = n))
+
+# amend the grid function
+grid_function <- function(mu, sigma) {
+  
+  dnorm(d3, mean = mu, sd = sigma, log = T) %>% 
+    sum()
+  
+}
+
+# make the posterior
+d_grid <-
+  d_grid %>% 
+  mutate(log_likelihood = map2_dbl(mu, sigma, grid_function)) %>% 
+  mutate(prior_mu    = dnorm(mu, mean = 178, sd = 20, log = T),
+         prior_sigma = dunif(sigma, min = 0, max = 50, log = T)) %>% 
+  mutate(product = log_likelihood + prior_mu + prior_sigma) %>% 
+  mutate(probability = exp(product - max(product)))
+
+# `sample_n()` and plot
+set.seed(4)
+
+d_grid_samples <- 
+  d_grid %>% 
+  sample_n(size = 1e4, replace = T, weight = probability)
+
+d_grid_samples %>% 
+  ggplot(aes(x = mu, y = sigma)) + 
+  geom_point(size = .9, alpha = 1/15) +
+  labs(x = expression(mu[samples]),
+       y = expression(sigma[samples])) +
+  theme(panel.grid = element_blank())
 ```
 
+And the updated densities..
 ```{r 4.25}
-rethinking::dens(sample2.sigma, norm.comp = T)
+d_grid_samples %>% 
+  pivot_longer(mu:sigma) %>% 
+
+  ggplot(aes(x = value)) + 
+  geom_density(fill = "grey33", size = 0) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab(NULL) +
+  theme(panel.grid = element_blank()) +
+  facet_wrap(~ name, scales = "free", labeller = label_parsed)
 ```
 
 Now you can see the posterior for $\sigma$ is not Gaussian, but as a long tail towards higher values. 
@@ -595,13 +627,6 @@ Now you can see the posterior for $\sigma$ is not Gaussian, but as a long tail t
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-Repeat the code to load the data and select the adults:
-
-```{r 4.26}
-data(Howell1)
-d <- Howell1
-d2 <- d[ d$age >= 18 , ]
-```
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
@@ -610,11 +635,27 @@ knitr::include_graphics(file.path(slides_dir, '33.png'))
 `quap` works by making the formula lists. Typically there's some abbreviated forms. You'll have to write how every parameter multiplies every variable. 
 
 ```{r 4.27}
-flist = alist(
-  height ~ dnorm(mu, sigma),
-  mu ~ dnorm(178, 20),
-  sigma ~ dunif(0, 50)
-)
+b4.1 <- 
+  brm(data = d2, 
+      family = gaussian,
+      height ~ 1,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 31000, warmup = 30000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.01")
+
+# HMC tends to work better when you default to an exponential or half Cauchy for sigma
+b4.1_hc <- 
+  brms::brm(data = d2, 
+            family = gaussian,
+            height ~ 1,
+            prior = c(brms::prior(normal(178, 20), class = Intercept),
+                      # the magic lives here
+                      brms::prior(cauchy(0, 1), class = sigma)),
+            iter = 2000, warmup = 1000, chains = 4, cores = 4,
+            seed = 4,
+            file = "fits/b04.01_hc")
 ```
 
 Plug in the parameters and plug it into `quap`.
@@ -623,9 +664,6 @@ Plug in the parameters and plug it into `quap`.
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-```{r 4.28}
-m4.1 = rethinking::quap(flist, data = d2)
-```
 
 `quap` translates it into a statement about a log probability of the combinations of data, then passes it to the hill-finding algorithm built into R called `optim`, which passes it back as a list of means and a covariance matrix, which is sufficient to create a posterior distribution.
 
@@ -633,68 +671,101 @@ m4.1 = rethinking::quap(flist, data = d2)
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
-```{r 4.29, fig.margin = T}
-rethinking::precis(m4.1)
-```
 
 These numbers provide Gaussian approximations for each parameter's *marginal* distribution, meaning the plausibility of each value of $\mu$ after averaging over the plausibilities of each value of $\sigma$. 
 
 `quap` estimates the posterior by climbing it like a hill. To do this, it has to start climbing someplace, at some combination of parameter values. But it's possible to specify a starting value
 
-```{r 4.30}
-start <- list(
-  mu=mean(d2$height),
-  sigma=sd(d2$height)
-)
-m4.1 <- quap( flist , data=d2 , start=start )
+```{r}
+plot(b4.1_hc)
 ```
+
+Get the model summary:
+
+```{r}
+print(b4.1_hc)
+```
+
+If you want the 89% intervals like `rethinking`:
+
+```{r}
+summary(b4.1_hc, prob = .89)
+```
+
 
 Let's splice in a more informative prior for $\mu$ so you can see the effect.
 
 ```{r 4.31}
-m4.2 <- quap(
-  alist(
-    height ~ dnorm( mu , sigma ) ,
-    mu ~ dnorm( 178 , 0.1 ) ,
-    sigma ~ dunif( 0 , 50 )
-  ) , data=d2 )
-precis( m4.2 )
+b4.2 <- 
+  brm(data = d2, 
+      family = gaussian,
+      height ~ 1,
+      prior = c(prior(normal(178, 0.1), class = Intercept),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.02")
+
+plot(b4.2)
 ```
 
-***4.3.6 Sampling from a `quap`***
+```{r}
+summary(b4.2)
+```
+
+
+Compare the two:
+
+```{r}
+rbind(summary(b4.1_hc)$fixed,
+      summary(b4.2)$fixed)
+```
+
+***4.3.6 Sampling from a ~~`quap`~~ `brm()` fit***
 
 To this the matrix of variances and covariances among all paris of parameters:
 
 ```{r 4.32, fig.margin = T}
-rethinking::vcov(m4.1)
+post <- brms::as_draws_df(b4.1_hc) %>% 
+  dplyr::select(b_Intercept, sigma, lp__)
+
+head(post)
+
+
 ```
 
 This is a **Variant-covariance Matrix**. It is the multi-dimensional glue of a quadratic approximation, because it tells us how each parameter relates to every other parameter in the posterior distribution.
 
 ```{r 4.33, fig.margin = T}
-diag(rethinking::vcov( m4.1 ))
-cov2cor(rethinking::vcov( m4.1 ) )
+# NOw `select()` the columns and feed them into `cov()`
+dplyr::select(post, b_Intercept:sigma) %>% 
+  cov()
+
+# variances
+dplyr::select(post, b_Intercept:sigma) %>%
+  cov() %>%
+  diag()
+
+# correlation
+post %>%
+  dplyr::select(b_Intercept, sigma) %>%
+    cor()
 ```
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
 
-Compare `quap` to grid approximation. The values in the rows go together. But plot the columns by themselves. Sigma still has a skew.
-
-```{r 4.34}
-post = rethinking::extract.samples(m4.1, n = 1e4)
-head(post)
-```
-
 ```{r 4.35}
-precis(post)
-```
-
-Here's a peak under the motor of `extract.samples`:
-
-```{r 4.36}
-post = MASS::mvrnorm(n = 1e4, mu = coef(m4.1), Sigma = vcov(m4.1))
+post %>%
+  pivot_longer(-lp__) %>% 
+  group_by(name) %>%
+  summarise(mean = mean(value),
+            sd   = sd(value),
+            `2.5%`  = quantile(value, probs = .025),
+            `97.5%` = quantile(value, probs = .975)) %>%
+  mutate_if(is.numeric, round, digits = 2) %>% 
+  mutate(histospark = c(histospark(post$b_Intercept), histospark(post$sigma)))
 ```
 
 
@@ -713,8 +784,11 @@ knitr::include_graphics(file.path(slides_dir, '38.png'))
 ```
 
 ```{r 4.37}
-data(Howell1); d <- Howell1; d2 <- d[ d$age >= 18 , ]
-plot( d2$height ~ d2$weight )
+ggplot(data = d2, 
+       aes(x = weight, y = height)) +
+  geom_point(shape = 1, size = 2) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 ```
 
 So now let's add a line. When we learn the predictions, we can learn the statistical association between weight and height. The question is how would you statistically describe this relationship?
@@ -739,9 +813,17 @@ knitr::include_graphics(file.path(slides_dir, '42.png'))
 
 ```{r 4.38}
 set.seed(2971)
-N = 100 # 100 lines
-a = rnorm(N, 178, 20)
-b = rnorm(N, 0, 10)
+# how many lines would you like?
+n_lines <- 100
+
+lines <-
+  tibble(n = 1:n_lines,
+         a = rnorm(n_lines, mean = 178, sd = 20),
+         b = rnorm(n_lines, mean = 0, sd = 10)) %>% 
+  expand(nesting(n, a, b), weight = range(d2$weight)) %>% 
+  mutate(height = a + b * (weight - mean(d2$weight)))
+
+head(lines)
 ```
 
 Now we have 100 paris of $\alpha$ and $\beta$ values.
@@ -753,15 +835,13 @@ knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
 
 ```{r 4.39, fig.margin = T}
-plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400), xlab="weight" , ylab="height" )
-abline( h=0 , lty=2 )
-abline( h=272 , lty=1 , lwd=0.5 )
-mtext( "b ~ dnorm(0,10)" )
-xbar <- mean(d2$weight)
-for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
-                        from=min(d2$weight) ,
-                        to=max(d2$weight) , add=TRUE ,
-                        col=col.alpha("black",0.2) )
+lines %>% 
+  ggplot(aes(x = weight, y = height, group = n)) +
+  geom_hline(yintercept = c(0, 272), linetype = 2:1, size = 1/3) +
+  geom_line(alpha = 1/10) +
+  coord_cartesian(ylim = c(-100, 400)) +
+  ggtitle("b ~ dnorm(0, 10)") +
+  theme_classic()
 ```
 
 Getting the scatter right is important, because you can see these impossibly steep lines. Some of them take you from impossibly short individuals to twice the tallest. Want to dampen these expectations. Practise on these safe examples. 
@@ -771,9 +851,31 @@ knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
 ```{r 4.40, fig.margin = T}
-b = rlnorm(1e4, 0, 1)
-rethinking::dens(b, xlim = c(0,5), adj = 0.1)
+set.seed(4)
+
+tibble(b = rlnorm(1e4, mean = 0, sd = 1)) %>% 
+  ggplot(aes(x = b)) +
+  geom_density(fill = "grey92") +
+  coord_cartesian(xlim = c(0, 5)) +
+  theme_classic()
 ```
+
+A log-normal distribution is the distibution whose logarithm is normally distributed.
+
+```{r}
+set.seed(4)
+
+tibble(rnorm           = rnorm(1e5, mean = 0, sd = 1),
+       `log(rlognorm)` = log(rlnorm(1e5, mean = 0, sd = 1))) %>% 
+  pivot_longer(everything()) %>% 
+
+  ggplot(aes(x = value)) +
+  geom_density(fill = "grey92") +
+  coord_cartesian(xlim = c(-3, 3)) +
+  theme_classic() +
+  facet_wrap(~ name, nrow = 2)
+```
+
 
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '45.png'))
@@ -782,20 +884,31 @@ knitr::include_graphics(file.path(slides_dir, '45.png'))
 Still a lot of scatter, but still one crazy line. Now at least we're in the possible range.
 
 ```{r 4.41}
-set.seed(2971)
-N <- 100 # 100 lines
-a <- rnorm( N , 178 , 20 )
-b <- rlnorm( N , 0 , 1 )
+# make a tibble to annotate the plot
+text <-
+  tibble(weight = c(34, 43),
+         height = c(0 - 25, 272 + 25),
+         label  = c("Embryo", "World's tallest person (272 cm)"))
 
-plot( NULL , xlim=range(d2$weight) , ylim=c(-100,400), xlab="weight" , ylab="height" )
-abline( h=0 , lty=2 )
-abline( h=272 , lty=1 , lwd=0.5 )
-mtext( "b ~ dnorm(0,10)" )
-xbar <- mean(d2$weight)
-for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
-                        from=min(d2$weight) ,
-                        to=max(d2$weight) , add=TRUE ,
-                        col=col.alpha("black",0.2) )
+# simulate
+set.seed(2971)
+
+tibble(n = 1:n_lines,
+       a = rnorm(n_lines, mean = 178, sd = 20),
+       b = rlnorm(n_lines, mean = 0, sd = 1)) %>% 
+  expand(nesting(n, a, b), weight = range(d2$weight)) %>% 
+  mutate(height = a + b * (weight - mean(d2$weight))) %>%
+  
+  # plot
+  ggplot(aes(x = weight, y = height, group = n)) +
+  geom_hline(yintercept = c(0, 272), linetype = 2:1, size = 1/3) +
+  geom_line(alpha = 1/10) +
+  geom_text(data = text,
+            aes(label = label),
+            size = 3) +
+  coord_cartesian(ylim = c(-100, 400)) +
+  ggtitle("log(b) ~ dnorm(0, 1)") +
+  theme_classic()
 ```
 
 > How to choose a prior? The procedure we've performed in this chapter is to choose priors conditional on pre-data knowledge of the variables - their constraints, ranges, and theoretical relationships. 
@@ -806,66 +919,110 @@ for ( i in 1:N ) curve( a[i] + b[i]*(x - xbar),
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
 
-
+To add a predictor, just use the `+` operator in the model `formula`.
 
 ```{r 4.42}
-# load data again, since it's a long way back
-data(Howell1); d <- Howell1; d2 <- d[ d$age >= 18 , ]
-# define the average weight, x-bar
-xbar <- mean(d2$weight)
+# make a new variable for `weight - xbar`
+d2 <-
+  d2 %>% 
+  mutate(weight_c = weight - mean(weight))
 # fit model
-m4.3 <- quap(
-  alist(
-    height ~ dnorm( mu , sigma ) ,
-    mu <- a + b*( weight - xbar ) ,
-    a ~ dnorm( 178 , 20 ) ,
-    b ~ dlnorm( 0 , 1 ) ,
-    sigma ~ dunif( 0 , 50 )
-  ) , data=d2 )
+b4.3 <- 
+  brm(data = d2, 
+      family = gaussian,
+      height ~ 1 + weight_c,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(lognormal(0, 1), class = b),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 28000, warmup = 27000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.03")
+```
+
+```{r}
+plot(b4.3)
 ```
 
 
 ```{r 4.43}
-m4.3b <- quap(
-  alist(
-    height ~ dnorm( mu , sigma ) ,
-    mu <- a + exp(log_b)*( weight - xbar ),
-    a ~ dnorm( 178 , 20 ) ,
-    log_b ~ dnorm( 0 , 1),
-    sigma ~ dunif( 0 , 50 )
-  ) , data=d2 )
+b4.3b <- 
+  brm(data = d2, 
+      family = gaussian,
+      bf(height ~ a + exp(lb) * weight_c,
+         a ~ 1,
+         lb ~ 1,
+         nl = TRUE),
+      prior = c(prior(normal(178, 20), class = b, nlpar = a),
+                prior(normal(0, 1), class = b, nlpar = lb),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 31000, warmup = 30000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.03b")
 ```
 
 
 ***4.4.3 Interpreting the posterior distribution***
 
 ```{r 4.44}
-precis(m4.3)
+brms::posterior_summary(b4.3)[1:3, ] %>% 
+  round(digits = 2)
 ```
 
 See the covariances:
 
 ```{r 4.45}
-round(rethinking::vcov(m4.3), 3)
+vcov(b4.3) %>% 
+  round(3)
 ```
+
+No $\sigma$. To get that we have to extract the posterior draws and use the `cov()` function instead:
+
+```{r}
+brms::as_draws_df(b4.3) %>%
+  dplyr::select(-lp__, -starts_with(".")) %>%
+  cov() %>%
+  round(digits = 3)
+```
+
 
 Very little covariation among the parameters in this case.
 
 ```{r}
 # Show both the marginal posteriors and the covariance
-pairs(m4.3)
+pairs(b4.3)
 ```
 In the practice problems at the end of the chapter, you'll see that the lack of covariance among the parameters results from **Centering**.
 
 Plot the data with the posterior mean values for `a` and `b`:
 
 ```{r 4.46, fig.margin = T}
-plot( height ~ weight , data=d2 , col=rangi2 )
-post <- extract.samples( m4.3 )
-a_map <- mean(post$a)
-b_map <- mean(post$b)
-curve( a_map + b_map*(x - xbar) , add=TRUE )
+d2 %>%
+  ggplot(aes(x = weight_c, y = height)) +
+  geom_abline(intercept = fixef(b4.3)[1], 
+              slope     = fixef(b4.3)[2]) +
+  geom_point(shape = 1, size = 2, color = "royalblue") +
+  theme_classic()
 ```
+
+Adjust the x-axis breaks to return them to real values.
+
+```{r}
+labels <-
+  c(-10, 0, 10) + mean(d2$weight) %>% 
+  round(digits = 0)
+
+d2 %>%
+  ggplot(aes(x = weight_c, y = height)) +
+  geom_abline(intercept = fixef(b4.3)[1], 
+              slope     = fixef(b4.3)[2]) +
+  geom_point(shape = 1, size = 2, color = "royalblue") +
+  scale_x_continuous("weight",
+                     breaks = c(-10, 0, 10),
+                     labels = labels) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "We managed to get this posterior distribution, and we can take from the precis values the `a` and `b`b values and draw a line with those, where `a` is the expected value of height (155) when weight is at its average value. And the expected change in height is nearly 1. But the posterior distribution is not a single line, it's an infinite number of lines each with a probability. So let's get more lines on the graph to show the uncertainty in inference. "}
 knitr::include_graphics(file.path(slides_dir, '47.png'))
@@ -880,43 +1037,134 @@ knitr::include_graphics(file.path(slides_dir, '49.png'))
 ```
 
 ```{r 4.47}
-post = rethinking::extract.samples(m4.3)
-post[1:5, ]
+post <- brms::as_draws_df(b4.3)
+
+post %>%
+  slice(1:5)  # this serves a similar function as `head()`
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "To see this work, and reinforce how Bayesian updating works, let's start with a reduced dataset of 10 randomly sampled adults. We fit our linear regression model, and get a quadratic approximation of the posterior distribution. You'll see they're very different from the prior. Now they're very concentrated around the data. You can see there's a lot of scatter because the model isn't sure where it should be."}
 knitr::include_graphics(file.path(slides_dir, '50.png'))
 ```
 
-```{r 4.48}
+```{r 4.48, results = "hide"}
 N <- 10
-dN <- d2[ 1:N , ]
-mN <- quap(
-  alist(
-    height ~ dnorm( mu , sigma ) ,
-    mu <- a + b*( weight - mean(weight) ) ,
-    a ~ dnorm( 178 , 20 ) ,
-    b ~ dlnorm( 0 , 1 ) ,
-    sigma ~ dunif( 0 , 50 )
-  ) , data=dN )
+
+b4.3_010 <- 
+  brm(data = d2 %>%
+        slice(1:N),  # note our tricky use of `N` and `slice()`
+      family = gaussian,
+      height ~ 1 + weight_c,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(lognormal(0, 1), class = b),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 11000, warmup = 10000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.03_010")
+
+N <- 50
+
+b4.3_050 <- 
+  brm(data = d2 %>%
+        slice(1:N), 
+      family = gaussian,
+      height ~ 1 + weight_c,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(lognormal(0, 1), class = b),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 11000, warmup = 10000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.03_050")
+
+N <- 150
+
+b4.3_150 <- 
+  brm(data = d2 %>%
+        slice(1:N), 
+      family = gaussian,
+      height ~ 1 + weight_c,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(lognormal(0, 1), class = b),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 21000, warmup = 20000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.03_150")
+
+N <- 352
+
+b4.3_352 <- 
+  brm(data = d2 %>%
+        slice(1:N), 
+      family = gaussian,
+      height ~ 1 + weight_c,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(lognormal(0, 1), class = b),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 28000, warmup = 27000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.03_352")
 ```
+
+```{r}
+post010 <- brms::as_draws_df(b4.3_010)
+post050 <- brms::as_draws_df(b4.3_050)
+post150 <- brms::as_draws_df(b4.3_150)
+post352 <- brms::as_draws_df(b4.3_352)
+```
+
 
 Now plot 20 of these lines:
 
 ```{r 4.49, fig.margin = T}
-# extract 20 samples from the posterior
-post <- extract.samples( mN , n=20 )
+p1 <- 
+  ggplot(data =  d2[1:10, ], 
+         aes(x = weight_c, y = height)) +
+  geom_abline(intercept = post010[1:20, 1], 
+              slope     = post010[1:20, 2],
+              size = 1/3, alpha = .3) +
+  geom_point(shape = 1, size = 2, color = "royalblue") +
+  coord_cartesian(xlim = range(d2$weight_c),
+                  ylim = range(d2$height)) +
+  labs(subtitle = "N = 10")
 
-# display raw data and sample size
-plot( dN$weight , dN$height ,
-  xlim=range(d2$weight) , ylim=range(d2$height) ,
-  col=rangi2 , xlab="weight" , ylab="height" )
-mtext(concat("N = ",N))
+p2 <-
+  ggplot(data =  d2[1:50, ], 
+         aes(x = weight_c, y = height)) +
+  geom_abline(intercept = post050[1:20, 1], 
+              slope     = post050[1:20, 2],
+              size = 1/3, alpha = .3) +
+  geom_point(shape = 1, size = 2, color = "royalblue") +
+  coord_cartesian(xlim = range(d2$weight_c),
+                  ylim = range(d2$height)) +
+  labs(subtitle = "N = 50")
 
-# plot the lines, with transparency
-for ( i in 1:20 )
-  curve( post$a[i] + post$b[i]*(x-mean(dN$weight)) ,
-         col=col.alpha("black",0.3) , add=TRUE )
+p3 <-
+  ggplot(data =  d2[1:150, ], 
+         aes(x = weight_c, y = height)) +
+  geom_abline(intercept = post150[1:20, 1], 
+              slope     = post150[1:20, 2],
+              size = 1/3, alpha = .3) +
+  geom_point(shape = 1, size = 2, color = "royalblue") +
+  coord_cartesian(xlim = range(d2$weight_c),
+                  ylim = range(d2$height)) +
+  labs(subtitle = "N = 150")
+
+p4 <- 
+  ggplot(data =  d2[1:352, ], 
+         aes(x = weight_c, y = height)) +
+  geom_abline(intercept = post352[1:20, 1], 
+              slope     = post352[1:20, 2],
+              size = 1/3, alpha = .3) +
+  geom_point(shape = 1, size = 2, color = "royalblue") +
+  coord_cartesian(xlim = range(d2$weight_c),
+                  ylim = range(d2$height)) +
+  labs(subtitle = "N = 352")
+
+(p1 + p2 + p3 + p4) &
+  scale_x_continuous("weight",
+                     breaks = c(-10, 0, 10),
+                     labels = labels) &
+  theme_classic()
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "Now add 50, and you'll see they get more concentrated. Note the uncertainty at the ends are more uncertain. They pivot around the means in the centre."}
@@ -950,20 +1198,39 @@ knitr::include_graphics(file.path(slides_dir, '09.png'))
 The basic idea that any particular value of the $x$ variables, $\mu$ has some density. It's confident of the values on the inside, less of the values on the outside. As an example, what does the model expect the height of the individual is if weight is 50? $\mu$ at 50 is now going to create a distribution.
 
 ```{r 4.50}
-post = rethinking::extract.samples(m4.3)
-mu_at_50 = post$a + post$b * (50 - xbar)
+mean(d2$weight)
+mu_at_50 <- 
+  post %>% 
+  transmute(mu_at_50 = b_Intercept + b_weight_c + 5.01)
+ 
 head(mu_at_50)
 ```
 
 `mu_at_50` is a vector of predicted means, one for each random sample from the posterior. 
 
 ```{r, 4.51, fig.margin = T}
-rethinking::dens(mu_at_50, col = rangi2, lwd = 2, xlab = "mu|weight = 50")
+mu_at_50 %>%
+  ggplot(aes(x = mu_at_50)) +
+  geom_density(size = 0, fill = "royalblue") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab(expression(mu["height | weight = 50"])) +
+  theme_classic()
 ```
 Find the 89% compatibility interval
 
 ```{r 4.52, fig.margin = T}
-rethinking::PI(mu_at_50, prob = .89)
+tidybayes::mean_hdi(mu_at_50[, 1], .width = c(.89, .95))
+```
+
+Add them to the density plot:
+```{r}
+mu_at_50 %>%
+  ggplot(aes(x = mu_at_50, y = 0)) +
+  stat_halfeye(point_interval = mode_hdi, .width = .95,
+               fill = "royalblue") +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab(expression(mu["height | weight = 50"])) +
+  theme_classic()
 ```
 
 
@@ -978,10 +1245,12 @@ knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
 
 ```{r 4.53, fig.margin = T}
-mu = rethinking::link(m4.3)
+mu <- fitted(b4.3, summary = F)
+
 str(mu)
-rethinking::dens(mu)
 ```
+
+When you specify `summary = F`, `fitted()` returns a matrix of values with as many rows as there were post-warmup iterations across your HMC chains and as many columns as there were cases in your analysis.
 
 You need to make a sequence of x-axis values (`weight.seq`). You could make it extraplote further if you like. Then you send these in to the funciton via `link`. There's a box in the chapter that shows you how link works. It just loops, but saves you time. 
 
@@ -990,44 +1259,64 @@ What you end up with in $m$ is 1000 rows, where each column is a value of weight
 There are 352 rows in `d2`, corresponding to 352 individuals. What to do with this big matrix? `link` provides a posterior distribution of $\mu$ for each case we feed it. We actually want a distribution of $\mu$ for each unique weight value on the horizontal axis. Just pass it some new data:
 
 ```{r 4.54}
-# define sequence of weights to compute predictions for
-# these vaules will be on the horizontal axis
-weight.seq = seq(from = 25, to = 70, by = 1)
+weight_seq <- 
+  tibble(weight = 25:70) %>% 
+  mutate(weight_c = weight - mean(d2$weight))
 
-# use link to compute mu
-# for each sample from posterior
-# and for each weight in weight.seq
-mu = rethinking::link(m4.3, data = data.frame(weight = weight.seq))
-str(mu)
+# With `newdata`, you can accommodate custom predictor values.
+mu <-
+  brms::fitted(b4.3,
+               summary = F,
+               newdata = weight_seq) %>%
+  data.frame() %>%
+  # here we name the columns after the `weight` values from which they were computed
+  set_names(25:70) %>% 
+  mutate(iter = 1:n())
 ```
 
 And now there are only 46 columns in `mu`, because we fed it 46 different values for `weight`. Let's plot the distribution:
 
 ```{r 4.55, fig.margin = T}
-# use type="n" to hide raw data
-plot(height ~ weight, d2, type = "n")
+# Convert to long format
+mu <- 
+  mu %>%
+  pivot_longer(-iter,
+               names_to = "weight",
+               values_to = "height") %>% 
+  # we might reformat `weight` to numerals
+  mutate(weight = as.numeric(weight))
 
-# loop over samples and plot each mu value
-for (i in 1:100)
-  points(weight.seq, mu[i,] , pch = 16, col = col.alpha(rangi2, .1))
+head(mu)
+
+d2 %>%
+  ggplot(aes(x = weight, y = height)) +
+  geom_point(data = mu %>% filter(iter < 101), 
+             color = "navyblue", alpha = .05) +
+  coord_cartesian(xlim = c(30, 65)) +
+  theme(panel.grid = element_blank())
 ```
 
-```{r 4.56}
-# summarize the distribution of mu
-mu.mean = apply(mu, 2, mean)
-mu.PI =  apply(mu, 2, PI, prob = .89)
-```
+
 
 ```{r 4.57}
-# Plot raw data
-## Fading out points to make line and interval more visible
-plot(height ~ weight, data = d2, col = col.alpha(rangi2, 0.5))
+mu_summary <-
+  fitted(b4.3, 
+         newdata = weight_seq) %>%
+  data.frame() %>%
+  bind_cols(weight_seq)
 
-## Plot the MAP line, aka the mean mu for each weight
-lines(weight.seq, mu.mean)
+head(mu_summary)
 
-## Plot a shaded region for 89% PI
-shade(mu.PI, weight.seq)
+d2 %>%
+  ggplot(aes(x = weight, y = height)) +
+  geom_smooth(data = mu_summary,
+              aes(y = Estimate, ymin = Q2.5, ymax = Q97.5),
+              stat = "identity",
+              fill = "grey70", color = "black", alpha = 1, size = 1/2) +
+  geom_point(color = "navyblue", shape = 1, size = 1.5, alpha = 2/3) +
+  coord_cartesian(xlim = range(d2$weight)) +
+  theme(text = element_text(family = "Times"),
+        panel.grid = element_blank())
 ```
 
 Here's the recipe for generating predictions and intervals from the posterior of a fit model:
@@ -1038,15 +1327,6 @@ Here's the recipe for generating predictions and intervals from the posterior of
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is like rolling your own `link` here."}
 knitr::include_graphics(file.path(slides_dir, '12.png'))
-```
-```{r 4.58}
-post = extract.samples(m4.3)
-mu.link = function(weight) post$a + post$b*( weight - xbar )
-weight.seq = seq(from = 25, to = 70, by = 1)
-mu = sapply(weight.seq, mu.link)
-mu.mean = apply(mu, 2, mean)
-mu.CI = apply(mu, 2, PI, prob = 0.89)
-mu.HPDI = apply(mu, 2, HPDI, prob = 0.89)
 ```
 
 Whatever model you find yourself with, this approach can be used to generate posterior predictions for any component of it. 
@@ -1067,54 +1347,48 @@ knitr::include_graphics(file.path(slides_dir, '15.png'))
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
+We've only been plotting the $\mu$ part. To bring in the variability expressed by $\sigma$, we'll have to switch to the `predict()` function, the analogue to `rethinking::sim()`.
+
 ```{r 4.59}
-sim.height = rethinking::sim(m4.3, data = list(weight = weight.seq))
-str(sim.height)
+weight_seq <- 
+  tibble(weight = 25:70) %>% 
+  mutate(weight_c = weight - mean(d2$weight))
 ```
 
-This matrix is like the earlier one, `mu`, but contains simulated heights, not distributions of plausible average height, $\mu$. 
-
-Summarise these simmulated heights in the same way:
 
 ```{r 4.60}
-height.PI = apply(sim.height, 2, PI, prob = 0.89)
+pred_height <-
+  predict(b4.3,
+          newdata = weight_seq) %>%
+  data.frame() %>%
+  bind_cols(weight_seq)
+  
+pred_height %>%
+  slice(1:6)
 ```
 
 Now `height.PI` contains the 89% posterior prediction interval of observable (according to the model) heights, across the values of weight in `weight.seq`.
 
 ```{r 4.61}
-# Plot raw data
-plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
-
-# draw MAP line
-lines( weight.seq , mu.mean )
-
-# draw HPDI region for line
-shade( mu.HPDI , weight.seq )
-
-# draw PI region for simulated heights
-shade( height.PI , weight.seq )
+d2 %>%
+  ggplot(aes(x = weight)) +
+  geom_ribbon(data = pred_height, 
+              aes(ymin = Q2.5, ymax = Q97.5),
+              fill = "grey83") +
+  geom_smooth(data = mu_summary,
+              aes(y = Estimate, ymin = Q2.5, ymax = Q97.5),
+              stat = "identity",
+              fill = "grey70", color = "black", alpha = 1, size = 1/2) +
+  geom_point(aes(y = height),
+             color = "navyblue", shape = 1, size = 1.5, alpha = 2/3) +
+  coord_cartesian(xlim = range(d2$weight),
+                  ylim = range(d2$height)) +
+  theme(text = element_text(family = "Times"),
+        panel.grid = element_blank())
 ```
 
 If the rough shaded interval bothers you, increase the number of samples from the posterior distribution.
-```{r 4.62}
-sim.height <- rethinking::sim( m4.3 , data=list(weight=weight.seq) , n=1e4 )
-height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
-```
 
-```{r}
-# Plot raw data
-plot( height ~ weight , d2 , col=col.alpha(rangi2,0.5) )
-
-# draw MAP line
-lines( weight.seq , mu.mean )
-
-# draw HPDI region for line
-shade( mu.HPDI , weight.seq )
-
-# draw PI region for simulated heights
-shade( height.PI , weight.seq )
-```
 
 ## Curves from lines
 
@@ -1123,7 +1397,6 @@ knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
 
 ***4.5.1 Polynomial regression***
-
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is a descriptive strategy for drawing curves for the relationship between two variables. Second-order gives you a parabola. You can keep going - third order, fourth order. And on and on and on. You can push this to the limits of absurdity."}
@@ -1135,14 +1408,17 @@ knitr::include_graphics(file.path(slides_dir, '18.png'))
 knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
  
-```{r 4.64}
-library(rethinking)
-data(Howell1)
-d <- Howell1
-```
 
 ```{r}
-plot( height ~ weight , d )
+d %>% 
+  ggplot(aes(x = weight, y = height)) +
+  geom_point(color = "navyblue", shape = 1, size = 1.5, alpha = 2/3) +
+  annotate(geom = "text",
+           x = 42, y = 115,
+           label = "This relation is\nvisibly curved.",
+           family = "Times") +
+  theme(text = element_text(family = "Times"),
+        panel.grid = element_blank())
 ```
 The relationship is visibly curved now that we've included the non-adult individuals.
 
@@ -1159,22 +1435,31 @@ knitr::include_graphics(file.path(slides_dir, '21.png'))
 knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
-```{r 4.65}
-d$weight_s <- ( d$weight - mean(d$weight) )/sd(d$weight)
-d$weight_s2 <- d$weight_s^2
-m4.5 <- rethinking::quap(
-alist(
-  height ~ dnorm( mu , sigma ) ,
-  mu <- a + b1*weight_s + b2*weight_s2 ,
-  a ~ dnorm( 178 , 20 ) ,
-  b1 ~ dlnorm( 0 , 1) ,
-  b2 ~ dnorm( 0 , 1 ) ,
-  sigma ~ dunif( 0 , 50 )
-) , data=d )
+```{r 4.65, results = "hide"}
+# Standardise our weight variable
+d <-
+  d %>%
+  mutate(weight_s = (weight - mean(weight)) / sd(weight)) %>% 
+  mutate(weight_s2 = weight_s^2)
+
+# Fit the model
+b4.5 <- 
+  brm(data = d, 
+      family = gaussian,
+      height ~ 1 + weight_s + weight_s2,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(lognormal(0, 1), class = b, coef = "weight_s"),
+                prior(normal(0, 1), class = b, coef = "weight_s2"),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 30000, warmup = 29000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.05")
+
+plot(b4.5)
 ```
 
 ```{r 4.66}
-precis(m4.5)
+print(b4.5)
 ```
 
 
@@ -1203,39 +1488,51 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
+`fitted()` and `predict()` wrangling..
+
 ```{r 4.67}
-weight.seq <- seq( from=-2.2 , to=2 , length.out=30 )
-pred_dat <- list( weight_s=weight.seq , weight_s2=weight.seq^2 )
-mu <- link( m4.5 , data=pred_dat )
-mu.mean <- apply( mu , 2 , mean )
-mu.PI <- apply( mu , 2 , PI , prob=0.89 )
-sim.height <- rethinking::sim( m4.5 , data=pred_dat )
-height.PI <- apply( sim.height , 2 , PI , prob=0.89 )
+weight_seq <- 
+  tibble(weight_s = seq(from = -2.5, to = 2.5, length.out = 30)) %>% 
+  mutate(weight_s2 = weight_s^2)
+
+fitd_quad <-
+  fitted(b4.5, 
+         newdata = weight_seq) %>%
+  data.frame() %>%
+  bind_cols(weight_seq)
+
+pred_quad <-
+  predict(b4.5, 
+          newdata = weight_seq) %>%
+  data.frame() %>%
+  bind_cols(weight_seq)  
 ```
 
+Plot
 ```{r 4.68}
-plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) )
-lines( weight.seq , mu.mean )
-shade( mu.PI , weight.seq )
-shade( height.PI , weight.seq )
+p2 <-
+  ggplot(data = d, 
+       aes(x = weight_s)) +
+  geom_ribbon(data = pred_quad, 
+              aes(ymin = Q2.5, ymax = Q97.5),
+              fill = "grey83") +
+  geom_smooth(data = fitd_quad,
+              aes(y = Estimate, ymin = Q2.5, ymax = Q97.5),
+              stat = "identity",
+              fill = "grey70", color = "black", alpha = 1, size = 1/2) +
+  geom_point(aes(y = height),
+             color = "navyblue", shape = 1, size = 1.5, alpha = 1/3) +
+  labs(subtitle = "quadratic",
+       y = "height") +
+  coord_cartesian(xlim = range(d$weight_s),
+                  ylim = range(d$height)) +
+  theme(text = element_text(family = "Times"),
+        panel.grid = element_blank())
+
+p2
 ```
 
-> When you have expert knoweldge, it is often easy to do better than a linear model. These models are geocentric devices for describing partial correlations. We should feel embarrassed to use them, just so we don't become satisfied with the phenomenologicla explanations they provide.
-
-Convert back to natural scale:
-
-```{r 4.70}
-# Remove the horizontal axis
-plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) , xaxt="n" )
-```
-
-```{r 4.71}
-# Then explicitly construct the axis
-plot( height ~ weight_s , d , col=col.alpha(rangi2,0.5) , xaxt="n" )
-at <- c(-2,-1,0,1,2)
-labels <- at*sd(d$weight) + mean(d$weight)
-axis( side=1 , at=at , labels=round(labels,1) )
-```
+> When you have expert knoweldge, it is often easy to do better than a linear model. These models are geocentric devices for describing partial correlations. We should feel embarrassed to use them, just so we don't become satisfied with the phenomenological explanations they provide.
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "It's very sure, conditional on the shape, that that's the parameter you want. Those lines don't fit the data very well, but there's almost no uncertainty about where they are. I've extended the data a bit, and you can see the quadratic bends down. It curves down because it has to. Cubic have to turn twice. Have to turn. Can't be *monotonic*. For the cubic, we add our cubic term $\\beta_3$. Fits even better, but now it's extrapolating upwards. "}
@@ -1245,7 +1542,31 @@ knitr::include_graphics(file.path(slides_dir, '29.png'))
 
 ```{r, echo = F, out.width='80%', fig.cap = "In this example, you had that outside of the range below the range. But this can also happen internally, when you have a gap in your data, and it'll do silly things in between. The bigger problem is that the parameters all jointly determine the shape, so the model can't tune them independently to create local fits. That's why you get silly predictions. Polynomials aren't that flexible, because the *must* turn, a certain number of times."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
+
+
 ```
+
+Cubics:
+
+```{r, results = "hide"}
+d <-
+  d %>% 
+  mutate(weight_s3 = weight_s^3)
+
+b4.6 <- 
+  brm(data = d, 
+      family = gaussian,
+      height ~ 1 + weight_s + weight_s2 + weight_s3,
+      prior = c(prior(normal(178, 20), class = Intercept),
+                prior(lognormal(0, 1), class = b, coef = "weight_s"),
+                prior(normal(0, 1), class = b, coef = "weight_s2"),
+                prior(normal(0, 1), class = b, coef = "weight_s3"),
+                prior(uniform(0, 50), class = sigma)),
+      iter = 40000, warmup = 39000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.06")
+```
+
 
 ***4.5.2 Splines***
 
