@@ -1,26 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    dev: 'svg'
-    number_sections: false
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-#output: html_notebook
-#editor_options: 
-#  chunk_output_type: inline
-#output:
-#  bookdown::tufte_html_book:
-#    toc: yes
-#    css: toc.css
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
-#    link-citations: yes
----
-
 # The Haunted DAG & The Causal Terror
 
 ```{r, message = F, warning=F}
@@ -48,18 +25,52 @@ knitr::include_graphics(file.path(slides_dir, '06.png'))
 knitr::include_graphics(file.path(slides_dir, '07.png'))
 ```
 
-```{r 6.1}
+```{r 6.1, fig.cap = "Figure 6.1"}
+library(tidyverse)
+
 set.seed(1914)
-N <- 200 # num grant proposals
-p <- 0.1 # proportion to select
-# uncorrelated newsworthiness and trustworthiness
-nw <- rnorm(N)
-tw <- rnorm(N)
-# select top 10% of combined scores
-s <- nw + tw # total score
-q <- quantile( s , 1-p ) # top 10% threshold
-selected <- ifelse( s >= q , TRUE , FALSE )
-cor( tw[selected] , nw[selected] )
+n <- 200  # number of grant proposals
+p <- 0.1  # proportion to select
+
+d <-
+  # uncorrelated newsworthiness and trustworthiness
+  tibble(newsworthiness  = rnorm(n, mean = 0, sd = 1),
+         trustworthiness = rnorm(n, mean = 0, sd = 1)) %>% 
+  # total_score
+  mutate(total_score = newsworthiness + trustworthiness) %>% 
+  # select top 10% of combined scores
+  mutate(selected = ifelse(total_score >= quantile(total_score, 1 - p), TRUE, FALSE))
+
+head(d)
+
+# Correlation
+d %>% 
+  filter(selected == TRUE) %>% 
+  dplyr::select(newsworthiness, trustworthiness) %>% 
+  cor()
+
+ggplot2::theme_set(theme_minimal())
+
+# we'll need this for the annotation
+text <-
+  tibble(newsworthiness  = c(2, 1), 
+         trustworthiness = c(2.25, -2.5),
+         selected        = c(TRUE, FALSE),
+         label           = c("selected", "rejected"))
+
+d %>% 
+  ggplot(aes(x = newsworthiness, y = trustworthiness, color = selected)) +
+  geom_point(aes(shape = selected), alpha = 3/4) +
+  geom_text(data = text,
+            aes(label = label)) +
+  geom_smooth(data = . %>% filter(selected == TRUE),
+              method = "lm", fullrange = T,
+              color = "lightblue", se = F, size = 1/2) +
+  scale_color_manual(values = c("black", "lightblue")) +
+  scale_shape_manual(values = c(1, 19)) +
+  scale_x_continuous(limits = c(-3, 3.9), expand = c(0, 0)) +
+  coord_cartesian(ylim = range(d$trustworthiness)) +
+  theme(legend.position = "none")
 ```
 
 
@@ -90,47 +101,75 @@ Means a very strong association between two or more predictors.
 
 Consequence: the posterior distribution will seem to suggest that none of the variables is reliably associated with the outcome, even if all of the variables are in reality strongly associated with the outcome.
 
-That said, the model will work fine for prediction; you will jsut be frustrated trying to understand it.
+That said, the model will work fine for prediction; you will just be frustrated trying to understand it.
 
 ***6.1.1 Multicollinear legs***
 
 Imagine trying to predict an individual's height using the length of their legs as a predictor. But once you put both legs (right and left) into the model, something vexing will happen. 
 
 ```{r 6.2}
-N <- 100 # number of individuals
+n <- 100
 set.seed(909)
-height <- rnorm(N,10,2) # sim total height of each
-leg_prop <- runif(N,0.4,0.5) # leg as proportion of height
-leg_left <- leg_prop*height + # sim left leg as proportion + error
-  rnorm( N , 0 , 0.02 )
-leg_right <- leg_prop*height + # sim right leg as proportion + error
-  rnorm( N , 0 , 0.02 )
-# combine into data frame
-d <- data.frame(height,leg_left,leg_right)
+
+d <- 
+  tibble(height   = rnorm(n, mean = 10, sd = 2),
+         leg_prop = runif(n, min = 0.4, max = 0.5)) %>% 
+  mutate(leg_left  = leg_prop * height + rnorm(n, mean = 0, sd = 0.02),
+         leg_right = leg_prop * height + rnorm(n, mean = 0, sd = 0.02))
 ```
 
 We expect the beta coefficient that measures the association of a leg with height to end up around the average height (10) divided by 45% of the average height (4.5). 
 
-```{r 6.3}
-m6.1 <- quap(
-  alist(
-    height ~ dnorm( mu , sigma ) ,
-    mu <- a + bl*leg_left + br*leg_right ,
-    a ~ dnorm( 10 , 100 ) ,
-    bl ~ dnorm( 2 , 10 ) ,
-    br ~ dnorm( 2 , 10 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=d )
-precis(m6.1)
+```{r}
+d %>%
+  dplyr::select(leg_left:leg_right) %>%
+  cor() %>%
+  round(digits = 4)
 ```
 
 ```{r}
-plot(precis(m6.1))
+d %>%
+  ggplot(aes(x = leg_left, y = leg_right)) +
+  geom_point(alpha = 1/2, color = "forestgreen")
 ```
 
+
+```{r 6.3, results = "hide"}
+b6.1 <- 
+  brm(data = d, 
+      family = gaussian,
+      height ~ 1 + leg_left + leg_right,
+      prior = c(prior(normal(10, 100), class = Intercept),
+                prior(normal(2, 10), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.01")
+```
+
+```{r}
+print(b6.1)
+```
+
+
+```{r}
+bayesplot::color_scheme_set("orange")
+
+brms::mcmc_plot(b6.1, 
+                     type = "intervals", 
+                     prob = .5, 
+                     prob_outer = .95,
+                     point_est = "mean") +
+  labs(title = "The coefficient plot for the two-leg model",
+       subtitle = "Holy smokes; look at the widths of those betas!") +
+  theme(axis.text.y = element_text(hjust = 0),
+        panel.grid.minor = element_blank(),
+        strip.text = element_text(hjust = 0)) 
+```
+
+
 ```{r 6.5}
-post <- extract.samples(m6.1)
-plot( bl ~ br , post , col=col.alpha(rangi2,0.1) , pch=16 )
+pairs(b6.1, pars = parnames(b6.1)[2:3])
 ```
 
 The posterior distribution for these two parameters is very hgihly correlated, with all of the plausible values of `bl` and `br` lying around a narrow ridge. When `bl` is large, then `br` must be small. Since both leg variables contain almost exactly the same information, if you insist on including both in a model, then there will be a practically infinite number of combinations of `bl` and `br` that produce the same predictions.
@@ -138,104 +177,224 @@ The posterior distribution for these two parameters is very hgihly correlated, w
 Compute the posterior distribution and plot it.
 
 ```{r 6.6}
-sum_blbr <- post$bl + post$br
-dens( sum_blbr , col=rangi2 , lwd=2 , xlab="sum of bl and br" )
+post <- brms::as_draws_df(b6.1)
+  
+post %>% 
+  ggplot(aes(x = b_leg_left, y = b_leg_right)) +
+  geom_point(color = "forestgreen", alpha = 1/10, size = 1/2)
+
+post %>% 
+  ggplot(aes(x = b_leg_left + b_leg_right, y = 0)) +
+  stat_halfeye(point_interval = median_qi, 
+               fill = "steelblue", .width = .95) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = "Sum the multicollinear coefficients",
+       subtitle = "Marked by the median and 95% PIs")
 ```
 
-```{r 6.7}
-m6.2 <- quap(
-  alist(
-    height ~ dnorm( mu , sigma ) ,
-    mu <- a + bl*leg_left,
-    a ~ dnorm( 10 , 100 ) ,
-    bl ~ dnorm( 2 , 10 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=d )
-precis(m6.2)
+```{r 6.7, results = "hide"}
+b6.2 <- 
+  brm(data = d, 
+      family = gaussian,
+      height ~ 1 + leg_left,
+      prior = c(prior(normal(10, 100), class = Intercept),
+                prior(normal(2, 10), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.02")
 ```
+
+```{r}
+print(b6.2)
+```
+
+```{r}
+brms::as_draws_df(b6.2) %>% 
+  
+  ggplot(aes(x = b_leg_left, y = 0)) +
+  stat_halfeye(point_interval = median_qi, 
+               fill = "steelblue", .width = .95) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = "Just one coefficient needed",
+       subtitle = "Marked by the median and 95% PIs",
+       x = "only b_leg_left, this time")
+```
+
 
 The basic lesson is this:
->When two predictor varilables are very strongly correlated (conditional on other variables int he model), including both in a model may lead to confusion.
+>When two predictor varilables are very strongly correlated (conditional on other variables in the model), including both in a model may lead to confusion.
 
 ***6.1.2. Multicollinear milk***
 
 ```{r 6.8}
-library(rethinking)
-data(milk)
+data(milk, package = "rethinking")
 d <- milk
-d$K <- rethinking::standardize( d$kcal.per.g )
-d$F <- rethinking::standardize( d$perc.fat )
-d$L <- rethinking::standardize( d$perc.lactose )
+rm(milk)
+
+d <-
+  d %>% 
+  mutate(k = rethinking::standardize(kcal.per.g),
+         f = rethinking::standardize(perc.fat),
+         l = rethinking::standardize(perc.lactose))
 ```
 
-```{r 6.9}
-# kcal.per.g regressed on perc.fat
-m6.3 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bF*F ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bF ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=d )
-# kcal.per.g regressed on perc.lactose
-m6.4 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bL*L ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bL ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=d )
-precis( m6.3 )
-precis( m6.4 )
+```{r 6.9, results = "hide"}
+# k regressed on f
+b6.3 <- 
+  brm(data = d, 
+      family = gaussian,
+      k ~ 1 + f,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.03")
+
+# k regressed on l
+b6.4 <- 
+  brm(data = d, 
+      family = gaussian,
+      k ~ 1 + l,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.04")
 ```
+
+```{r}
+brms::as_draws_df(b6.3) %>% round(digits = 2)
+```
+
+```{r}
+brms::as_draws_df(b6.4) %>% round(digits = 2)
+```
+
 
 Given the strong association of each predictor with the outcome, we might conclude that both variables are reliable predictors of total energy in milk, across species. But watch what happens when we place both predictor variables in the same regression model:
 
-```{r 6.10}
-m6.5 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bF*F + bL*L ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bF ~ dnorm( 0 , 0.5 ) ,
-    bL ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) ,
-  data=d )
-precis( m6.5 )
+```{r 6.10, results = "hide"}
+b6.5 <- 
+  brm(data = d, 
+      family = gaussian,
+      k ~ 1 + f+ l,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.05")
+
+```
+
+```{r}
+brms::as_draws_df(b6.5) %>% round(digits = 2)
 ```
 
 Now the posterior means of both bF and bL are closer to zero. And the standard deviations for both parameters are twice as large as in the bivariate models (m6.3 and m6.4).
 
-```{r 6.11}
-pairs( ~ kcal.per.g + perc.fat + perc.lactose , data=d , col=rangi2 )
+```{r}
+# define a couple custom functions
+my_diag <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) + 
+    geom_density(fill = "steelblue", color = "black")
+}
+
+my_lower <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) + 
+    geom_smooth(method = "lm", color = "orange", se = F) +
+    geom_point(alpha = .8, size = 1/4, color = "blue")
+  }
+
+# plug those custom functions into `ggpairs()`
+GGally::ggpairs(data = d, columns = c(3:4, 6),
+                upper = list(continuous = wrap("cor", family = "sans", color = "black")),
+                diag = list(continuous = my_diag),
+                lower = list(continuous = my_lower))
 ```
 
-Either helps in predicting kcal.per.g, but neither helps as much *once you already know the other*.
+
+
+Either helps in predicting `kcal.per.g`, but neither helps as much *once you already know the other*.
+
+DAG the sense out of it:
+
+```{r}
+dag_coords <-
+  tibble(name = c("L", "D", "F", "K"),
+         x    = c(1, 2, 3, 2),
+         y    = c(2, 2, 2, 1))
+
+ggdag::dagify(L ~ D,
+       F ~ D,
+       K ~ L + F,
+       coords = dag_coords) %>%
+  
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  ggdag::geom_dag_point(aes(color = name == "D"),
+                        alpha = 1/2, size = 6.5, show.legend = F) +
+  geom_point(x = 2, y = 2, 
+             size = 6.5, shape = 1, stroke = 1, color = "orange") +
+  ggdag::geom_dag_text(color = "black") +
+  ggdag::geom_dag_edges() +
+  scale_color_manual(values = c("steelblue", "orange")) +
+  scale_x_continuous(NULL, breaks = NULL, expand = c(.1, .1)) +
+  scale_y_continuous(NULL, breaks = NULL, expand = c(.1, .1))
+```
+
 
 Some fields actually teach students to inspect pairwise correlations before fitting a model, to identify and drop highly correlated predictors. This is a mistake. Pairwise correlations are not the problem. It is the conditional associations—not correlations—that matter. 
 
 Now let's see how the imprecision of the posterior increases with association between two predictors.
 
-```{r 6.12}
-library(rethinking)
-data(milk)
-d <- milk
-sim.coll <- function( r=0.9 ) {
-  d$x <- rnorm( nrow(d) , mean=r*d$perc.fat ,
-    sd=sqrt( (1-r^2)*var(d$perc.fat) ) )
-  m <- lm( kcal.per.g ~ perc.fat + x , data=d )
-  sqrt( diag( vcov(m) ) )[2] # stddev of parameter
+```{r 6.12, fig.cap = "Figure 5.10"}
+# define a custom function
+sim_coll <- function(seed, rho) {
+  
+  # simulate the data
+  set.seed(seed)
+  
+  d <-
+    d %>% 
+    mutate(x = rnorm(n(), 
+                     mean = perc.fat * rho,
+                     sd = sqrt((1 - rho^2) * var(perc.fat))))
+    
+  # fit an OLS model
+  m <- lm(kcal.per.g ~ perc.fat + x, data = d)
+  
+  # extract the parameter SD
+  sqrt(diag(vcov(m)))[2]
+  
 }
-rep.sim.coll <- function( r=0.9 , n=100 ) {
-  stddev <- replicate( n , sim.coll(r) )
-  mean(stddev)
-}
-r.seq <- seq(from=0,to=0.99,by=0.01)
-stddev <- sapply( r.seq , function(z) rep.sim.coll(r=z,n=100) )
-plot( stddev ~ r.seq , type="l" , col=rangi2, lwd=2 , xlab="correlation" )
+
+# how many simulations per `rho`-value would you like?
+n_seed <- 100
+# how many `rho`-values from 0 to .99 would you like to evaluate the process over?
+n_rho  <- 30
+
+d <-
+  crossing(seed = 1:n_seed,
+           rho  = seq(from = 0, to = .99, length.out = n_rho))  %>% 
+  mutate(parameter_sd = purrr::map2_dbl(seed, rho, sim_coll)) %>% 
+  group_by(rho) %>% 
+  # we'll `summarise()` our output by the mean and 95% intervals
+  summarise(mean = mean(parameter_sd),
+            ll   = quantile(parameter_sd, prob = .025),
+            ul   = quantile(parameter_sd, prob = .975))
+
+# Add 95% interval bands
+d %>% 
+  ggplot(aes(x = rho, y = mean)) +
+  geom_smooth(aes(ymin = ll, ymax = ul),
+              stat = "identity",
+              fill = "orange", color = "orange", alpha = 1/3, size = 2/3) +
+  labs(x = expression(rho),
+       y = "parameter SD") +
+  coord_cartesian(ylim = c(0, .0072))
 ```
 
 
@@ -250,22 +409,30 @@ knitr::include_graphics(file.path(slides_dir, '14.png'))
 ```
 
 ```{r 6.13}
+# how many plants would you like?
+n <- 100
+
 set.seed(71)
-# number of plants
-N <- 100
-
-# simulate initial heights
-h0 <- rnorm(N,10,2)
-
-# assign treatments and simulate fungus and growth
-treatment <- rep( 0:1 , each=N/2 )
-fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4 )
-h1 <- h0 + rnorm(N, 5 - 3*fungus)
-
-# compose a clean data frame
-d <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
-precis(d)
+d <- 
+  tibble(h0        = rnorm(n, mean = 10, sd = 2), 
+         treatment = rep(0:1, each = n / 2),
+         fungus    = rbinom(n, size = 1, prob = .5 - treatment * 0.4),
+         h1        = h0 + rnorm(n, mean = 5 - 3 * fungus, sd = 1))
 ```
+
+```{r}
+d %>% 
+  head()
+```
+
+```{r}
+d %>% 
+  pivot_longer(everything()) %>% 
+  group_by(name) %>% 
+  tidybayes::mean_qi(.width = .89) %>% 
+  mutate_if(is.double, round, digits = 2)
+```
+
 
 ***6.2.1. A prior is born***
 
@@ -276,36 +443,78 @@ h_{1,i}\sim Normal(\mu_i, \sigma) \\
 \mu_i = h_{0,i} \times p
 $$
 
+Take a look as the $p \sim LogNormal(0, 0.25)$
 ```{r 6.14}
-sim_p <- rlnorm( 1e4 , 0 , 0.25 )
-precis( data.frame(sim_p) )
+set.seed(6)
+
+# simulate
+sim_p <-
+  tibble(sim_p = rlnorm(1e4, meanlog = 0, sdlog = 0.25)) 
+
+# wrangle
+sim_p %>% 
+  mutate(`exp(sim_p)` = exp(sim_p)) %>%
+  gather() %>% 
+  
+  # plot
+  ggplot(aes(x = value)) +
+  geom_density(fill = "steelblue") +
+  scale_x_continuous(breaks = c(0, .5, 1, 1.5, 2, 3, 5)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  coord_cartesian(xlim = c(0, 6)) +
+  theme(panel.grid.minor.x = element_blank()) +
+  facet_wrap(~ key, scale = "free_y", ncol = 1)
 ```
+
+```{r}
+sim_p %>% 
+  mutate(`exp(sim_p)` = exp(sim_p)) %>%
+  pivot_longer(everything()) %>%
+  group_by(name) %>% 
+  tidybayes::mean_qi(.width = .89) %>% 
+  mutate_if(is.double, round, digits = 2)
+```
+
 
 So this prior expects anything from 40% shrinkage up to 50% growth.
 
-```{r 6.15}
-m6.6 <- quap(
-  alist(
-    h1 ~ dnorm( mu , sigma ),
-    mu <- h0*p,
-    p ~ dlnorm( 0 , 0.25 ),
-    sigma ~ dexp( 1 )
-  ), data=d )
-precis(m6.6)
+```{r 6.15, results = "hide"}
+b6.6 <- 
+  brm(data = d, 
+      family = gaussian,
+      h1 ~ 0 + h0,
+      prior = c(prior(lognormal(0, 0.25), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.06")
 ```
-```{r 6.16}
-m6.7 <- quap(
-  alist(
-    h1 ~ dnorm( mu , sigma ),
-    mu <- h0 * p,
-    p <- a + bt*treatment + bf*fungus,
-    a ~ dlnorm( 0 , 0.2 ) ,
-    bt ~ dnorm( 0 , 0.5 ),
-    bf ~ dnorm( 0 , 0.5 ),
-    sigma ~ dexp( 1 )
-  ), data=d )
-precis(m6.7)
+
+```{r}
+print(b6.6)
 ```
+
+
+```{r 6.16, results = "hide"}
+b6.7 <- 
+  brm(data = d, 
+      family = gaussian,
+      bf(h1 ~ h0 * (a + t * treatment + f * fungus),
+         a + t + f ~ 1,
+         nl = TRUE),
+      prior = c(prior(lognormal(0, 0.2), nlpar = a, lb = 0),
+                prior(normal(0, 0.5), nlpar = t),
+                prior(normal(0, 0.5), nlpar = f),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.07")
+```
+
+```{r}
+print(b6.7)
+```
+
 
 ***6.2.2. Blocked by consequence***
 
@@ -314,17 +523,23 @@ precis(m6.7)
 To measure treatment properly, we should omit the post-treatment variable `fungus`.
 
 
-```{r 6.17}
-m6.8 <- quap(
-  alist(
-    h1 ~ dnorm( mu , sigma ),
-    mu <- h0 * p,
-    p <- a + bt*treatment,
-    a ~ dlnorm( 0 , 0.2 ),
-    bt ~ dnorm( 0 , 0.5 ),
-    sigma ~ dexp( 1 )
-  ), data=d )
-precis(m6.8)
+```{r 6.17, results = "hide"}
+b6.8 <- 
+  brm(data = d, 
+      family = gaussian,
+      bf(h1 ~ h0 * (a + t * treatment),
+         a + t ~ 1,
+         nl = TRUE),
+      prior = c(prior(lognormal(0, 0.2), nlpar = a, lb = 0),
+                prior(normal(0, 0.5), nlpar = t),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.08")
+```
+
+```{r}
+print(b6.8)
 ```
 
 Now the impact of treatment is clearly positive, as it should be.
@@ -332,19 +547,45 @@ Now the impact of treatment is clearly positive, as it should be.
 ***6.2.3. Fungus and d-separation***
 
 ```{r 6.18}
-library(dagitty)
-plant_dag <- dagitty( "dag {
-  H_0 -> H_1
-  F -> H_1
-  T -> F
-}")
-coordinates( plant_dag ) <- list( x=c(H_0=0,T=2,F=1.5,H_1=1) ,
-    y=c(H_0=0,T=0,F=0,H_1=0) )
-drawdag( plant_dag )
+# define our coordinates
+dag_coords <-
+  tibble(name = c("H0", "T", "F", "H1"),
+         x    = c(1, 5, 4, 3),
+         y    = c(2, 2, 1.5, 1))
+
+# save our DAG
+dag <-
+  ggdag::dagify(F ~ T,
+                H1 ~ H0 + F,
+                coords = dag_coords)
+
+# make function
+gg_simple_dag <- function(d) {
+  
+  d %>% 
+    ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+    ggdag::geom_dag_point(color = "steelblue", alpha = 1/2, size = 6.5) +
+    ggdag::geom_dag_text(color = "black") +
+    ggdag::geom_dag_edges() + 
+    ggdag::theme_dag()
+  
+}
+
+# try it out!
+dag %>% 
+  gg_simple_dag()
 ```
 
+Conditioning on $F$ induces **d-separation**. The "d" stands for *directional*. D-separation means that some variables on a directed graph are independent of others. In this case, $H_1$ is d-separated from $T$, but only when we condition on $F$, because it blocks the path between $T$ and $H_1$. 
+
 ```{r 6.19}
-dagitty::impliedConditionalIndependencies(plant_dag)
+dag %>% 
+  dagitty::dseparated("T", "H1")
+
+dag %>% 
+  dagitty::dseparated("T", "H1", "F")
+
+dagitty::impliedConditionalIndependencies(dag)
 ```
 
 The first two say that original plant height should not be associated with the treatment of fungus, provided we do not condition on anything.
@@ -355,43 +596,95 @@ But consider this DAG:
 knitr::include_graphics(here::here("docs/misc_figs/06/fungus_dag.png"))
 ```
 
+```{r}
+# define our coordinates
+dag_coords <-
+  tibble(name = c("H0", "H1", "M", "F", "T"),
+         x    = c(1, 2, 2.5, 3, 4),
+         y    = c(2, 2, 1, 2, 2))
+
+# save our DAG
+dag <-
+  dagify(F ~ M + T,
+         H1 ~ H0 + M,
+         coords = dag_coords)
+
+gg_fancy_dag <- function(d, x = 1, y = 1, circle = "U") {
+  
+  d %>% 
+    ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+    geom_dag_point(aes(color = name == circle),
+                   alpha = 1/2, size = 6.5, show.legend = F) +
+    geom_point(x = x, y = y, 
+               size = 6.5, shape = 1, stroke = 1, color = "orange") +
+    geom_dag_text(color = "black") +
+    geom_dag_edges() + 
+    scale_color_manual(values = c("steelblue", "orange")) +
+    theme_dag()
+  
+}
+
+# check it out
+dag %>% 
+  gg_fancy_dag(x = 2.5, y = 1, circle = "M")
+```
+
+
 A regression of $H_1$ on $T$ will show no association between the treatment and plant growth. But if we include $F$ in the model, suddenly there will be an association. Let’s try it.
 
 ```{r 6.20}
 set.seed(71)
-N <- 1000
-h0 <- rnorm(N,10,2)
-treatment <- rep( 0:1 , each=N/2 )
-M <- rbern(N)
-fungus <- rbinom( N , size=1 , prob=0.5 - treatment*0.4 + 0.4*M )
-h1 <- h0 + rnorm( N , 5 + 3*M )
-d2 <- data.frame( h0=h0 , h1=h1 , treatment=treatment , fungus=fungus )
+n <- 1000
 
-# Rerun models with d2
-m6.7 <- quap(
-  alist(
-    h1 ~ dnorm( mu , sigma ),
-    mu <- h0 * p,
-    p <- a + bt*treatment + bf*fungus,
-    a ~ dlnorm( 0 , 0.2 ) ,
-    bt ~ dnorm( 0 , 0.5 ),
-    bf ~ dnorm( 0 , 0.5 ),
-    sigma ~ dexp( 1 )
-  ), data=d2 )
-precis(m6.7)
+d2 <- 
+  tibble(h0        = rnorm(n, mean = 10, sd = 2),
+         treatment = rep(0:1, each = n / 2),
+         m         = rbinom(n, size = 1, prob = .5),
+         fungus    = rbinom(n, size = 1, prob = .5 - treatment * 0.4 + 0.4 * m),
+         h1        = h0 + rnorm(n, mean = 5 + 3 * m, sd = 1))
 
-
-m6.8 <- quap(
-  alist(
-    h1 ~ dnorm( mu , sigma ),
-    mu <- h0 * p,
-    p <- a + bt*treatment,
-    a ~ dlnorm( 0 , 0.2 ),
-    bt ~ dnorm( 0 , 0.5 ),
-    sigma ~ dexp( 1 )
-  ), data=d2 )
-precis(m6.8)
+head(d2)
 ```
+
+```{r, results = "hide"}
+# Rerun models with d2
+b6.7b <- 
+  brm(data = d2, 
+      family = gaussian,
+      bf(h1 ~ h0 * (a + t * treatment + f * fungus),
+         a + t + f ~ 1,
+         nl = TRUE),
+      prior = c(prior(lognormal(0, 0.2), nlpar = a, lb = 0),
+                prior(normal(0, 0.5), nlpar = t),
+                prior(normal(0, 0.5), nlpar = f),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.07b")
+
+
+b6.8b <- 
+  brm(data = d2, 
+      family = gaussian,
+      bf(h1 ~ h0 * (a + t * treatment),
+         a + t ~ 1,
+         nl = TRUE),
+      prior = c(prior(lognormal(0, 0.2), nlpar = a, lb = 0),
+                prior(normal(0, 0.5), nlpar = t),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.08b")
+```
+
+```{r}
+brms::as_draws_df(b6.7b) %>%
+  round(digits = 2)
+
+brms::as_draws_df(b6.7b) %>%
+  round(digits = 2)
+```
+
 
 Now fungus seems like it helped the plants, even though it had no effect.
 
@@ -442,48 +735,98 @@ knitr::include_graphics(file.path(slides_dir, '23.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "Here the simulation is slightly different to the usual `rnorm`. Here's the algorithm. Uniform happiness at birth. Distributed from 0 to 1. Reality is more complicated, even harder to figure out. At 18 years old, you're eligible to marry. Then you have your coin-flip chance to get married. The chance is proportional to your happiness, which is constant. Age itself doesn't cause marriage, but each year you're alive you have another chance to get married. Married people remain married unto death. Then everyone moves to Spain. 1300 people, 3 variables, over 1000 years."}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
+
 ```{r 6.21}
-library(rethinking)
-d <- sim_happiness( seed=1977 , N_years=1000 )
-precis(d)
+d <- rethinking::sim_happiness(seed = 1977, N_years = 1000)
+
+head(d)
 ```
+
+Summarise the variables:
+
+```{r}
+d %>% 
+  pivot_longer(everything()) %>% 
+  group_by(name) %>% 
+  tidybayes::mean_qi(value) %>% 
+  mutate_if(is.double, round, digits = 2)
+```
+
+```{r, fig.cap="Figure 6.5"}
+d %>% 
+  mutate(married = factor(married,
+                          labels = c("unmarried", "married"))) %>% 
+  
+  ggplot(aes(x = age, y = happiness, color = married)) +
+  geom_point(size = 1.75) +
+  scale_color_manual(NULL, values = c("grey85", "forestgreen")) +
+  scale_x_continuous(expand = c(.015, .015)) +
+  theme(panel.grid = element_blank())
+```
+
 
 Rescale age so that the range from 18 to 65 is one unit, i.e. `A` ranges from 0 to 1, where 0 is age 18 and 1 is age 65:
 
 ```{r 6.22}
-d2 <- d[ d$age>17 , ] # only adults
-d2$A <- ( d2$age - 18 ) / ( 65 - 18 )
+d2 <-
+  d %>% 
+  filter(age > 17) %>% 
+  mutate(a = (age - 18) / (65 - 18))
+
+head(d2)
 ```
 
-Approximate the posterior 
-```{r 6.23}
-d2$mid <- d2$married + 1
-m6.9 <- quap(
-  alist(
-    happiness ~ dnorm( mu , sigma ),
-    mu <- a[mid] + bA*A,
-    a[mid] ~ dnorm( 0 , 1 ) ,
-    bA ~ dnorm( 0 , 2 ) ,
-    sigma ~ dexp(1)
-  ) , data=d2 )
-precis(m6.9,depth=2)
+Save `mid` as a factor to make the results easier to interpret:
+
+```{r}
+d2 <-
+  d2 %>% 
+  mutate(mid = factor(married + 1, labels = c("single", "married")))
+
+head(d2)
 ```
+
+
+Approximate the posterior 
+```{r 6.23, results = "hide"}
+b6.9 <- 
+  brm(data = d2, 
+      family = gaussian,
+      happiness ~ 0 + mid + a,
+      prior = c(prior(normal(0, 1), class = b, coef = midmarried),
+                prior(normal(0, 1), class = b, coef = midsingle),
+                prior(normal(0, 2), class = b, coef = a),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.09")
+```
+
+```{r}
+print(b6.9)
+```
+
 
 The model is quite sure that age is negatively associated with happiness. We’d like to compare the inferences from this model to a model that omits marriage status:
 
-```{r 6.24}
-m6.10 <- quap(
-  alist(
-    happiness ~ dnorm( mu , sigma ),
-    mu <- a + bA*A,
-    a ~ dnorm( 0 , 1 ),
-    bA ~ dnorm( 0 , 2 ),
-    sigma ~ dexp(1)
-  ) , data=d2 )
-precis(m6.10)
+```{r 6.24, results = "hide"}
+b6.10 <- 
+  brm(data = d2, 
+      family = gaussian,
+      happiness ~ 0 + Intercept + a,
+      prior = c(prior(normal(0, 1), class = b, coef = Intercept),
+                prior(normal(0, 2), class = b, coef = a),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.10")
 ```
 
+```{r}
+print(b6.10)
+```
 
+>The collider is marriage status. It is a common consequence of age and happiness.
 
 ```{r, echo = F, out.width='80%', fig.cap = "Here's the system. Run a regression where we take happiness. Happiness is the outcome, then the linear model `mu`, the slope `a` which is age. That's the exposure we're interested in. And we know the marriage status, so perhaps we control for that. (No, that's the wrong thing to do, as we'll see.) Created an index variable. Then put that in as a control. We see that single people are less happy. Regression models don't have arrows. It's not in the Bayesian network; that's what the DAG does. `a[2]` is married individuals. Positive `mu`. The slope is solidly negative. But this is a spurious correlation by conditioning on a collider. "}
 knitr::include_graphics(file.path(slides_dir, '25.png'))
@@ -521,20 +864,23 @@ knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
 
 ```{r 6.25}
-N <- 200 # number of grandparent-parent-child triads
-b_GP <- 1 # direct effect of G on P
-b_GC <- 0 # direct effect of G on C
-b_PC <- 1 # direct effect of P on C
-b_U <- 2 # direct effect of U on P and C
-```
+# how many grandparent-parent-child triads would you like?
+n    <- 200 
 
-```{r 6.26}
+b_gp <- 1  # direct effect of G on P
+b_gc <- 0  # direct effect of G on C
+b_pc <- 1  # direct effect of P on C
+b_u  <- 2  # direct effect of U on P and C
+
+# simulate triads
 set.seed(1)
-U <- 2*rbern( N , 0.5 ) - 1
-G <- rnorm( N )
-P <- rnorm( N , b_GP*G + b_U*U )
-C <- rnorm( N , b_PC*P + b_GC*G + b_U*U )
-d <- data.frame( C=C , P=P , G=G , U=U )
+d <-
+  tibble(u = 2 * rbinom(n, size = 1, prob = .5) - 1,
+         g = rnorm(n, mean = 0, sd = 1)) %>% 
+  mutate(p = rnorm(n, mean = b_gp * g + b_u * u, sd = 1)) %>% 
+  mutate(c = rnorm(n, mean = b_pc * p + b_gc * g + b_u * u, sd = 1))
+
+head(d)
 ```
 
 
@@ -542,16 +888,20 @@ d <- data.frame( C=C , P=P , G=G , U=U )
 knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
-```{r 6.27}
-m6.11 <- quap(
-  alist(
-    C ~ dnorm( mu , sigma ),
-    mu <- a + b_PC*P + b_GC*G,
-    a ~ dnorm( 0 , 1 ),
-    c(b_PC,b_GC) ~ dnorm( 0 , 1 ),
-    sigma ~ dexp( 1 )
-  ), data=d )
-precis(m6.11)
+```{r 6.27, results = "hide"}
+b6.11 <- 
+  brm(data = d, 
+      family = gaussian,
+      c ~ 0 + Intercept + p + g,
+      prior = c(prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.11")
+```
+
+```{r}
+print(b6.11)
 ```
 
 
@@ -559,19 +909,46 @@ precis(m6.11)
 knitr::include_graphics(file.path(slides_dir, '33.png'))
 ```
 
+```{r, fig.cap = "Figure 6.5"}
+d %>% 
+  mutate(centile = ifelse(p >= quantile(p, prob = .45) & p <= quantile(p, prob = .60), "a", "b"),
+         u = factor(u)) %>%
+  
+  ggplot(aes(x = g, y = c)) +
+  geom_point(aes(shape = centile, color = u),
+             size = 2.5, stroke = 1/4) +
+  stat_smooth(data = . %>% filter(centile == "a"),
+              method = "lm", se = F, size = 1/2, color = "black", fullrange = T) +
+  scale_shape_manual(values = c(19, 1)) +
+  scale_color_manual(values = c("black", "lightblue")) +
+  theme(legend.position = "none")
+```
+
+
 What can we do about this? We have to measure $U$:
 
-```{r 6.28}
-m6.12 <- quap(
-  alist(
-    C ~ dnorm( mu , sigma ),
-    mu <- a + b_PC*P + b_GC*G + b_U*U,
-    a ~ dnorm( 0 , 1 ) ,
-    c(b_PC,b_GC,b_U) ~ dnorm( 0 , 1 ),
-    sigma ~ dexp( 1 )
-  ), data=d )
-precis(m6.12)
+```{r 6.28, results = "hide}
+b6.12 <- 
+  brm(data = d, 
+      family = gaussian,
+      c ~ 0 + Intercept + p + g + u,
+      prior = c(prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 6,
+      file = "fits/b06.12")
 ```
+
+```{r}
+print(b6.12)
+```
+
+Now the posterior for $\beta_g$ is hovering around 0, where it belongs. 
+
+```{r}
+b_gc
+```
+
 
 And those are the slopes we simulated with.
 
@@ -632,14 +1009,17 @@ knitr::include_graphics(file.path(slides_dir, '06.png'))
 Can get `dagitty` to do it for us:
 
 ```{r 6.29}
-library(dagitty)
-dag_6.1 <- dagitty( "dag {
-  U [unobserved]
-  X -> Y
-  X <- U <- A -> C -> Y
-  U -> B <- C
-}")
-adjustmentSets( dag_6.1 , exposure="X" , outcome="Y" )
+dag_6.1 <- 
+  dagitty::dagitty(
+    "dag {
+    U [unobserved]
+    X -> Y
+    X <- U <- A -> C -> Y 
+    U -> B <- C
+    }"
+  )
+
+dagitty::adjustmentSets(dag_6.1, exposure = "X", outcome = "Y")
 ```
 
 Conditioning on either $C$ or $A$ would suffice. Conditioning on $C$ is the better idea, from the perspective of efficiency, since it could also help with the precision of the estimate of $X \rightarrow Y$. 
@@ -658,14 +1038,17 @@ knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
 ```{r 6.30}
-library(dagitty)
-dag_6.2 <- dagitty( "dag {
-  A -> D
-  A -> M -> D
-  A <- S -> M
-  S -> W -> D
-}")
-adjustmentSets( dag_6.2 , exposure="W", outcome="D" )
+dag_6.2 <- 
+  dagitty::dagitty(
+    "dag {
+    A -> D
+    A -> M -> D
+    A <- S -> M
+    S -> W -> D
+    }"
+  )
+
+dagitty::adjustmentSets(dag_6.2, exposure = "W", outcome = "D")
 ```
 
 
@@ -680,7 +1063,7 @@ knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```
 
 ```{r 6.31}
-impliedConditionalIndependencies( dag_6.2 )
+dagitty::impliedConditionalIndependencies(dag_6.2)
 ```
 
 

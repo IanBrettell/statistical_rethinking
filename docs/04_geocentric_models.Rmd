@@ -1844,35 +1844,78 @@ tibble(x = seq(from = 0, to = 10, by = 0.1)) %>%
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
-```{r 4.76}
-m4.7 <- rethinking::quap(
-  alist(
-    D ~ dnorm( mu , sigma ) ,
-    mu <- a + B %*% w ,
-    a ~ dnorm(100,10),
-    w ~ dnorm(0,10),
-    sigma ~ dexp(1)
-  ), data=list( D=d2$doy , B=B ) ,
-  start=list( w=rep( 0 , ncol(B) ) ) )
+
+Add the `B` matrix to the `d2` data frame.
+```{r}
+d3 <-
+  d2 %>% 
+  mutate(B = B) 
+
+# take a look at the structure of `d3
+d3 %>% glimpse()
 ```
+
+
+```{r 4.76, results = "hide"}
+b4.8 <- 
+  brm(data = d3,
+      family = gaussian,
+      doy ~ 1 + B,
+      prior = c(prior(normal(100, 10), class = Intercept),
+                prior(normal(0, 10), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.08")
+
+print(b4.8)
+```
+
+Each of the 17 columns in our `B` matrix was assigned its own parameter.
 
 Then plot the posterior predictions:
 
 ```{r 4.77}
-post <- extract.samples( m4.7 )
-w <- apply( post$w , 2 , mean )
-plot( NULL , xlim=range(d2$year) , ylim=c(-6,6) ,
-      xlab="year" , ylab="basis * weight" )
-for ( i in 1:ncol(B) ) lines( d2$year , w[i]*B[,i] )
+post <- brms::as_draws_df(b4.8)
+
+glimpse(post)
+
+post %>% 
+  dplyr::select(b_B1:b_B17) %>% 
+  set_names(c(str_c(0, 1:9), 10:17)) %>% 
+  pivot_longer(everything(), names_to = "bias_function") %>% 
+  group_by(bias_function) %>% 
+  summarise(weight = mean(value)) %>% 
+  full_join(b, by = "bias_function") %>% 
+  
+  # plot
+  ggplot(aes(x = year, y = bias * weight, group = bias_function)) +
+  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
+  geom_line(color = "#ffb7c5", alpha = 1/2, size = 1.5) +
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "#4f455c"),
+        panel.grid = element_blank()) 
 ```
 
 Finally, the 97% posterior interval for $\mu$. 
 
 ```{r, 4.78}
-mu <- link( m4.7 )
-mu_PI <- apply(mu,2,PI,0.97)
-plot( d2$year , d2$doy , col=col.alpha(rangi2,0.3) , pch=16)
-shade( mu_PI , d2$year , col=col.alpha("black",0.5) )
+f <- fitted(b4.8)
+
+f %>% 
+  data.frame() %>% 
+  bind_cols(d2) %>% 
+  
+  ggplot(aes(x = year, y = doy, ymin = Q2.5, ymax = Q97.5)) + 
+  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
+  geom_hline(yintercept = fixef(b4.8)[1, 1], color = "white", linetype = 2) +
+  geom_point(color = "#ffb7c5", alpha = 1/2) +
+  geom_ribbon(fill = "white", alpha = 2/3) +
+  labs(x = "year",
+       y = "day in year") +
+  theme_bw() +
+  theme(panel.background = element_rect(fill = "#4f455c"),
+        panel.grid = element_blank())
 ```
 
 
@@ -1883,6 +1926,39 @@ knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "Resulting spline isn't super wiggly. Depends on what you want to de-trend."}
 knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
+
+Re-do with 5 knots:
+
+```{r}
+# redo the `B` splines
+num_knots <- 5
+knot_list <- quantile(d2$year, probs = seq(from = 0, to = 1, length.out = num_knots))
+
+B <- splines::bs(d2$year,
+                 knots = knot_list[-c(1, num_knots)], 
+                 # this makes the splines liner rater than cubic
+                 degree = 1, 
+                 intercept = TRUE)
+
+# define a new `d4` data
+d4 <- 
+  d2 %>% 
+  mutate(B = B)
+
+b4.9 <- 
+  brm(data = d4,
+      family = gaussian,
+      formula = doy ~ 1 + B,
+      prior = c(prior(normal(100, 10), class = Intercept),
+                prior(normal(0, 10), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 4,
+      file = "fits/b04.09")
+
+print(b4.9)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "Let's do cubic splines. Most popular because they're flexible but not crazy. Play around with the number of knots. What you'll see is you can have too few knots, but at some point you'll have enough that it won't make much of a difference. This is what the basis functions look like, and now they're wigglier, but they also overlap more, so now at a particular point you can have up to four basis curves overlapping. "}
 knitr::include_graphics(file.path(slides_dir, '42.png'))
@@ -1896,18 +1972,63 @@ knitr::include_graphics(file.path(slides_dir, '43.png'))
 knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
-Can do the same thing with matrix multiplication
-```{r 4.79}
-m4.7alt <- rethinking::quap(
-  alist(
-    D ~ dnorm( mu , sigma ) ,
-    mu <- a + sapply( 1:827 , function(i) sum( B[i,]*w ) ) ,
-    a ~ dnorm(100,1),
-    w ~ dnorm(0,10),
-    sigma ~ dexp(1)
-  ),
-  data=list( D=d2$doy , B=B ) ,
-  start=list( w=rep( 0 , ncol(B) ) ) )
+```{r Figure 4.12}
+## top
+# wrangle a bit
+b <-
+  invoke(data.frame, d4) %>% 
+  pivot_longer(starts_with("B"),
+               names_to = "bias_function",
+               values_to = "bias")
+
+# plot
+p1 <- 
+  b %>% 
+  ggplot(aes(x = year, y = bias, group = bias_function)) +
+  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
+  geom_line(color = "#ffb7c5", alpha = 1/2, size = 1.5) +
+  scale_x_continuous(NULL, breaks = NULL) +
+  ylab("bias value")
+
+## middle
+# wrangle
+p2 <-
+  brms::as_draws_df(b4.9) %>% 
+  dplyr::select(b_B1:b_B5) %>% 
+  set_names(str_c("B.", 1:5)) %>% 
+  pivot_longer(everything(), names_to = "bias_function") %>% 
+  group_by(bias_function) %>% 
+  summarise(weight = mean(value)) %>% 
+  full_join(b, by = "bias_function") %>% 
+  
+  # plot
+  ggplot(aes(x = year, y = bias * weight, group = bias_function)) +
+  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
+  geom_line(color = "#ffb7c5", alpha = 1/2, size = 1.5) +
+  scale_x_continuous(NULL, breaks = NULL)
+
+## bottom
+# wrangle
+f <- fitted(b4.9)
+
+p3 <-
+  f %>% 
+  data.frame() %>% 
+  bind_cols(d2) %>% 
+  
+  # plot
+  ggplot(aes(x = year, y = doy, ymin = Q2.5, ymax = Q97.5)) + 
+  geom_vline(xintercept = knot_list, color = "white", alpha = 1/2) +
+  geom_hline(yintercept = fixef(b4.9)[1, 1], color = "white", linetype = 2) +
+  geom_point(color = "#ffb7c5", alpha = 1/2) +
+  geom_ribbon(fill = "white", alpha = 2/3) +
+  labs(x = "year",
+       y = "day in year")
+
+(p1 / p2 / p3) &
+  theme_bw() &
+  theme(panel.background = element_rect(fill = "#4f455c"),
+        panel.grid = element_blank())
 ```
 
 
@@ -1918,6 +2039,8 @@ knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```{r, echo = F, out.width='80%'}
 knitr::include_graphics(file.path(slides_dir, '46.png'))
 ```
+
+
 
 ## Practice
 

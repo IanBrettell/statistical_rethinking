@@ -1,29 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    dev: 'svg'
-    number_sections: false
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-#output: html_notebook
-#editor_options: 
-#  chunk_output_type: inline
-#output:
-#  bookdown::tufte_html_book:
-#    toc: yes
-#    css: toc.css
-##    toc_float: true
-#    dev: 'svg'
-##    number_sections: true
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
-#    link-citations: yes
----
-
 # The Many Variables & The Spurious Waffles
 
 ```{r, message = F, warning=F}
@@ -76,14 +50,67 @@ knitr::include_graphics(file.path(slides_dir, '09.png'))
 ```
 
 ```{r 5.1}
-# load data
-data("WaffleDivorce")
-d = WaffleDivorce
+data(WaffleDivorce, package = "rethinking")
+d <- WaffleDivorce
+```
 
-# Standardise variables
-d$D = rethinking::standardize( d$Divorce )
-d$M = rethinking::standardize( d$Marriage)
-d$A = rethinking::standardize( d$MedianAgeMarriage)
+Standardise the focal variables:
+```{r}
+d <-
+  d %>% 
+  mutate(d = rethinking::standardize(Divorce),
+         m = rethinking::standardize(Marriage),
+         a = rethinking::standardize(MedianAgeMarriage))
+```
+
+Check it out:
+```{r}
+head(d)
+glimpse(d)
+```
+
+```{r, fig.cap = "Figure 5.1"}
+d %>%
+  ggplot(aes(x = WaffleHouses/Population, y = Divorce)) +
+  stat_smooth(method = "lm", fullrange = T, size = 1/2,
+              color = "firebrick4", fill = "firebrick", alpha = 1/5) +
+  geom_point(size = 1.5, color = "firebrick4", alpha = 1/2) +
+  ggrepel::geom_text_repel(data = d %>% filter(Loc %in% c("ME", "OK", "AR", "AL", "GA", "SC", "NJ")),
+                           aes(label = Loc), 
+                           size = 3, seed = 1042) +  # this makes it reproducible
+  scale_x_continuous("Waffle Houses per million", limits = c(0, 55)) +
+  ylab("Divorce rate") +
+  coord_cartesian(xlim = c(0, 50), ylim = c(5, 15)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
+
+Or on a map:
+
+```{r}
+
+left_join(
+  # get the map data
+  urbnmapr::get_urbn_map(map = "states", sf = TRUE),
+  # add the primary data
+  d %>% 
+    mutate(state_name = Location %>% as.character(),
+           across(c("d", "m", "a"), ~as.numeric(.))) %>% 
+    dplyr::select(d:a, state_name),
+  by = "state_name"
+) %>%
+  # convert to the long format for faceting
+  tidyr::pivot_longer(cols = c("d", "m", "a")) %>% 
+  
+  # plot!
+  ggplot() +
+  geom_sf(aes(fill = value, geometry = geometry),
+          size = 0) +
+  scale_fill_gradient(low = "#f8eaea", high = "firebrick4") +
+  theme_void() +
+  theme(legend.position = "none",
+        strip.text = element_text(margin = margin(0, 0, .5, 0))) +
+  facet_wrap(~ name)
 ```
 
 
@@ -122,7 +149,7 @@ knitr::include_graphics(file.path(slides_dir, '15.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "You can fit your model. You can run that model. `extract.prior` samples from the prior to simulate. Then pass it to `link` to create predictions based on the prior. Then you can plot the regression lines. "}
 knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
-If $\beta_A = 1$, that would imply that a change of one standard deviation in age at marriage is assocatied with a change of one standard deviation in divorce.
+If $\beta_A = 1$, that would imply that a change of one standard deviation in age at marriage is associated with a change of one standard deviation in divorce.
 
 To know if that's strong, how big is a standard deviation of age at marriage?
 
@@ -131,60 +158,128 @@ sd( d$MedianAgeMarriage )
 ```
 
 
-```{r 5.3}
-m5.1 = rethinking::quap(
-  alist(
-    D ~ dnorm( mu , sigma ) ,
-    mu <- a + bA * A ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bA ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data = d )
+```{r 5.3, results = "hide"}
+b5.1 <- 
+  brm(data = d, 
+      family = gaussian,
+      d ~ 1 + a,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      sample_prior = T,
+      file = "fits/b05.01")
 ```
 
+`sample_prior = T` tells `brms` to take draws from both the posterior distribution (as usual) and from the prior predictive distribution. 
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is 50 regression lines from the prior. Standardised deviation of marriage. 2 SD is almost all. If your model thinks a possible divorce rate is outside the observable range of divorce rates, then they're bad. This prior allows really strong relationships. Allows it to govern nearly all the variation in divorce rate. But we'll move forward with this. This is the flattest prior you could justify scientifically. Priors by frequentists consider even crazier priors, just as vertical lines."}
 knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
 
 ```{r 5.4}
-set.seed(10)
-prior = rethinking::extract.prior( m5.1 )
-mu <- rethinking::link( m5.1 , 
-            post=prior , 
-            data=list( A=c(-2,2) ) )
+prior <- prior_samples(b5.1)
 
-plot( NULL , xlim=c(-2,2) , ylim=c(-2,2) )
-for ( i in 1:50 ) lines( c(-2,2) , mu[i,] , col=col.alpha("black",0.4) )
+prior %>% glimpse()
+
+set.seed(5)
+
+prior %>% 
+  slice_sample(n = 50) %>% 
+  rownames_to_column("draw") %>% 
+  expand(nesting(draw, Intercept, b),
+         a = c(-2, 2)) %>% 
+  mutate(d = Intercept + b * a) %>% 
+  
+  ggplot(aes(x = a, y = d)) +
+  geom_line(aes(group = draw),
+            color = "firebrick", alpha = .4) +
+  labs(x = "Median age marriage (std)",
+       y = "Divorce rate (std)") +
+  coord_cartesian(ylim = c(-2, 2)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
 ```
 
 Now for the posterior predictions:
 
 ```{r 5.5}
-# compute percentile interval of mean
-A_seq = seq( from=-3 , to=3.2 , length.out=30 )
-mu = link( m5.1 , data=list(A=A_seq) )
-mu.mean = apply( mu , 2, mean )
-mu.PI = apply( mu , 2 , PI )
+# determine the range of `a` values we'd like to feed into `fitted()`
+nd <- tibble(a = seq(from = -3, to = 3.2, length.out = 30))
 
-# plot it all
-plot( D ~ A , data=d , col=rangi2 )
-lines( A_seq , mu.mean , lwd=2 )
-shade( mu.PI , A_seq )
+# now use `fitted()` to get the model-implied trajectories
+fitted(b5.1,
+       newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  
+  # plot
+  ggplot(aes(x = a)) +
+  geom_smooth(aes(y = Estimate, ymin = Q2.5, ymax = Q97.5),
+              stat = "identity",
+              fill = "firebrick", color = "firebrick4", alpha = 1/5, size = 1/4) +
+  geom_point(data = d, 
+             aes(y = d), 
+             size = 2, color = "firebrick4") +
+  labs(x = "Median age marriage (std)",
+       y = "Divorce rate (std)") +
+  coord_cartesian(xlim = range(d$a), 
+                  ylim = range(d$d)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
 ```
-$\beta_A$ is reliably negative. You can fit a similar regression for the relationship in the left-hand plot:
+$\beta_A$ is reliably negative. 
 
-```{r 5.6}
-m5.2 <- rethinking::quap(
-  alist(
-    D ~ dnorm( mu , sigma ) ,
-    mu <- a + bM * M ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bM ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data = d )
+```{r}
+print(b5.1)
+```
+
+
+You can fit a similar regression for the relationship in the left-hand plot:
+
+```{r 5.6, results = "hide"}
+b5.2 <- 
+  brm(data = d, 
+      family = gaussian,
+      d ~ 1 + m,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.02")
 
 ```
+
+```{r}
+print(b5.2)
+```
+
+Make the left-hand panel
+
+```{r}
+nd <- tibble(m = seq(from = -2.5, to = 3.5, length.out = 30))
+
+fitted(b5.2, newdata = nd) %>%
+  data.frame() %>%
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = m)) +
+  geom_smooth(aes(y = Estimate, ymin = Q2.5, ymax = Q97.5),
+              stat = "identity",
+              fill = "firebrick", color = "firebrick4", alpha = 1/5, size = 1/4) +
+  geom_point(data = d, 
+             aes(y = d), 
+             size = 2, color = "firebrick4") +
+  labs(x = "Marriage rate (std)",
+       y = "Divorce rate (std)") +
+  coord_cartesian(xlim = range(d$m), 
+                  ylim = range(d$d)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
+```
+
 
 Drawing a DAG
 
@@ -197,16 +292,31 @@ rethinking::drawdag( dag5.1 )
 ***5.1.2 Testable implications***
 
 ```{r 5.8}
-DMA_dag2 <- dagitty('dag{ D <- A -> M }')
-impliedConditionalIndependencies( DMA_dag2 )
+set.seed(5)
+
+ggdag::dagify(M ~ A,
+       D ~ A + M) %>%
+  ggdag::ggdag(node_size = 8)
+```
+Get correlations
+
+```{r}
+d %>% 
+  dplyr::select(d:a) %>% 
+  cor()
 ```
 
-```{r 5.9}
-DMA_dag1 <- dagitty('dag{ D <- A -> M -> D }')
-impliedConditionalIndependencies( DMA_dag1 )
+
+```{r}
+dagitty::dagitty('dag{ D <- A -> M }') %>% 
+  dagitty::impliedConditionalIndependencies()
 ```
 
-No conditional independencies, so no output.
+```{r}
+dagitty::dagitty('dag{D <- A -> M -> D}') %>% 
+  dagitty::impliedConditionalIndependencies()
+```
+
 
 ***5.1.3 Multiple regression notation***
 
@@ -216,19 +326,22 @@ knitr::include_graphics(file.path(slides_dir, '18.png'))
 
 ***5.1.4 Approximating the posterior***
 
-```{r 5.10}
-m5.3 <- quap(
-  alist(
-    D ~ dnorm( mu , sigma ) ,
-    mu <- a + bM*M + bA*A ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bM ~ dnorm( 0 , 0.5 ) ,
-    bA ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data = d )
-precis( m5.3 )
+```{r 5.10, results = "hide"}
+b5.3 <- 
+  brm(data = d, 
+      family = gaussian,
+      d ~ 1 + m + a,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.03")
 ```
 
+```{r}
+print(b5.3)
+```
 
 
 ```{r, echo = F, out.width='80%'}
@@ -242,8 +355,34 @@ knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```
 
 ```{r 5.11}
-# Faulty code
-#plot( rethinking::coeftab(m5.1,m5.2,m5.3), par=c("bA","bM") )
+# first, extract and rename the necessary posterior parameters
+bind_cols(
+  brms::as_draws_df(b5.1) %>% 
+    transmute(`b5.1_beta[A]` = b_a),
+  brms::as_draws_df(b5.2) %>% 
+    transmute(`b5.2_beta[M]` = b_m),
+  brms::as_draws_df(b5.3) %>% 
+    transmute(`b5.3_beta[M]` = b_m,
+              `b5.3_beta[A]` = b_a)
+  ) %>% 
+  # convert them to the long format, group, and get the posterior summaries
+  pivot_longer(everything()) %>% 
+  group_by(name) %>% 
+  summarise(mean = mean(value),
+            ll   = quantile(value, prob = .025),
+            ul   = quantile(value, prob = .975)) %>% 
+  # since the `key` variable is really two variables in one, here we split them up
+  separate(col = name, into = c("fit", "parameter"), sep = "_") %>% 
+  
+  # plot!
+  ggplot(aes(x = mean, xmin = ll, xmax = ul, y = fit)) +
+  geom_vline(xintercept = 0, color = "firebrick", alpha = 1/5) +
+  geom_pointrange(color = "firebrick") +
+  labs(x = "posterior", y = NULL) +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        strip.background = element_rect(fill = "transparent", color = "transparent")) +
+  facet_wrap(~ parameter, ncol = 1, labeller = label_parsed)
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is the graph. Once you know the median age of marriage, you get little extra information in marriage. But when you ad A, it does give you information. If you just wanted to make a prediction, M is useful, but if you wanted to change D, you need to change other things like A."}
@@ -253,14 +392,26 @@ knitr::include_graphics(file.path(slides_dir, '21.png'))
 
 You have to be clear about whether you're interesting in predicting things, or understanding the true nature of things. 
 
-Let's simulate the divorce example. Every DAG implies a simulation, and such simulations can help us design models to correclty infer relationships among variables.
+Let's simulate the divorce example. Every DAG implies a simulation, and such simulations can help us design models to correctly infer relationships among variables.
 
 ```{r 5.12}
-N = 50 # number of simulated States
-age = rnorm(N) # sim A
-mar = rnorm(N, -age) # sim A -> M
-div = rnorm(N, age) # sim A -> D
+# how many states would you like?
+n <- 50 
+
+set.seed(5)
+sim_d <-
+  tibble(age = rnorm(n, mean = 0, sd = 1)) %>%  # sim A 
+  mutate(mar = rnorm(n, mean = -age, sd = 1),   # sim A -> M 
+         div = rnorm(n, mean =  age, sd = 1))   # sim A -> D
+
+head(sim_d)
 ```
+
+```{r}
+pairs(sim_d, col = "firebrick4")
+```
+
+
 
 ***5.1.5 Plotting multivariate posteriors***
 
@@ -278,29 +429,59 @@ Recipe:
 
 1. Regress a predictor, and find the extra variance left over, and look at the pattern of the relationship between the residuals and the outcome.
 
-```{r 5.13}
-# Approximate the posterior
-m5.4 = rethinking::quap(
-  alist(
-    M ~ dnorm( mu , sigma ) ,
-    mu <- a + bAM * A ,
-    a ~ dnorm( 0, 0.2 ) ,
-    bAM ~ dnorm( 0, 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ), data = d
-)
+```{r 5.13, results = "hide"}
+b5.4 <- 
+  brm(data = d, 
+      family = gaussian,
+      m ~ 1 + a,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.04")
 ```
 
-```{r 5.14}
-# Compute the residuals
-mu = rethinking::link(m5.4)
-mu_mean = apply( mu, 2, mean)
-mu_resid = d$M - mu_mean
+```{r}
+print(b5.4)
 ```
+
+```{r}
+f <- 
+  fitted(b5.4) %>%
+  data.frame() %>%
+  bind_cols(d)
+
+glimpse(f)
+```
+
+
+
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Here's our first residual plot"}
 knitr::include_graphics(file.path(slides_dir, '24.png'))
+```
+
+```{r}
+p1 <-
+  f %>% 
+  ggplot(aes(x = a, y = m)) +
+  geom_point(size = 2, shape = 1, color = "firebrick4") +
+  geom_segment(aes(xend = a, yend = Estimate), 
+               size = 1/4) +
+  geom_line(aes(y = Estimate), 
+            color = "firebrick4") +
+  geom_text_repel(data = . %>% filter(Loc %in% c("WY", "ND", "ME", "HI", "DC")),  
+                  aes(label = Loc), 
+                  size = 3, seed = 14) +
+  labs(x = "Age at marriage (std)",
+       y = "Marriage rate (std)") +
+  coord_cartesian(ylim = range(d$m)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
+
+p1
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "What are we looking at here? Marriage rate, standardised. THe distance from the regression line - the expected value of M conditional on A, is the residual. THe unexplained bit from the model. Highlighted some states with high residuals. Now we'll take the absolute distances for each point."}
@@ -312,12 +493,109 @@ knitr::include_graphics(file.path(slides_dir, '25.png'))
 knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
+```{r}
+r <- 
+  residuals(b5.4) %>%
+  # to use this in ggplot2, we need to make it a tibble or data frame
+  data.frame() %>% 
+  bind_cols(d)
+
+p3 <-
+  r %>% 
+  ggplot(aes(x = Estimate, y = d)) +
+  stat_smooth(method = "lm", fullrange = T,
+              color = "firebrick4", fill = "firebrick4", 
+              alpha = 1/5, size = 1/2) +
+  geom_vline(xintercept = 0, linetype = 2, color = "grey50") +
+  geom_point(size = 2, color = "firebrick4", alpha = 2/3) +
+  geom_text_repel(data = . %>% filter(Loc %in% c("WY", "ND", "ME", "HI", "DC")),  
+                  aes(label = Loc), 
+                  size = 3, seed = 5) +
+  scale_x_continuous(limits = c(-2, 2)) +
+  coord_cartesian(xlim = range(r$Estimate)) +
+  labs(x = "Marriage rate residuals",
+       y = "Divorce rate (std)") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+p3
+```
+
 ```{r, echo = F, out.width='80%', fig.cap = "Still no explanation about why ME is so high. Now you can pivot A on M. "}
 knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
+```{r}
+b5.4b <- 
+  brm(data = d, 
+      family = gaussian,
+      a ~ 1 + m,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.04b")
+```
+
+```{r}
+p2 <-
+  fitted(b5.4b) %>%
+  data.frame() %>%
+  bind_cols(d) %>% 
+  
+  ggplot(aes(x = m, y = a)) +
+  geom_point(size = 2, shape = 1, color = "firebrick4") +
+  geom_segment(aes(xend = m, yend = Estimate), 
+               size = 1/4) +
+  geom_line(aes(y = Estimate), 
+            color = "firebrick4") +
+  geom_text_repel(data = . %>% filter(Loc %in% c("DC", "HI", "ID")),  
+                  aes(label = Loc), 
+                  size = 3, seed = 5) +
+  labs(x = "Marriage rate (std)",
+       y = "Age at marriage (std)") +
+  coord_cartesian(ylim = range(d$a)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())   
+
+p2
+```
+
 ```{r, echo = F, out.width='80%', fig.cap = "Then put those on the plot on the bottom. So now that you know M, there's considerable information in also knowing A. But the reverse is not true. "}
 knitr::include_graphics(file.path(slides_dir, '28.png'))
+```
+
+```{r}
+r <-
+  residuals(b5.4b) %>%
+  data.frame() %>% 
+  bind_cols(d)
+
+p4 <-
+  r %>%
+  ggplot(aes(x = Estimate, y = d)) +
+  stat_smooth(method = "lm", fullrange = T,
+              color = "firebrick4", fill = "firebrick4", 
+              alpha = 1/5, size = 1/2) +
+  geom_vline(xintercept = 0, linetype = 2, color = "grey50") +
+  geom_point(size = 2, color = "firebrick4", alpha = 2/3) +
+  geom_text_repel(data = . %>% filter(Loc %in% c("ID", "HI", "DC")),  
+                  aes(label = Loc), 
+                  size = 3, seed = 5) +
+  scale_x_continuous(limits = c(-2, 3)) +
+  coord_cartesian(xlim = range(r$Estimate),
+                  ylim = range(d$d)) +
+  labs(x = "Age at marriage residuals",
+       y = "Divorce rate (std)") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+p4
+```
+
+```{r}
+p1 + p2 + p3 + p4 + plot_annotation(title = "Understanding multiple regression through residuals")
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap = "This is one of the things we mean. In observational studies like this one, there's no ethical intervention we can make. But we want to make causal information. Linear regression allows you to do that, but only if you have an idea of the causal relationship between the variables. To interpret, you need a causal framework. We'll have an example latter when controlling can *create* a confound. These models are not magic. You shouldn't get cocky. This is the kind of study where you use average data. Quite a pathological dataset."}
@@ -336,38 +614,30 @@ Goals:
 1. Figure out whether the approximation of the posterior works. Compare the predictions with the raw data. If they're different, they fail. 
 2. It can inspire you to look at the cases that don't fit well, and figure out what you need to make better causal inferences.
 
-```{r 5.15}
-# call link without specifying new data
-# so it uses original data
-mu = link(m5.3)
-
-# summarize samples across cases
-mu_mean = apply(mu, 2, mean)
-mu_PI = apply(mu, 2, rethinking::PI)
-
-# simulate observations
-# again no new data, so uses original data
-D_sim = rethinking::sim( m5.3 , n=1e4 )
-D_PI = apply( D_sim, 2, rethinking::PI)
-```
 
 
 Plot predictions against observed. 
 
 ```{r 5.16}
-plot(mu_mean ~ d$D, col = rangi2, ylim = range(mu_PI) ,
-     xlab = "Observed divorce", ylab = "Predicted divorce")
-abline( a=0, b=1, lty=2 )
-for ( i in 1:nrow(d) ) lines( rep(d$D[i], 2) , mu_PI[, i] , col = rangi2 )
+fitted(b5.3) %>%
+  data.frame() %>%
+  # un-standardize the model predictions
+  mutate_all(~. * sd(d$Divorce) + mean(d$Divorce)) %>% 
+  bind_cols(d) %>%
+  
+  ggplot(aes(x = Divorce, y = Estimate)) +
+  geom_abline(linetype = 2, color = "grey50", size = .5) +
+  geom_point(size = 1.5, color = "firebrick4", alpha = 3/4) +
+  geom_linerange(aes(ymin = Q2.5, ymax = Q97.5),
+                 size = 1/4, color = "firebrick4") +
+  geom_text(data = . %>% filter(Loc %in% c("ID", "UT", "RI", "ME")),
+            aes(label = Loc), 
+            hjust = 1, nudge_x = - 0.25) +
+  labs(x = "Observed divorce", y = "Predicted divorce") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 ```
 
-```{r 5.17}
-plot(mu_mean ~ d$D, col = rangi2, ylim = range(mu_PI) ,
-     xlab = "Observed divorce", ylab = "Predicted divorce")
-abline( a=0, b=1, lty=2 )
-for ( i in 1:nrow(d) ) lines( rep(d$D[i], 2) , mu_PI[, i] , col = rangi2 )
-identify( x=d$D , y=mu_mean , labels=d$Loc )
-```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Diagonal is unity - perfect prediction. But there are states where they're making bad predictions, like ID. Has a very low D. That's why there's a mismatch. It's getting it really wrong. Why? The Mormons. They have a very low divorce rate. UT as well."}
@@ -383,107 +653,169 @@ Used with clarity of purpose, counterfactual plots help you understand the model
 Recipe:
 1. Pick a variable to manipulate (the intervention variable)
 2. Define the range of values to set the intervention variable to.
-3. FOr each vlaue of the intervention variable, and for each sample in posterior, use the causal model to simulate the values of other variables, including the outcome. 
+3. For each value of the intervention variable, and for each sample in posterior, use the causal model to simulate the values of other variables, including the outcome. 
 
-```{r 5.19}
-data(WaffleDivorce)
-d <- list()
-d$A <- standardize( WaffleDivorce$MedianAgeMarriage )
-d$D <- standardize( WaffleDivorce$Divorce )
-d$M <- standardize( WaffleDivorce$Marriage )
-m5.3_A <- quap(
-  alist(
-    ## A -> D <- M
-    D ~ dnorm( mu , sigma ) ,
-    mu <- a + bM*M + bA*A ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bM ~ dnorm( 0 , 0.5 ) ,
-    bA ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 ),
-    ## A -> M
-    M ~ dnorm( mu_M , sigma_M ),
-    mu_M <- aM + bAM*A,
-    aM ~ dnorm( 0 , 0.2 ),
-    bAM ~ dnorm( 0 , 0.5 ),
-    sigma_M ~ dexp( 1 )
-  ) , data = d )
+```{r 5.19, results = "hide"}
+d_model <- bf(d ~ 1 + a + m)
+m_model <- bf(m ~ 1 + a)
 
-precis(m5.3_A)
+b5.3_A <-
+  brm(data = d, 
+      family = gaussian,
+      d_model + m_model + set_rescor(FALSE),
+      prior = c(prior(normal(0, 0.2), class = Intercept, resp = d),
+                prior(normal(0, 0.5), class = b, resp = d),
+                prior(exponential(1), class = sigma, resp = d),
+                
+                prior(normal(0, 0.2), class = Intercept, resp = m),
+                prior(normal(0, 0.5), class = b, resp = m),
+                prior(exponential(1), class = sigma, resp = m)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.03_A")
 ```
+
+```{r}
+nd <- tibble(a = seq(from = -2, to = 2, length.out = 30),
+             m = 0)
+
+p1 <-
+  predict(b5.3_A,
+          resp = "d",
+          newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = a, y = Estimate, ymin = Q2.5, ymax = Q97.5)) +
+  geom_smooth(stat = "identity",
+              fill = "firebrick", color = "firebrick4", alpha = 1/5, size = 1/4) +
+  labs(subtitle = "Total counterfactual effect of A on D",
+       x = "manipulated A",
+       y = "counterfactual D") +
+  coord_cartesian(ylim = c(-2, 2)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
+
+p1
+```
+
 
 Now simulate what would happen if we manipulate A. 
-```{r 5.20}
-# Define a rang eof values for A
-A_seq <- seq( from=-2 , to=2 , length.out=30 )
-```
-
-```{r 5.21}
-# Simulate the influence of A on M
-# prep data
-sim_dat <- data.frame( A=A_seq )
-
-# simulate M and then D, using A_seq
-s <- rethinking::sim( m5.3_A , data=sim_dat , vars=c("M","D") )
-```
 
 ```{r 5.22}
-#Plot the predictions
-plot( sim_dat$A , colMeans(s$D) , ylim=c(-2,2) , type="l" , xlab="manipulated A" , ylab="counterfactual D" )
-shade( apply(s$D,2,PI) , sim_dat$A )
-mtext( "Total counterfactual effect of A on D" )
+nd <- tibble(a = seq(from = -2, to = 2, length.out = 30))
+
+p2 <-
+  predict(b5.3_A,
+          resp = "m",
+          newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = a, y = Estimate, ymin = Q2.5, ymax = Q97.5)) +
+  geom_smooth(stat = "identity",
+              fill = "firebrick", color = "firebrick4", alpha = 1/5, size = 1/4) +
+  labs(subtitle = "Counterfactual effect of A on M",
+       x = "manipulated A",
+       y = "counterfactual M") +
+  coord_cartesian(ylim = c(-2, 2)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
+
+p1 + p2 + plot_annotation(title = "Counterfactual plots for the multivariate divorce model")
 ```
 
-```{r 5.23}
-# new data frame, standardized to mean 26.1 and std dev 1.24
-sim2_dat <- data.frame( A=(c(20,30)-26.1)/1.24 )
-s2 <- rethinking::sim( m5.3_A , data=sim2_dat , vars=c("M","D") )
-mean( s2$D[,2] - s2$D[,1] )
+```{r}
+# new data frame, standardized to mean 26.1 and std dev 1.24 
+nd <- tibble(a = (c(20, 30) - 26.1) / 1.24,
+             m = 0)
+
+predict(b5.3_A,
+        resp = "d",
+        newdata = nd,
+        summary = F) %>% 
+  data.frame() %>% 
+  set_names("a20", "a30") %>% 
+  mutate(difference = a30 - a20) %>% 
+  summarise(mean = mean(difference))
 ```
+
 
 This is a huge effect of 4.5 standard deviations, probably impossibly large.
 
 Now let's simulate the effect of manipulating $M$. It's like a perfectly controlled experiment. We'll simulate a counterfactual for an average state, with $A = 0$, and see what changing $M$ does.
 
 ```{r 5.24}
-sim_dat <- data.frame( M=seq(from=-2,to=2,length.out=30) , A=0 )
-s <- rethinking::sim( m5.3_A , data=sim_dat , vars="D" )
+nd <- tibble(m = seq(from = -2, to = 2, length.out = 30),
+             a = 0)
 
-plot( sim_dat$M , colMeans(s) , ylim=c(-2,2) , type="l" ,
-  xlab="manipulated M" , ylab="counterfactual D" )
-shade( apply(s,2,PI) , sim_dat$M )
-mtext( "Total counterfactual effect of M on D" )
+predict(b5.3_A,
+        resp = "d",
+        newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = m, y = Estimate, ymin = Q2.5, ymax = Q97.5)) +
+  geom_smooth(stat = "identity",
+              fill = "firebrick", color = "firebrick4", alpha = 1/5, size = 1/4) +
+  labs(subtitle = "Total counterfactual effect of M on D",
+       x = "manipulated M",
+       y = "counterfactual D") +
+  coord_cartesian(ylim = c(-2, 2)) +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
 ```
+
 
 Note that we only simulated $D$ now. We don't simulate $A$, because $M$ doesn't influence it. 
 
-**Simulatig counterfactuals**
+**Simulating counterfactuals**
 
-Define a range of vlaues that we want to assign to $A$:
+Define a range of values that we want to assign to $A$ and extract the posterior samples:
+
 ```{r 5.25}
-A_seq <- seq( from=-2 , to=2 , length.out=30 )
+post <-
+  brms::as_draws_df(b5.3_A) %>% 
+  mutate(iter = 1:n())
 ```
 
-Then extract the posterior samples:
 
 ```{r 5.26}
-post <- rethinking::extract.samples( m5.3_A )
-M_sim <- with( post , sapply( 1:30 ,
-  function(i) rnorm( 1e3 , aM + bAM*A_seq[i] , sigma_M ) ) )
-# The linear model inside `rnorm` comes right out of the model definition.
+post <-
+  post %>% 
+  expand(nesting(iter, b_m_Intercept, b_m_a, sigma_m, b_d_Intercept, b_d_a, b_d_m, sigma_d),
+         a = seq(from = -2, to = 2, length.out = 30)) %>% 
+  mutate(m_sim = rnorm(n(), mean = b_m_Intercept + b_m_a * a, sd = sigma_m)) %>% 
+  mutate(d_sim = rnorm(n(), mean = b_d_Intercept + b_d_a * a + b_d_m * m_sim, sd = sigma_d)) %>% 
+  pivot_longer(ends_with("sim")) %>% 
+  group_by(a, name) %>% 
+  summarise(mean = mean(value),
+            ll = quantile(value, prob = .025),
+            ul = quantile(value, prob = .975))
+
+# what did we do?
+head(post)
 ```
 
-This produces a matrix of values, with samples in rows and cases corresponding to the values in `A_seq` in the columns. Now that we have simulated values for $M$, we can simulate $D$ too:
 
-```{r 5.27}
-D_sim <- with( post , sapply( 1:30 ,
-  function(i) rnorm( 1e3 , a + bA*A_seq[i] + bM*M_sim[,i] , sigma ) ) )
-```
 
 If you plot `A_seq` against the column means of `D_sim`, you'll see the same result as before. 
 
 ```{r}
-ggplot() +
-  geom_line(aes(A_seq, colMeans(D_sim)))
+post %>% 
+  mutate(dv = if_else(name == "d_sim", "predictions for D", "predictions for M")) %>% 
+  
+  ggplot(aes(x = a, y = mean, ymin = ll, ymax = ul)) +
+  geom_smooth(stat = "identity",
+              fill = "firebrick", color = "firebrick4", alpha = 1/5, size = 1/4) +
+  labs(title = "Hand-made counterfactual plots for the multivariate divorce model",
+       x = "manipulated A",
+       y = "counterfactual") +
+  coord_cartesian(ylim = c(-2, 2)) +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        strip.background = element_blank()) +
+  facet_wrap(~ dv)
 ```
 
 
@@ -500,110 +832,202 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "Sample of primate species. Pairs plot. Particularly strong correlation between the magnitude of body mass (log(mass)) is strongly correlated with neocortex. No particular strong relationship between `log(mass)` and `kcal.per.g`."}
 knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
+
 ```{r 5.28}
-data(milk)
+data(milk, package = "rethinking")
 d <- milk
-str(d)
+rm(milk)
+
+glimpse(d)
 ```
+
+```{r}
+d %>% 
+  dplyr::select(kcal.per.g, mass, neocortex.perc) %>% 
+  pairs(col = "firebrick4")
+```
+
 
 As before, standardising helps us both get a reliable approximation of the posterior as well as build reasonable priors.
 
 ```{r 5.29}
-d$K <- standardize( d$kcal.per.g )
-d$N <- standardize( d$neocortex.perc )
-d$M <- standardize( log(d$mass) )
+d <-
+  d %>% 
+  mutate(kcal.per.g_s     = (kcal.per.g - mean(kcal.per.g)) / sd(kcal.per.g), 
+         log_mass_s       = (log(mass) - mean(log(mass))) / sd(log(mass)), 
+         neocortex.perc_s = (neocortex.perc - mean(neocortex.perc, na.rm = T)) / sd(neocortex.perc, na.rm = T)
+         )
 ```
 
 Let's first just try to run this as a quap model with some vague priors:
 
-```{r, 5.30, eval = F}
-m5.5_draft <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bN*N ,
-    a ~ dnorm( 0 , 1 ) ,
-    bN ~ dnorm( 0 , 1 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=d )
-# Returns following error:
-# Error in quap(alist(K ~ dnorm(mu, sigma), mu <- a + bN * N, a ~ dnorm(0,  : 
-#  initial value in 'vmmin' is not finite
-# The start values for the parameters were invalid. This could be caused by missing values (NA) in the data or by start values outside the parameter constraints. If there are no NA values in the data, try using explicit start values.
+```{r, 5.30}
+b5.5_draft <- 
+  brm(data = d, 
+      family = gaussian,
+      kcal.per.g_s ~ 1 + neocortex.perc_s,
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      sample_prior = T,
+      file = "fits/b05.05_draft")
 ```
 
 The culprit is the missing values in `N`. 
 
-```{r 5.31}
-d$neocortex.perc
-```
-
 Here we'll just drop the missing values, known as **complete case analysis**. But it isn't always a good thing - see Chapter 15.
 
 ```{r 5.32}
-dcc <- d[ complete.cases(d$K,d$N,d$M) , ]
+dcc <- 
+  d %>%
+  drop_na(ends_with("_s"))
+
+# how many rows did we drop?
+nrow(d) - nrow(dcc)
 ```
 
 Now let's model with that.
 
 ```{r 5.33}
-m5.5_draft <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bN*N ,
-    a ~ dnorm( 0 , 1 ) ,
-    bN ~ dnorm( 0 , 1 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=dcc )
+b5.5_draft <- 
+  brm(data = dcc, 
+      family = gaussian,
+      kcal.per.g_s ~ 1 + neocortex.perc_s,
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      sample_prior = T,
+      file = "fits/b05.05_draft")
 ```
 
 Simulate and plot 50 prior regression lines.
 ```{r 5.34}
-prior <- rethinking::extract.prior( m5.5_draft )
-xseq <- c(-2,2)
-mu <- link( m5.5_draft , post=prior , data=list(N=xseq) )
+set.seed(5)
 
-
-plot( NULL , xlim=xseq , ylim=xseq )
-for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )
+prior_samples(b5.5_draft) %>% 
+  slice_sample(n = 50) %>% 
+  rownames_to_column() %>% 
+  expand(nesting(rowname, Intercept, b),
+         neocortex.perc_s = c(-2, 2)) %>% 
+  mutate(kcal.per.g_s = Intercept + b * neocortex.perc_s) %>% 
+  
+  ggplot(aes(x = neocortex.perc_s, y = kcal.per.g_s)) +
+  geom_line(aes(group = rowname),
+            color = "firebrick", alpha = .4) +
+  coord_cartesian(ylim = c(-2, 2)) +
+  labs(x = "neocortex percent (std)",
+       y = "kilocal per g (std)",
+       subtitle = "Intercept ~ dnorm(0, 1)\nb ~ dnorm(0, 1)") +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
 ```
+
+```{r}
+print(b5.5_draft)
+```
+
+Tighten up the fit:
 
 ```{r 5.35}
-m5.5 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bN*N ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bN ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=dcc )
-
-prior <- rethinking::extract.prior( m5.5 )
-xseq <- c(-2,2)
-mu <- link( m5.5 , post=prior , data=list(N=xseq) )
-
-
-plot( NULL , xlim=xseq , ylim=xseq )
-for ( i in 1:50 ) lines( xseq , mu[i,] , col=col.alpha("black",0.3) )
+b5.5 <- 
+  brm(data = dcc, 
+      family = gaussian,
+      kcal.per.g_s ~ 1 + neocortex.perc_s,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      sample_prior = T,
+      file = "fits/b05.05")
 ```
 
 
+```{r, fig.cap = "Figure 5.8b"}
+set.seed(5)
+prior_samples(b5.5) %>% 
+  slice_sample(n = 50) %>% 
+  rownames_to_column() %>% 
+  expand(nesting(rowname, Intercept, b),
+         neocortex.perc_s = c(-2, 2)) %>% 
+  mutate(kcal.per.g_s = Intercept + b * neocortex.perc_s) %>% 
+  
+  ggplot(aes(x = neocortex.perc_s, y = kcal.per.g_s, group = rowname)) +
+  geom_line(color = "firebrick", alpha = .4) +
+  coord_cartesian(ylim = c(-2, 2)) +
+  labs(subtitle = "Intercept ~ dnorm(0, 0.2)\nb ~ dnorm(0, 0.5)",
+       x = "neocortex percent (std)",
+       y = "kilocal per g (std)") +
+  theme_bw() +
+  theme(panel.grid = element_blank()) 
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "We need to do some prior predictive simulation. Left is not a good prior. All we need to do to get the regression lines to live in the outcome space, we can contract $\alpha$ - should be about 0, and the slope should be about 0.5 to be tighter. If you standardise the predictor and outcome, Normal(0, 0.5) should keep you in the outcome space."}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
 ```
+
 ```{r 5.36}
-precis( m5.5 )
+print(b5.5)
 ```
 
+```{r}
+# wrangle
+bind_rows(
+  posterior_samples(b5.5_draft) %>% dplyr::select(b_Intercept:sigma),
+  posterior_samples(b5.5) %>% dplyr::select(b_Intercept:sigma)
+  )  %>% 
+  mutate(fit = rep(c("b5.5_draft", "b5.5"), each = n() / 2)) %>% 
+  pivot_longer(-fit) %>% 
+  group_by(name, fit) %>% 
+  summarise(mean = mean(value),
+            ll = quantile(value, prob = .025),
+            ul = quantile(value, prob = .975)) %>% 
+  mutate(fit = factor(fit, levels = c("b5.5_draft", "b5.5"))) %>% 
+  
+  # plot
+  ggplot(aes(x = mean, y = fit, xmin = ll, xmax = ul)) +
+  geom_pointrange(color = "firebrick") +
+  geom_hline(yintercept = 0, color = "firebrick", alpha = 1/5) +
+  labs(x = "posterior", 
+       y = NULL) +
+  theme_bw() +
+  theme(axis.text.y = element_text(hjust = 0),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank()) +
+  facet_wrap(~ name, ncol = 1)
+```
+
+
 ```{r 5.37}
-xseq <- seq( from=min(dcc$N)-0.15 , to=max(dcc$N)+0.15 , length.out=30 )
-mu <- link( m5.5 , data=list(N=xseq) )
-mu_mean <- apply(mu,2,mean)
-mu_PI <- apply(mu,2,PI)
-plot( K ~ N , data=dcc )
-lines( xseq , mu_mean , lwd=2 )
-shade( mu_PI , xseq )
+nd <- tibble(neocortex.perc_s = seq(from = -2.5, to = 2, length.out = 30))
+
+fitted(b5.5, 
+       newdata = nd,
+       probs = c(.025, .975, .25, .75)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = neocortex.perc_s, y = Estimate)) +
+  geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5),
+              fill = "firebrick", alpha = 1/5) +
+  geom_smooth(aes(ymin = Q25, ymax = Q75),
+              stat = "identity",
+              fill = "firebrick4", color = "firebrick4", alpha = 1/5, size = 1/2) +
+  geom_point(data = dcc, 
+             aes(x = neocortex.perc_s, y = kcal.per.g_s),
+             size = 2, color = "firebrick4") +
+  coord_cartesian(xlim = range(dcc$neocortex.perc_s), 
+                  ylim = range(dcc$kcal.per.g_s)) +
+  labs(x = "neocortex percent (std)",
+       y = "kilocal per g (std)") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 ```
 
 
@@ -614,26 +1038,50 @@ knitr::include_graphics(file.path(slides_dir, '37.png'))
 Let's consider another predictor variable, adult female body mass, `mass`. Let's use the logarithm of mass as a predictor as well. Why a logarithm instead of the raw mass? 
 >Because taking the log of a measure translates the measure into magnitudes. 
 
-```{r}
-m5.6 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bM*M ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bM ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=dcc )
-precis(m5.6)
-
-xseq <- seq( from=min(dcc$M)-0.15 , to=max(dcc$M)+0.15 , length.out=30 )
-mu <- link( m5.6 , data=list(M=xseq) )
-mu_mean <- apply(mu,2,mean)
-mu_PI <- apply(mu,2,PI)
-plot( K ~ M , data=dcc )
-lines( xseq , mu_mean , lwd=2 )
-shade( mu_PI , xseq )
+```{r, results = "hide"}
+b5.6 <- 
+  brm(data = dcc, 
+      family = gaussian,
+      kcal.per.g_s ~ 1 + log_mass_s,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      sample_prior = T,
+      file = "fits/b05.06")
 ```
 
+```{r}
+print(b5.6)
+```
+
+
+```{r}
+nd <- tibble(log_mass_s = seq(from = -2.5, to = 2.5, length.out = 30))
+
+fitted(b5.6, 
+       newdata = nd,
+       probs = c(.025, .975, .25, .75)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = log_mass_s, y = Estimate)) +
+  geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5),
+              fill = "firebrick", alpha = 1/5) +
+  geom_smooth(aes(ymin = Q25, ymax = Q75),
+              stat = "identity",
+              fill = "firebrick4", color = "firebrick4", alpha = 1/5, size = 1/2) +
+  geom_point(data = dcc, 
+             aes(y = kcal.per.g_s),
+             size = 2, color = "firebrick4") +
+  coord_cartesian(xlim = range(dcc$log_mass_s), 
+                  ylim = range(dcc$kcal.per.g_s)) +
+  labs(x = "log body mass (std)",
+       y = "kilocal per g (std)") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap = "Now very strong relationship between both."}
@@ -642,22 +1090,50 @@ knitr::include_graphics(file.path(slides_dir, '38.png'))
 
 Now add both together.
 
-```{r 5.39}
-m5.7 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ) ,
-    mu <- a + bN*N + bM*M ,
-    a ~ dnorm( 0 , 0.2 ) ,
-    bN ~ dnorm( 0 , 0.5 ) ,
-    bM ~ dnorm( 0 , 0.5 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=dcc )
-precis(m5.7)
+```{r 5.39, results = "hide"}
+b5.7 <- 
+  brm(data = dcc, 
+      family = gaussian,
+      kcal.per.g_s ~ 1 + neocortex.perc_s + log_mass_s,
+      prior = c(prior(normal(0, 0.2), class = Intercept),
+                prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.07")
 ```
 
+```{r}
+print(b5.7)
+```
+
+
 ```{r 5.40, eval = F}
-# Faulty code
-plot( rethinking::coeftab( m5.5 , m5.6 , m5.7 ) , pars=c("bM","bN") )
+bind_cols(
+  brms::as_draws_df(b5.5) %>% 
+    transmute(`b5.5_beta[N]` = b_neocortex.perc_s),
+  brms::as_draws_df(b5.6) %>% 
+    transmute(`b5.6_beta[M]` = b_log_mass_s),
+  brms::as_draws_df(b5.7) %>% 
+    transmute(`b5.7_beta[N]` = b_neocortex.perc_s,
+              `b5.7_beta[M]` = b_log_mass_s)
+  ) %>% 
+  pivot_longer(everything()) %>% 
+  group_by(name) %>% 
+  summarise(mean = mean(value),
+            ll   = quantile(value, prob = .025),
+            ul   = quantile(value, prob = .975)) %>% 
+  separate(name, into = c("fit", "parameter"), sep = "_") %>% 
+  # complete(fit, parameter) %>% 
+  
+  ggplot(aes(x = mean, y = fit, xmin = ll, xmax = ul)) +
+  geom_pointrange(color = "firebrick") +
+  geom_hline(yintercept = 0, color = "firebrick", alpha = 1/5) +
+  ylab(NULL) +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        strip.background = element_rect(fill = "transparent", color = "transparent")) +
+  facet_wrap(~ parameter, ncol = 1, labeller = label_parsed)
 ```
 
 
@@ -666,17 +1142,83 @@ knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
 ```{r}
-pairs( ~K + M + N , dcc )
+# define custom functions
+my_diag <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) + 
+    geom_density(fill = "firebrick4", size = 0)
+}
+
+my_lower <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) + 
+    geom_smooth(method = "lm", color = "firebrick4", size = 1, 
+                se = F) +
+    geom_point(color = "firebrick", alpha = .8, size = 1/3)
+  }
+
+# plot
+dcc %>% 
+  dplyr::select(ends_with("_s")) %>% 
+  GGally::ggpairs(upper = list(continuous = GGally::wrap("cor", family = "sans", color = "black")),
+          # plug those custom functions into `ggpairs()`
+          diag  = list(continuous = my_diag),
+          lower = list(continuous = my_lower)) + 
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"))
 ```
 
-```{r 5.41}
-xseq <- seq( from=min(dcc$M)-0.15 , to=max(dcc$M)+0.15 , length.out=30 )
-mu <- link( m5.7 , data=data.frame( M=xseq , N=0 ) )
-mu_mean <- apply(mu,2,mean)
-mu_PI <- apply(mu,2,PI)
-plot( NULL , xlim=range(dcc$M) , ylim=range(dcc$K) )
-lines( xseq , mu_mean , lwd=2 )
-shade( mu_PI , xseq )
+```{r 5.41, fig.cap = "Figure 5.9 (bottom row)"}
+nd <- tibble(neocortex.perc_s = seq(from = -2.5, to = 2, length.out = 30),
+             log_mass_s       = 0)
+
+p1 <-
+  fitted(b5.7, 
+         newdata = nd,
+         probs = c(.025, .975, .25, .75)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = neocortex.perc_s, y = Estimate)) +
+  geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5),
+              fill = "firebrick", alpha = 1/5) +
+  geom_smooth(aes(ymin = Q25, ymax = Q75),
+              stat = "identity",
+              fill = "firebrick4", color = "firebrick4", alpha = 1/5, size = 1/2) +
+  coord_cartesian(xlim = range(dcc$neocortex.perc_s), 
+                  ylim = range(dcc$kcal.per.g_s)) +
+  labs(subtitle = "Counterfactual holding M = 0", 
+       x = "neocortex percent (std)",
+       y = "kilocal per g (std)")
+
+nd <- tibble(log_mass_s       = seq(from = -2.5, to = 2.5, length.out = 30),
+             neocortex.perc_s = 0)
+
+p2 <-
+  fitted(b5.7, 
+         newdata = nd,
+         probs = c(.025, .975, .25, .75)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>% 
+  
+  ggplot(aes(x = log_mass_s, y = Estimate)) +
+  geom_ribbon(aes(ymin = Q2.5, ymax = Q97.5),
+              fill = "firebrick", alpha = 1/5) +
+  geom_smooth(aes(ymin = Q25, ymax = Q75),
+              stat = "identity",
+              fill = "firebrick4", color = "firebrick4", alpha = 1/5, size = 1/2) +
+  coord_cartesian(xlim = range(dcc$log_mass_s), 
+                  ylim = range(dcc$kcal.per.g_s)) +
+  labs(subtitle = "Counterfactual holding N = 0",
+       x = "log body mass (std)",
+       y = "kilocal per g (std)")
+
+# combine
+p1 + p2 + 
+  plot_annotation(title = "Figure 5.9 [bottom row]. Milk energy and neocortex among primates.") &
+  theme_bw() &
+  theme(panel.grid = element_blank())
 ```
 
 **Simulating a masking relationship**
@@ -686,42 +1228,30 @@ knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
 ```{r}
-# M -> K <- N
-# M -> N
+# how many cases would you like?
 n <- 100
-M <- rnorm( n )
-N <- rnorm( n , M )
-K <- rnorm( n , N - M )
-d_sim <- data.frame(K=K,N=N,M=M)
+
+set.seed(5)
+d_sim <- 
+  tibble(m = rnorm(n, mean = 0, sd = 1)) %>% 
+  mutate(n = rnorm(n, mean = m, sd = 1)) %>% 
+  mutate(k = rnorm(n, mean = n - m, sd = 1))
 ```
 
-```{r 5.43}
-# M -> K <- N
-# N -> M
-n <- 100
-N <- rnorm( n )
-M <- rnorm( n , N )
-K <- rnorm( n , N - M )
-d_sim2 <- data.frame(K=K,N=N,M=M)
+Get a sense of what we just simulated:
 
-# M -> K <- N
-# M <- U -> N
-n <- 100
-U <- rnorm( n )
-N <- rnorm( n , U )
-M <- rnorm( n , U )
-K <- rnorm( n , N - M )
-d_sim3 <- data.frame(K=K,N=N,M=M)
+```{r}
+d_sim %>% 
+  GGally::ggpairs(upper = list(continuous = GGally::wrap("cor", family = "sans", color = "firebrick4")),
+          diag  = list(continuous = my_diag),
+          lower = list(continuous = my_lower)) + 
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"))
 ```
 
-```{r 5.44}
-dag5.7 <- dagitty( "dag{
-  M -> K <- N
-  M -> N }" )
-coordinates(dag5.7) <- list( x=c(M=0,K=1,N=2) , y=c(M=0.5,K=1,N=0.5) )
-MElist <- equivalentDAGs(dag5.7)
-drawdag(MElist)
-```
 
 ## Categorical variables
 
@@ -730,9 +1260,12 @@ knitr::include_graphics(file.path(slides_dir, '41.png'))
 ```
 
 ```{r 5.45}
-data(Howell1)
+data(Howell1, package = "rethinking")
 d <- Howell1
-str(d)
+rm(Howell1)
+
+d %>% 
+  glimpse()
 ```
 
 `male` is an indicator, or dummy, variable.
@@ -744,10 +1277,37 @@ knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```{r, echo = F, out.width='80%', fig.cap = "Height varies by sex, so you could include it in the model. The linear model looks like a continuous predictor, because you've coded it as 0 and 1, if effectively turns the parameter off and on, and adjusts the mean. Effectively makes two intercepts, one male, one female. `alpha` is the intercept for females, and `alpha + betaM` is the intercept for males. "}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
+
 ```{r 5.46}
-mu_female <- rnorm(1e4,178,20)
-mu_male <- rnorm(1e4,178,20) + rnorm(1e4,0,10)
-precis( data.frame( mu_female , mu_male ) )
+set.seed(5)
+
+prior <-
+  tibble(mu_female = rnorm(1e4, mean = 178, sd = 20)) %>% 
+  mutate(mu_male = mu_female + rnorm(1e4, mean = 0, sd = 10))
+
+prior %>% 
+  pivot_longer(everything()) %>% 
+  group_by(name) %>% 
+  summarise(mean = mean(value),
+            sd   = sd(value),
+            ll   = quantile(value, prob = .025),
+            ul   = quantile(value, prob = .975)) %>% 
+  mutate_if(is.double, round, digits = 2)
+```
+
+Visualise the two prior predictive distributions:
+```{r}
+prior %>% 
+  pivot_longer(everything()) %>% 
+  ggplot(aes(x = value, fill = name, color = name)) +
+  geom_density(size = 2/3, alpha = 2/3) +
+  scale_fill_manual(NULL, values = c("firebrick4", "black")) +
+  scale_color_manual(NULL, values = c("firebrick4", "black")) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("prior predictive distribution for our dummy groups") +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        legend.position = c(.82, .83))
 ```
 
 
@@ -760,9 +1320,21 @@ knitr::include_graphics(file.path(slides_dir, '45.png'))
 ```
 
 ```{r 5.47}
-d$sex <- ifelse( d$male==1 , 2 , 1 )
-str( d$sex )
+d <-
+  d %>% 
+  mutate(sex = ifelse(male == 1, 2, 1))
+
+head(d)
 ```
+
+Make it a factor:
+
+```{r}
+d <-
+  d %>% 
+  mutate(sex = factor(sex))
+```
+
 
 -------
 
@@ -782,68 +1354,165 @@ knitr::include_graphics(file.path(slides_dir, '02.png'))
 knitr::include_graphics(file.path(slides_dir, '03.png'))
 ```
 
-```{r 5.48}
-m5.8 <- quap(
-  alist(
-    height ~ dnorm( mu , sigma ) ,
-    mu <- a[sex] ,
-    a[sex] ~ dnorm( 178 , 20 ) ,
-    sigma ~ dunif( 0 , 50 )
-  ) , data=d )
-precis( m5.8 , depth=2 )
+```{r 5.48, results = "hide"}
+b5.8 <- 
+  brm(data = d, 
+      family = gaussian,
+      height ~ 0 + sex,
+      prior = c(prior(normal(178, 20), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.08")
 ```
+
+```{r}
+print(b5.8)
+```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "If you want the posterior distribution for the sexes, you extract samples from the posterior. Then compute the difference by subtracting the difference from each sample. Still it in a column called `diff_fm`. Posterior mean is -8. All the comparisons are already in the posterior, you just have to extract samples to compute them. We'll be using this kind of coding in future examples."}
 knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
+
 ```{r 5.49}
-post <- extract.samples(m5.8)
-post$diff_fm <- post$a[,1] - post$a[,2]
-precis( post , depth=2 )
+brms::as_draws_df(b5.8) %>% 
+  mutate(diff_fm = b_sex1 - b_sex2) %>% 
+  gather(key, value, -`lp__`) %>% 
+  group_by(key) %>% 
+  tidybayes::mean_qi(value, .width = .89)
 ```
 
 ***5.3.2. Many categories***
 
 ```{r 5.50}
-data(milk)
+data(milk, package = "rethinking")
 d <- milk
-levels(d$clade)
+rm(milk)
 ```
+
+Peek at `clade`
+
+```{r}
+d %>%
+  distinct(clade)
+```
+
 
 ```{r 5.51}
 d$clade_id <- as.integer( d$clade )
 ```
 
-```{r 5.52}
-d$K <- standardize( d$kcal.per.g )
-m5.9 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ),
-    mu <- a[clade_id],
-    a[clade_id] ~ dnorm( 0 , 0.5 ),
-    sigma ~ dexp( 1 )
-  ) , data=d )
-labels <- paste( "a[" , 1:4 , "]:" , levels(d$clade) , sep="")
-# Faulty code
-#plot( precis( m5.9 , depth=2 , pars="a" ) , labels=labels , xlab="expected kcal (std)" )
+```{r 5.52, results = "hide"}
+# standardize the `kcal.per.g` variable
+d <-
+  d %>% 
+  mutate(kcal.per.g_s = (kcal.per.g - mean(kcal.per.g)) / sd(kcal.per.g))
+
+b5.9 <- 
+  brm(data = d, 
+      family = gaussian,
+      kcal.per.g_s ~ 0 + clade,
+      prior = c(prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.09")
 ```
+
+```{r}
+print(b5.9)
+```
+
+```{r}
+bayesplot::color_scheme_set("red")
+
+post <- brms::as_draws_df(b5.9)
+
+post %>% 
+  dplyr::select(starts_with("b_")) %>% 
+  bayesplot::mcmc_intervals(prob = .5,
+                 point_est = "median") +
+  labs(title = "My fancy bayesplot-based coefficient plot") +
+  theme_bw() +
+  theme(axis.text.y = element_text(hjust = 0),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank())
+```
+
 
 ```{r 5.53}
 # Randomly assign these primates to some made up categories
+houses <- c("Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin")
+
 set.seed(63)
-d$house <- sample( rep(1:4,each=8) , size=nrow(d) )
+d <-
+  d %>% 
+  mutate(house = sample(rep(houses, each = 8), size = n()))
 ```
 
-```{r 5.54}
+```{r 5.54, results = "hide"}
 # Now include these categories as another predictor in the model
-m5.10 <- quap(
-  alist(
-    K ~ dnorm( mu , sigma ),
-    mu <- a[clade_id] + h[house],
-    a[clade_id] ~ dnorm( 0 , 0.5 ),
-    h[house] ~ dnorm( 0 , 0.5 ),
-    sigma ~ dexp( 1 )
-  ) , data=d )
+b5.10 <- 
+  brm(data = d, 
+      family = gaussian,
+      kcal.per.g_s ~ 0 + clade + house,
+      prior = c(prior(normal(0, 0.5), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.10")
+```
+
+```{r}
+print(b5.10)
+```
+
+Notice we lost the first category of the second variable. This is because with **brms** formula syntax `<criterion> ~ 0 + <index variable>`, it only works with one index variable. 
+
+Here's the fix:
+```{r, results = "hide"}
+b5.11 <- 
+  brm(data = d, 
+      family = gaussian,
+      bf(kcal.per.g_s ~ 0 + a + h, 
+         a ~ 0 + clade, 
+         h ~ 0 + house,
+         nl = TRUE),
+      prior = c(prior(normal(0, 0.5), nlpar = a),
+                prior(normal(0, 0.5), nlpar = h),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 5,
+      file = "fits/b05.11")
+```
+
+```{r}
+print(b5.11)
+```
+
+```{r}
+brms::as_draws_df(b5.11) %>% 
+  pivot_longer(starts_with("b_")) %>% 
+  mutate(name = str_remove(name, "b_") %>% 
+           str_remove(., "clade") %>% 
+           str_remove(., "house") %>% 
+           str_replace(., "World", " World ")) %>% 
+  separate(name, into = c("predictor", "level"), sep = "_") %>% 
+  mutate(predictor = if_else(predictor == "a", "predictor: clade", "predictor: house")) %>% 
+  
+  ggplot(aes(x = value, y = reorder(level, value))) +  # note how we used `reorder()` to arrange the coefficients
+  geom_vline(xintercept = 0, color = "firebrick4", alpha = 1/10) +
+  stat_pointinterval(point_interval = mode_hdi, .width = .89, 
+                     size = 1, color = "firebrick4") +
+  labs(x = "expected kcal (std)", 
+       y = NULL) +
+  theme_bw() +
+  theme(axis.text.y = element_text(hjust = 0),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank()) +
+  facet_wrap(~ predictor, scales = "free_y")
 ```
 
 

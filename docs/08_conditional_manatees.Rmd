@@ -1,19 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    dev: 'svg'
-    number_sections: false
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-#output: html_notebook
-#editor_options: 
-#  chunk_output_type: inline
----
-
 # Conditional Manatees
 
 ```{r, message = F, warning=F}
@@ -92,20 +76,86 @@ knitr::include_graphics(file.path(slides_dir, '16.png'))
 ```
 
 ```{r 8.1}
-library(rethinking)
-data(rugged)
+data(rugged, package = "rethinking")
 d <- rugged
+rm(rugged)
 
-# make log version of outcome
-d$log_gdp <- log( d$rgdppc_2000 )
+theme_set(
+  ggthemes::theme_pander() +
+    theme(text = element_text(family = "Times"),
+          panel.background = element_rect(color = "black")) 
+)
+
+
+```
+
+Wrangle the data
+```{r}
+# make the log version of criterion
+d <- 
+  d %>%
+  mutate(log_gdp = log(rgdppc_2000))
 
 # extract countries with GDP data
-dd <- d[ complete.cases(d$rgdppc_2000) , ]
-
-# rescale variables
-dd$log_gdp_std <- dd$log_gdp / mean(dd$log_gdp)
-dd$rugged_std <- dd$rugged / max(dd$rugged)
+dd <-
+  d %>%
+  filter(complete.cases(rgdppc_2000)) %>% 
+  # re-scale variables
+  mutate(log_gdp_std = log_gdp / mean(log_gdp), 
+         rugged_std  = rugged / max(rugged))
 ```
+
+```{r}
+# African nations
+p1 <-
+  dd %>% 
+  filter(cont_africa == 1) %>% 
+  ggplot(aes(x = rugged_std, y = log_gdp_std)) +
+  geom_smooth(method = "lm", formula = y ~ x,
+              fill = ggthemes::palette_pander(n = 2)[1],
+              color = ggthemes::palette_pander(n = 2)[1]) +
+  geom_point(color = ggthemes::palette_pander(n = 2)[1]) +
+  geom_text_repel(data = . %>% 
+                    filter(country %in% c("Lesotho", "Seychelles")),  
+                  aes(label = country), 
+                  size = 3, family = "Times", seed = 8) +
+  labs(subtitle = "African nations",
+       x = "ruggedness (standardized)",
+       y = "log GDP (as proportion of mean)")
+
+# Non-African nations
+p2 <-
+  dd %>% 
+  filter(cont_africa == 0) %>% 
+  ggplot(aes(x = rugged_std, y = log_gdp_std)) +
+  geom_smooth(method = "lm", formula = y ~ x,
+              fill = ggthemes::palette_pander(n = 2)[2],
+              color = ggthemes::palette_pander(n = 2)[2]) +
+  geom_point(color = ggthemes::palette_pander(n = 2)[2]) +
+  geom_text_repel(data = . %>% 
+                    filter(country %in% c("Switzerland", "Tajikistan")),  
+                  aes(label = country), 
+                  size = 3, family = "Times", seed = 8) +
+  xlim(0, 1) +
+  labs(subtitle = "Non-African nations",
+       x = "ruggedness (standardized)",
+       y = "log GDP (as proportion of mean)")
+
+# combine
+p1 + p2 + plot_annotation(title = "Figure 8.2. Separate linear regressions inside and outside of Africa")
+```
+
+```{r}
+mean(dd$rugged_std)
+```
+
+Make a mean-centered version of `rugged_std`.
+```{r}
+dd <-
+  dd %>%
+  mutate(rugged_std_c  = rugged_std - mean(rugged_std))
+```
+
 
 Remember that using $\bar{r}$ just makes it easier to assign a prior to the intercept $\alpha$.
 
@@ -115,16 +165,21 @@ Now for $\beta$, the slope. If we center it on zero, that indicates no bias for 
 
 And finally, let’s assign $\sigma$ something very broad, $\sigma \sim Exponential(1)$.
 
-```{r 8.2}
-m8.1 <- quap(
-  alist(
-    log_gdp_std ~ dnorm( mu , sigma ) ,
-    mu <- a + b*( rugged_std - 0.215 ) ,
-    a ~ dnorm( 1 , 1 ) ,
-    b ~ dnorm( 0 , 1 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=dd )
+```{r 8.2, results = "hide"}
+b8.1 <-
+  brm(data = dd, 
+      family = gaussian,
+      log_gdp_std ~ 1 + rugged_std_c,
+      prior = c(prior(normal(1, 1), class = Intercept),
+                prior(normal(0, 1), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 8,
+      sample_prior = T, # allows us to use `prior_samples()`
+      file = "fits/b08.01")
 ```
+
+
 
 
 ```{r, echo = F, out.width='80%', fig.cap="We want to develop priors that constrain pre-data the outcomes to the possible outcome space. We've scaled the outcome between 0 and 1. Then I've taken log GDP, and scaled it in proportion to the average. 1.5 is 50% more. Think about doubling the economy - that would be a huge effect. The dashed lines are the world's GDPs. We've centered at 1 for the average GDP. We simulate priors and we get chaos. At least on the right you can stay within the world's possible economies."}
@@ -134,39 +189,84 @@ knitr::include_graphics(file.path(slides_dir, '17.png'))
 Let's look at the prior predictions:
 
 ```{r 8.3}
-set.seed(7)
-prior <- extract.prior( m8.1 )
+prior <- brms::prior_draws(b8.1)
 
-# set up the plot dimensions
-plot( NULL , xlim=c(0,1) , ylim=c(0.5,1.5) ,
-  xlab="ruggedness" , ylab="log GDP" )
-abline( h=min(dd$log_gdp_std) , lty=2 )
-abline( h=max(dd$log_gdp_std) , lty=2 )
+set.seed(8)
 
-# draw 50 lines from the prior
-rugged_seq <- seq( from=-0.1 , to=1.1 , length.out=30 )
-mu <- link( m8.1 , post=prior , data=data.frame(rugged_std=rugged_seq) )
-for ( i in 1:50 ) lines( rugged_seq , mu[i,] , col=col.alpha("black",0.3) )
+p1 <-
+  prior %>% 
+  slice_sample(n = 50) %>% 
+  rownames_to_column() %>% 
+  expand(nesting(rowname, Intercept, b),
+         rugged_std_c = c(-2, 2)) %>% 
+  mutate(log_gdp_std = Intercept + b * rugged_std_c,
+         rugged_std  = rugged_std_c + mean(dd$rugged_std)) %>% 
+  
+  ggplot(aes(x = rugged_std, y = log_gdp_std, group = rowname)) +
+  geom_hline(yintercept = range(dd$log_gdp_std), linetype = 2) +
+  geom_line(color = ggthemes::palette_pander(n = 2)[2], alpha = .4) +
+  geom_abline(intercept = 1.3, slope = -0.6,
+              color = ggthemes::palette_pander(n = 2)[1], size = 2) +
+  labs(subtitle = "Intercept ~ dnorm(1, 1)\nb ~ dnorm(0, 1)",
+       x = "ruggedness",
+       y = "log GDP (prop of mean)") +
+  coord_cartesian(xlim = c(0, 1),
+                  ylim = c(0.5, 1.5))
+
+p1
 ```
+
+
 
 ```{r 8.4}
-sum( abs(prior$b) > 0.6 ) / length(prior$b)
+prior %>%
+  summarise(a = sum(abs(b) > abs(-0.6)) / nrow(prior))
 ```
 
-```{r 8.5}
-m8.1 <- quap(
-  alist(
-    log_gdp_std ~ dnorm( mu , sigma ) ,
-    mu <- a + b*( rugged_std - 0.215 ) ,
-    a ~ dnorm( 1 , 0.1 ) ,
-    b ~ dnorm( 0 , 0.3 ) ,
-    sigma ~ dexp(1)
-  ) , data=dd )
+```{r 8.5, results="hide"}
+b8.1b <-
+  brm(data = dd, 
+      family = gaussian,
+      log_gdp_std ~ 1 + rugged_std_c,
+      prior = c(prior(normal(1, 0.1), class = Intercept),
+                prior(normal(0, 0.3), class = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 8,
+      sample_prior = T,
+      file = "fits/b08.01b")
 ```
 
-```{r 8.6}
-precis( m8.1 )
+```{r 8.6, fig.cap = "Figure 8.3"}
+set.seed(8)
+
+p2 <-
+  prior_samples(b8.1b) %>% 
+  slice_sample(n = 50) %>% 
+  rownames_to_column() %>% 
+  expand(nesting(rowname, Intercept, b),
+         rugged_std_c = c(-2, 2)) %>% 
+  mutate(log_gdp_std = Intercept + b * rugged_std_c,
+         rugged_std  = rugged_std_c + mean(dd$rugged_std)) %>% 
+  
+  ggplot(aes(x = rugged_std, y = log_gdp_std, group = rowname)) +
+  geom_hline(yintercept = range(dd$log_gdp_std), linetype = 2) +
+  geom_line(color = palette_pander(n = 2)[2], alpha = .4) +
+  scale_y_continuous("", breaks = NULL) +
+  labs(subtitle = "Intercept ~ dnorm(1, 0.1)\nb ~ dnorm(0, 0.3)",
+       x = "ruggedness") +
+  coord_cartesian(xlim = c(0, 1),
+                  ylim = c(0.5, 1.5))
+
+p1 + p2 + 
+  plot_annotation(title = "Simulating in search of reasonable priors for the terrain ruggedness example.",
+                  theme = theme(plot.title = element_text(size = 12)))
 ```
+
+```{r}
+print(b8.1b)
+```
+
 
 Really no overall association between terrain ruggedness and log GDP. Next we’ll see how to split apart the continents.
 
@@ -174,49 +274,96 @@ Really no overall association between terrain ruggedness and log GDP. Next we’
 
 ```{r 8.7}
 # make variable to index Africa (1) or not (2)
-dd$cid <- ifelse( dd$cont_africa==1 , 1 , 2 )
+dd <- 
+  dd %>% 
+  mutate(cid = if_else(cont_africa == 1, "1", "2"))
 ```
 
+Note we're suppressing the default intercept via the `0 + ...` syntax.
 ```{r 8.8}
-m8.2 <- quap(
-  alist(
-    log_gdp_std ~ dnorm( mu , sigma ) ,
-    mu <- a[cid] + b*( rugged_std - 0.215 ) ,
-    a[cid] ~ dnorm( 1 , 0.1 ) ,
-    b ~ dnorm( 0 , 0.3 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=dd )
+b8.2 <-
+  brm(data = dd, 
+      family = gaussian,
+      log_gdp_std ~ 0 + cid + rugged_std_c,
+      prior = c(prior(normal(1, 0.1), class = b, coef = cid1),
+                prior(normal(1, 0.1), class = b, coef = cid2),
+                prior(normal(0, 0.3), class = b, coef = rugged_std_c),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 8,
+      file = "fits/b08.02")
 ```
 
 ```{r 8.9}
-rethinking::compare( m8.1 , m8.2 )
+b8.1b <- add_criterion(b8.1b, "waic")
+b8.2 <- add_criterion(b8.2, "waic")
+
+brms::loo_compare(b8.1b, b8.2, criterion = "waic") %>%
+  print(simplify = F)
 ```
 
+```{r}
+model_weights(b8.1b, b8.2, weights = "waic") %>% round(digits = 3)
+```
+
+
 ```{r 8.10}
-precis( m8.2 , depth=2 )
+print(b8.2)
 ```
 
 ```{r 8.11}
-post <- extract.samples(m8.2)
-diff_a1_a2 <- post$a[,1] - post$a[,2]
-PI( diff_a1_a2 )
+post <- 
+  brms::as_draws_df(b8.2) %>% 
+  mutate(diff = b_cid1 - b_cid2)
+
+library(tidybayes)
+
+qi(post$diff, .width = .89)
 ```
 
 The difference is reliably below zero.
 
 ```{r 8.12}
-rugged.seq <- seq( from=-0.1 , to=1.1 , length.out=30 )
-# compute mu over samples, fixing cid=2 and then cid=1
-mu.NotAfrica <- link( m8.2 ,
-  data=data.frame( cid=2 , rugged_std=rugged.seq ) )
-mu.Africa <- link( m8.2 ,
-  data=data.frame( cid=1 , rugged_std=rugged.seq ) )
-# summarize to means and intervals
-mu.NotAfrica_mu <- apply( mu.NotAfrica , 2 , mean )
-mu.NotAfrica_ci <- apply( mu.NotAfrica , 2 , PI , prob=0.97 )
-mu.Africa_mu <- apply( mu.Africa , 2 , mean )
-mu.Africa_ci <- apply( mu.Africa , 2 , PI , prob=0.97 )
+nd <- 
+  crossing(cid        = 1:2,
+           rugged_std = seq(from = -0.2, to = 1.2, length.out = 30)) %>% 
+  mutate(rugged_std_c = rugged_std - mean(dd$rugged_std))
+
+f <-
+  fitted(b8.2, 
+         newdata = nd,
+         probs = c(.015, .985)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>%
+  mutate(cont_africa = ifelse(cid == 1, "Africa", "not Africa"))
+
+# what did we do?
+head(f)
 ```
+
+```{r, fig.cap="Figure 8.4"}
+dd %>%
+  mutate(cont_africa = ifelse(cont_africa == 1, "Africa", "not Africa")) %>%
+  
+  ggplot(aes(x = rugged_std, fill = cont_africa, color = cont_africa)) +
+  geom_smooth(data = f,
+              aes(y = Estimate, ymin = Q1.5, ymax = Q98.5),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_point(aes(y = log_gdp_std),
+             size = 2/3) +
+  scale_fill_pander() +
+  scale_colour_pander() +
+  labs(subtitle = "b8.2",
+       x = "ruggedness (standardized)",
+       y = "log GDP (as proportion of mean)") +
+  coord_cartesian(xlim = c(0, 1)) +
+  theme(legend.background = element_blank(),
+        legend.direction = "horizontal",
+        legend.position = c(.67, .93),
+        legend.title = element_blank())
+```
+
 
 
 ```{r, echo = F, out.width='80%', fig.cap="These two plots come from splitting the data. This is cheating, because now you have no statistical criterion on which to evaluate the split. Need to estimate both of the lines in the same model. DOn't split it yourself - let the model split it and tell you how compelling it is."}
@@ -233,9 +380,6 @@ knitr::include_graphics(file.path(slides_dir, '19.png'))
 
 This just means making the slope conditional on continent.
 
-```{r}
-
-```
 
 
 ```{r, echo = F, out.width='80%', fig.cap="Just add the index variable to the slope. Now we have a separete slope for ecah continent. Centered the GDP so that the intercept makes sense. "}
@@ -251,14 +395,21 @@ knitr::include_graphics(file.path(slides_dir, '22.png'))
 ```
 
 ```{r 8.13}
-m8.3 <- quap(
-  alist(
-    log_gdp_std ~ dnorm( mu , sigma ) ,
-    mu <- a[cid] + b[cid]*( rugged_std - 0.215 ) ,
-    a[cid] ~ dnorm( 1 , 0.1 ) ,
-    b[cid] ~ dnorm( 0 , 0.3 ) ,
-    sigma ~ dexp( 1 )
-  ) , data=dd )
+b8.3 <- 
+  brm(data = dd, 
+      family = gaussian,
+      bf(log_gdp_std ~ 0 + a + b * rugged_std_c, 
+         a ~ 0 + cid, 
+         b ~ 0 + cid,
+         nl = TRUE),
+      prior = c(prior(normal(1, 0.1), class = b, coef = cid1, nlpar = a),
+                prior(normal(1, 0.1), class = b, coef = cid2, nlpar = a),
+                prior(normal(0, 0.3), class = b, coef = cid1, nlpar = b),
+                prior(normal(0, 0.3), class = b, coef = cid2, nlpar = b),
+                prior(exponential(1), class = sigma)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 8,
+      file = "fits/b08.03")
 ```
 
 
@@ -272,45 +423,68 @@ knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
 ```{r 8.14}
-precis( m8.3 , depth=2 )
+print(b8.3)
 ```
 
 ```{r 8.15}
-rethinking::compare( m8.1 , m8.2 , m8.3 , func=PSIS )
+b8.1b <- add_criterion(b8.1b, "loo")
+b8.2 <- add_criterion(b8.2, "loo")
+b8.3 <- add_criterion(b8.3, c("loo", "waic"))
+
+brms::loo_compare(b8.1b, b8.2, b8.3, criterion = "loo") %>%
+  print(simplify = F)
 ```
 
-Model family m8.3 has more than 95% of the weight. That’s very strong support for including the interaction effect, if prediction is our goal. But the modicum of weight given to `m8.2` suggests that the posterior means for the slopes in `m8.3` are a little overfit.
+Get the LOO weights
+```{r}
+model_weights(b8.1b, b8.2, b8.3, weights = "loo") %>% round(digits = 2)
+```
+
+
+Model family b8.3 has more than 95% of the weight. That’s very strong support for including the interaction effect, if prediction is our goal. But the modicum of weight given to `m8.2` suggests that the posterior means for the slopes in `m8.3` are a little overfit.
 
 ```{r 8.16}
-plot( PSIS( m8.3 , pointwise=TRUE )$k )
+loo(b8.3) %>% 
+  plot()
 ```
+
+
 
 ***8.1.4. Plotting the interaction***
 
-```{r}
-# plot Africa - cid=1
-d.A1 <- dd[ dd$cid==1 , ]
-plot( d.A1$rugged_std , d.A1$log_gdp_std , pch=16 , col=rangi2 ,
-  xlab="ruggedness (standardized)" , ylab="log GDP (as proportion of mean)" ,
-  xlim=c(0,1) )
-mu <- link( m8.3 , data=data.frame( cid=1 , rugged_std=rugged_seq ) )
-mu_mean <- apply( mu , 2 , mean )
-mu_ci <- apply( mu , 2 , PI , prob=0.97 )
-lines( rugged_seq , mu_mean , lwd=2 )
-shade( mu_ci , rugged_seq , col=col.alpha(rangi2,0.3) )
+```{r, fig.cap = "Figure 8.4"}
+countries <- c("Equatorial Guinea", "South Africa", "Seychelles", "Swaziland", "Lesotho", "Rwanda", "Burundi", "Luxembourg", "Greece", "Switzerland", "Lebanon", "Yemen", "Tajikistan", "Nepal")
 
-mtext("African nations")
-# plot non-Africa - cid=2
-d.A0 <- dd[ dd$cid==2 , ]
-plot( d.A0$rugged_std , d.A0$log_gdp_std , pch=1 , col="black" ,
-  xlab="ruggedness (standardized)" , ylab="log GDP (as proportion of mean)" ,
-  xlim=c(0,1) )
-mu <- link( m8.3 , data=data.frame( cid=2 , rugged_std=rugged_seq ) )
-mu_mean <- apply( mu , 2 , mean )
-mu_ci <- apply( mu , 2 , PI , prob=0.97 )
-lines( rugged_seq , mu_mean , lwd=2 )
-shade( mu_ci , rugged_seq )
-mtext("Non-African nations")
+f <-
+  fitted(b8.3, 
+         # we already defined `nd`, above
+         newdata = nd,
+         probs = c(.015, .985)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>%
+  mutate(cont_africa = ifelse(cid == 1, "African nations", "Non-African nations"))
+
+dd %>%
+  mutate(cont_africa = ifelse(cont_africa == 1, "African nations", "Non-African nations")) %>%
+  
+  ggplot(aes(x = rugged_std, y = log_gdp_std, fill = cont_africa, color = cont_africa)) +
+  geom_smooth(data = f,
+              aes(y = Estimate, ymin = Q1.5, ymax = Q98.5),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_text_repel(data = . %>% filter(country %in% countries),  
+                  aes(label = country), 
+                  size = 3, seed = 8, 
+                  segment.color = "grey25", min.segment.length = 0) +
+  geom_point(aes(y = log_gdp_std),
+             size = 2/3) +
+  scale_fill_pander() +
+  scale_colour_pander() +
+  labs(x = "ruggedness (standardized)",
+       y = "log GDP (as proportion of mean)") +
+  coord_cartesian(xlim = c(0, 1)) +
+  theme(legend.position = "none") +
+  facet_wrap(~ cont_africa)
 ```
 
 ## Symmetry of interactions
@@ -321,11 +495,30 @@ A simple interaction model contains two symmetrical interpretations. Absent some
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-```{r 8.18}
-rugged_seq <- seq(from=-0.2,to=1.2,length.out=30)
-muA <- link( m8.3 , data=data.frame(cid=1,rugged_std=rugged_seq) )
-muN <- link( m8.3 , data=data.frame(cid=2,rugged_std=rugged_seq) )
-delta <- muA - muN
+```{r 8.18, fig.cap = "Figure 8.6"}
+fitted(b8.3, 
+       newdata = nd,
+       summary = F) %>%
+  data.frame() %>%
+  pivot_longer(everything()) %>% 
+  bind_cols(expand(nd,
+                   iter = 1:4000,
+                   nesting(cid, rugged_std))) %>% 
+  dplyr::select(-name) %>% 
+  pivot_wider(names_from = cid, values_from = value) %>% 
+  mutate(delta = `1` - `2`) %>% 
+  
+  ggplot(aes(x = rugged_std, y = delta)) +
+  stat_lineribbon(.width = .95, fill = palette_pander(n = 8)[8], alpha = 3/4) +
+  geom_hline(yintercept = 0, linetype = 2) +
+  annotate(geom = "text",
+           x = .2, y = 0,
+           label = "Africa higher GDP\nAfrica lower GDP",
+           family = "Times") +
+  labs(x = "ruggedness (standardized)",
+       y = "expected difference log GDP") +
+  coord_cartesian(xlim = c(0, 1),
+                  ylim = c(-0.3, 0.2))
 ```
 
 
@@ -340,16 +533,21 @@ Interpretation is much harder with continuous variables, even though the mathema
 ***8.3.1. A winter flower***
 
 ```{r 8.19}
-library(rethinking)
-data(tulips)
+data(tulips, package = "rethinking")
 d <- tulips
-str(d)
+rm(tulips)
+
+glimpse(d)
 ```
 
+***8.3.2. The models***
+
 ```{r 8.20}
-d$blooms_std <- d$blooms / max(d$blooms)
-d$water_cent <- d$water - mean(d$water)
-d$shade_cent <- d$shade - mean(d$shade)
+d <-
+  d %>% 
+  mutate(blooms_std = blooms / max(blooms),
+         water_cent = water - mean(water),
+         shade_cent = shade - mean(shade))
 ```
 
 
