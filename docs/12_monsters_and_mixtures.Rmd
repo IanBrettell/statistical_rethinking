@@ -1,18 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
-#output: html_notebook
-editor_options: 
-  chunk_output_type: inline
-#output:
-#  bookdown::tufte_html_book:
-#    toc: yes
-#    css: toc.css
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
-#    link-citations: yes
----
-
 # Monsters and Mixtures
 
 ```{r, message = F, warning=F}
@@ -53,56 +38,211 @@ A **BETA-BINOMIAL** model is a mixture of binomial distributions. It assumes tha
 A beta distribution has two parameters, an average probability $\bar{p}$ and a shape parameter $\theta$. The shape parameter $\theta$ describes how spread out the distribution is. When $\theta = 2$, every probability from zero to 1 is equally likely. As $\theta$ increases above 2, the distribution of probabilities grows more concentrated. When $\theta < 2$, the distribution is so dispersed that extreme probabilities near zero and 1 are more likely than the mean. You can play around with the parameters to get a feel for the shapes this distribution can take:
 
 ```{r 12.1}
-pbar <- 0.5
+library(tidyverse)
+
+theme_set(
+  theme_hc() +
+  theme(axis.ticks.y = element_blank(),
+        plot.background = element_rect(fill = "grey92"))
+)
+
+pbar  <- .5
 theta <- 5
-curve( dbeta2(x,pbar,theta) , from=0 , to=1 ,
-  xlab="probability" , ylab="Density" )
+
+ggplot(data = tibble(x = seq(from = 0, to = 1, by = .01)),
+       aes(x = x, y = rethinking::dbeta2(x, pbar, theta))) +
+  geom_area(fill = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous("probability space", breaks = c(0, .5, 1)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle(expression(The~beta~distribution),
+          subtitle = expression("Defined in terms of "*mu*" (i.e., pbar) and "*kappa*" (i.e., theta)"))
 ```
 
-```{r 12.2}
-library(rethinking)
-data(UCBadmit)
-d <- UCBadmit
-d$gid <- ifelse( d$applicant.gender=="male" , 1L , 2L )
-dat <- list( A=d$admit , N=d$applications , gid=d$gid )
-m12.1 <- ulam(
-  alist(
-    A ~ dbetabinom( N , pbar , theta ),
-    logit(pbar) <- a[gid],
-    a[gid] ~ dnorm( 0 , 1.5 ),
-    transpars> theta <<- phi + 2.0,
-    phi ~ dexp(1)
-  ), data=dat , chains=4 )
+Helper function to convert `pbar` and `theta` to $\alpha$ and $\beta$. 
+
+```{r}
+betaABfromMeanKappa <- function(mean, kappa) {
+  if (mean <= 0 | mean >= 1) stop("must have 0 < mean < 1")
+  if (kappa <= 0) stop("kappa must be > 0")
+  a <- mean * kappa
+  b <- (1.0 - mean) * kappa
+  return(list(a = a, b = b))
+}
 ```
+
+```{r}
+betaABfromMeanKappa(mean = pbar, kappa = theta)
+```
+
+Now to again with $\alpha$ and $\beta$ values.
+
+```{r}
+ggplot(data = tibble(x = seq(from = 0, to = 1, by = .01)),
+       aes(x = x, y = dbeta(x, 2.5, 2.5))) +
+  geom_area(fill = canva_pal("Green fields")(4)[4]) +
+  scale_x_continuous("probability space", breaks = c(0, .5, 1)) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  ggtitle(expression(The~beta~distribution),
+          subtitle = expression("This time defined in terms of "*alpha*" and "*beta))
+```
+
+Explore different  values for `pbar` and `theta`:
+
+```{r}
+# data
+crossing(pbar  = c(.25, .5, .75),
+         theta = c(5, 15, 30)) %>% 
+  expand(nesting(pbar, theta), x = seq(from = 0, to = 1, length.out = 100)) %>% 
+  mutate(density = rethinking::dbeta2(x, pbar, theta),
+         mu      = str_c("mu == ", pbar %>% str_remove(., "0")),
+         kappa   = factor(str_c("kappa == ", theta), 
+                          levels = c("kappa == 30", "kappa == 15", "kappa == 5"))) %>% 
+  
+  # plot
+  ggplot(aes(x = x, y = density)) +
+  geom_area(fill = canva_pal("Green fields")(4)[4]) +
+  scale_x_continuous("probability space", 
+                     breaks = c(0, .5, 1), labels = c("0", ".5", "1")) +
+  scale_y_continuous(NULL, labels = NULL) +
+  theme(axis.ticks.y = element_blank()) +
+  facet_grid(kappa ~ mu, labeller = label_parsed)
+```
+
+
+```{r 12.2}
+data(UCBadmit, package = "rethinking") 
+d <- 
+  UCBadmit %>% 
+  mutate(gid = ifelse(applicant.gender == "male", "1", "2"))
+rm(UCBadmit)
+
+library(brms)
+
+# Need to make a custom distribution for `brms`
+beta_binomial2 <- custom_family(
+  "beta_binomial2", dpars = c("mu", "phi"),
+  links = c("logit", "log"), lb = c(NA, 2),
+  type = "int", vars = "vint1[n]"
+)
+
+stan_funs <- "
+  real beta_binomial2_lpmf(int y, real mu, real phi, int T) {
+    return beta_binomial_lpmf(y | T, mu * phi, (1 - mu) * phi);
+  }
+  int beta_binomial2_rng(real mu, real phi, int T) {
+    return beta_binomial_rng(T, mu * phi, (1 - mu) * phi);
+  }
+"
+
+stanvars <- stanvar(scode = stan_funs, block = "functions")
+
+b12.1 <-
+  brm(data = d, 
+      family = beta_binomial2,  # here's our custom likelihood
+      admit | vint(applications) ~ 0 + gid,
+      prior = c(prior(normal(0, 1.5), class = b),
+                prior(exponential(1), class = phi)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      stanvars = stanvars,  # note our `stanvars`
+      seed = 12,
+      file = "fits/b12.01")
+```
+
+```{r}
+print(b12.1)
+```
+
 
 I tagged `theta` with `transpars>` (transformed parameters) so that Stan will return it in the samples. Let’s take a quick look at the posterior means. But let’s also go ahead and compute the constrast between the two genders first:
 
 ```{r 12.3}
-post <- extract.samples( m12.1 )
-post$da <- post$a[,1] - post$a[,2]
-precis( post , depth=2 )
+post <- brms::as_draws_df(b12.1)
+head(post)
 ```
+
+Compute and summarize a contrast between the two genders:
+```{r}
+post %>% 
+  transmute(da = b_gid1 - b_gid2) %>% 
+  tidybayes::mean_qi(.width = .89) %>% 
+  mutate_if(is.double, round, digits = 3)
+```
+
 
 The beta-binomial model allows each row in the data—each combination of department and gender—to have its own unobserved intercept. These unobserved intercepts are sampled from a beta distribution with mean $\bar{p}_i$ and dispersion $\theta$. To see what this beta distribution looks like, we can just plot it.
 
+First process:
+
+```{r}
+set.seed(12)
+
+lines <-
+  post %>% 
+  mutate(iter  = 1:n(),
+         p_bar = inv_logit_scaled(b_gid2)) %>% 
+  slice_sample(n = 100) %>% 
+  expand(nesting(iter, p_bar, phi),
+         x = seq(from = 0, to = 1, by = .005)) %>% 
+  mutate(density = pmap_dbl(list(x, p_bar, phi), rethinking::dbeta2))
+
+str(lines)
+```
+
+Then plot:
 ```{r 12.1}
-gid <- 2
-# draw posterior mean beta distribution
-curve( dbeta2(x,mean(logistic(post$a[,gid])),mean(post$theta)) , from=0 , to=1 ,
-  ylab="Density" , xlab="probability admit", ylim=c(0,3) , lwd=2 )
-  
-# draw 50 beta distributions sampled from posterior
-for ( i in 1:50 ) {
-  p <- logistic( post$a[i,gid] )
-  theta <- post$theta[i]
-  curve( dbeta2(x,p,theta) , add=TRUE , col=col.alpha("black",0.2) )
-}
-mtext( "distribution of female admission rates" )
+lines %>% 
+  ggplot(aes(x = x, y = density)) + 
+  stat_function(fun = rethinking::dbeta2,
+                args = list(prob = mean(inv_logit_scaled(post %>%
+                                                           dplyr::pull("b_gid2"))
+                                        ),
+                            theta = mean(post %>% 
+                                           dplyr::pull("phi")
+                                         ) 
+                              
+                            ),
+                size = 1.5, color = canva_pal("Green fields")(4)[4]) +
+  geom_line(aes(group = iter),
+            alpha = .2, color = canva_pal("Green fields")(4)[4]) +
+  scale_y_continuous(NULL, breaks = NULL, limits = c(0, 3)) +
+  labs(subtitle = "distribution of female admission rates",
+       x = "probability admit")
 ```
 
 What the model has done is accommodate the variation among departments—there is a lot of variation! As a result, it is no longer tricked by department variation into a false inference about gender.
 
-To get a sense of how the beta distribution of probabilities of admission influences predicted counts of applications admitted, let’s look at the posterior validation check:
+To get a sense of how the beta distribution of probabilities of admission influences predicted counts of applications admitted, let’s look at the posterior validation check.
+
+First write helper functions:
+
+```{r}
+expose_functions(b12.1, vectorize = TRUE)
+
+# required to use `predict()`
+log_lik_beta_binomial2 <- function(i, prep) {
+  mu     <- prep$dpars$mu[, i]
+  phi    <- prep$dpars$phi
+  trials <- prep$data$vint1[i]
+  y      <- prep$data$Y[i]
+  beta_binomial2_lpmf(y, mu, phi, trials)
+}
+
+posterior_predict_beta_binomial2 <- function(i, prep, ...) {
+  mu     <- prep$dpars$mu[, i]
+  phi    <- prep$dpars$phi
+  trials <- prep$data$vint1[i]
+  beta_binomial2_rng(mu, phi, trials)
+}
+
+# required to use `fitted()`
+posterior_epred_beta_binomial2 <- function(prep) {
+  mu     <- prep$dpars$mu
+  trials <- prep$data$vint1
+  trials <- matrix(trials, nrow = nrow(mu), ncol = ncol(mu), byrow = TRUE)
+  mu * trials
+}
+```
+
 
 ```{r 12.5}
 postcheck( m12.1 )

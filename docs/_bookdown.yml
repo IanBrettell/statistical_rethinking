@@ -18,7 +18,7 @@ rmd_files: ["index.Rmd",
             "09_markov_chain_monte_carlo.Rmd",
             "10_big_entropy_and_the_generalized_linear_model.Rmd",
             "11_god_spiked_the_integers.Rmd",
-            "12_monsters_and_mixtures.Rmd",
+            #"12_monsters_and_mixtures.Rmd",
             "13_models_with_memory.Rmd",
             "14_adventures_in_covariance.Rmd",
             "15_missing_data_and_other_opportunities.Rmd"]

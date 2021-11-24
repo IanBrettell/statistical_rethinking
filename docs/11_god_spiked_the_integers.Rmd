@@ -1,18 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
-#output: html_notebook
-editor_options: 
-  chunk_output_type: inline
-#output:
-#  bookdown::tufte_html_book:
-#    toc: yes
-#    css: toc.css
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
-#    link-citations: yes
----
-
 # God Spiked the Integers
 
 ```{r, message = F, warning=F}
@@ -23,6 +8,8 @@ source(here::here("code/scripts/source.R"))
 ```{r}
 slides_dir = here::here("docs/slides/L11")
 ```
+
+
 
 >The essential problem is this: When what we wish to predict is a count, the scale of the parameters is never the same as the scale of the outcome.
 
@@ -49,9 +36,17 @@ knitr::include_graphics(file.path(slides_dir, '52.png'))
 ```
 
 ```{r 11.1}
-library(rethinking)
-data(chimpanzees)
+data(chimpanzees, package = "rethinking")
 d <- chimpanzees
+rm(chimpanzees)
+
+d %>% 
+  distinct(prosoc_left, condition) %>% 
+  mutate(description = c("Two food items on right and no partner",
+                         "Two food items on left and no partner",
+                         "Two food items on right and partner present",
+                         "Two food items on left and partner present")) %>% 
+  DT::datatable()
 ```
 
 
@@ -59,14 +54,22 @@ d <- chimpanzees
 knitr::include_graphics(file.path(slides_dir, '53.png'))
 ```
 
+It would be conventional to include these two variables and their interaction using dummy variables. We're going to follow McElreath and use an index variable approach. 
 ```{r 11.2}
-d$treatment <- 1 + d$prosoc_left + 2*d$condition
+d <-
+  d %>% 
+  mutate(treatment = factor(1 + prosoc_left + 2 * condition)) %>% 
+  # this will come in handy, later
+  mutate(labels = factor(treatment,
+                         levels = 1:4,
+                         labels = c("r/n", "l/n", "r/p", "l/p")))
 ```
 
 Now treatment contains the values 1 through 4, matching the numbers in the list above. You can verify by using cross-tabs:
 
 ```{r 11.3}
-xtabs( ~ treatment + prosoc_left + condition , d )
+d %>% 
+  count(condition, treatment, prosoc_left)
 ```
 
 
@@ -87,32 +90,77 @@ knitr::include_graphics(file.path(slides_dir, '56.png'))
 We need to pick a value for $\omega$. To emphasize the madness of conventional flat priors, let’s start with something rather flat, like $\omega = 10$. 
 
 ```{r 11.4}
-m11.1 <- quap(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a ,
-    a ~ dnorm( 0 , 10 )
-  ) , data=d )
+b11.1 <-
+  brms::brm(data = d, 
+            family = binomial,
+            pulled_left | trials(1) ~ 1,
+            prior(normal(0, 10), class = Intercept),
+            seed = 11,
+            sample_prior = T,
+            file = "fits/b11.01")
 ```
+
+```{r}
+library(wesanderson)
+library(ggthemes)
+
+theme_set(
+  theme_default() + 
+    theme_tufte() +
+    theme(plot.background = element_rect(fill = wes_palette("Moonrise2")[3],
+                                         color = wes_palette("Moonrise2")[3]))
+)
+```
+
 
 Now let’s sample from the prior:
 
 ```{r 11.5}
-set.seed(1999)
-prior <- extract.prior( m11.1 , n=1e4 )
+brms::prior_draws(b11.1) %>% 
+  mutate(p = inv_logit_scaled(Intercept)) %>% 
+  
+  ggplot(aes(x = p)) +
+  geom_density(fill = wes_palette("Moonrise2")[4], 
+               size = 0, adjust = 0.1) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("prior prob pull left")
 ```
+
+```{r}
+b11.1b <-
+  brm(data = d, 
+      family = binomial,
+      pulled_left | trials(1) ~ 1,
+      prior(normal(0, 1.5), class = Intercept),
+      seed = 11,
+      sample_prior = T,
+      file = "fits/b11.01b")
+```
+
 
 One step remains. We need to convert the parameter to the outcome scale. This means using the INVERSE-LINK FUNCTION, as discussed in the previous chapter. In this case, the link function is logit, so the inverse link is `inv_logit`.
 
 
 ```{r 11.6}
-p <- inv_logit( prior$a )
-dens( p , adj=0.1 )
+# wrangle
+bind_rows(brms::prior_draws(b11.1),
+          brms::prior_draws(b11.1b)) %>% 
+  mutate(p = brms::inv_logit_scaled(Intercept),
+         w = factor(rep(c(10, 1.5), each = n() / 2),
+                    levels = c(10, 1.5))) %>% 
+  
+  # plot
+  ggplot(aes(x = p, fill = w)) +
+  geom_density(size = 0, alpha = 3/4, adjust = 0.1) +
+  scale_fill_manual(expression(italic(w)), values = wes_palette("Moonrise2")[c(4, 1)]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(alpha%~%Normal(0*", "*italic(w))),
+       x = "prior prob pull left")
 ```
 
 The model thinks, before it sees the data, that chimpanzees either never or always pull the left lever.
 
-```{r, echo = F, out.width='80%', fig.cap="What happens is we have the prior proabability scale. THe black density curve is the prior hwere you assign alpha the normal 0,10. Because a Gaussian distribution has huge amount of mass beyond absolute 3. Most of the mass is outside the extremes. Because the range of the log-odds scale is -4,4. So when you change it to the probabilty scale, it puts a lot of probability in the tails. We can adopt this heuritsitc postiion of having something flat, which is normal with omega of 1.5"}
+```{r, echo = F, out.width='80%', fig.cap="What happens is we have the prior proabability scale. THe black density curve is the prior where you assign alpha the normal 0,10. Because a Gaussian distribution has huge amount of mass beyond absolute 3. Most of the mass is outside the extremes. Because the range of the log-odds scale is -4,4. So when you change it to the probabilty scale, it puts a lot of probability in the tails. We can adopt this heuritsitc postiion of having something flat, which is normal with omega of 1.5"}
 knitr::include_graphics(file.path(slides_dir, '57.png'))
 ```
 
@@ -142,40 +190,69 @@ knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```{r, echo = F, out.width='80%', fig.cap="We turn to these models. To remind you, we're processesing chimp lever-pulling data. We're dealing with getting sinsible priors. Last time it was about slope. Now we're also thinking about treatments. There are 4 treatments. Partner at the table or not, and whether the food is on the left or right. We want to measure unqiue log-odds for each of those. Flat prior on the logit scale is definitely not flat on the probability scale. Same problem for the treatment. For the prior predictives, we want to look at the distribution of differences."}
 knitr::include_graphics(file.path(slides_dir, '05.png'))
 ```
+
+
 ```{r 11.7}
-m11.2 <- quap(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a + b[treatment] ,
-    a ~ dnorm( 0 , 1.5 ),
-    b[treatment] ~ dnorm( 0 , 10 )
-  ) , data=d )
-set.seed(1999)
-prior <- extract.prior( m11.2 , n=1e4 )
-p <- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )
+# w = 10
+b11.2 <- 
+  brm(data = d, 
+      family = binomial,
+      bf(pulled_left | trials(1) ~ a + b,
+         a ~ 1, 
+         b ~ 0 + treatment,
+         nl = TRUE),
+      prior = c(prior(normal(0, 1.5), nlpar = a),
+                prior(normal(0, 10), nlpar = b, coef = treatment1),
+                prior(normal(0, 10), nlpar = b, coef = treatment2),
+                prior(normal(0, 10), nlpar = b, coef = treatment3),
+                prior(normal(0, 10), nlpar = b, coef = treatment4)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      sample_prior = T,
+      file = "fits/b11.02")
+
+# w = 0.5
+b11.3 <- 
+  brm(data = d, 
+      family = binomial,
+      bf(pulled_left | trials(1) ~ a + b,
+         a ~ 1, 
+         b ~ 0 + treatment,
+         nl = TRUE),
+      prior = c(prior(normal(0, 1.5), nlpar = a),
+                prior(normal(0, 0.5), nlpar = b, coef = treatment1),
+                prior(normal(0, 0.5), nlpar = b, coef = treatment2),
+                prior(normal(0, 0.5), nlpar = b, coef = treatment3),
+                prior(normal(0, 0.5), nlpar = b, coef = treatment4)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      sample_prior = T,
+      file = "fits/b11.03")
 ```
 
 Plot the absolute prior difference between the first two treatments.
 
 ```{r 11.8}
-dens( abs( p[,1] - p[,2] ) , adj=0.1 )
+# wrangle
+prior <-
+  bind_rows(prior_samples(b11.2),
+            prior_samples(b11.3)) %>% 
+  mutate(w  = factor(rep(c(10, 0.5), each = n() / 2),
+                     levels = c(10, 0.5)),
+         p1 = inv_logit_scaled(b_a + b_b_treatment1),
+         p2 = inv_logit_scaled(b_a + b_b_treatment2)) %>% 
+  mutate(diff = abs(p1 - p2)) 
+
+# plot
+prior %>% 
+  ggplot(aes(x = diff, fill = w)) +
+  geom_density(size = 0, alpha = 3/4, adjust = 0.1) +
+  scale_fill_manual(expression(italic(w)), values = wes_palette("Moonrise2")[c(4, 2)]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = expression(alpha%~%Normal(0*", "*italic(w))),
+       x = "prior diff between treatments")
 ```
 
-Use a $Normal(0.0.5)$ prior instead.
-
-```{r 11.9}
-m11.3 <- quap(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a + b[treatment] ,
-    a ~ dnorm( 0 , 1.5 ),
-    b[treatment] ~ dnorm( 0 , 0.5 )
-  ) , data=d )
-set.seed(1999)
-prior <- extract.prior( m11.3 , n=1e4 )
-p <- sapply( 1:4 , function(k) inv_logit( prior$a + prior$b[,k] ) )
-mean( abs( p[,1] - p[,2] ) )
-```
 
 
 ```{r, echo = F, out.width='80%', fig.cap="I'm using `rnorm` to sample some parameter values and look at some differences. Left is simulating the intercept alpha. A flat prior transformed to the probability scale it puts all the mass at 0 and 1, so we use 1.5. On the right we have the difference. The biggest difference is 1, smallest is 0. Again if you iuse something large on the logit scale, on the probability scale assumes that the treatments are either 0 or 1. We want it to reflect that the differences probably aren't large. To be near 0 you need a tighter scale parameter."}
@@ -188,36 +265,55 @@ knitr::include_graphics(file.path(slides_dir, '07.png'))
 
 Let’s turn to Hamiltonian Monte Carlo to approximate the posterior, so you can get some practice with it.
 
+Save `actor` as a factor:
+
 ```{r 11.10}
-# trimmed data list
-dat_list <- list(
-  pulled_left = d$pulled_left,
-  actor = d$actor,
-  treatment = as.integer(d$treatment) )
+d <-
+  d %>% 
+  mutate(actor = factor(actor))
 ```
 
 Now start the Markov chain. Add `log_lik=TRUE` to the call, so that `ulam` computes the values necessary for PSIS and WAIC. 
 
 ```{r 11.11}
-m11.4 <- ulam(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a[actor] + b[treatment] ,
-    a[actor] ~ dnorm( 0 , 1.5 ),
-    b[treatment] ~ dnorm( 0 , 0.5 )
-  ) , data=dat_list , chains=4 , log_lik=TRUE )
-precis( m11.4 , depth=2 )
+b11.4 <- 
+  brm(data = d, 
+      family = binomial,
+      bf(pulled_left | trials(1) ~ a + b,
+         a ~ 0 + actor, 
+         b ~ 0 + treatment,
+         nl = TRUE),
+      prior = c(prior(normal(0, 1.5), nlpar = a),
+                prior(normal(0, 0.5), nlpar = b)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      file = "fits/b11.04")
 ```
 
+```{r}
+print(b11.4)
+```
 
 ```{r, echo = F, out.width='80%', fig.cap="Let's look at the individual difference parameters. Chimp 2 is 'lefty'. He never pulled the right lever. The others have some more variation, with a slight tnedency for handedness. 7 has no preference. So handedness adds noise. It's not technically a confound, but it makes measurement harder. Backdoor criterion doesn't tell you to control for handedness. We don't need it because this is an experiment."}
 knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
 ```{r 11.12}
-post <- extract.samples(m11.4)
-p_left <- inv_logit( post$a )
-plot( precis( as.data.frame(p_left) ) , xlim=c(0,1) )
+post <- brms::as_draws_df(b11.4)
+
+post %>% 
+  pivot_longer(contains("actor")) %>%
+  mutate(probability = brms::inv_logit_scaled(value),
+         actor       = factor(str_remove(name, "b_a_actor"),
+                              levels = 7:1)) %>% 
+  
+  ggplot(aes(x = probability, y = actor)) +
+  geom_vline(xintercept = .5, color = wes_palette("Moonrise2")[1], linetype = 3) +
+  tidybayes::stat_pointinterval(.width = .95, size = 1/2,
+                     color = wes_palette("Moonrise2")[4]) +
+  scale_x_continuous(expression(alpha[actor]), limits = 0:1) +
+  ylab(NULL) +
+  theme(axis.ticks.y = element_blank())
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap="N = no partner; P = partner. This is an example of how hard it is to figure out what happened in the experiment. The contrasts of interest are the interaction. We need them to choose the prosocial option more when there's a parter on the other end, not just because there's more food on that side. When the prosocial option is on the left, we'd expect higher estimates. For the other two treatments are on the right hand side, and they do, but there's not much of an interaction effect. The side of the prosocial option has more effect, but not as much of the handedness. "}
@@ -227,24 +323,50 @@ knitr::include_graphics(file.path(slides_dir, '09.png'))
 On the logit scale:
 
 ```{r 11.13}
-labs <- c("R/N","L/N","R/P","L/P")
-plot( precis( m11.4 , depth=2 , pars="b" ) , labels=labs )
+tx <- c("R/N", "L/N", "R/P", "L/P")
+
+post %>% 
+  dplyr::select(contains("treatment")) %>% 
+  set_names("R/N","L/N","R/P","L/P") %>% 
+  pivot_longer(everything()) %>%
+  mutate(probability = brms::inv_logit_scaled(value),
+         treatment   = factor(name, levels = tx)) %>% 
+  mutate(treatment = fct_rev(treatment)) %>% 
+  
+  ggplot(aes(x = value, y = treatment)) +
+  geom_vline(xintercept = 0, color = wes_palette("Moonrise2")[2], linetype = 3) +
+  tidybayes::stat_pointinterval(.width = .95, size = 1/2,
+                                color = wes_palette("Moonrise2")[4]) +
+  labs(x = expression(beta[treatment]),
+       y = NULL) +
+  theme(axis.ticks.y = element_blank())
 ```
 
 You can probably see already that there isn’t much evidence of prosocial intention in these data. But let’s calculate the differences between no-partner/partner and make sure.
 
 ```{r 11.14}
-diffs <- list(
-  db13 = post$b[,1] - post$b[,3],
-  db24 = post$b[,2] - post$b[,4] )
-plot( precis(diffs) )
+post %>% 
+  mutate(db13 = b_b_treatment1 - b_b_treatment3,
+         db24 = b_b_treatment2 - b_b_treatment4) %>% 
+  pivot_longer(db13:db24) %>%
+  mutate(diffs = factor(name, levels = c("db24", "db13"))) %>% 
+  
+  ggplot(aes(x = value, y = diffs)) +
+  geom_vline(xintercept = 0, color = wes_palette("Moonrise2")[2], linetype = 3) +
+  tidybayes::stat_pointinterval(.width = .95, size = 1/2,
+                     color = wes_palette("Moonrise2")[4]) +
+  labs(x = "difference",
+       y = NULL) +
+  theme(axis.ticks.y = element_blank())
 ```
 
 Now let’s consider a posterior prediction check. Let’s summarize the proportions of left pulls for each actor in each treatment and then plot against the posterior predictions. First, to calculate the proportion in each combination of `actor` and `treatment`:
 
 ```{r 11.15}
-pl <- by( d$pulled_left , list( d$actor , d$treatment ) , mean )
-pl[1,]
+d %>%
+  group_by(actor, treatment) %>%
+  summarise(proportion = mean(pulled_left)) %>% 
+  filter(actor == 1)
 ```
 
 
@@ -255,34 +377,59 @@ knitr::include_graphics(file.path(slides_dir, '10.png'))
 ```{r, echo = F, out.width='80%', fig.cap="Now look at the posterior predictions. This is what it thinks. Sees that every chimp has the same partner effect. Can't vary based on actor. If anything, adding a partner reduced the tendency to pull left. Look at actor 2's predictions. The model is not sure that it would never pull it again. So even though the data has no variation in it, the model does. With 5-year-old kids, adding a partner changes everything."}
 knitr::include_graphics(file.path(slides_dir, '11.png'))
 ```
+
 ```{r 11.16}
-plot( NULL , xlim=c(1,28) , ylim=c(0,1) , xlab="" ,
- ylab="proportion left lever", xaxt="n" , yaxt="n" )
-axis( 2 , at=c(0,0.5,1) , labels=c(0,0.5,1) )
-abline( h=0.5 , lty=2 )
-for ( j in 1:7 ) abline( v=(j-1)*4+4.5 , lwd=0.5 )
-for ( j in 1:7 ) text( (j-1)*4+2.5 , 1.1 , concat("actor",j) , xpd=TRUE )
-for ( j in (1:7)[-2] ) {
-  lines( (j-1)*4+c(1,3) , pl[j,c(1,3)] , lwd=2 , col=rangi2 )
-  lines( (j-1)*4+c(2,4) , pl[j,c(2,4)] , lwd=2 , col=rangi2 )
-}
-points( 1:28 , t(pl) , pch=16 , col="white" , cex=1.7 )
-points( 1:28 , t(pl) , pch=c(1,1,16,16) , col=rangi2 , lwd=2 )
-yoff <- 0.01
-text( 1 , pl[1,1]-yoff , "R/N" , pos=1 , cex=0.8 )
-text( 2 , pl[1,2]+yoff , "L/N" , pos=3 , cex=0.8 )
-text( 3 , pl[1,3]-yoff , "R/P" , pos=1 , cex=0.8 )
-text( 4 , pl[1,4]+yoff , "L/P" , pos=3 , cex=0.8 )
-mtext( "observed proportions\n" )
+p1 <-
+  d %>%
+  group_by(actor, treatment) %>%
+  summarise(proportion = mean(pulled_left)) %>% 
+  left_join(d %>% distinct(actor, treatment, labels, condition, prosoc_left),
+            by = c("actor", "treatment")) %>% 
+  mutate(condition = factor(condition)) %>% 
+  
+  ggplot(aes(x = labels, y = proportion)) +
+  geom_hline(yintercept = .5, color = wes_palette("Moonrise2")[3]) +
+  geom_line(aes(group = prosoc_left),
+            size = 1/4, color = wes_palette("Moonrise2")[4]) +
+  geom_point(aes(color = condition),
+             size = 2.5, show.legend = F) + 
+  labs(subtitle = "observed proportions")
 ```
 
-Compute the posterior predictions with `link`:
+
+Compute the posterior predictions:
 
 ```{r 11.17}
-dat <- list( actor=rep(1:7,each=4) , treatment=rep(1:4,times=7) )
-p_post <- link( m11.4 , data=dat )
-p_mu <- apply( p_post , 2 , mean )
-p_ci <- apply( p_post , 2 , PI )
+nd <- 
+  d %>% 
+  distinct(actor, treatment, labels, condition, prosoc_left)
+
+p2 <-
+  fitted(b11.4,
+         newdata = nd) %>% 
+  data.frame() %>% 
+  bind_cols(nd) %>% 
+  mutate(condition = factor(condition)) %>% 
+  
+  ggplot(aes(x = labels, y = Estimate, ymin = Q2.5, ymax = Q97.5)) +
+  geom_hline(yintercept = .5, color = wes_palette("Moonrise2")[3]) +
+  geom_line(aes(group = prosoc_left),
+            size = 1/4, color = wes_palette("Moonrise2")[4]) +
+  geom_pointrange(aes(color = condition),
+                  fatten = 2.5, show.legend = F) + 
+  labs(subtitle = "posterior predictions")
+
+# combine the two ggplots
+library(patchwork)
+
+(p1 / p2) &
+  scale_color_manual(values = wes_palette("Moonrise2")[c(2:1)]) &
+  scale_y_continuous("proportion left lever", 
+                     breaks = c(0, .5, 1), limits = c(0, 1)) &
+  xlab(NULL) &
+  theme(axis.ticks.x = element_blank(),
+        panel.background = element_rect(fill = alpha("white", 1/10), size = 0)) &
+  facet_wrap(~ actor, nrow = 1, labeller = label_both)
 ```
 
 The model expects almost no change when adding a partner. Most of the variation in predictions comes from the actor intercepts. Handedness seems to be the big story of this experiment.
@@ -294,8 +441,10 @@ Let's confirm that a simpler model will do just fine, because there doesn't seem
 To confirm this, here are the new index variables we'll need:
 
 ```{r 11.18}
-d$side <- d$prosoc_left + 1 # right 1, left 2
-d$cond <- d$condition + 1 # no partner 1, partner 2
+d <-
+  d %>% 
+  mutate(side = factor(prosoc_left + 1),  # right 1, left 2
+         cond = factor(condition + 1))    # no partner 1, partner 2
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap="If you want to do model comparison, you'll have to add this `log_lik` which computes the log probability of each observation. Once you hav those, they get spit out of the chain. Have to do it optionally because it can exhaust the memory on your computer. So if you don't need it, don't add it. Here I'm using `LOO` to compare. There's no interaction because there's no unique parameter for that. Now we can confirm that the interaction is not doing any work, because the models are the same on the prediction scale."}
@@ -303,50 +452,61 @@ knitr::include_graphics(file.path(slides_dir, '12.png'))
 ```
 
 ```{r 11.19}
-dat_list2 <- list(
-  pulled_left = d$pulled_left,
-  actor = d$actor,
-  side = d$side,
-  cond = d$cond )
-m11.5 <- ulam(
-  alist(
-    pulled_left ~ dbinom( 1 , p ) ,
-    logit(p) <- a[actor] + bs[side] + bc[cond] ,
-    a[actor] ~ dnorm( 0 , 1.5 ),
-    bs[side] ~ dnorm( 0 , 0.5 ),
-    bc[cond] ~ dnorm( 0 , 0.5 )
-  ) , data=dat_list2 , chains=4 , log_lik=TRUE )
+b11.5 <- 
+  brm(data = d, 
+      family = binomial,
+      bf(pulled_left | trials(1) ~ a + bs + bc,
+         a ~ 0 + actor, 
+         bs ~ 0 + side, 
+         bc ~ 0 + cond,
+         nl = TRUE),
+      prior = c(prior(normal(0, 1.5), nlpar = a),
+                prior(normal(0, 0.5), nlpar = bs),
+                prior(normal(0, 0.5), nlpar = bc)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      file = "fits/b11.05")
 ```
 
 Comparing the two models with PSIS:
 
-```{r 11.20, eval = F}
-# Faulty code
-rethinking::loo_compare( m11.5 , m11.4 , func=PSIS )
+```{r 11.20}
+b11.4 <- add_criterion(b11.4, c("loo", "waic"))
+b11.5 <- add_criterion(b11.5, c("loo", "waic"))
+
+brms::loo_compare(b11.4, b11.5, criterion = "loo") %>% print(simplify = F)
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="You'll get used to bionmial and logistical regression through examples. You can talk about effect scales in two different ways. And you need both. When you're looking at differences between parameters on the log-odds scale, they're relative. Why? Because you're not talking abou tthe probbaiblity of the event happening. But if you want to predict how it happens in the real world, then the base rate matters. That's absolute. Something can seem really big when the absolute effect is small. The proportional odds adjustment is 0.9. SO that's 90% of the preivous odds. If you switch the lever, you reduce the odds by 90%. The risk with this is that unimportant things  can seem super important on the relative scale... because of base rate effects."}
+```{r}
+brms::loo_compare(b11.4, b11.5, criterion = "waic") %>% print(simplify = F)
+```
+
+
+```{r, echo = F, out.width='80%', fig.cap="You'll get used to bionmial and logistical regression through examples. You can talk about effect scales in two different ways. And you need both. When you're looking at differences between parameters on the log-odds scale, they're relative. Why? Because you're not talking about the probability of the event happening. But if you want to predict how it happens in the real world, then the base rate matters. That's absolute. Something can seem really big when the absolute effect is small. The proportional odds adjustment is 0.9. So that's 90% of the previous odds. If you switch the lever, you reduce the odds by 90%. The risk with this is that unimportant things  can seem super important on the relative scale... because of base rate effects."}
 knitr::include_graphics(file.path(slides_dir, '13.png'))
 ```
 
+```{r}
+brms::model_weights(b11.4, b11.5, weights = "loo") %>% round(digits = 2)
+```
+
+```{r}
+brms::model_weights(b11.4, b11.5, weights = "waic") %>% round(digits = 2)
+```
+
+```{r}
+print(b11.5)
+```
+
+
 ```{r 11.21}
-post <- extract.samples( m11.4 , clean=FALSE )
-str(post)
+brms::log_lik(b11.5) %>% str()
 ```
 
 The log_lik matrix at the top contains all of the log-probabilities needed to calculate WAIC and PSIS. 
 Finally, we loop over the observations and calculate the binomial probability of each, conditional on the parameters.
  
-```{r 11.22}
-m11.4_stan_code <- stancode(m11.4)
-m11.4_stan <- stan( model_code=m11.4_stan_code , data=dat_list , chains=4 )
-```
 
-```{r, eval = F}
-# Faulty code
-compare( m11.4_stan , m11.4 )
-```
- 
  
 ***11.1.2. Relative shark and absolute deer***
 
@@ -365,9 +525,11 @@ knitr::include_graphics(file.path(slides_dir, '16.png'))
 It is more common to see logistic regressions interpreted through RELATIVE EFFECTS. Relative effects are proportional changes in the odds of an outcome. If we change a variable and say the odds of an outcome double, then we are discussing relative effects. You can calculate these PROPORTIONAL ODDS relative effect sizes by simply exponentiating the parameter of interest. For example, to calculate the proportional odds of switching from treatment 2 to treatment 4 (adding a partner):
 
 ```{r 11.23}
-post <- extract.samples(m11.4)
-mean( exp(post$b[,4]-post$b[,2]) )
+brms::as_draws_df(b11.4) %>% 
+  mutate(proportional_odds = exp(b_b_treatment4 - b_b_treatment2)) %>% 
+  tidybayes::mean_qi(proportional_odds)
 ```
+>On average, the switch multiplies the odds of pulling the left lever by 0.92, an 8% reduction in odds. This is what is meant by proportional odds. The new odds are calculated by taking the old odds and multiplying them by the proportional odds, which is 0.92 in this example. (p. 336)
 
 ***11.1.3. Aggregated binomial: Chimpanzees again, condensed***
 
@@ -376,51 +538,75 @@ In the `chimpanzees` data context, the models all calculated the likelihood of o
 For example, to calculate the number of times each chimpanzee pulled the left-hand lever, for each combination of predictor values:
 
 ```{r 11.24}
-data(chimpanzees)
-d <- chimpanzees
-d$treatment <- 1 + d$prosoc_left + 2*d$condition
-d$side <- d$prosoc_left + 1 # right 1, left 2
-d$cond <- d$condition + 1 # no partner 1, partner 2
-d_aggregated <- aggregate(
-  d$pulled_left ,
-  list( treatment=d$treatment , actor=d$actor ,
-    side=d$side , cond=d$cond ) ,
-  sum )
-colnames(d_aggregated)[5] <- "left_pulls"
+d_aggregated <-
+  d %>%
+  group_by(treatment, actor, side, cond) %>%
+  summarise(left_pulls = sum(pulled_left)) %>% 
+  ungroup()
 
-head(d_aggregated, 8)
+d_aggregated %>%
+  head(n = 8)
 ```
 
 ```{r 11.25}
-dat <- with( d_aggregated , list(
-  left_pulls = left_pulls,
-  treatment = treatment,
-  actor = actor,
-  side = side,
-  cond = cond ) )
-  
-m11.6 <- ulam(
-  alist(
-    left_pulls ~ dbinom( 18 , p ) ,
-    logit(p) <- a[actor] + b[treatment] ,
-    a[actor] ~ dnorm( 0 , 1.5 ) ,
-    b[treatment] ~ dnorm( 0 , 0.5 )
-  ) , data=dat , chains=4 , log_lik=TRUE )
+b11.6 <- 
+  brm(data = d_aggregated, 
+      family = binomial,
+      bf(left_pulls | trials(18) ~ a + b,
+         a ~ 0 + actor, 
+         b ~ 0 + treatment,
+         nl = TRUE),
+      prior = c(prior(normal(0, 1.5), nlpar = a),
+                prior(normal(0, 0.5), nlpar = b)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      file = "fits/b11.06")
 ```
 
-```{r 11.26, eval = F}
-# Faulty code
-compare( m11.6 , m11.4 , func=PSIS )
+```{r}
+print(b11.6)
+```
+
+
+```{r 11.26}
+# this is just for fancy annotation
+text <-
+  tibble(value = c(1.4, 2.6),
+         name  = "b_a_actor7",
+         fit   = c("b11.6", "b11.4"))
+
+# rope in the posterior draws and wrangle
+bind_rows(brms::as_draws_df(b11.4),
+          brms::as_draws_df(b11.6)) %>% 
+  mutate(fit = rep(c("b11.4", "b11.6"), each = n() / 2)) %>% 
+  pivot_longer(b_a_actor1:b_b_treatment4) %>% 
+  
+  # plot
+  ggplot(aes(x = value, y = name, color = fit)) +
+  stat_pointinterval(.width = .95, size = 2/3,
+                     position = position_dodge(width = 0.5)) +
+  scale_color_manual(values = wes_palette("Moonrise2")[2:1]) +
+  geom_text(data = text,
+            aes(label = fit),
+            family = "Times", position = position_dodge(width = 2.25)) +
+  labs(x = "posterior (log-odds scale)",
+       y = NULL) +
+  theme(axis.ticks.y = element_blank(),
+        legend.position = "none")
 ```
 
 This makes the aggregated probabilities larger—there are more ways to see the data. So the PSIS/WAIC scores end up being smaller. Go ahead and try it with the simple example here:
 
 ```{r 11.27}
-# deviance of aggregated 6-in-9
--2*dbinom(6,9,0.2,log=TRUE)
-# deviance of dis-aggregated
--2*sum(dbern(c(1,1,1,1,1,1,0,0,0),0.2,log=TRUE))
+b11.4 <- brms::add_criterion(b11.4, "loo")
+b11.6 <- brms::add_criterion(b11.6, "loo")
+
+loo(b11.4)
+loo(b11.6)
 ```
+
+>Before looking at the Pareto $k$ values, you might have noticed already that we didn’t get a similar warning before in the disaggregated logistic models of the same data. Why not? Because when we aggregated the data by actor-treatment, we forced PSIS (and WAIC) to imagine cross-validation that leaves out all 18 observations in each actor-treatment combination. So instead of leave-one-out cross-validation, it is more like leave-eighteen-out. This makes some observations more influential, because they are really now 18 observations.
+What’s the bottom line? If you want to calculate WAIC or PSIS, you should use a logistic regression data format, not an aggregated format. Otherwise you are implicitly assuming that only large chunks of the data are separable. (p. 340)
 
 ***11.1.4. Aggregated binomial: Graduate school admissions***
 
@@ -429,11 +615,20 @@ knitr::include_graphics(file.path(slides_dir, '17.png'))
 ```
 
 ```{r 11.28}
-library(rethinking)
-data(UCBadmit)
+data(UCBadmit, package = "rethinking")
 d <- UCBadmit
+rm(UCBadmit)
+
+d
 ```
 
+Compute our index variable `gid`:
+```{r}
+d <- 
+  d %>%  
+  mutate(gid  = factor(applicant.gender, levels = c("male", "female")),
+         case = factor(1:n()))
+```
 
 ```{r, echo = F, out.width='80%', fig.cap="This is the whole dataset. Each application is like a coin flip, with a probabilityt htat the candidate is admitted. There are 6 anonymised departments. `admit` is total offered, `reject` is the complement, and `applications` is the total. You could disaggregate them but it would be a really long table with a row of applications. This is a nice compact way to represent it and run exactly the same model either way."}
 knitr::include_graphics(file.path(slides_dir, '18.png'))
@@ -444,18 +639,19 @@ knitr::include_graphics(file.path(slides_dir, '19.png'))
 ```
 
 ```{r 11.29}
-dat_list <- list(
-  admit = d$admit,
-  applications = d$applications,
-  gid = ifelse( d$applicant.gender=="male" , 1 , 2 )
-)
-m11.7 <- ulam(
-  alist(
-  admit ~ dbinom( applications , p ) ,
-  logit(p) <- a[gid] ,
-  a[gid] ~ dnorm( 0 , 1.5 )
-  ) , data=dat_list , chains=4 )
-precis( m11.7 , depth=2 )
+b11.7 <-
+  brm(data = d, 
+      family = binomial,
+      admit | trials(applications) ~ 0 + gid,
+      prior(normal(0, 1.5), class = b),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 11,
+      file = "fits/b11.07")
+```
+
+
+```{r}
+print(b11.7)
 ```
 
 
@@ -466,24 +662,47 @@ knitr::include_graphics(file.path(slides_dir, '20.png'))
 The posterior for male applicants, `a[1]`, is higher than that of female applicants. How much higher? We need to compute the contrast. Let’s calculate the contrast on the logit scale (shark) as well as the contrast on the outcome scale (absolute deer):
 
 ```{r 11.30}
-post <- extract.samples(m11.7)
-diff_a <- post$a[,1] - post$a[,2]
-diff_p <- inv_logit(post$a[,1]) - inv_logit(post$a[,2])
-precis( list( diff_a=diff_a , diff_p=diff_p ) )
+brms::as_draws_df(b11.7) %>% 
+  mutate(diff_a = b_gidmale - b_gidfemale,
+         diff_p = inv_logit_scaled(b_gidmale) - inv_logit_scaled(b_gidfemale)) %>% 
+  pivot_longer(contains("diff")) %>% 
+  group_by(name) %>% 
+  tidybayes::mean_qi(value, .width = .89)
 ```
 
 ```{r 11.31}
-postcheck( m11.7 )
-# draw lines connecting points from same dept
-for ( i in 1:6 ) {
-  x <- 1 + 2*(i-1)
-  y1 <- d$admit[x]/d$applications[x]
-  y2 <- d$admit[x+1]/d$applications[x+1]
-  lines( c(x,x+1) , c(y1,y2) , col=rangi2 , lwd=2 )
-  text( x+0.5 , (y1+y2)/2 + 0.05 , d$dept[x] , cex=0.8 , col=rangi2 )
-}
+p <- 
+  predict(b11.7) %>% 
+  data.frame() %>% 
+  bind_cols(d)
+
+text <-
+  d %>%
+  group_by(dept) %>%
+  summarise(case  = mean(as.numeric(case)),
+            admit = mean(admit / applications) + .05)
+
+p %>% 
+  ggplot(aes(x = case, y = admit / applications)) +
+  geom_pointrange(aes(y    = Estimate / applications,
+                      ymin = Q2.5     / applications ,
+                      ymax = Q97.5    / applications),
+                  color = wes_palette("Moonrise2")[1],
+                  shape = 1, alpha = 1/3) +
+  geom_point(color = wes_palette("Moonrise2")[2]) +
+  geom_line(aes(group = dept),
+            color = wes_palette("Moonrise2")[2]) +
+  geom_text(data = text,
+            aes(y = admit, label = dept),
+            color = wes_palette("Moonrise2")[2],
+            family = "serif") +
+  scale_y_continuous("Proportion admitted", limits = 0:1) +
+  ggtitle("Posterior validation check") +
+  theme(axis.ticks.x = element_blank())
 ```
 
+>Sometimes a fit this bad is the result of a coding mistake. In this case, it is not. The model did correctly answer the question we asked of it: *What are the average probabilities of admission for women and men, across all departments?* The problem in this case is that men and women did not apply to the same departments, and departments vary in their rates of admission. This makes the answer misleading….
+Instead of asking "*What are the average probabilities of admission for women and men across all departments?*" we want to ask “What is the average difference in probability of admission between women and men within departments?” (pp. 342–343, emphasis in the original).
 
 ```{r, echo = F, out.width='80%', fig.cap="Now push the posterior out through the model and get predictions. Ugly graph. Blue is raw data. Black is predictions. Open circle is posterior mean for each case in data (combination of department and gender). The posteriro predictions go down as you go from male to female, but at the department level, all except 1 are admitted at a higher rate. "}
 knitr::include_graphics(file.path(slides_dir, '21.png'))
@@ -506,15 +725,22 @@ knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
 ```{r 11.32}
-dat_list$dept_id <- rep(1:6,each=2)
-m11.8 <- ulam(
-  alist(
-    admit ~ dbinom( applications , p ) ,
-    logit(p) <- a[gid] + delta[dept_id] ,
-    a[gid] ~ dnorm( 0 , 1.5 ) ,
-    delta[dept_id] ~ dnorm( 0 , 1.5 )
-  ) , data=dat_list , chains=4 , iter=4000 )
-precis( m11.8 , depth=2 )
+b11.8 <-
+  brm(data = d, 
+      family = binomial,
+      bf(admit | trials(applications) ~ a + d,
+         a ~ 0 + gid, 
+         d ~ 0 + dept,
+         nl = TRUE),
+      prior = c(prior(normal(0, 1.5), nlpar = a),
+                prior(normal(0, 1.5), nlpar = d)),
+      iter = 4000, warmup = 1000, cores = 4, chains = 4,
+      seed = 11,
+      file = "fits/b11.08") 
+```
+
+```{r}
+print(b11.8)
 ```
 
 
@@ -523,10 +749,12 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
 ```{r}
-post <- extract.samples(m11.8)
-diff_a <- post$a[,1] - post$a[,2]
-diff_p <- inv_logit(post$a[,1]) - inv_logit(post$a[,2])
-precis( list( diff_a=diff_a , diff_p=diff_p ) )
+brms::as_draws_df(b11.8) %>% 
+  mutate(diff_a = b_a_gidmale - b_a_gidfemale,
+         diff_p = brms::inv_logit_scaled(b_a_gidmale) - brms::inv_logit_scaled(b_a_gidfemale)) %>% 
+  pivot_longer(contains("diff")) %>% 
+  group_by(name) %>% 
+  mean_qi(value, .width = .89)
 ```
 
 
@@ -535,11 +763,13 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 ```
 
 ```{r 11.34}
-pg <- with( dat_list , sapply( 1:6 , function(k)
-  applications[dept_id==k]/sum(applications[dept_id==k]) ) )
-rownames(pg) <- c("male","female")
-colnames(pg) <- unique(d$dept)
-round( pg , 2 )
+d %>% 
+  group_by(dept) %>% 
+  mutate(proportion = applications / sum(applications)) %>% 
+  dplyr::select(dept, gid, proportion) %>% 
+  pivot_wider(names_from = dept,
+              values_from = proportion) %>% 
+  mutate_if(is.double, round, digits = 2)
 ```
 
 
@@ -564,10 +794,12 @@ knitr::include_graphics(file.path(slides_dir, '30.png'))
 ```{r, echo = F, out.width='80%', fig.cap="Michelle does ethnographic field work. Interestd in Oceania as a natural experiment in cultutral evolution. Theoretical model that says that cultural evolution is proportional to the logarithm of population size. Even these islands have a small population, they might have a high contact rate."}
 knitr::include_graphics(file.path(slides_dir, '31.png'))
 ```
+
 ```{r 11.36}
-library(rethinking)
-data(Kline)
+data(Kline, package = "rethinking")
 d <- Kline
+rm(Kline)
+
 d
 ```
 
@@ -576,8 +808,10 @@ We’ll want to use regularization to damp down overfitting, as always. But as y
 First make some new columns with the standardized log of population and an index variable for contact:
 
 ```{r 11.37}
-d$P <- scale( log(d$population) )
-d$contact_id <- ifelse( d$contact=="high" , 2 , 1 )
+d <-
+  d %>%
+  mutate(log_pop_std = (log(population) - mean(log(population))) / sd(log(population)),
+         cid         = contact)
 ```
 
 
@@ -593,22 +827,32 @@ knitr::include_graphics(file.path(slides_dir, '33.png'))
 knitr::include_graphics(file.path(slides_dir, '34.png'))
 ```
 
-```{r 11.38}
-curve( dlnorm( x , 0 , 10 ) , from=0 , to=100 , n=200 )
-```
-
-```{r 11.39}
-a <- rnorm(1e4,0,10)
-lambda <- exp(a)
-mean( lambda )
-```
 
 I encourage you to play around with the curve code above, trying different means and standard deviations. The fact to appreciate is that a log link puts half of the real numbers—the negative numbers—between 0 and 1 on the outcome scale. 
 
 Here's my weakly informative suggestion:
 
 ```{r 11.40}
-curve( dlnorm( x , 3 , 0.5 ) , from=0 , to=100 , n=200 )
+tibble(x       = c(3, 22),
+       y       = c(0.055, 0.04),
+       meanlog = c(0, 3),
+       sdlog   = c(10, 0.5)) %>% 
+  expand(nesting(x, y, meanlog, sdlog),
+         number = seq(from = 0, to = 100, length.out = 200)) %>% 
+  mutate(density = dlnorm(number, meanlog, sdlog),
+         group   = str_c("alpha%~%Normal(", meanlog, ", ", sdlog, ")")) %>% 
+  
+  ggplot(aes(fill = group, color = group)) +
+  geom_area(aes(x = number, y = density),
+            alpha = 3/4, size = 0, position = "identity") +
+  geom_text(data = . %>% group_by(group) %>% slice(1),
+            aes(x = x, y = y, label = group),
+            family = "Times", parse = T,  hjust = 0) +
+  scale_fill_manual(values = wes_palette("Moonrise2")[1:2]) +
+  scale_color_manual(values = wes_palette("Moonrise2")[1:2]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab("mean number of tools") +
+  theme(legend.position = "none")
 ```
 
 
@@ -617,40 +861,97 @@ knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
 ```{r 11.41}
-N <- 100
-a <- rnorm( N , 3 , 0.5 )
-b <- rnorm( N , 0 , 10 )
-plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
-for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=grau() )
+tibble(x    = c(10, 4),
+       y    = c(0.05, 0.5),
+       mean = c(0, 3),
+       sd   = c(10, 0.5)) %>% 
+  expand(nesting(x, y, mean, sd),
+         number = seq(from = -25, to = 25, length.out = 500)) %>% 
+  mutate(density = dnorm(number, mean, sd),
+         group   = str_c("alpha%~%Normal(", mean, ", ", sd, ")")) %>% 
+  
+  ggplot(aes(fill = group, color = group)) +
+  geom_area(aes(x = number, y = density),
+            alpha = 3/4, size = 0, position = "identity") +
+  geom_text(data = . %>% group_by(group) %>% slice(1),
+            aes(x = x, y = y, label = group),
+            family = "Times", parse = T,  hjust = 0) +
+  scale_fill_manual(values = wes_palette("Moonrise2")[1:2]) +
+  scale_color_manual(values = wes_palette("Moonrise2")[1:2]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  xlab(expression(lambda~scale)) +
+  theme(legend.position = "none")
 ```
 
 This prior is terrible. Of course you will be able to confirm, once we start fitting models, that even 10 observations can overcome these terrible priors. But please remember that we are practicing for when it does matter.
 
 So let's try something much tighter.
 
-```{r 11.42}
-set.seed(10)
-N <- 100
-a <- rnorm( N , 3 , 0.5 )
-b <- rnorm( N , 0 , 0.2 )
-plot( NULL , xlim=c(-2,2) , ylim=c(0,100) )
-for ( i in 1:N ) curve( exp( a[i] + b[i]*x ) , add=TRUE , col=grau() )
-```
 
 ```{r 11.43}
-x_seq <- seq( from=log(100) , to=log(200000) , length.out=100 )
-lambda <- sapply( x_seq , function(x) exp( a + b*x ) )
-plot( NULL , xlim=range(x_seq) , ylim=c(0,500) , xlab="log population" ,
-  ylab="total tools" )
-for ( i in 1:N ) lines( x_seq , lambda[i,] , col=grau() , lwd=1.5 )
+set.seed(11)
+
+# how many lines would you like?
+n <- 100
+
+# simulate and wrangle
+tibble(i = 1:n,
+       a = rnorm(n, mean = 3, sd = 0.5)) %>% 
+  mutate(`beta%~%Normal(0*', '*10)`  = rnorm(n, mean = 0 , sd = 10),
+         `beta%~%Normal(0*', '*0.2)` = rnorm(n, mean = 0 , sd = 0.2)) %>% 
+  pivot_longer(contains("beta"),
+               values_to = "b",
+               names_to = "prior") %>% 
+  expand(nesting(i, a, b, prior),
+         x = seq(from = -2, to = 2, length.out = 100)) %>% 
+  
+  # plot
+  ggplot(aes(x = x, y = exp(a + b * x), group = i)) +
+  geom_line(size = 1/4, alpha = 2/3,
+            color = wes_palette("Moonrise2")[4]) +
+  labs(x = "log population (std)",
+       y = "total tools") +
+  coord_cartesian(ylim = c(0, 100)) +
+  facet_wrap(~ prior, labeller = label_parsed)
 ```
 
 Let's view them on the natural population scale:
 
 ```{r 11.44}
-plot( NULL , xlim=range(exp(x_seq)) , ylim=c(0,500) , xlab="population" ,
-  ylab="total tools" )
-for ( i in 1:N ) lines( exp(x_seq) , lambda[i,] , col=grau() , lwd=1.5 )
+set.seed(11)
+
+prior <-
+  tibble(i = 1:n,
+         a = rnorm(n, mean = 3, sd = 0.5),
+         b = rnorm(n, mean = 0, sd = 0.2)) %>% 
+  expand(nesting(i, a, b),
+         x = seq(from = log(100), to = log(200000), length.out = 100))
+
+# left
+p1 <-
+  prior %>% 
+  ggplot(aes(x = x, y = exp(a + b * x), group = i)) +
+  geom_line(size = 1/4, alpha = 2/3,
+            color = wes_palette("Moonrise2")[4]) +
+  labs(subtitle = expression(beta%~%Normal(0*', '*0.2)),
+       x = "log population",
+       y = "total tools") +
+  coord_cartesian(xlim = c(log(100), log(200000)),
+                  ylim = c(0, 500))
+# right
+p2 <-
+  prior %>% 
+  ggplot(aes(x = exp(x), y = exp(a + b * x), group = i)) +
+  geom_line(size = 1/4, alpha = 2/3,
+            color = wes_palette("Moonrise2")[4]) +
+  labs(subtitle = expression(beta%~%Normal(0*', '*0.2)),
+       x = "population",
+       y = "total tools") +
+  coord_cartesian(xlim = c(100, 200000),
+                  ylim = c(0, 500))
+
+# combine
+p1 | p2
 ```
 
 
@@ -663,93 +964,126 @@ knitr::include_graphics(file.path(slides_dir, '36.png'))
 Okay, finally we can approximate some posterior distributions. 
 
 ```{r 11.45}
-dat <- list(
-  T = d$total_tools ,
-  P = d$P ,
-  cid = d$contact_id )
-  
 # intercept only
-m11.9 <- ulam(
-  alist(
-    T ~ dpois( lambda ),
-    log(lambda) <- a,
-    a ~ dnorm( 3 , 0.5 )
-  ), data=dat , chains=4 , log_lik=TRUE )
-  
+b11.9 <-
+  brm(data = d, 
+      family = poisson,
+      total_tools ~ 1,
+      prior(normal(3, 0.5), class = Intercept),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      file = "fits/b11.09") 
+
 # interaction model
-m11.10 <- ulam(
-  alist(
-    T ~ dpois( lambda ),
-    log(lambda) <- a[cid] + b[cid]*P,
-    a[cid] ~ dnorm( 3 , 0.5 ),
-    b[cid] ~ dnorm( 0 , 0.2 )
-  ), data=dat , chains=4 , log_lik=TRUE )
+b11.10 <-
+  brm(data = d, 
+      family = poisson,
+      bf(total_tools ~ a + b * log_pop_std,
+         a + b ~ 0 + cid,
+         nl = TRUE),
+      prior = c(prior(normal(3, 0.5), nlpar = a),
+                prior(normal(0, 0.2), nlpar = b)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      file = "fits/b11.10") 
 ```
+
+```{r}
+print(b11.9)
+```
+
+```{r}
+print(b11.10)
+```
+
 
 Let’s look at the PSIS model comparison quickly, just to flag two important facts.
 
-```{r 11.46, eval = F}
-# Faulty code
-compare( m11.9 , m11.10 , func=PSIS )
+```{r 11.46}
+b11.9  <- brms::add_criterion(b11.9, "loo")
+b11.10 <- brms::add_criterion(b11.10, "loo")
+
+brms::loo_compare(b11.9, b11.10, criterion = "loo") %>% print(simplify = F)
+
+brms::model_weights(b11.9, b11.10, weights = "loo") %>% round(digits = 2)
+
+loo::loo(b11.10) %>% loo::pareto_k_table()
 ```
 
-```{r 11.47}
-k <- PSIS( m11.10 , pointwise=TRUE )$k
-plot( dat$P , dat$T , xlab="log population (std)" , ylab="total tools" ,
-  col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
-  ylim=c(0,75) , cex=1+normalize(k) )
-  
-# set up the horizontal axis values to compute predictions at
-ns <- 100
-P_seq <- seq( from=-1.4 , to=3 , length.out=ns )
-  
-# predictions for cid=1 (low contact)
-lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
-lmu <- apply( lambda , 2 , mean )
-lci <- apply( lambda , 2 , PI )
-lines( P_seq , lmu , lty=2 , lwd=1.5 )
-shade( lci , P_seq , xpd=TRUE )
-  
-# predictions for cid=2 (high contact)
-lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
-lmu <- apply( lambda , 2 , mean )
-lci <- apply( lambda , 2 , PI )
-lines( P_seq , lmu , lty=1 , lwd=1.5 )
-shade( lci , P_seq , xpd=TRUE )
+```{r}
+tibble(culture = d$culture,
+       k       = b11.10$criteria$loo$diagnostics$pareto_k) %>% 
+  arrange(desc(k)) %>% 
+  mutate_if(is.double, round, digits = 2)
 ```
 
-```{r 11.48}
-plot( d$population , d$total_tools , xlab="population", ylab="total tools" ,
-  col=rangi2 , pch=ifelse( dat$cid==1 , 1 , 16 ) , lwd=2 ,
-  ylim=c(0,75) , cex=1+normalize(k) )
-  
-ns <- 100
-P_seq <- seq( from=-5 , to=3 , length.out=ns )
-# 1.53 is sd of log(population)
-# 9 is mean of log(population)
-pop_seq <- exp( P_seq*1.53 + 9 )
-  
-lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=1 ) )
-lmu <- apply( lambda , 2 , mean )
-lci <- apply( lambda , 2 , PI )
-lines( pop_seq , lmu , lty=2 , lwd=1.5 )
-shade( lci , pop_seq , xpd=TRUE )
 
-lambda <- link( m11.10 , data=data.frame( P=P_seq , cid=2 ) )
-lmu <- apply( lambda , 2 , mean )
-lci <- apply( lambda , 2 , PI )
-lines( pop_seq , lmu , lty=1 , lwd=1.5 )
-shade( lci , pop_seq , xpd=TRUE )
+```{r 11.47, fig.cap = "Figure 11.9"}
+cultures <- c("Hawaii", "Tonga", "Trobriand", "Yap")
+
+library(ggrepel)
+
+nd <-
+  distinct(d, cid) %>% 
+  expand(cid, 
+         log_pop_std = seq(from = -4.5, to = 2.5, length.out = 100))
+f <- 
+  fitted(b11.10,
+         newdata = nd,
+         probs = c(.055, .945)) %>%
+  data.frame() %>%
+  bind_cols(nd)
+
+p1 <-
+  f %>%
+  ggplot(aes(x = log_pop_std, group = cid, color = cid)) +
+  geom_smooth(aes(y = Estimate, ymin = Q5.5, ymax = Q94.5, fill = cid),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_point(data = bind_cols(d, b11.10$criteria$loo$diagnostics),
+             aes(y = total_tools, size = pareto_k),
+             alpha = 4/5) +
+  geom_text_repel(data = 
+                    bind_cols(d, b11.10$criteria$loo$diagnostics) %>% 
+                    filter(culture %in% cultures) %>% 
+                    mutate(label = str_c(culture, " (", round(pareto_k, digits = 2), ")")),
+                  aes(y = total_tools, label = label), 
+                  size = 3, seed = 11, color = "black", family = "Times") +
+  labs(x = "log population (std)",
+       y = "total tools") +
+  coord_cartesian(xlim = range(b11.10$data$log_pop_std),
+                  ylim = c(0, 80))
+
+p2 <-
+  f %>%
+  mutate(population = exp((log_pop_std * sd(log(d$population))) + mean(log(d$population)))) %>% 
+
+  ggplot(aes(x = population, group = cid, color = cid)) +
+  geom_smooth(aes(y = Estimate, ymin = Q5.5, ymax = Q94.5, fill = cid),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_point(data = bind_cols(d, b11.10$criteria$loo$diagnostics),
+             aes(y = total_tools, size = pareto_k),
+             alpha = 4/5) +
+  scale_x_continuous("population", breaks = c(0, 50000, 150000, 250000)) +
+  ylab("total tools") +
+  coord_cartesian(xlim = range(d$population),
+                  ylim = c(0, 80))
+
+(p1 | p2) &
+  scale_fill_manual(values = wes_palette("Moonrise2")[1:2]) &
+  scale_color_manual(values = wes_palette("Moonrise2")[1:2]) &
+  scale_size(range = c(2, 5)) &
+  theme(legend.position = "none")
+
 ```
+
 
 
 ```{r, echo = F, out.width='80%', fig.cap="We can compare the two. This shows that once you get into GLMs, the efffective number of parameters have very little to do with the actual parameter count. The law in GLMs. All that nice relationship in Gausssian, which is a measure of your overfitting risk, is correlated with yoiur paramter count. Why? Ceiling and floor effects. LOO will still measure your overfitting risk. The model with more parameters has less overfitting risk that the model with only one parameter."}
 knitr::include_graphics(file.path(slides_dir, '37.png'))
 ```
-```{r, eval = F}
-# Faulty code
-compare(m11.9, m11.10, func = LOO)
-```
+
 
 
 ```{r, echo = F, out.width='80%', fig.cap=""}
@@ -781,15 +1115,29 @@ knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
 ```{r 11.49}
-dat2 <- list( T=d$total_tools, P=d$population, cid=d$contact_id )
-m11.11 <- ulam(
-  alist(
-    T ~ dpois( lambda ),
-    lambda <- exp(a[cid])*P^b[cid]/g,
-    a[cid] ~ dnorm(1,1),
-    b[cid] ~ dexp(1),
-    g ~ dexp(1)
-  ), data=dat2 , chains=4 , log_lik=TRUE )
+b11.11 <-
+  brm(data = d, 
+      family = poisson(link = "identity"),
+      bf(total_tools ~ exp(a) * population^b / g,
+         a + b ~ 0 + cid,
+         g ~ 1,
+         nl = TRUE),
+      prior = c(prior(normal(1, 1), nlpar = a),
+                prior(exponential(1), nlpar = b, lb = 0),
+                prior(exponential(1), nlpar = g, lb = 0)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 11,
+      #control = list(adapt_delta = .95),
+      file = "fits/b11.11") 
+```
+
+```{r}
+print(b11.11)
+```
+
+```{r}
+#b11.11 <- brms::add_criterion(b11.11, criterion = "loo", moment_match = T)
+#loo(b11.11)
 ```
 
 
@@ -810,8 +1158,15 @@ The parameter $\lambda$ is the expected value of a Poisson model, but it’s als
 Suppose you own a monastery. The data available to you about the rate at which manuscripts are completed is totaled up each day. Suppose the true rate is $\lambda = 1.5$ manuscripts per day. We can simulate a month of daily counts:
 
 ```{r 11.50}
+set.seed(11)
+
 num_days <- 30
-y <- rpois( num_days , 1.5 )
+y        <- rpois(num_days, lambda = 1.5)
+
+num_weeks <- 4
+y_new     <- rpois(num_weeks, lambda = 0.5 * 7)
+
+
 ```
 
 So now `y` holds 30 days of simulated counts of completed manuscripts.
@@ -819,42 +1174,48 @@ So now `y` holds 30 days of simulated counts of completed manuscripts.
 Also suppose that your monastery is turning a tidy profit, so you are considering purchasing another monastery. Before purchasing, you’d like to know how productive the new monastery might be. Unfortunately, the current owners don’t keep daily records, so a head-to-head comparison of the daily totals isn’t possible. Instead, the owners keep weekly totals. Suppose the daily rate at the new monastery is actually $\lambda = 0.5$ manuscripts per day. To simulate data on a weekly basis, we just multiply this average by 7, the exposure:
 
 ```{r 11.51}
-num_weeks <- 4
-y_new <- rpois( num_weeks , 0.5*7 )
+(
+  d <- 
+  tibble(y         = c(y, y_new), 
+         days      = rep(c(1, 7), times = c(num_days, num_weeks)),  # this is the exposure
+         monastery = rep(0:1, times = c(num_days, num_weeks))) %>%
+  mutate(log_days = log(days))
+)
 ```
 
 And new y_new holds four weeks of counts of completed manuscripts.
 
 To analyze both `y`, totaled up daily, and `y_new`, totaled up weekly, we just add the logarithm of the exposure to linear model. First, let’s build a data frame to organize the counts and help you see the exposure for each case:
 
-```{r 11.52}
-y_all <- c( y , y_new )
-exposure <- c( rep(1,30) , rep(7,4) )
-monastery <- c( rep(0,30) , rep(1,4) )
-d <- data.frame( y=y_all , days=exposure , monastery=monastery )
-```
 
 ```{r 11.53}
-# compute the offset
-d$log_days <- log( d$days )
-
-# fit the model
-m11.12 <- quap(
-  alist(
-    y ~ dpois( lambda ),
-    log(lambda) <- log_days + a + b*monastery,
-    a ~ dnorm( 0 , 1 ),
-    b ~ dnorm( 0 , 1 )
-  ), data=d )
+b11.12 <-
+  brm(data = d, 
+      family = poisson,
+      y ~ 1 + offset(log_days) + monastery,
+      prior = c(prior(normal(0, 1), class = Intercept),
+                prior(normal(0, 1), class = b)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 11,
+      file = "fits/b11.12")
 ```
+
+```{r}
+print(b11.12)
+```
+
 
 To compute the posterior distributions of λ in each monastery, we sample from the posterior and then just use the linear model, but without the offset now. We don’t use the offset again, when computing predictions, because the parameters are already on the daily scale, for both monasteries.
 
 ```{r 11.54}
-post <- extract.samples( m11.12 )
-lambda_old <- exp( post$a )
-lambda_new <- exp( post$a + post$b )
-precis( data.frame( lambda_old , lambda_new ) )
+brms::as_draws_df(b11.12) %>%
+  mutate(lambda_old = exp(b_Intercept),
+         lambda_new = exp(b_Intercept + b_monastery)) %>%
+  pivot_longer(contains("lambda")) %>% 
+  mutate(name = factor(name, levels = c("lambda_old", "lambda_new"))) %>%
+  group_by(name) %>%
+  mean_hdi(value, .width = .89) %>% 
+  mutate_if(is.double, round, digits = 2)
 ```
 
 ## Multinomial and categorical models
@@ -871,124 +1232,213 @@ For example, suppose you are modeling choice of career for a number of young adu
 
 ```{r 11.55}
 # simulate career choices among 500 individuals
-N <- 500  # number of individuals
-income <- c(1,2,5)  # expected income of each career
-score <- 0.5*income # scores for each career, based on income
+n      <- 500           # number of individuals
+income <- c(1, 2, 5)    # expected income of each career
+score  <- 0.5 * income  # scores for each career, based on income
+
 # next line converts scores to probabilities
-p <- softmax(score[1],score[2],score[3])
+p <- softmax(score[1], score[2], score[3])
 
 # now simulate choice
 # outcome career holds event type values, not counts
-career <- rep(NA,N) # empty vector of choices for each individual
+career <- rep(NA, n)  # empty vector of choices for each individual
+
 # sample chosen career for each individual
 set.seed(34302)
-for ( i in 1:N ) career[i] <- sample( 1:3 , size=1 , prob=p )
+# sample chosen career for each individual
+for(i in 1:n) career[i] <- sample(1:3, size = 1, prob = p)
 ```
+
+
+```{r}
+# put them in a tibble
+d <-
+  tibble(career = career) %>% 
+  mutate(career_income = ifelse(career == 3, 5, career))
+
+# plot 
+d %>%
+  ggplot(aes(x = career)) +
+  geom_bar(size = 0, fill = wes_palette("Moonrise2")[2])
+```
+
 
 To fit the model to these fake data, we use the `dcategorical` likelihood, which is the multinomial logistic regression distribution. It works when each value in the outcome variable, here `career`, contains the individual event types on each row. To convert all the scores to probabilities, we’ll use the multinomial logit link, which is called `softmax.` Then each possible career gets its own linear model with its own features. There are no intercepts in the simulation above. But if income doesn’t predict career choice, you still want an intercept to account for differences in frequency. Here’s the code:
 
 ```{r 11.56}
+# define the model
 code_m11.13 <- "
 data{
   int N; // number of individuals
-  int K; // number of possible careers
+  int K; // number of possible careers 
   int career[N]; // outcome
   vector[K] career_income;
 }
 parameters{
-  vector[K-1] a; // intercepts
+  vector[K - 1] a; // intercepts
   real<lower=0> b; // association of income with choice
 }
 model{
   vector[K] p;
   vector[K] s;
-  a ~ normal( 0 , 1 );
-  b ~ normal( 0 , 0.5 );
-  s[1] = a[1] + b*career_income[1];
-  s[2] = a[2] + b*career_income[2];
+  a ~ normal(0, 1);
+  b ~ normal(0, 0.5);
+  s[1] = a[1] + b * career_income[1]; 
+  s[2] = a[2] + b * career_income[2]; 
   s[3] = 0; // pivot
-  p = softmax( s );
-  career ~ categorical( p );
-}
+  p = softmax(s);
+  career ~ categorical(p);
+} 
 "
+
+
 ```
 
 Then we set up the data list and invoke stan:
 
 ```{r 11.57}
-dat_list <- list( N=N , K=3 , career=career , career_income=income )
-m11.13 <- stan( model_code=code_m11.13 , data=dat_list , chains=4 )
-precis( m11.13 , 2 )
+# wrangle the data
+dat_list <- 
+  list(N = n, 
+       K = 3, 
+       career = career, 
+       career_income = income)
+
+# fit the model
+m11.13 <- 
+  stan(data = dat_list,
+       model_code = code_m11.13,
+       chains = 4)
 ```
+
+
+```{r}
+precis(m11.13, depth = 2) %>% round(digits = 2)
+```
+
 
 You might have gotten some divergent transitions above. Can you figure out why?
 
 To conduct a counterfactual simulation, we can extract the samples and make our own. The goal is to compare a counterfactual career in which the income is changed. How much does the probability change, in the presence of these competing careers? This is a subtle kind of question, because the probability change always depends upon the other choices. So let’s imagine doubling the income of career 2 above:
 
-```{r}
-post <- extract.samples( m11.13 )
+```{r, 11.58}
+post <- extract.samples(m11.13)
 
 # set up logit scores
-s1 <- with( post , a[,1] + b*income[1] )
-s2_orig <- with( post , a[,2] + b*income[2] )
-s2_new <- with( post , a[,2] + b*income[2]*2 )
+s1      <- with(post, a[, 1] + b * income[1])
+s2_orig <- with(post, a[, 2] + b * income[2])
+s2_new  <- with(post, a[, 2] + b * income[2] * 2)
 
-# compute probabilities for original and counterfactual
-p_orig <- sapply( 1:length(post$b) , function(i)
-  softmax( c(s1[i],s2_orig[i],0) ) )
-p_new <- sapply( 1:length(post$b) , function(i)
-  softmax( c(s1[i],s2_new[i],0) ) )
+# compute probabilities for original and counterfactual 
+p_orig <- sapply(1:length(post$b), function(i)
+  softmax(c(s1[i], s2_orig[i], 0)))
+
+p_new <- sapply(1:length(post$b), function(i)
+  softmax(c(s1[i], s2_new[i], 0)))
 
 # summarize
-p_diff <- p_new[2,] - p_orig[2,]
-precis( p_diff )
+p_diff <- p_new[2, ] - p_orig[2, ] 
+precis(p_diff)
 ```
+
+```{r}
+b11.13io <-
+  brm(data = d, 
+      family = categorical(link = logit, refcat = 3),
+      career ~ 1,
+      prior = c(prior(normal(0, 1), class = Intercept, dpar = mu1),
+                prior(normal(0, 1), class = Intercept, dpar = mu2)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 11,
+      file = "fits/b11.13io")
+```
+
+```{r}
+print(b11.13io)
+```
+
 
 ***11.3.2. Predictors matched to observations***
 
 ```{r 11.59}
-N <- 500
+n <- 500
+set.seed(11)
+
 # simulate family incomes for each individual
-family_income <- runif(N)
+family_income <- runif(n)
+
 # assign a unique coefficient for each type of event
-b <- c(-2,0,2)
-career <- rep(NA,N) # empty vector of choices for each individual
-for ( i in 1:N ) {
-  score <- 0.5*(1:3) + b*family_income[i]
-  p <- softmax(score[1],score[2],score[3])
-  career[i] <- sample( 1:3 , size=1 , prob=p )
+b      <- c(-2, 0, 2)
+career <- rep(NA, n)  # empty vector of choices for each individual
+for (i in 1:n) {
+    score     <- 0.5 * (1:3) + b * family_income[i]
+    p         <- softmax(score[1], score[2], score[3])
+    career[i] <- sample(1:3, size = 1, prob = p)
 }
-
-code_m11.14 <- "
-data{
-  int N; // number of observations
-  int K; // number of outcome values
-  int career[N]; // outcome
-  real family_income[N];
-}
-parameters{
-  vector[K-1] a; // intercepts
-  vector[K-1] b; // coefficients on family income
-}
-model{
-  vector[K] p;
-  vector[K] s;
-  a ~ normal(0,1.5);
-  b ~ normal(0,1);
-  for ( i in 1:N ) {
-    for ( j in 1:(K-1) ) s[j] = a[j] + b[j]*family_income[i];
-    s[K] = 0; // the pivot
-    p = softmax( s );
-    career[i] ~ categorical( p );
-  }
-}
-"
-
-dat_list <- list( N=N , K=3 , career=career , family_income=family_income )
-m11.14 <- stan( model_code=code_m11.14 , data=dat_list , chains=4 )
-precis( m11.14 , 2 )
-
 ```
+
+
+```{r}
+# put the data in a tibble
+d <-
+  tibble(career = career) %>% 
+  mutate(family_income = family_income)
+
+p1 <-
+  d %>% 
+  mutate(career = as.factor(career)) %>% 
+  
+  ggplot(aes(x = family_income, fill = career)) +
+  geom_density(size = 0, alpha = 3/4) +
+  scale_fill_manual(values = wes_palette("Moonrise2")[c(4, 2, 1)]) +
+  theme(legend.position = "none")
+  
+p2 <-
+  d %>% 
+  mutate(career = as.factor(career)) %>%
+  
+  mutate(fi = santoku::chop_width(family_income, width = .1, start = 0, labels = 1:10)) %>% 
+  count(fi, career) %>% 
+  group_by(fi) %>% 
+  mutate(proportion = n / sum(n)) %>% 
+  mutate(f = as.double(fi)) %>% 
+  
+  ggplot(aes(x = (f - 1) / 9, y = proportion, fill = career)) +
+  geom_area() +
+  scale_fill_manual(values = wes_palette("Moonrise2")[c(4, 2, 1)]) +
+  xlab("family_income, descritized")
+
+p1 + p2
+```
+
+```{r}
+b11.14 <-
+  brm(data = d, 
+      family = categorical(link = logit, refcat = 3),
+      bf(career ~ 1,
+         nlf(mu1 ~ a1 + b1 * family_income),
+         nlf(mu2 ~ a2 + b2 * family_income),
+         a1 + a2 + b1 + b2 ~ 1),
+      prior = c(prior(normal(0, 1.5), class = b, nlpar = a1),
+                prior(normal(0, 1.5), class = b, nlpar = a2),
+                prior(normal(0, 1), class = b, nlpar = b1),
+                prior(normal(0, 1), class = b, nlpar = b2)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 11,
+      file = "fits/b11.14")
+```
+
+```{r}
+print(b11.14)
+```
+
+```{r}
+b11.14 <- brms::add_criterion(b11.14, "loo")
+
+loo(b11.14)
+```
+
+
 
 ***11.3.3. Multinomial in disguise as Poisson***
 
@@ -997,45 +1447,64 @@ Another way to fit a multinomial/categorical model is to refactor it into a seri
 I appreciate that this kind of thing—modeling the same data different ways but getting the same inferences—is exactly the kind of thing that makes statistics maddening for scientists. So I’ll begin by taking a binomial example from earlier in the chapter and doing it over as a Poisson regression. Since the binomial is just a special case of the multinomial, the approach extrapolates to any number of event types. Think again of the UC Berkeley admissions data. Let’s load it again:
 
 ```{r 11.60}
-library(rethinking)
-data(UCBadmit)
+data(UCBadmit, package = "rethinking")
 d <- UCBadmit
+rm(UCBadmit)
 ```
 
 Now let’s use a Poisson regression to model both the rate of admission and the rate of rejection. And we’ll compare the inference to the binomial model’s probability of admission. Here are both the binomial and Poisson models:
 
 ```{r 11.61}
 # binomial model of overall admission probability
-m_binom <- quap(
-  alist(
-    admit ~ dbinom(applications,p),
-    logit(p) <- a,
-    a ~ dnorm( 0 , 1.5 )
-  ), data=d )
-  
+b11.binom <-
+  brm(data = d, 
+      family = binomial,
+      admit | trials(applications) ~ 1,
+      prior(normal(0, 1.5), class = Intercept),
+      iter = 2000, warmup = 1000, cores = 3, chains = 3,
+      seed = 11,
+      file = "fits/b11.binom")
+
 # Poisson model of overall admission rate and rejection rate
-# ‘reject’ is a reserved word in Stan, cannot use as variable name
-dat <- list( admit=d$admit , rej=d$reject )
-m_pois <- ulam(
-  alist(
-    admit ~ dpois(lambda1),
-    rej ~ dpois(lambda2),
-    log(lambda1) <- a1,
-    log(lambda2) <- a2,
-    c(a1,a2) ~ dnorm(0,1.5)
-  ), data=dat , chains=3 , cores=3 )
+b11.pois <-
+  brm(data = d %>%
+        mutate(rej = reject),  # 'reject' is a reserved word
+      family = poisson,
+      mvbind(admit, rej) ~ 1,
+      prior(normal(0, 1.5), class = Intercept),
+      iter = 2000, warmup = 1000, cores = 3, chains = 3,
+      seed = 11,
+      file = "fits/b11.pois")
 ```
 
 Let’s consider just the posterior means, for the sake of simplicity. But keep in mind that the entire posterior is what matters. First, the inferred binomial probability of admission, across the entire data set, is:
 
-```{r, 11.62}
-inv_logit(coef(m_binom))
+```{r}
+# extract the samples
+post <- brms::as_draws_df(b11.pois)
+# wrangle
+post %>%
+  mutate(admit  = exp(b_admit_Intercept), 
+         reject = exp(b_rej_Intercept)) %>% 
+  pivot_longer(admit:reject) %>% 
+  
+  # plot
+  ggplot(aes(x = value, y = name, fill = name)) +
+  tidybayes::stat_halfeye(point_interval = median_qi, .width = .95,
+               color = wes_palette("Moonrise2")[4]) +
+  scale_fill_manual(values = wes_palette("Moonrise2")[1:2]) +
+  labs(title = " Mean admit/reject rates across departments",
+       x = "# applications",
+       y = NULL) +
+  theme(axis.ticks.y = element_blank(),
+        legend.position = "none")
 ```
 
+
 ```{r 11.63}
-k <- coef(m_pois)
-a1 <- k['a1']; a2 <- k['a2']
-exp(a1)/(exp(a1)+exp(a2))
+#k <- coef(m_pois)
+#a1 <- k['a1']; a2 <- k['a2']
+#exp(a1)/(exp(a1)+exp(a2))
 ```
 
 That’s the same inference as in the binomial model.

@@ -1,18 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '`r format(Sys.Date())`'
-#output: html_notebook
-editor_options: 
-  chunk_output_type: inline
-#output:
-#  bookdown::tufte_html_book:
-#    toc: yes
-#    css: toc.css
-#    pandoc_args: --lua-filter=color-text.lua
-#    highlight: pygments
-#    link-citations: yes
----
-
 # Big Entropy and the Generalized Linear Model
 
 ```{r, message = F, warning=F}
@@ -78,27 +63,35 @@ knitr::include_graphics(file.path(slides_dir, '08.png'))
 Let’s put each distribution of pebbles in a list:
 
 ```{r 10.1}
-p <- list()
-p$A <- c(0,0,10,0,0)
-p$B <- c(0,1,8,1,0)
-p$C <- c(0,2,6,2,0)
-p$D <- c(1,2,4,2,1)
-p$E <- c(2,2,2,2,2)
+d <-
+  tibble(a = c(0, 0, 10, 0, 0),
+         b = c(0, 1, 8, 1, 0),
+         c = c(0, 2, 6, 2, 0),
+         d = c(1, 2, 4, 2, 1),
+         e = 2) 
 ```
 
 And let’s normalize each such that it is a probability distribution. 
 
 ```{r 10.2}
-p_norm <- lapply( p , function(q) q/sum(q))
+# this is our analogue to McElreath's `lapply()` code
+d %>% 
+  mutate_all(~ . / sum(.)) %>% 
+  # the next few lines constitute our analogue to his `sapply()` code
+  pivot_longer(everything(), names_to = "plot") %>% 
+  group_by(plot) %>% 
+  summarise(h = -sum(ifelse(value == 0, 0, value * log(value))))
 ```
 
-Since these are now probability distributions, we can compute the information entropy of each
-
-```{r 10.3}
-( H <- sapply( p_norm , function(q) -sum(ifelse(q==0,0,q*log(q))) ) )
-```
+Since these are now probability distributions, we can compute the information entropy of each as above. 
 
 So distribution E, which can realized by far the greatest number of ways, also has the biggest entropy.
+
+```{r}
+library(ghibli)
+ghibli_palette("MarnieMedium1")[1:7]
+```
+
 
 
 ```{r, echo = F, out.width='80%', fig.cap="Only one way to get all the pebbles in bucket 3. "}
@@ -165,40 +158,89 @@ knitr::include_graphics(file.path(slides_dir, '23.png'))
 
 To appreciate why the Gaussian shape has the biggest entropy for any continuous distribution with this variance, consider that entropy increases as we make a distribution flatter. So we could easily make up a probability distribution with larger entropy than the blue distribution in Figure 10.2: Just take probability from the center and put it in the tails. The more uniform the distribution looks, the higher its entropy will be. But there are limits on how much of this we can do and maintain the same variance, $\sigma^2 = 1$.
 
-Then the Gaussian distribution gets its shape by being as spread out as possible for a distribution with fixed variance.
+*Then the Gaussian distribution gets its shape by being as spread out as possible for a distribution with fixed variance.*
 
 ***10.1.2. Binomial***
 
 ```{r 10.5}
-# build list of the candidate distributions
-p <- list()
-p[[1]] <- c(1/4,1/4,1/4,1/4)
-p[[2]] <- c(2/6,1/6,1/6,2/6)
-p[[3]] <- c(1/6,2/6,2/6,1/6)
-p[[4]] <- c(1/8,4/8,2/8,1/8)
+# data
+d <-
+  tibble(distribution = letters[1:4],
+         ww = c(1/4, 2/6, 1/6, 1/8),
+         bw = c(1/4, 1/6, 2/6, 4/8),
+         wb = c(1/4, 1/6, 2/6, 2/8),
+         bb = c(1/4, 2/6, 1/6, 1/8))
 
-# compute expected value of each
-sapply( p , function(p) sum(p*c(0,1,1,2)) )
+# table
+d %>% 
+  mutate_if(is.numeric, ~MASS::fractions(.) %>% as.character()) %>% 
+  flextable::flextable()
 ```
 
 Compute the entropy of each distribution:
 
 ```{r 10.6}
 # compute entropy of each distribution
-sapply( p , function(p) -sum( p*log(p) ) )
+d %>% 
+  group_by(distribution) %>% 
+  summarise(entropy = -sum(probability * log(probability)))
 ```
+
+```{r, fig.cap = "Figure 10.3"}
+d <- 
+  d %>% 
+  pivot_longer(-distribution,
+               names_to = "sequence", 
+               values_to = "probability") %>% 
+  mutate(sequence = factor(sequence, levels = c("ww", "bw", "wb", "bb")))
+
+d  %>% 
+  ggplot(aes(x = sequence, y = probability, group = 1)) +
+  geom_point(size = 2, color = ghibli_palette("PonyoMedium")[4]) +
+  geom_line(color = ghibli_palette("PonyoMedium")[5]) +
+  labs(x = NULL, y = NULL) +
+  coord_cartesian(ylim = 0:1) +
+  theme(axis.ticks.x = element_blank(),
+        panel.background = element_rect(fill = ghibli_palette("PonyoMedium")[2]),
+        panel.grid = element_blank(),
+        strip.background = element_rect(fill = ghibli_palette("PonyoMedium")[6])) +
+  facet_wrap(~ distribution)
+```
+
+```{r}
+d %>% 
+  # `str_count()` will count the number of times "b" occurs within a given row of `sequence`
+  mutate(n_b = str_count(sequence, "b")) %>% 
+  mutate(product = probability * n_b) %>% 
+  group_by(distribution) %>% 
+  summarise(expected_value = sum(product))
+```
+
+```{r}
+d %>% 
+  group_by(distribution) %>% 
+  summarise(entropy = -sum(probability * log(probability)))
+```
+
 
 The binomial with this expected value is:
 
 ```{r 10.7}
 p <- 0.7
-( A <- c( (1-p)^2 , p*(1-p) , (1-p)*p , p^2 ) )
+
+(
+  a <- 
+  c((1 - p)^2, 
+    p * (1 - p), 
+    (1 - p) * p, 
+    p^2)
+)
 ```
 
 This distribution is definitely not flat. So to appreciate how this distribution has maximum entropy—is the flattest distribution with expected value 1.4—we’ll simulate a bunch of distributions with the same expected value and then compare entropies. The entropy of the distribution above is just:
 
 ```{r 10.8}
--sum( A*log(A) )
+-sum(a * log(a))
 ```
 
 So if we randomly generate thousands of distributions with expected value 1.4, we expect that none will have a larger entropy than this.
@@ -206,36 +248,112 @@ So if we randomly generate thousands of distributions with expected value 1.4, w
 We can use a short R function to simulate random probability distributions that have any specified expected value. The code below will do the job. Don’t worry about how it works (unless you want to).
 
 ```{r 10.9}
-sim.p <- function(G=1.4) {
-  x123 <- runif(3)
-  x4 <- ( (G)*sum(x123)-x123[2]-x123[3] )/(2-G)
-  z <- sum( c(x123,x4) )
-  p <- c( x123 , x4 )/z
-  list( H=-sum( p*log(p) ) , p=p )
+sim_p <- function(seed, g = 1.4) {
+  
+  set.seed(seed)
+  
+  x_123 <- runif(3)
+  x_4   <- ((g) * sum(x_123) - x_123[2] - x_123[3]) / (2 - g)
+  z     <- sum(c(x_123, x_4))
+  p     <- c(x_123, x_4) / z
+  
+  tibble(h   = -sum(p * log(p)), 
+         p   = p,
+         key = factor(c("ww", "bw", "wb", "bb"), levels = c("ww", "bw", "wb", "bb")))
+  
 }
 ```
 
 ```{r 10.10}
-H <- replicate( 1e5 , sim.p(1.4) )
-dens( as.numeric(H[1,]) , adj=0.1 )
+sim_p(seed = 9.9, g = 1.4)
 ```
 
-Let’s split out the entropies and distributions, so that it’s easier to work with them:
+```{r}
+# how many replications would you like?
+n_rep <- 1e5
 
-```{r 10.11}
-entropies <- as.numeric(H[1,])
-distributions <- H[2,]
+d <-
+  tibble(seed = 1:n_rep) %>% 
+  mutate(sim = map2(seed, 1.4, sim_p)) %>% 
+  unnest(sim)
+
+head(d)
 ```
+
+
+Let’s split out the entropies and distributions, so that it’s easier to work with them.
 
 Now we can ask what the largest observed entropy was:
 
 ```{r 10.12}
-max(entropies)
+ranked_d <-
+  d %>% 
+  group_by(seed) %>% 
+  arrange(desc(h)) %>% 
+  ungroup() %>%
+  # here's the rank order step
+  mutate(rank = rep(1:n_rep, each = 4))
+
+head(ranked_d)
 ```
 
 ```{r 10.13}
-distributions[ which.max(entropies) ]
+subset_d <-
+  ranked_d %>%
+  # I arrived at these `rank` values by trial and error
+  filter(rank %in% c(1, 87373, n_rep - 1500, n_rep - 10)) %>% 
+  # I arrived at the `height` values by trial and error, too
+  mutate(height       = rep(c(8, 2.25, .75, .5), each = 4),
+         distribution = rep(letters[1:4], each = 4))
+head(subset_d)
 ```
+
+```{r}
+p1 <-
+  d %>% 
+  ggplot(aes(x = h)) +
+  geom_density(size = 0, fill = ghibli_palette("LaputaMedium")[3],
+               adjust = 1/4) +
+  # note the data statements for the next two geoms
+  geom_linerange(data = subset_d %>% group_by(seed) %>% slice(1),
+                 aes(ymin = 0, ymax = height),
+                 color = ghibli_palette("LaputaMedium")[5]) +
+  geom_text(data = subset_d %>% group_by(seed) %>% slice(1),
+            aes(y = height + .5, label = distribution)) +
+  scale_x_continuous("Entropy", breaks = seq(from = .7, to = 1.2, by = .1)) +
+  theme(panel.background = element_rect(fill = ghibli_palette("LaputaMedium")[7]),
+        panel.grid = element_blank())
+```
+
+```{r, fig.cap = "Figure 10.4"}
+p2 <-
+  ranked_d %>%
+  filter(rank %in% c(1, 87373, n_rep - 1500, n_rep - 10)) %>% 
+  mutate(distribution = rep(letters[1:4], each = 4)) %>% 
+  
+  ggplot(aes(x = key, y = p, group = 1)) +
+  geom_line(color = ghibli_palette("LaputaMedium")[5]) +
+  geom_point(size = 2, color = ghibli_palette("LaputaMedium")[4]) +
+  scale_y_continuous(NULL, breaks = NULL, limits = c(0, .75)) +
+  xlab(NULL) +
+  theme(axis.ticks.x = element_blank(),
+        panel.background = element_rect(fill = ghibli_palette("LaputaMedium")[7]),
+        panel.grid = element_blank(),
+        strip.background = element_rect(fill = ghibli_palette("LaputaMedium")[6])) +
+  facet_wrap(~ distribution)
+
+# combine and plot
+library(patchwork)
+p1 | p2
+```
+
+```{r}
+ranked_d %>% 
+  group_by(key) %>% 
+  arrange(desc(h)) %>% 
+  slice(1)
+```
+
 
 And that’s almost exactly ${0.09, 0.21, 0.21, 0.49}$, the distribution we calculated earlier.
 The other distributions in Figure 10.4—B, C, and D—are all less even than A.
@@ -250,7 +368,7 @@ What is usually meant by “independence” in a probability distribution is jus
 
 ## Generalized linear models
 
-For an outcome variable that is continuous and far from any theoretical maximum or minimum, this sort of Gaussian model has maximum entropy. But when the outcome variable is either discrete or bounded, a Gaussian likelihood is not the most powerful choice.
+>For an outcome variable that is continuous and far from any theoretical maximum or minimum, this sort of Gaussian model has maximum entropy. But when the outcome variable is either discrete or bounded, a Gaussian likelihood is not the most powerful choice.
 
 Luckily, it’s easy to do better. By using all of our prior knowledge about the outcome variable, usually in the form of constraints on the possible values it can take, we can appeal to maximum entropy for the choice of distribution. Then all we have to do is generalize the linear regression strategy—replace a parameter describing the shape of the likelihood with a linear model—to probability distributions other than the Gaussian.
 
@@ -277,7 +395,7 @@ The $f$ is a **link function**, to be determined separately from the distributio
 knitr::include_graphics(file.path(slides_dir, '25.png'))
 ```
 
-Histomancy is a false god, because even perfectly good Gaussian variables may not look Gaussian when displayed as a histogram. Why? Because at most what a Gaussian likelihood assumes is not that the aggregated data look Gaussian, but rather that the residuals, after fitting the model, look Gaussian. So for example the combined histogram of male and female body weights is certainly not Gaussian. But it is (approximately) a mixture of Gaussian distributions. So after conditioning on sex, the residuals may be quite normal.
+Histomancy is a false god, because even perfectly good Gaussian variables may not look Gaussian when displayed as a histogram. Why? **Because at most what a Gaussian likelihood assumes is not that the aggregated data look Gaussian, but rather that the residuals, after fitting the model, look Gaussian.** So for example the combined histogram of male and female body weights is certainly not Gaussian. But it is (approximately) a mixture of Gaussian distributions. So after conditioning on sex, the residuals may be quite normal.
 
 ***10.2.1. Meet the family***
 
@@ -303,7 +421,7 @@ Practically, the Poisson distribution is used for counts that never get close to
 knitr::include_graphics(file.path(slides_dir, '29.png'))
 ```
 
-**Gamma**: also constrained to be zero or positive. It too is a fundamental distribution of distance and duration. But unlike the exponential distribution, the gamma distribution can have a peak above zero. If an event can only happen after two or more exponentially distributed events happen, the resulting waiting times will be gamma distributed. Common in survival and event history analysis, as well as some contexts in which a continuous measurement is constrained to be positive.
+**Gamma**: also constrained to be zero or positive. It too is a fundamental distribution of distance and duration. But unlike the exponential distribution, the gamma distribution can have a peak above zero. **If an event can only happen after two or more exponentially distributed events happen, the resulting waiting times will be gamma distributed.** Common in survival and event history analysis, as well as some contexts in which a continuous measurement is constrained to be positive.
 
 ```{r, echo = F, out.width='80%', fig.cap="If you get a Gamma with a really large mean, it converges to a Normal. But not the only way - all roads lead to normal. And it's hard to leave. So these are generative processes, based on the constraints. Doesn't mean that they're correct, but it's the betting part."}
 knitr::include_graphics(file.path(slides_dir, '30.png'))
@@ -318,6 +436,8 @@ knitr::include_graphics(file.path(slides_dir, '32.png'))
 ```
 
 ***10.2.2. Linking linear models to distributions***
+
+>To build a regression model from any of the exponential family distributions is just a matter of attaching one or more linear models to one or more of the parameters that describe the distribution’s shape. But as hinted at earlier, usually we require a **link function** to prevent mathematical accidents like negative distances or probability masses that exceed 1. (p. 316, emphasis in the original)
 
 ```{r, echo = F, out.width='80%', fig.cap="Consider the Gaussian linear regression. It's super benign, and that's because it has a special property: the scientific measurement units and the parameter for the mean are the same. "}
 knitr::include_graphics(file.path(slides_dir, '33.png'))
@@ -359,7 +479,7 @@ knitr::include_graphics(file.path(slides_dir, '41.png'))
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
-```{r, echo = F, out.width='80%', fig.cap="If you do this, there's a really nice mapping onto the probability scale, where x is linear on the log odds scale, and constrained to the (0,1) internval on teh probability scale. This arises from the maxent derivation of the binomial distribution. In machine learnign they call it the maxent classifier."}
+```{r, echo = F, out.width='80%', fig.cap="If you do this, there's a really nice mapping onto the probability scale, where x is linear on the log odds scale, and constrained to the (0,1) internval on the probability scale. This arises from the maxent derivation of the binomial distribution. In machine learning they call it the maxent classifier."}
 knitr::include_graphics(file.path(slides_dir, '43.png'))
 ```
 
@@ -395,7 +515,7 @@ knitr::include_graphics(file.path(slides_dir, '50.png'))
 knitr::include_graphics(file.path(slides_dir, '51.png'))
 ```
 
-***10.2.3. Omitted variable bias again***
+
 
 
 

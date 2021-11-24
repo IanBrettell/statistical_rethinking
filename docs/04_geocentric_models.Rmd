@@ -1106,10 +1106,14 @@ b4.3_352 <-
 ```
 
 ```{r}
-post010 <- brms::as_draws_df(b4.3_010)
-post050 <- brms::as_draws_df(b4.3_050)
-post150 <- brms::as_draws_df(b4.3_150)
-post352 <- brms::as_draws_df(b4.3_352)
+post010 <- brms::as_draws_df(b4.3_010) %>% 
+  dplyr::select(-starts_with("."))
+post050 <- brms::as_draws_df(b4.3_050) %>% 
+  dplyr::select(-starts_with("."))
+post150 <- brms::as_draws_df(b4.3_150) %>% 
+  dplyr::select(-starts_with("."))
+post352 <- brms::as_draws_df(b4.3_352) %>% 
+  dplyr::select(-starts_with("."))
 ```
 
 
@@ -1119,8 +1123,12 @@ Now plot 20 of these lines:
 p1 <- 
   ggplot(data =  d2[1:10, ], 
          aes(x = weight_c, y = height)) +
-  geom_abline(intercept = post010[1:20, 1], 
-              slope     = post010[1:20, 2],
+  geom_abline(intercept = post010 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_Intercept"), 
+              slope     = post010 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_weight_c"),
               size = 1/3, alpha = .3) +
   geom_point(shape = 1, size = 2, color = "royalblue") +
   coord_cartesian(xlim = range(d2$weight_c),
@@ -1130,8 +1138,12 @@ p1 <-
 p2 <-
   ggplot(data =  d2[1:50, ], 
          aes(x = weight_c, y = height)) +
-  geom_abline(intercept = post050[1:20, 1], 
-              slope     = post050[1:20, 2],
+  geom_abline(intercept = post050 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_Intercept"), 
+              slope     = post050 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_weight_c"),
               size = 1/3, alpha = .3) +
   geom_point(shape = 1, size = 2, color = "royalblue") +
   coord_cartesian(xlim = range(d2$weight_c),
@@ -1141,8 +1153,12 @@ p2 <-
 p3 <-
   ggplot(data =  d2[1:150, ], 
          aes(x = weight_c, y = height)) +
-  geom_abline(intercept = post150[1:20, 1], 
-              slope     = post150[1:20, 2],
+  geom_abline(intercept = post150 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_Intercept"), 
+              slope     = post150 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_weight_c"),
               size = 1/3, alpha = .3) +
   geom_point(shape = 1, size = 2, color = "royalblue") +
   coord_cartesian(xlim = range(d2$weight_c),
@@ -1152,20 +1168,27 @@ p3 <-
 p4 <- 
   ggplot(data =  d2[1:352, ], 
          aes(x = weight_c, y = height)) +
-  geom_abline(intercept = post352[1:20, 1], 
-              slope     = post352[1:20, 2],
+  geom_abline(intercept = post352 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_Intercept"), 
+              slope     = post352 %>% 
+                dplyr::slice(1:20) %>% 
+                dplyr::pull("b_weight_c"),
               size = 1/3, alpha = .3) +
   geom_point(shape = 1, size = 2, color = "royalblue") +
   coord_cartesian(xlim = range(d2$weight_c),
                   ylim = range(d2$height)) +
   labs(subtitle = "N = 352")
+```
 
+```{r}
 (p1 + p2 + p3 + p4) &
   scale_x_continuous("weight",
                      breaks = c(-10, 0, 10),
                      labels = labels) &
   theme_classic()
 ```
+
 
 ```{r, echo = F, out.width='80%', fig.cap = "Now add 50, and you'll see they get more concentrated. Note the uncertainty at the ends are more uncertain. They pivot around the means in the centre."}
 knitr::include_graphics(file.path(slides_dir, '51.png'))
@@ -1265,7 +1288,7 @@ weight_seq <-
 
 # With `newdata`, you can accommodate custom predictor values.
 mu <-
-  brms::fitted(b4.3,
+  fitted(b4.3,
                summary = F,
                newdata = weight_seq) %>%
   data.frame() %>%
