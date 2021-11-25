@@ -216,7 +216,7 @@ To get a sense of how the beta distribution of probabilities of admission influe
 First write helper functions:
 
 ```{r}
-expose_functions(b12.1, vectorize = TRUE)
+brms::expose_functions(b12.1, vectorize = TRUE)
 
 # required to use `predict()`
 log_lik_beta_binomial2 <- function(i, prep) {
