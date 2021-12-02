@@ -1,0 +1,36 @@
+Bootstrap: docker
+From: rocker/tidyverse:4.1.0
+
+%post
+    apt update
+    apt install -y nodejs npm libmagick++-dev libglpk40 libudunits2-0 libproj15 libgdal26
+
+    # Install cmdstanr
+    # we recommend running this is a fresh R session or restarting your current session
+    R -e 'install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))'
+
+    # Install CRAN packages
+    install2.r --error \
+        coda \
+        mvtnorm \
+        devtools \
+        loo \
+        dagitty \
+        tufte \
+        brms \
+        bayesplot \
+        remotes \
+        magick \
+        patchwork \
+        tidybayes \
+        ggdag \
+        rcartocolor
+
+    # Install `rethinking`
+    R -e 'devtools::install_github("rmcelreath/rethinking")'
+
+    # Install `urbanmapr`
+    R -e 'devtools::install_github("UrbanInstitute/urbnmapr")'
+    
+    # Install `ggthemes`
+    R -e 'devtools::install_github(c("hadley/ggplot2", "jrnold/ggthemes"))'

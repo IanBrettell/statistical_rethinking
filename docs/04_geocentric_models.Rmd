@@ -726,7 +726,7 @@ rbind(summary(b4.1_hc)$fixed,
 To this the matrix of variances and covariances among all paris of parameters:
 
 ```{r 4.32, fig.margin = T}
-post <- brms::as_draws_df(b4.1_hc) %>% 
+post <- brms::posterior_samples(b4.1_hc) %>% 
   dplyr::select(b_Intercept, sigma, lp__)
 
 head(post)
@@ -978,7 +978,7 @@ vcov(b4.3) %>%
 No $\sigma$. To get that we have to extract the posterior draws and use the `cov()` function instead:
 
 ```{r}
-brms::as_draws_df(b4.3) %>%
+brms::posterior_samples(b4.3) %>%
   dplyr::select(-lp__, -starts_with(".")) %>%
   cov() %>%
   round(digits = 3)
@@ -1037,7 +1037,7 @@ knitr::include_graphics(file.path(slides_dir, '49.png'))
 ```
 
 ```{r 4.47}
-post <- brms::as_draws_df(b4.3)
+post <- brms::posterior_samples(b4.3)
 
 post %>%
   slice(1:5)  # this serves a similar function as `head()`
@@ -1106,13 +1106,13 @@ b4.3_352 <-
 ```
 
 ```{r}
-post010 <- brms::as_draws_df(b4.3_010) %>% 
+post010 <- brms::posterior_samples(b4.3_010) %>% 
   dplyr::select(-starts_with("."))
-post050 <- brms::as_draws_df(b4.3_050) %>% 
+post050 <- brms::posterior_samples(b4.3_050) %>% 
   dplyr::select(-starts_with("."))
-post150 <- brms::as_draws_df(b4.3_150) %>% 
+post150 <- brms::posterior_samples(b4.3_150) %>% 
   dplyr::select(-starts_with("."))
-post352 <- brms::as_draws_df(b4.3_352) %>% 
+post352 <- brms::posterior_samples(b4.3_352) %>% 
   dplyr::select(-starts_with("."))
 ```
 
@@ -1899,7 +1899,7 @@ Each of the 17 columns in our `B` matrix was assigned its own parameter.
 Then plot the posterior predictions:
 
 ```{r 4.77}
-post <- brms::as_draws_df(b4.8)
+post <- brms::posterior_samples(b4.8)
 
 glimpse(post)
 
@@ -2016,7 +2016,7 @@ p1 <-
 ## middle
 # wrangle
 p2 <-
-  brms::as_draws_df(b4.9) %>% 
+  brms::posterior_samples(b4.9) %>% 
   dplyr::select(b_B1:b_B5) %>% 
   set_names(str_c("B.", 1:5)) %>% 
   pivot_longer(everything(), names_to = "bias_function") %>% 

@@ -357,11 +357,11 @@ knitr::include_graphics(file.path(slides_dir, '20.png'))
 ```{r 5.11}
 # first, extract and rename the necessary posterior parameters
 bind_cols(
-  brms::as_draws_df(b5.1) %>% 
+  brms::posterior_samples(b5.1) %>% 
     transmute(`b5.1_beta[A]` = b_a),
-  brms::as_draws_df(b5.2) %>% 
+  brms::posterior_samples(b5.2) %>% 
     transmute(`b5.2_beta[M]` = b_m),
-  brms::as_draws_df(b5.3) %>% 
+  brms::posterior_samples(b5.3) %>% 
     transmute(`b5.3_beta[M]` = b_m,
               `b5.3_beta[A]` = b_a)
   ) %>% 
@@ -775,7 +775,7 @@ Define a range of values that we want to assign to $A$ and extract the posterior
 
 ```{r 5.25}
 post <-
-  brms::as_draws_df(b5.3_A) %>% 
+  brms::posterior_samples(b5.3_A) %>% 
   mutate(iter = 1:n())
 ```
 
@@ -1110,11 +1110,11 @@ print(b5.7)
 
 ```{r 5.40, eval = F}
 bind_cols(
-  brms::as_draws_df(b5.5) %>% 
+  brms::posterior_samples(b5.5) %>% 
     transmute(`b5.5_beta[N]` = b_neocortex.perc_s),
-  brms::as_draws_df(b5.6) %>% 
+  brms::posterior_samples(b5.6) %>% 
     transmute(`b5.6_beta[M]` = b_log_mass_s),
-  brms::as_draws_df(b5.7) %>% 
+  brms::posterior_samples(b5.7) %>% 
     transmute(`b5.7_beta[N]` = b_neocortex.perc_s,
               `b5.7_beta[M]` = b_log_mass_s)
   ) %>% 
@@ -1376,7 +1376,7 @@ knitr::include_graphics(file.path(slides_dir, '04.png'))
 ```
 
 ```{r 5.49}
-brms::as_draws_df(b5.8) %>% 
+brms::posterior_samples(b5.8) %>% 
   mutate(diff_fm = b_sex1 - b_sex2) %>% 
   gather(key, value, -`lp__`) %>% 
   group_by(key) %>% 
@@ -1427,7 +1427,7 @@ print(b5.9)
 ```{r}
 bayesplot::color_scheme_set("red")
 
-post <- brms::as_draws_df(b5.9)
+post <- brms::posterior_samples(b5.9)
 
 post %>% 
   dplyr::select(starts_with("b_")) %>% 
@@ -1492,12 +1492,12 @@ print(b5.11)
 ```
 
 ```{r}
-brms::as_draws_df(b5.11) %>% 
+brms::posterior_samples(b5.11) %>% 
   pivot_longer(starts_with("b_")) %>% 
   mutate(name = str_remove(name, "b_") %>% 
-           str_remove(., "clade") %>% 
-           str_remove(., "house") %>% 
-           str_replace(., "World", " World ")) %>% 
+                str_remove(., "clade") %>% 
+                str_remove(., "house") %>% 
+                str_replace(., "World", " World ")) %>% 
   separate(name, into = c("predictor", "level"), sep = "_") %>% 
   mutate(predictor = if_else(predictor == "a", "predictor: clade", "predictor: house")) %>% 
   

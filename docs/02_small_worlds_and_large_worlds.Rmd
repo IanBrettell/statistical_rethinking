@@ -375,12 +375,12 @@ Re-fit the last model from above:
 
 ```{r 2.8}
 b2.1 <-
-  brm(data = list(w = 24), 
-      family = binomial(link = "identity"),
-      w | trials(36) ~ 0 + Intercept,
-      prior(beta(1, 1), class = b, lb = 0, ub = 1),
-      seed = 2,
-      file = "fits/b02.01")
+  brms::brm(data = list(w = 24), 
+            family = binomial(link = "identity"),
+            w | trials(36) ~ 0 + Intercept,
+            prior(beta(1, 1), class = b, lb = 0, ub = 1),
+            seed = 2,
+            file = "fits/b02.01")
 ```
 
 ```{r}

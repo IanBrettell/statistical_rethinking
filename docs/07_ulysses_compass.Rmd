@@ -251,7 +251,7 @@ b7.6 <-
       file = "fits/b07.06")
 ```
 
-```{r}
+```{r, warning = F, message = F}
 expose_functions(b7.6, vectorize = TRUE)
 
 posterior_epred_custom_normal <- function(prep) {
@@ -1051,9 +1051,11 @@ w[, 7:8] %>%
 ```
 
 ```{r 7.30}
-tibble(waic_b6.6 = waic(b6.6)$pointwise[, "waic"],
-       waic_b6.8 = waic(b6.8)$pointwise[, "waic"]) %>% 
-  mutate(diff = waic_b6.6 - waic_b6.8) %>% 
+n <- length(b6.7$criteria$waic$pointwise[, "waic"])
+
+tibble(waic_b6.7 = b6.7$criteria$waic$pointwise[, "waic"],
+       waic_b6.8 = b6.8$criteria$waic$pointwise[, "waic"]) %>% 
+  mutate(diff = waic_b6.7 - waic_b6.8) %>% 
   summarise(diff_se = sqrt(n * var(diff)))
 ```
 

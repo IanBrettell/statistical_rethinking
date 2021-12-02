@@ -177,7 +177,7 @@ The posterior distribution for these two parameters is very hgihly correlated, w
 Compute the posterior distribution and plot it.
 
 ```{r 6.6}
-post <- brms::as_draws_df(b6.1)
+post <- brms::posterior_samples(b6.1)
   
 post %>% 
   ggplot(aes(x = b_leg_left, y = b_leg_right)) +
@@ -210,7 +210,7 @@ print(b6.2)
 ```
 
 ```{r}
-brms::as_draws_df(b6.2) %>% 
+brms::posterior_samples(b6.2) %>% 
   
   ggplot(aes(x = b_leg_left, y = 0)) +
   stat_halfeye(point_interval = median_qi, 
@@ -266,11 +266,11 @@ b6.4 <-
 ```
 
 ```{r}
-brms::as_draws_df(b6.3) %>% round(digits = 2)
+brms::posterior_samples(b6.3) %>% round(digits = 2)
 ```
 
 ```{r}
-brms::as_draws_df(b6.4) %>% round(digits = 2)
+brms::posterior_samples(b6.4) %>% round(digits = 2)
 ```
 
 
@@ -291,7 +291,7 @@ b6.5 <-
 ```
 
 ```{r}
-brms::as_draws_df(b6.5) %>% round(digits = 2)
+brms::posterior_samples(b6.5) %>% round(digits = 2)
 ```
 
 Now the posterior means of both bF and bL are closer to zero. And the standard deviations for both parameters are twice as large as in the bivariate models (m6.3 and m6.4).
@@ -678,10 +678,10 @@ b6.8b <-
 ```
 
 ```{r}
-brms::as_draws_df(b6.7b) %>%
+brms::posterior_samples(b6.7b) %>%
   round(digits = 2)
 
-brms::as_draws_df(b6.7b) %>%
+brms::posterior_samples(b6.7b) %>%
   round(digits = 2)
 ```
 
