@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="11.3 Multinomial and categorical models | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="11.3 Multinomial and categorical models | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>11.3 Multinomial and categorical models | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="multinomial-and-categorical-models" class="section level2" number="11.3">
+<h2><span class="header-section-number">11.3</span> Multinomial and categorical models</h2>
+<p>When more than two types of unordered events are possible, and the probability of each type of event is constant across trials, then the maximum entropy distribution is the <strong>MULTI-NOMIAL DISTRIBUTION</strong>.</p>
+<p><img src="slides/L12/47.png" width="80%" /></p>
+<p><strong><em>11.3.1. Predictors matched to outcomes</em></strong></p>
+<p>For example, suppose you are modeling choice of career for a number of young adults. One of the relevant predictor variables is expected income. In that case, the same parameter βincome appears in each linear model, in order to estimate the impact of the income trait on the probability a career is chosen. But a different income value multiplies the parameter in each linear model.</p>
+<div class="sourceCode" id="cb842"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb842-1"><a href="11.3-multinomial-and-categorical-models.html#cb842-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate career choices among 500 individuals</span></span>
+<span id="cb842-2"><a href="11.3-multinomial-and-categorical-models.html#cb842-2" aria-hidden="true" tabindex="-1"></a>n      <span class="ot">&lt;-</span> <span class="dv">500</span>           <span class="co"># number of individuals</span></span>
+<span id="cb842-3"><a href="11.3-multinomial-and-categorical-models.html#cb842-3" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>)    <span class="co"># expected income of each career</span></span>
+<span id="cb842-4"><a href="11.3-multinomial-and-categorical-models.html#cb842-4" aria-hidden="true" tabindex="-1"></a>score  <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> income  <span class="co"># scores for each career, based on income</span></span>
+<span id="cb842-5"><a href="11.3-multinomial-and-categorical-models.html#cb842-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb842-6"><a href="11.3-multinomial-and-categorical-models.html#cb842-6" aria-hidden="true" tabindex="-1"></a><span class="co"># next line converts scores to probabilities</span></span>
+<span id="cb842-7"><a href="11.3-multinomial-and-categorical-models.html#cb842-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">softmax</span>(score[<span class="dv">1</span>], score[<span class="dv">2</span>], score[<span class="dv">3</span>])</span>
+<span id="cb842-8"><a href="11.3-multinomial-and-categorical-models.html#cb842-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb842-9"><a href="11.3-multinomial-and-categorical-models.html#cb842-9" aria-hidden="true" tabindex="-1"></a><span class="co"># now simulate choice</span></span>
+<span id="cb842-10"><a href="11.3-multinomial-and-categorical-models.html#cb842-10" aria-hidden="true" tabindex="-1"></a><span class="co"># outcome career holds event type values, not counts</span></span>
+<span id="cb842-11"><a href="11.3-multinomial-and-categorical-models.html#cb842-11" aria-hidden="true" tabindex="-1"></a>career <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, n)  <span class="co"># empty vector of choices for each individual</span></span>
+<span id="cb842-12"><a href="11.3-multinomial-and-categorical-models.html#cb842-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb842-13"><a href="11.3-multinomial-and-categorical-models.html#cb842-13" aria-hidden="true" tabindex="-1"></a><span class="co"># sample chosen career for each individual</span></span>
+<span id="cb842-14"><a href="11.3-multinomial-and-categorical-models.html#cb842-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">34302</span>)</span>
+<span id="cb842-15"><a href="11.3-multinomial-and-categorical-models.html#cb842-15" aria-hidden="true" tabindex="-1"></a><span class="co"># sample chosen career for each individual</span></span>
+<span id="cb842-16"><a href="11.3-multinomial-and-categorical-models.html#cb842-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n) career[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> p)</span></code></pre></div>
+<div class="sourceCode" id="cb843"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb843-1"><a href="11.3-multinomial-and-categorical-models.html#cb843-1" aria-hidden="true" tabindex="-1"></a><span class="co"># put them in a tibble</span></span>
+<span id="cb843-2"><a href="11.3-multinomial-and-categorical-models.html#cb843-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span></span>
+<span id="cb843-3"><a href="11.3-multinomial-and-categorical-models.html#cb843-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">career =</span> career) <span class="sc">%&gt;%</span> </span>
+<span id="cb843-4"><a href="11.3-multinomial-and-categorical-models.html#cb843-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">career_income =</span> <span class="fu">ifelse</span>(career <span class="sc">==</span> <span class="dv">3</span>, <span class="dv">5</span>, career))</span>
+<span id="cb843-5"><a href="11.3-multinomial-and-categorical-models.html#cb843-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb843-6"><a href="11.3-multinomial-and-categorical-models.html#cb843-6" aria-hidden="true" tabindex="-1"></a><span class="co"># plot </span></span>
+<span id="cb843-7"><a href="11.3-multinomial-and-categorical-models.html#cb843-7" aria-hidden="true" tabindex="-1"></a>d <span class="sc">%&gt;%</span></span>
+<span id="cb843-8"><a href="11.3-multinomial-and-categorical-models.html#cb843-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> career)) <span class="sc">+</span></span>
+<span id="cb843-9"><a href="11.3-multinomial-and-categorical-models.html#cb843-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="fu">wes_palette</span>(<span class="st">&quot;Moonrise2&quot;</span>)[<span class="dv">2</span>])</span></code></pre></div>
+<p><img src="11_god_spiked_the_integers_files/figure-html/unnamed-chunk-75-1.png" width="672" /></p>
+<p>To fit the model to these fake data, we use the <code>dcategorical</code> likelihood, which is the multinomial logistic regression distribution. It works when each value in the outcome variable, here <code>career</code>, contains the individual event types on each row. To convert all the scores to probabilities, we’ll use the multinomial logit link, which is called <code>softmax.</code> Then each possible career gets its own linear model with its own features. There are no intercepts in the simulation above. But if income doesn’t predict career choice, you still want an intercept to account for differences in frequency. Here’s the code:</p>
+<div class="sourceCode" id="cb844"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb844-1"><a href="11.3-multinomial-and-categorical-models.html#cb844-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define the model</span></span>
+<span id="cb844-2"><a href="11.3-multinomial-and-categorical-models.html#cb844-2" aria-hidden="true" tabindex="-1"></a>code_m11<span class="fl">.13</span> <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb844-3"><a href="11.3-multinomial-and-categorical-models.html#cb844-3" aria-hidden="true" tabindex="-1"></a><span class="st">data{</span></span>
+<span id="cb844-4"><a href="11.3-multinomial-and-categorical-models.html#cb844-4" aria-hidden="true" tabindex="-1"></a><span class="st">  int N; // number of individuals</span></span>
+<span id="cb844-5"><a href="11.3-multinomial-and-categorical-models.html#cb844-5" aria-hidden="true" tabindex="-1"></a><span class="st">  int K; // number of possible careers </span></span>
+<span id="cb844-6"><a href="11.3-multinomial-and-categorical-models.html#cb844-6" aria-hidden="true" tabindex="-1"></a><span class="st">  int career[N]; // outcome</span></span>
+<span id="cb844-7"><a href="11.3-multinomial-and-categorical-models.html#cb844-7" aria-hidden="true" tabindex="-1"></a><span class="st">  vector[K] career_income;</span></span>
+<span id="cb844-8"><a href="11.3-multinomial-and-categorical-models.html#cb844-8" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb844-9"><a href="11.3-multinomial-and-categorical-models.html#cb844-9" aria-hidden="true" tabindex="-1"></a><span class="st">parameters{</span></span>
+<span id="cb844-10"><a href="11.3-multinomial-and-categorical-models.html#cb844-10" aria-hidden="true" tabindex="-1"></a><span class="st">  vector[K - 1] a; // intercepts</span></span>
+<span id="cb844-11"><a href="11.3-multinomial-and-categorical-models.html#cb844-11" aria-hidden="true" tabindex="-1"></a><span class="st">  real&lt;lower=0&gt; b; // association of income with choice</span></span>
+<span id="cb844-12"><a href="11.3-multinomial-and-categorical-models.html#cb844-12" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb844-13"><a href="11.3-multinomial-and-categorical-models.html#cb844-13" aria-hidden="true" tabindex="-1"></a><span class="st">model{</span></span>
+<span id="cb844-14"><a href="11.3-multinomial-and-categorical-models.html#cb844-14" aria-hidden="true" tabindex="-1"></a><span class="st">  vector[K] p;</span></span>
+<span id="cb844-15"><a href="11.3-multinomial-and-categorical-models.html#cb844-15" aria-hidden="true" tabindex="-1"></a><span class="st">  vector[K] s;</span></span>
+<span id="cb844-16"><a href="11.3-multinomial-and-categorical-models.html#cb844-16" aria-hidden="true" tabindex="-1"></a><span class="st">  a ~ normal(0, 1);</span></span>
+<span id="cb844-17"><a href="11.3-multinomial-and-categorical-models.html#cb844-17" aria-hidden="true" tabindex="-1"></a><span class="st">  b ~ normal(0, 0.5);</span></span>
+<span id="cb844-18"><a href="11.3-multinomial-and-categorical-models.html#cb844-18" aria-hidden="true" tabindex="-1"></a><span class="st">  s[1] = a[1] + b * career_income[1]; </span></span>
+<span id="cb844-19"><a href="11.3-multinomial-and-categorical-models.html#cb844-19" aria-hidden="true" tabindex="-1"></a><span class="st">  s[2] = a[2] + b * career_income[2]; </span></span>
+<span id="cb844-20"><a href="11.3-multinomial-and-categorical-models.html#cb844-20" aria-hidden="true" tabindex="-1"></a><span class="st">  s[3] = 0; // pivot</span></span>
+<span id="cb844-21"><a href="11.3-multinomial-and-categorical-models.html#cb844-21" aria-hidden="true" tabindex="-1"></a><span class="st">  p = softmax(s);</span></span>
+<span id="cb844-22"><a href="11.3-multinomial-and-categorical-models.html#cb844-22" aria-hidden="true" tabindex="-1"></a><span class="st">  career ~ categorical(p);</span></span>
+<span id="cb844-23"><a href="11.3-multinomial-and-categorical-models.html#cb844-23" aria-hidden="true" tabindex="-1"></a><span class="st">} </span></span>
+<span id="cb844-24"><a href="11.3-multinomial-and-categorical-models.html#cb844-24" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
+<p>Then we set up the data list and invoke stan:</p>
+<div class="sourceCode" id="cb845"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb845-1"><a href="11.3-multinomial-and-categorical-models.html#cb845-1" aria-hidden="true" tabindex="-1"></a><span class="co"># wrangle the data</span></span>
+<span id="cb845-2"><a href="11.3-multinomial-and-categorical-models.html#cb845-2" aria-hidden="true" tabindex="-1"></a>dat_list <span class="ot">&lt;-</span> </span>
+<span id="cb845-3"><a href="11.3-multinomial-and-categorical-models.html#cb845-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">N =</span> n, </span>
+<span id="cb845-4"><a href="11.3-multinomial-and-categorical-models.html#cb845-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">K =</span> <span class="dv">3</span>, </span>
+<span id="cb845-5"><a href="11.3-multinomial-and-categorical-models.html#cb845-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">career =</span> career, </span>
+<span id="cb845-6"><a href="11.3-multinomial-and-categorical-models.html#cb845-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">career_income =</span> income)</span>
+<span id="cb845-7"><a href="11.3-multinomial-and-categorical-models.html#cb845-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb845-8"><a href="11.3-multinomial-and-categorical-models.html#cb845-8" aria-hidden="true" tabindex="-1"></a><span class="co"># fit the model</span></span>
+<span id="cb845-9"><a href="11.3-multinomial-and-categorical-models.html#cb845-9" aria-hidden="true" tabindex="-1"></a>m11<span class="fl">.13</span> <span class="ot">&lt;-</span> </span>
+<span id="cb845-10"><a href="11.3-multinomial-and-categorical-models.html#cb845-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stan</span>(<span class="at">data =</span> dat_list,</span>
+<span id="cb845-11"><a href="11.3-multinomial-and-categorical-models.html#cb845-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">model_code =</span> code_m11<span class="fl">.13</span>,</span>
+<span id="cb845-12"><a href="11.3-multinomial-and-categorical-models.html#cb845-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div>
+<pre><code>## Warning: There were 100 divergent transitions after warmup. See
+## http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup
+## to find out why this is a problem and how to eliminate them.</code></pre>
+<pre><code>## Warning: Examine the pairs() plot to diagnose sampling problems</code></pre>
+<pre><code>## Warning: Bulk Effective Samples Size (ESS) is too low, indicating posterior means and medians may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#bulk-ess</code></pre>
+<pre><code>## Warning: Tail Effective Samples Size (ESS) is too low, indicating posterior variances and tail quantiles may be unreliable.
+## Running the chains for more iterations may help. See
+## http://mc-stan.org/misc/warnings.html#tail-ess</code></pre>
+<div class="sourceCode" id="cb850"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb850-1"><a href="11.3-multinomial-and-categorical-models.html#cb850-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m11<span class="fl">.13</span>, <span class="at">depth =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##       mean   sd  5.5% 94.5%  n_eff Rhat4
+## a[1] -2.12 0.18 -2.43 -1.84 333.35  1.01
+## a[2] -1.77 0.24 -2.19 -1.45 183.29  1.03
+## b     0.12 0.11  0.01  0.33 178.03  1.03</code></pre>
+<p>You might have gotten some divergent transitions above. Can you figure out why?</p>
+<p>To conduct a counterfactual simulation, we can extract the samples and make our own. The goal is to compare a counterfactual career in which the income is changed. How much does the probability change, in the presence of these competing careers? This is a subtle kind of question, because the probability change always depends upon the other choices. So let’s imagine doubling the income of career 2 above:</p>
+<div class="sourceCode" id="cb852"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb852-1"><a href="11.3-multinomial-and-categorical-models.html#cb852-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m11<span class="fl">.13</span>)</span>
+<span id="cb852-2"><a href="11.3-multinomial-and-categorical-models.html#cb852-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb852-3"><a href="11.3-multinomial-and-categorical-models.html#cb852-3" aria-hidden="true" tabindex="-1"></a><span class="co"># set up logit scores</span></span>
+<span id="cb852-4"><a href="11.3-multinomial-and-categorical-models.html#cb852-4" aria-hidden="true" tabindex="-1"></a>s1      <span class="ot">&lt;-</span> <span class="fu">with</span>(post, a[, <span class="dv">1</span>] <span class="sc">+</span> b <span class="sc">*</span> income[<span class="dv">1</span>])</span>
+<span id="cb852-5"><a href="11.3-multinomial-and-categorical-models.html#cb852-5" aria-hidden="true" tabindex="-1"></a>s2_orig <span class="ot">&lt;-</span> <span class="fu">with</span>(post, a[, <span class="dv">2</span>] <span class="sc">+</span> b <span class="sc">*</span> income[<span class="dv">2</span>])</span>
+<span id="cb852-6"><a href="11.3-multinomial-and-categorical-models.html#cb852-6" aria-hidden="true" tabindex="-1"></a>s2_new  <span class="ot">&lt;-</span> <span class="fu">with</span>(post, a[, <span class="dv">2</span>] <span class="sc">+</span> b <span class="sc">*</span> income[<span class="dv">2</span>] <span class="sc">*</span> <span class="dv">2</span>)</span>
+<span id="cb852-7"><a href="11.3-multinomial-and-categorical-models.html#cb852-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb852-8"><a href="11.3-multinomial-and-categorical-models.html#cb852-8" aria-hidden="true" tabindex="-1"></a><span class="co"># compute probabilities for original and counterfactual </span></span>
+<span id="cb852-9"><a href="11.3-multinomial-and-categorical-models.html#cb852-9" aria-hidden="true" tabindex="-1"></a>p_orig <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(post<span class="sc">$</span>b), <span class="cf">function</span>(i)</span>
+<span id="cb852-10"><a href="11.3-multinomial-and-categorical-models.html#cb852-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">softmax</span>(<span class="fu">c</span>(s1[i], s2_orig[i], <span class="dv">0</span>)))</span>
+<span id="cb852-11"><a href="11.3-multinomial-and-categorical-models.html#cb852-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb852-12"><a href="11.3-multinomial-and-categorical-models.html#cb852-12" aria-hidden="true" tabindex="-1"></a>p_new <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(post<span class="sc">$</span>b), <span class="cf">function</span>(i)</span>
+<span id="cb852-13"><a href="11.3-multinomial-and-categorical-models.html#cb852-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">softmax</span>(<span class="fu">c</span>(s1[i], s2_new[i], <span class="dv">0</span>)))</span>
+<span id="cb852-14"><a href="11.3-multinomial-and-categorical-models.html#cb852-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb852-15"><a href="11.3-multinomial-and-categorical-models.html#cb852-15" aria-hidden="true" tabindex="-1"></a><span class="co"># summarize</span></span>
+<span id="cb852-16"><a href="11.3-multinomial-and-categorical-models.html#cb852-16" aria-hidden="true" tabindex="-1"></a>p_diff <span class="ot">&lt;-</span> p_new[<span class="dv">2</span>, ] <span class="sc">-</span> p_orig[<span class="dv">2</span>, ] </span>
+<span id="cb852-17"><a href="11.3-multinomial-and-categorical-models.html#cb852-17" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(p_diff)</span></code></pre></div>
+<pre><code>##              mean         sd        5.5%     94.5%    histogram
+## p_diff 0.03855332 0.03796612 0.002158311 0.1133116 ▇▅▂▂▁▁▁▁▁▁▁▁</code></pre>
+<div class="sourceCode" id="cb854"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb854-1"><a href="11.3-multinomial-and-categorical-models.html#cb854-1" aria-hidden="true" tabindex="-1"></a>b11<span class="fl">.13</span>io <span class="ot">&lt;-</span></span>
+<span id="cb854-2"><a href="11.3-multinomial-and-categorical-models.html#cb854-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb854-3"><a href="11.3-multinomial-and-categorical-models.html#cb854-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">categorical</span>(<span class="at">link =</span> logit, <span class="at">refcat =</span> <span class="dv">3</span>),</span>
+<span id="cb854-4"><a href="11.3-multinomial-and-categorical-models.html#cb854-4" aria-hidden="true" tabindex="-1"></a>      career <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb854-5"><a href="11.3-multinomial-and-categorical-models.html#cb854-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept, <span class="at">dpar =</span> mu1),</span>
+<span id="cb854-6"><a href="11.3-multinomial-and-categorical-models.html#cb854-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept, <span class="at">dpar =</span> mu2)),</span>
+<span id="cb854-7"><a href="11.3-multinomial-and-categorical-models.html#cb854-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb854-8"><a href="11.3-multinomial-and-categorical-models.html#cb854-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">11</span>,</span>
+<span id="cb854-9"><a href="11.3-multinomial-and-categorical-models.html#cb854-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b11.13io&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb855"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb855-1"><a href="11.3-multinomial-and-categorical-models.html#cb855-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b11<span class="fl">.13</span>io)</span></code></pre></div>
+<pre><code>##  Family: categorical 
+##   Links: mu1 = logit; mu2 = logit 
+## Formula: career ~ 1 
+##    Data: d (Number of observations: 500) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## mu1_Intercept    -2.01      0.15    -2.31    -1.72 1.00     2772     2314
+## mu2_Intercept    -1.53      0.12    -1.78    -1.30 1.00     2699     2599
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p><strong><em>11.3.2. Predictors matched to observations</em></strong></p>
+<div class="sourceCode" id="cb857"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb857-1"><a href="11.3-multinomial-and-categorical-models.html#cb857-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb857-2"><a href="11.3-multinomial-and-categorical-models.html#cb857-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
+<span id="cb857-3"><a href="11.3-multinomial-and-categorical-models.html#cb857-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb857-4"><a href="11.3-multinomial-and-categorical-models.html#cb857-4" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate family incomes for each individual</span></span>
+<span id="cb857-5"><a href="11.3-multinomial-and-categorical-models.html#cb857-5" aria-hidden="true" tabindex="-1"></a>family_income <span class="ot">&lt;-</span> <span class="fu">runif</span>(n)</span>
+<span id="cb857-6"><a href="11.3-multinomial-and-categorical-models.html#cb857-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb857-7"><a href="11.3-multinomial-and-categorical-models.html#cb857-7" aria-hidden="true" tabindex="-1"></a><span class="co"># assign a unique coefficient for each type of event</span></span>
+<span id="cb857-8"><a href="11.3-multinomial-and-categorical-models.html#cb857-8" aria-hidden="true" tabindex="-1"></a>b      <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>)</span>
+<span id="cb857-9"><a href="11.3-multinomial-and-categorical-models.html#cb857-9" aria-hidden="true" tabindex="-1"></a>career <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">NA</span>, n)  <span class="co"># empty vector of choices for each individual</span></span>
+<span id="cb857-10"><a href="11.3-multinomial-and-categorical-models.html#cb857-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n) {</span>
+<span id="cb857-11"><a href="11.3-multinomial-and-categorical-models.html#cb857-11" aria-hidden="true" tabindex="-1"></a>    score     <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> (<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">+</span> b <span class="sc">*</span> family_income[i]</span>
+<span id="cb857-12"><a href="11.3-multinomial-and-categorical-models.html#cb857-12" aria-hidden="true" tabindex="-1"></a>    p         <span class="ot">&lt;-</span> <span class="fu">softmax</span>(score[<span class="dv">1</span>], score[<span class="dv">2</span>], score[<span class="dv">3</span>])</span>
+<span id="cb857-13"><a href="11.3-multinomial-and-categorical-models.html#cb857-13" aria-hidden="true" tabindex="-1"></a>    career[i] <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> p)</span>
+<span id="cb857-14"><a href="11.3-multinomial-and-categorical-models.html#cb857-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb858"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb858-1"><a href="11.3-multinomial-and-categorical-models.html#cb858-1" aria-hidden="true" tabindex="-1"></a><span class="co"># put the data in a tibble</span></span>
+<span id="cb858-2"><a href="11.3-multinomial-and-categorical-models.html#cb858-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span></span>
+<span id="cb858-3"><a href="11.3-multinomial-and-categorical-models.html#cb858-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">career =</span> career) <span class="sc">%&gt;%</span> </span>
+<span id="cb858-4"><a href="11.3-multinomial-and-categorical-models.html#cb858-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">family_income =</span> family_income)</span>
+<span id="cb858-5"><a href="11.3-multinomial-and-categorical-models.html#cb858-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb858-6"><a href="11.3-multinomial-and-categorical-models.html#cb858-6" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb858-7"><a href="11.3-multinomial-and-categorical-models.html#cb858-7" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb858-8"><a href="11.3-multinomial-and-categorical-models.html#cb858-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">career =</span> <span class="fu">as.factor</span>(career)) <span class="sc">%&gt;%</span> </span>
+<span id="cb858-9"><a href="11.3-multinomial-and-categorical-models.html#cb858-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb858-10"><a href="11.3-multinomial-and-categorical-models.html#cb858-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> family_income, <span class="at">fill =</span> career)) <span class="sc">+</span></span>
+<span id="cb858-11"><a href="11.3-multinomial-and-categorical-models.html#cb858-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb858-12"><a href="11.3-multinomial-and-categorical-models.html#cb858-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">wes_palette</span>(<span class="st">&quot;Moonrise2&quot;</span>)[<span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>)]) <span class="sc">+</span></span>
+<span id="cb858-13"><a href="11.3-multinomial-and-categorical-models.html#cb858-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span>
+<span id="cb858-14"><a href="11.3-multinomial-and-categorical-models.html#cb858-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb858-15"><a href="11.3-multinomial-and-categorical-models.html#cb858-15" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb858-16"><a href="11.3-multinomial-and-categorical-models.html#cb858-16" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb858-17"><a href="11.3-multinomial-and-categorical-models.html#cb858-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">career =</span> <span class="fu">as.factor</span>(career)) <span class="sc">%&gt;%</span></span>
+<span id="cb858-18"><a href="11.3-multinomial-and-categorical-models.html#cb858-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb858-19"><a href="11.3-multinomial-and-categorical-models.html#cb858-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fi =</span> santoku<span class="sc">::</span><span class="fu">chop_width</span>(family_income, <span class="at">width =</span> .<span class="dv">1</span>, <span class="at">start =</span> <span class="dv">0</span>, <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb858-20"><a href="11.3-multinomial-and-categorical-models.html#cb858-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(fi, career) <span class="sc">%&gt;%</span> </span>
+<span id="cb858-21"><a href="11.3-multinomial-and-categorical-models.html#cb858-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(fi) <span class="sc">%&gt;%</span> </span>
+<span id="cb858-22"><a href="11.3-multinomial-and-categorical-models.html#cb858-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb858-23"><a href="11.3-multinomial-and-categorical-models.html#cb858-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">f =</span> <span class="fu">as.double</span>(fi)) <span class="sc">%&gt;%</span> </span>
+<span id="cb858-24"><a href="11.3-multinomial-and-categorical-models.html#cb858-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb858-25"><a href="11.3-multinomial-and-categorical-models.html#cb858-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> (f <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">9</span>, <span class="at">y =</span> proportion, <span class="at">fill =</span> career)) <span class="sc">+</span></span>
+<span id="cb858-26"><a href="11.3-multinomial-and-categorical-models.html#cb858-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>() <span class="sc">+</span></span>
+<span id="cb858-27"><a href="11.3-multinomial-and-categorical-models.html#cb858-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">wes_palette</span>(<span class="st">&quot;Moonrise2&quot;</span>)[<span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>)]) <span class="sc">+</span></span>
+<span id="cb858-28"><a href="11.3-multinomial-and-categorical-models.html#cb858-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;family_income, descritized&quot;</span>)</span>
+<span id="cb858-29"><a href="11.3-multinomial-and-categorical-models.html#cb858-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb858-30"><a href="11.3-multinomial-and-categorical-models.html#cb858-30" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2</span></code></pre></div>
+<p><img src="11_god_spiked_the_integers_files/figure-html/unnamed-chunk-79-1.png" width="672" /></p>
+<div class="sourceCode" id="cb859"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb859-1"><a href="11.3-multinomial-and-categorical-models.html#cb859-1" aria-hidden="true" tabindex="-1"></a>b11<span class="fl">.14</span> <span class="ot">&lt;-</span></span>
+<span id="cb859-2"><a href="11.3-multinomial-and-categorical-models.html#cb859-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb859-3"><a href="11.3-multinomial-and-categorical-models.html#cb859-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> <span class="fu">categorical</span>(<span class="at">link =</span> logit, <span class="at">refcat =</span> <span class="dv">3</span>),</span>
+<span id="cb859-4"><a href="11.3-multinomial-and-categorical-models.html#cb859-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(career <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb859-5"><a href="11.3-multinomial-and-categorical-models.html#cb859-5" aria-hidden="true" tabindex="-1"></a>         <span class="fu">nlf</span>(mu1 <span class="sc">~</span> a1 <span class="sc">+</span> b1 <span class="sc">*</span> family_income),</span>
+<span id="cb859-6"><a href="11.3-multinomial-and-categorical-models.html#cb859-6" aria-hidden="true" tabindex="-1"></a>         <span class="fu">nlf</span>(mu2 <span class="sc">~</span> a2 <span class="sc">+</span> b2 <span class="sc">*</span> family_income),</span>
+<span id="cb859-7"><a href="11.3-multinomial-and-categorical-models.html#cb859-7" aria-hidden="true" tabindex="-1"></a>         a1 <span class="sc">+</span> a2 <span class="sc">+</span> b1 <span class="sc">+</span> b2 <span class="sc">~</span> <span class="dv">1</span>),</span>
+<span id="cb859-8"><a href="11.3-multinomial-and-categorical-models.html#cb859-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> b, <span class="at">nlpar =</span> a1),</span>
+<span id="cb859-9"><a href="11.3-multinomial-and-categorical-models.html#cb859-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> b, <span class="at">nlpar =</span> a2),</span>
+<span id="cb859-10"><a href="11.3-multinomial-and-categorical-models.html#cb859-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b, <span class="at">nlpar =</span> b1),</span>
+<span id="cb859-11"><a href="11.3-multinomial-and-categorical-models.html#cb859-11" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b, <span class="at">nlpar =</span> b2)),</span>
+<span id="cb859-12"><a href="11.3-multinomial-and-categorical-models.html#cb859-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb859-13"><a href="11.3-multinomial-and-categorical-models.html#cb859-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">11</span>,</span>
+<span id="cb859-14"><a href="11.3-multinomial-and-categorical-models.html#cb859-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b11.14&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb860"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb860-1"><a href="11.3-multinomial-and-categorical-models.html#cb860-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b11<span class="fl">.14</span>)</span></code></pre></div>
+<pre><code>##  Family: categorical 
+##   Links: mu1 = logit; mu2 = logit 
+## Formula: career ~ 1 
+##          mu1 ~ a1 + b1 * family_income
+##          mu2 ~ a2 + b2 * family_income
+##          a1 ~ 1
+##          a2 ~ 1
+##          b1 ~ 1
+##          b2 ~ 1
+##    Data: d (Number of observations: 500) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## a1_Intercept    -1.28      0.27    -1.82    -0.76 1.00     2354     2697
+## a2_Intercept    -1.01      0.22    -1.44    -0.59 1.00     1893     1987
+## b1_Intercept    -2.51      0.58    -3.70    -1.41 1.00     2347     2531
+## b2_Intercept    -1.21      0.42    -2.02    -0.37 1.00     1837     1954
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="sourceCode" id="cb862"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb862-1"><a href="11.3-multinomial-and-categorical-models.html#cb862-1" aria-hidden="true" tabindex="-1"></a>b11<span class="fl">.14</span> <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">add_criterion</span>(b11<span class="fl">.14</span>, <span class="st">&quot;loo&quot;</span>)</span>
+<span id="cb862-2"><a href="11.3-multinomial-and-categorical-models.html#cb862-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb862-3"><a href="11.3-multinomial-and-categorical-models.html#cb862-3" aria-hidden="true" tabindex="-1"></a><span class="fu">loo</span>(b11<span class="fl">.14</span>)</span></code></pre></div>
+<pre><code>## 
+## Computed from 4000 by 500 log-likelihood matrix
+## 
+##          Estimate   SE
+## elpd_loo   -330.5 17.0
+## p_loo         3.4  0.3
+## looic       661.0 33.9
+## ------
+## Monte Carlo SE of elpd_loo is 0.0.
+## 
+## All Pareto k estimates are good (k &lt; 0.5).
+## See help(&#39;pareto-k-diagnostic&#39;) for details.</code></pre>
+<p><strong><em>11.3.3. Multinomial in disguise as Poisson</em></strong></p>
+<p>Another way to fit a multinomial/categorical model is to refactor it into a series of Poisson likelihoods.180 That should sound a bit crazy. But it’s actually both principled and commonplace to model multinomial outcomes this way. It’s principled, because the mathematics justifies it. And it’s commonplace, because it is usually computationally easier to use Poisson rather than multinomial likelihoods. Here I’ll give an example of an implementation. For the mathematical details of the transformation, see the Overthinking box at the end.</p>
+<p>I appreciate that this kind of thing—modeling the same data different ways but getting the same inferences—is exactly the kind of thing that makes statistics maddening for scientists. So I’ll begin by taking a binomial example from earlier in the chapter and doing it over as a Poisson regression. Since the binomial is just a special case of the multinomial, the approach extrapolates to any number of event types. Think again of the UC Berkeley admissions data. Let’s load it again:</p>
+<div class="sourceCode" id="cb864"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb864-1"><a href="11.3-multinomial-and-categorical-models.html#cb864-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(UCBadmit, <span class="at">package =</span> <span class="st">&quot;rethinking&quot;</span>)</span>
+<span id="cb864-2"><a href="11.3-multinomial-and-categorical-models.html#cb864-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> UCBadmit</span>
+<span id="cb864-3"><a href="11.3-multinomial-and-categorical-models.html#cb864-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(UCBadmit)</span></code></pre></div>
+<p>Now let’s use a Poisson regression to model both the rate of admission and the rate of rejection. And we’ll compare the inference to the binomial model’s probability of admission. Here are both the binomial and Poisson models:</p>
+<div class="sourceCode" id="cb865"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb865-1"><a href="11.3-multinomial-and-categorical-models.html#cb865-1" aria-hidden="true" tabindex="-1"></a><span class="co"># binomial model of overall admission probability</span></span>
+<span id="cb865-2"><a href="11.3-multinomial-and-categorical-models.html#cb865-2" aria-hidden="true" tabindex="-1"></a>b11.binom <span class="ot">&lt;-</span></span>
+<span id="cb865-3"><a href="11.3-multinomial-and-categorical-models.html#cb865-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb865-4"><a href="11.3-multinomial-and-categorical-models.html#cb865-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> binomial,</span>
+<span id="cb865-5"><a href="11.3-multinomial-and-categorical-models.html#cb865-5" aria-hidden="true" tabindex="-1"></a>      admit <span class="sc">|</span> <span class="fu">trials</span>(applications) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb865-6"><a href="11.3-multinomial-and-categorical-models.html#cb865-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb865-7"><a href="11.3-multinomial-and-categorical-models.html#cb865-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">3</span>, <span class="at">chains =</span> <span class="dv">3</span>,</span>
+<span id="cb865-8"><a href="11.3-multinomial-and-categorical-models.html#cb865-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">11</span>,</span>
+<span id="cb865-9"><a href="11.3-multinomial-and-categorical-models.html#cb865-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b11.binom&quot;</span>)</span>
+<span id="cb865-10"><a href="11.3-multinomial-and-categorical-models.html#cb865-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb865-11"><a href="11.3-multinomial-and-categorical-models.html#cb865-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Poisson model of overall admission rate and rejection rate</span></span>
+<span id="cb865-12"><a href="11.3-multinomial-and-categorical-models.html#cb865-12" aria-hidden="true" tabindex="-1"></a>b11.pois <span class="ot">&lt;-</span></span>
+<span id="cb865-13"><a href="11.3-multinomial-and-categorical-models.html#cb865-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d <span class="sc">%&gt;%</span></span>
+<span id="cb865-14"><a href="11.3-multinomial-and-categorical-models.html#cb865-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">rej =</span> reject),  <span class="co"># &#39;reject&#39; is a reserved word</span></span>
+<span id="cb865-15"><a href="11.3-multinomial-and-categorical-models.html#cb865-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> poisson,</span>
+<span id="cb865-16"><a href="11.3-multinomial-and-categorical-models.html#cb865-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mvbind</span>(admit, rej) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb865-17"><a href="11.3-multinomial-and-categorical-models.html#cb865-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb865-18"><a href="11.3-multinomial-and-categorical-models.html#cb865-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">cores =</span> <span class="dv">3</span>, <span class="at">chains =</span> <span class="dv">3</span>,</span>
+<span id="cb865-19"><a href="11.3-multinomial-and-categorical-models.html#cb865-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">11</span>,</span>
+<span id="cb865-20"><a href="11.3-multinomial-and-categorical-models.html#cb865-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b11.pois&quot;</span>)</span></code></pre></div>
+<p>Let’s consider just the posterior means, for the sake of simplicity. But keep in mind that the entire posterior is what matters. First, the inferred binomial probability of admission, across the entire data set, is:</p>
+<div class="sourceCode" id="cb866"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb866-1"><a href="11.3-multinomial-and-categorical-models.html#cb866-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract the samples</span></span>
+<span id="cb866-2"><a href="11.3-multinomial-and-categorical-models.html#cb866-2" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b11.pois)</span>
+<span id="cb866-3"><a href="11.3-multinomial-and-categorical-models.html#cb866-3" aria-hidden="true" tabindex="-1"></a><span class="co"># wrangle</span></span>
+<span id="cb866-4"><a href="11.3-multinomial-and-categorical-models.html#cb866-4" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb866-5"><a href="11.3-multinomial-and-categorical-models.html#cb866-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">admit  =</span> <span class="fu">exp</span>(b_admit_Intercept), </span>
+<span id="cb866-6"><a href="11.3-multinomial-and-categorical-models.html#cb866-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">reject =</span> <span class="fu">exp</span>(b_rej_Intercept)) <span class="sc">%&gt;%</span> </span>
+<span id="cb866-7"><a href="11.3-multinomial-and-categorical-models.html#cb866-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(admit<span class="sc">:</span>reject) <span class="sc">%&gt;%</span> </span>
+<span id="cb866-8"><a href="11.3-multinomial-and-categorical-models.html#cb866-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb866-9"><a href="11.3-multinomial-and-categorical-models.html#cb866-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb866-10"><a href="11.3-multinomial-and-categorical-models.html#cb866-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> name, <span class="at">fill =</span> name)) <span class="sc">+</span></span>
+<span id="cb866-11"><a href="11.3-multinomial-and-categorical-models.html#cb866-11" aria-hidden="true" tabindex="-1"></a>  tidybayes<span class="sc">::</span><span class="fu">stat_halfeye</span>(<span class="at">point_interval =</span> median_qi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
+<span id="cb866-12"><a href="11.3-multinomial-and-categorical-models.html#cb866-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="fu">wes_palette</span>(<span class="st">&quot;Moonrise2&quot;</span>)[<span class="dv">4</span>]) <span class="sc">+</span></span>
+<span id="cb866-13"><a href="11.3-multinomial-and-categorical-models.html#cb866-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">wes_palette</span>(<span class="st">&quot;Moonrise2&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb866-14"><a href="11.3-multinomial-and-categorical-models.html#cb866-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot; Mean admit/reject rates across departments&quot;</span>,</span>
+<span id="cb866-15"><a href="11.3-multinomial-and-categorical-models.html#cb866-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;# applications&quot;</span>,</span>
+<span id="cb866-16"><a href="11.3-multinomial-and-categorical-models.html#cb866-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb866-17"><a href="11.3-multinomial-and-categorical-models.html#cb866-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb866-18"><a href="11.3-multinomial-and-categorical-models.html#cb866-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="11_god_spiked_the_integers_files/figure-html/unnamed-chunk-83-1.png" width="672" /></p>
+<div class="sourceCode" id="cb867"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb867-1"><a href="11.3-multinomial-and-categorical-models.html#cb867-1" aria-hidden="true" tabindex="-1"></a><span class="co">#k &lt;- coef(m_pois)</span></span>
+<span id="cb867-2"><a href="11.3-multinomial-and-categorical-models.html#cb867-2" aria-hidden="true" tabindex="-1"></a><span class="co">#a1 &lt;- k[&#39;a1&#39;]; a2 &lt;- k[&#39;a2&#39;]</span></span>
+<span id="cb867-3"><a href="11.3-multinomial-and-categorical-models.html#cb867-3" aria-hidden="true" tabindex="-1"></a><span class="co">#exp(a1)/(exp(a1)+exp(a2))</span></span></code></pre></div>
+<p>That’s the same inference as in the binomial model.</p>
+<p><img src="slides/L12/48.png" width="80%" /></p>
+<p><img src="slides/L12/49.png" width="80%" /></p>
+<p><img src="slides/L12/50.png" width="80%" /></p>
+<p><img src="slides/L12/51.png" width="80%" /></p>
+<p><img src="slides/L12/52.png" width="80%" /></p>
+<p><img src="slides/L12/53.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L12/54.png" alt="Scientific grant awards. " width="80%" />
+<p class="caption marginnote shownote">
+Scientific grant awards.
+</p>
+</div>
+<div class="sourceCode" id="cb868"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb868-1"><a href="11.3-multinomial-and-categorical-models.html#cb868-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L13&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L13/01.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L13/02.png" alt="This course is like this. The lectures are circles, and the homework is the owl. The book has a lot more detail. What it doesn't get quite right about science is that science doesn't know what the owl looks like. There are many many owls that would be satisfactory. There's not some perfect platonic owl." width="80%" />
+<p class="caption marginnote shownote">
+This course is like this. The lectures are circles, and the homework is the owl. The book has a lot more detail. What it doesn’t get quite right about science is that science doesn’t know what the owl looks like. There are many many owls that would be satisfactory. There’s not some perfect platonic owl.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/03.png" alt="Poisson is a count distribution. 0 to infidinty. Arises where there's some unkown maximum count, but the rate of each trial is very low. This is a very handy way to model counts. This is a very small dataset. Theory that says you get more innovation with larger populations, and therefore more complicated toolkits. Dashed line is for low-contact, solid for high-contact. That's the other interacting effect in the model. Hawaii has low contact. All the others are near one another. Easy to get from one to the other. There's a strong relationship with log population. There's massive uncertainty with large population sizes because there are no high-contact islands with large populations. On the right it's the same curve, but squished. If you calculate the predicted out-of-sample with the Pareto-k, you can find which points are adding uncertainty in prediction. Hawaii has high leverage because it has an order of magnitude higher population, so it's the only one informing what happens on the high end. What could you do? Not drop Hawaii from the analysis, but drop Hawaii playfullly to see what happens. And perhaps you could see there's still a trend for the low-population islands." width="80%" />
+<p class="caption marginnote shownote">
+Poisson is a count distribution. 0 to infidinty. Arises where there’s some unkown maximum count, but the rate of each trial is very low. This is a very handy way to model counts. This is a very small dataset. Theory that says you get more innovation with larger populations, and therefore more complicated toolkits. Dashed line is for low-contact, solid for high-contact. That’s the other interacting effect in the model. Hawaii has low contact. All the others are near one another. Easy to get from one to the other. There’s a strong relationship with log population. There’s massive uncertainty with large population sizes because there are no high-contact islands with large populations. On the right it’s the same curve, but squished. If you calculate the predicted out-of-sample with the Pareto-k, you can find which points are adding uncertainty in prediction. Hawaii has high leverage because it has an order of magnitude higher population, so it’s the only one informing what happens on the high end. What could you do? Not drop Hawaii from the analysis, but drop Hawaii playfullly to see what happens. And perhaps you could see there’s still a trend for the low-population islands.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/04.png" alt="Before we leave this example, here are some criticisms, which extend in general to GLMs. They're unreasonably effective. But, they generate a bunch of anomolies. If you know variables external to the model, they can produce ridiculous effects. If the first time you draw up a quantitative model, something ridiculous happens because you've left something out. Here the first weird thing is the intercept doesn't go through 0. For any real relationships, the 0s have to go together: 0 people = 0 tools. This GLM doesn't assert that because it has a free intercept. This isn't a total disaster. Also this weird thing where they cross." width="80%" />
+<p class="caption marginnote shownote">
+Before we leave this example, here are some criticisms, which extend in general to GLMs. They’re unreasonably effective. But, they generate a bunch of anomolies. If you know variables external to the model, they can produce ridiculous effects. If the first time you draw up a quantitative model, something ridiculous happens because you’ve left something out. Here the first weird thing is the intercept doesn’t go through 0. For any real relationships, the 0s have to go together: 0 people = 0 tools. This GLM doesn’t assert that because it has a free intercept. This isn’t a total disaster. Also this weird thing where they cross.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/05.png" alt="Let's run a simple model of the system. We want a dynamical systems model. Over time individuals make tools. We start with delta t which is the change in number of tools in a given timestep." width="80%" />
+<p class="caption marginnote shownote">
+Let’s run a simple model of the system. We want a dynamical systems model. Over time individuals make tools. We start with delta t which is the change in number of tools in a given timestep.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/06.png" alt="Then there's a rate of alpha - how many tools can each person invent? You get more people, you get more tools. The beta is an elasticity. That governs the diminishing returns. People get lazy if other people are making them. So the more people you have, the fewer new inventions you get per person. " width="80%" />
+<p class="caption marginnote shownote">
+Then there’s a rate of alpha - how many tools can each person invent? You get more people, you get more tools. The beta is an elasticity. That governs the diminishing returns. People get lazy if other people are making them. So the more people you have, the fewer new inventions you get per person.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/07.png" alt="Then there's the loss. People forget them, or you don't need to use them anymore. Now we'll fit this to data. We've got 3 parameters." width="80%" />
+<p class="caption marginnote shownote">
+Then there’s the loss. People forget them, or you don’t need to use them anymore. Now we’ll fit this to data. We’ve got 3 parameters.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/08.png" alt="This model implies a time series. We can use the same model in a cross-sectional case - we need an expectation. We can solve them for steady states where after a while the processes are balanced, where $\Delta T = 0$. On the left we have a hat over T = AlphaP to the Beta over gamma is the expected number of tools. Still stochastic, but the mean of the stationary distribution. Then can stick it into the Poisson. Better than Generalized Linear Madness, because the intercept is fixed here. " width="80%" />
+<p class="caption marginnote shownote">
+This model implies a time series. We can use the same model in a cross-sectional case - we need an expectation. We can solve them for steady states where after a while the processes are balanced, where <span class="math inline">\(\Delta T = 0\)</span>. On the left we have a hat over T = AlphaP to the Beta over gamma is the expected number of tools. Still stochastic, but the mean of the stationary distribution. Then can stick it into the Poisson. Better than Generalized Linear Madness, because the intercept is fixed here.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/09.png" alt="Can just write this into a Markov chain. Same idea, but now for lambda there's no link function. The only trick is that all these parameters needs to be positive. You have an array of tools to do that. One is to exponenentiate the parameter, which is what I've done with alpha. This is just a trick for making alpha positive. You're taking  a log normal now. For the other two I give them exponential distributions.  " width="80%" />
+<p class="caption marginnote shownote">
+Can just write this into a Markov chain. Same idea, but now for lambda there’s no link function. The only trick is that all these parameters needs to be positive. You have an array of tools to do that. One is to exponenentiate the parameter, which is what I’ve done with alpha. This is just a trick for making alpha positive. You’re taking a log normal now. For the other two I give them exponential distributions.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/10.png" alt="Chains happen, and you can compare the two models. The scientific model has flaws, but now it passes through the origin. And you get real separation nwo between the solid and dashed lines. Now the violations mean something. And the parameters have biological meaning. You can use epxerimental datasets to get information about the parameters. " width="80%" />
+<p class="caption marginnote shownote">
+Chains happen, and you can compare the two models. The scientific model has flaws, but now it passes through the origin. And you get real separation nwo between the solid and dashed lines. Now the violations mean something. And the parameters have biological meaning. You can use epxerimental datasets to get information about the parameters.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/11.png" alt="Every particular scientific example has its own idiosyncracies. So why teach GLMs? Because they're useful for everyone. If the different counts have different exposures or observation windows. If someone spends twice as much time fishing, we have to adjust for the exposure difference. How to do this? Use an offset, which is a log of the amount of time spent fishing. " width="80%" />
+<p class="caption marginnote shownote">
+Every particular scientific example has its own idiosyncracies. So why teach GLMs? Because they’re useful for everyone. If the different counts have different exposures or observation windows. If someone spends twice as much time fishing, we have to adjust for the exposure difference. How to do this? Use an offset, which is a log of the amount of time spent fishing.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/12.png" alt="There are other count distributions. Multinomial categorical models are extrapolations to more than two unordered outcomes. Geometric distributions are count distributions. Mixtures are binomial regressions, but allow the rates to vary in each case. Like multi-level models where you don't estimate the random effects." width="80%" />
+<p class="caption marginnote shownote">
+There are other count distributions. Multinomial categorical models are extrapolations to more than two unordered outcomes. Geometric distributions are count distributions. Mixtures are binomial regressions, but allow the rates to vary in each case. Like multi-level models where you don’t estimate the random effects.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/13.png" alt="I want to motivate this. They're like count models because they have discrete events. In this dataset it's cat adoptions. But to do this properly, you need to estimate the rate of the events. The parameters are about rates, and survival is counts. So imagine some lonely cat, and it's waiting to be adopted, and then it escapes. We don't know whether the cat would ever be adopted or not. The wrong this to do is throw it away, because it's still importnat to know how long it was waiting. So we have to count things that weren't counted. e.g. escaped, died of natural causes, whatever. This is called censoring. Left-consoring is when we don't know when the cat arrived. Right censoring is where at the time of counting they haven't been adopted yet. " width="80%" />
+<p class="caption marginnote shownote">
+I want to motivate this. They’re like count models because they have discrete events. In this dataset it’s cat adoptions. But to do this properly, you need to estimate the rate of the events. The parameters are about rates, and survival is counts. So imagine some lonely cat, and it’s waiting to be adopted, and then it escapes. We don’t know whether the cat would ever be adopted or not. The wrong this to do is throw it away, because it’s still importnat to know how long it was waiting. So we have to count things that weren’t counted. e.g. escaped, died of natural causes, whatever. This is called censoring. Left-consoring is when we don’t know when the cat arrived. Right censoring is where at the time of counting they haven’t been adopted yet.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/14.png" alt="20K cats from the Austin animal facility. Lots of things we know about them. Interested in adoption rates. In particular we want to compare all other cats to black cats. There are adoption events, so given some assumption about the rate. And want to predict what will happen given you're waiting a certain amount of times. Some die, some escape, and pure censoring is the cat is still there when we pulled the data. Epidemiological studies are like this. " width="80%" />
+<p class="caption marginnote shownote">
+20K cats from the Austin animal facility. Lots of things we know about them. Interested in adoption rates. In particular we want to compare all other cats to black cats. There are adoption events, so given some assumption about the rate. And want to predict what will happen given you’re waiting a certain amount of times. Some die, some escape, and pure censoring is the cat is still there when we pulled the data. Epidemiological studies are like this.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/15.png" alt="The simplest kind of distribution for survival analysis is exponential. So the probability of getting adopted that day comes fromt he exponential distribution. " width="80%" />
+<p class="caption marginnote shownote">
+The simplest kind of distribution for survival analysis is exponential. So the probability of getting adopted that day comes fromt he exponential distribution.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/16.png" alt="Measures the probability that it hasn't happened after a certain length of time. " width="80%" />
+<p class="caption marginnote shownote">
+Measures the probability that it hasn’t happened after a certain length of time.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/17.png" alt="You're really just coding the log-posterior here. It's raw stuff. If adopted = 0, now we're censored, so we need CCDF. When it sees a culstom tag, you can do a lot of dangerous things. " width="80%" />
+<p class="caption marginnote shownote">
+You’re really just coding the log-posterior here. It’s raw stuff. If adopted = 0, now we’re censored, so we need CCDF. When it sees a culstom tag, you can do a lot of dangerous things.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L13/18.png" alt="Black cats are discriminated against. There's a column for cat colours. " width="80%" />
+<p class="caption marginnote shownote">
+Black cats are discriminated against. There’s a column for cat colours.
+</p>
+</div>
+
+</div>
+<!-- </div> -->
+<p style="text-align: center;">
+<a href="11.2-poisson-regression.html"><button class="btn btn-default">Previous</button></a>
+<a href="12-models-with-memory.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 ---
 title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-11-25'
+date: '2021-12-04'
 output:
   html_document:
     toc: true

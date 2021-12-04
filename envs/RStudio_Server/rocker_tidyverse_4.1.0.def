@@ -8,6 +8,7 @@ From: rocker/tidyverse:4.1.0
     # Install cmdstanr
     # we recommend running this is a fresh R session or restarting your current session
     R -e 'install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))'
+    R -e 'cmdstanr::install_cmdstan()'
 
     # Install CRAN packages
     install2.r --error \
@@ -27,7 +28,9 @@ From: rocker/tidyverse:4.1.0
         rcartocolor \
         flextable \
         ghibli \
-        santoku
+        santoku \
+        invgamma \
+        ggdark
 
     # Install `rethinking`
     R -e 'devtools::install_github("rmcelreath/rethinking")'
@@ -43,3 +46,4 @@ From: rocker/tidyverse:4.1.0
 
     # `wesanderson`
     R -e 'devtools::install_github("karthik/wesanderson")'
+

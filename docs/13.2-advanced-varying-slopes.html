@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="13.2 Advanced varying slopes | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="13.2 Advanced varying slopes | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>13.2 Advanced varying slopes | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="advanced-varying-slopes" class="section level2" number="13.2">
+<h2><span class="header-section-number">13.2</span> Advanced varying slopes</h2>
+<div class="figure">
+<img src="slides/L17/39.png" alt="Grown up version of this. Many effects, many types of clusters. Back to the chimp data. Four treatments. Trying to estimate theaverage behaviour in each of these treatments. Howw often the left lever is pulled can vary by treatment. TID is treatment IDs 1 to 4, and for ecah there's an avergae rate of pulling the leve. BUt each chimp and blcok has a deviation from that mean. Alpha sub actor i, TID[i] measn the alpha deviation from the mean in this treatment, for actor[i]. Each actor gets four parameters. 7 actors. 7 x 4 parameters. RThen beta parameters for the block effects - deviations for the gamma means for each block. 4 parameters, times 6 blocks. Want to do some shrinkage. Rawest empirical descrption for this dataset yet. For eery little box, that has a unique idnetity, there's a uknique treatment and blocka dn actor that has its own deviation. But we'll need to do some shrinkage to deal with overfitting." width="80%" />
+<p class="caption marginnote shownote">
+Grown up version of this. Many effects, many types of clusters. Back to the chimp data. Four treatments. Trying to estimate theaverage behaviour in each of these treatments. Howw often the left lever is pulled can vary by treatment. TID is treatment IDs 1 to 4, and for ecah there’s an avergae rate of pulling the leve. BUt each chimp and blcok has a deviation from that mean. Alpha sub actor i, TID[i] measn the alpha deviation from the mean in this treatment, for actor[i]. Each actor gets four parameters. 7 actors. 7 x 4 parameters. RThen beta parameters for the block effects - deviations for the gamma means for each block. 4 parameters, times 6 blocks. Want to do some shrinkage. Rawest empirical descrption for this dataset yet. For eery little box, that has a unique idnetity, there’s a uknique treatment and blocka dn actor that has its own deviation. But we’ll need to do some shrinkage to deal with overfitting.
+</p>
+</div>
+<div class="sourceCode" id="cb997"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb997-1"><a href="13.2-advanced-varying-slopes.html#cb997-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(chimpanzees, <span class="at">package =</span> <span class="st">&quot;rethinking&quot;</span>)</span>
+<span id="cb997-2"><a href="13.2-advanced-varying-slopes.html#cb997-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> chimpanzees</span>
+<span id="cb997-3"><a href="13.2-advanced-varying-slopes.html#cb997-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(chimpanzees)</span>
+<span id="cb997-4"><a href="13.2-advanced-varying-slopes.html#cb997-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb997-5"><a href="13.2-advanced-varying-slopes.html#cb997-5" aria-hidden="true" tabindex="-1"></a><span class="co"># wrangle</span></span>
+<span id="cb997-6"><a href="13.2-advanced-varying-slopes.html#cb997-6" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span></span>
+<span id="cb997-7"><a href="13.2-advanced-varying-slopes.html#cb997-7" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb997-8"><a href="13.2-advanced-varying-slopes.html#cb997-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">actor     =</span> <span class="fu">factor</span>(actor),</span>
+<span id="cb997-9"><a href="13.2-advanced-varying-slopes.html#cb997-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">block     =</span> <span class="fu">factor</span>(block),</span>
+<span id="cb997-10"><a href="13.2-advanced-varying-slopes.html#cb997-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">treatment =</span> <span class="fu">factor</span>(<span class="dv">1</span> <span class="sc">+</span> prosoc_left <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> condition),</span>
+<span id="cb997-11"><a href="13.2-advanced-varying-slopes.html#cb997-11" aria-hidden="true" tabindex="-1"></a>         <span class="co"># this will come in handy, later</span></span>
+<span id="cb997-12"><a href="13.2-advanced-varying-slopes.html#cb997-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels    =</span> <span class="fu">factor</span>(treatment,</span>
+<span id="cb997-13"><a href="13.2-advanced-varying-slopes.html#cb997-13" aria-hidden="true" tabindex="-1"></a>                            <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,</span>
+<span id="cb997-14"><a href="13.2-advanced-varying-slopes.html#cb997-14" aria-hidden="true" tabindex="-1"></a>                            <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;r/n&quot;</span>, <span class="st">&quot;l/n&quot;</span>, <span class="st">&quot;r/p&quot;</span>, <span class="st">&quot;l/p&quot;</span>)))</span>
+<span id="cb997-15"><a href="13.2-advanced-varying-slopes.html#cb997-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb997-16"><a href="13.2-advanced-varying-slopes.html#cb997-16" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(d)</span></code></pre></div>
+<pre><code>## Rows: 504
+## Columns: 10
+## $ actor        &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ recipient    &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ condition    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ block        &lt;fct&gt; 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, …
+## $ trial        &lt;int&gt; 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 3…
+## $ prosoc_left  &lt;int&gt; 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, …
+## $ chose_prosoc &lt;int&gt; 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, …
+## $ pulled_left  &lt;int&gt; 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, …
+## $ treatment    &lt;fct&gt; 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, …
+## $ labels       &lt;fct&gt; r/n, r/n, l/n, r/n, l/n, l/n, l/n, l/n, r/n, r/n, r/n, l/…</code></pre>
+<div class="figure">
+<img src="slides/L17/40.png" alt="One matrix for each cluster type. So 28 actors, 24 blocks. Means are all 0. Then the covariance matrix." width="80%" />
+<p class="caption marginnote shownote">
+One matrix for each cluster type. So 28 actors, 24 blocks. Means are all 0. Then the covariance matrix.
+</p>
+</div>
+<p><img src="slides/L17/41.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L17/42.png" alt="Actor effects in red. Think of alphas as a matrix, with each row as an actor, and each column as a treatment. Then we define it down int he adaptive priors. `vector[4]` defines the matrix. 4 things minus the numbers of actors. Then there's this `multi_normal`. Multiplies the 4. `sigma_actor` and `Rho_actor`." width="80%" />
+<p class="caption marginnote shownote">
+Actor effects in red. Think of alphas as a matrix, with each row as an actor, and each column as a treatment. Then we define it down int he adaptive priors. <code>vector[4]</code> defines the matrix. 4 things minus the numbers of actors. Then there’s this <code>multi_normal</code>. Multiplies the 4. <code>sigma_actor</code> and <code>Rho_actor</code>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/43.png" alt="Now we have a matrix of betas. Row for each block, column for each treatment. The different treatment effects hav ea correlation across actors and blocks. What doe sthat mean? It's handedness. Actor number 2 always pulls the left. THe correlation among treatment effects is high. Really strong correlations, arising from handedness. With these models, part of learning is to run these, and then make the priors stronger. Try 64, 128. And see what happens to the posterior. Since you can't plot a 4D matrix. " width="80%" />
+<p class="caption marginnote shownote">
+Now we have a matrix of betas. Row for each block, column for each treatment. The different treatment effects hav ea correlation across actors and blocks. What doe sthat mean? It’s handedness. Actor number 2 always pulls the left. THe correlation among treatment effects is high. Really strong correlations, arising from handedness. With these models, part of learning is to run these, and then make the priors stronger. Try 64, 128. And see what happens to the posterior. Since you can’t plot a 4D matrix.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/44.png" alt="One of my favourite topics. The rollercoaster really pops off the rail with these." width="80%" />
+<p class="caption marginnote shownote">
+One of my favourite topics. The rollercoaster really pops off the rail with these.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/45.png" alt="To do a non-cetnered parameterisation, you factor all of the parameters out of the prior, into the linear model. For a 1D normal that's easy, because you can take hte mean and sigma out. But now we have a whole matrix. Sigmas aren't a problem, but still have a correlation matrix as a prior. Answer courtesy fo this guy. Figured out a cool trick to figure out a system of equations. " width="80%" />
+<p class="caption marginnote shownote">
+To do a non-cetnered parameterisation, you factor all of the parameters out of the prior, into the linear model. For a 1D normal that’s easy, because you can take hte mean and sigma out. But now we have a whole matrix. Sigmas aren’t a problem, but still have a correlation matrix as a prior. Answer courtesy fo this guy. Figured out a cool trick to figure out a system of equations.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/46.png" alt="Cholesky factor or decomposition is a workhorse. Artillery officer in WWI. Died in the war, but his colleagues had rescued his notes, where he had solved linear equations by solving fewer than you started with." width="80%" />
+<p class="caption marginnote shownote">
+Cholesky factor or decomposition is a workhorse. Artillery officer in WWI. Died in the war, but his colleagues had rescued his notes, where he had solved linear equations by solving fewer than you started with.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/47.png" alt="Why do we care? We've got this correlation matrix, and we need to somehow blend it with a vector of z scores. This is the non-centered prior business - you have independent z-scores, and blend them with a correaltion matrix to get things back on the right scale. This is what his technqiue lets us do. Imagine you wanted to simulated two vectors with a particular correlations. You could simulate independent random numbers. And you want their correlation to be 0.6. `z1` is just a bunch of z scores, like `z2`. Then we can get `a1` as a funtion by multiplying by sigma to put it on the normal scale. The last things is the Cholesky factor. This works for any size matrix. We'll pick up the rest in the next lecture." width="80%" />
+<p class="caption marginnote shownote">
+Why do we care? We’ve got this correlation matrix, and we need to somehow blend it with a vector of z scores. This is the non-centered prior business - you have independent z-scores, and blend them with a correaltion matrix to get things back on the right scale. This is what his technqiue lets us do. Imagine you wanted to simulated two vectors with a particular correlations. You could simulate independent random numbers. And you want their correlation to be 0.6. <code>z1</code> is just a bunch of z scores, like <code>z2</code>. Then we can get <code>a1</code> as a funtion by multiplying by sigma to put it on the normal scale. The last things is the Cholesky factor. This works for any size matrix. We’ll pick up the rest in the next lecture.
+</p>
+</div>
+<p><img src="slides/L17/48.png" width="80%" /></p>
+<p><img src="slides/L17/49.png" width="80%" /></p>
+<p><img src="slides/L17/50.png" width="80%" /></p>
+<p><img src="slides/L17/51.png" width="80%" /></p>
+<div class="sourceCode" id="cb999"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb999-1"><a href="13.2-advanced-varying-slopes.html#cb999-1" aria-hidden="true" tabindex="-1"></a>b14<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb999-2"><a href="13.2-advanced-varying-slopes.html#cb999-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb999-3"><a href="13.2-advanced-varying-slopes.html#cb999-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> binomial,</span>
+<span id="cb999-4"><a href="13.2-advanced-varying-slopes.html#cb999-4" aria-hidden="true" tabindex="-1"></a>      pulled_left <span class="sc">|</span> <span class="fu">trials</span>(<span class="dv">1</span>) <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> treatment <span class="sc">+</span> (<span class="dv">0</span> <span class="sc">+</span> treatment <span class="sc">|</span> actor) <span class="sc">+</span> (<span class="dv">0</span> <span class="sc">+</span> treatment <span class="sc">|</span> block),</span>
+<span id="cb999-5"><a href="13.2-advanced-varying-slopes.html#cb999-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb999-6"><a href="13.2-advanced-varying-slopes.html#cb999-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">group =</span> actor),</span>
+<span id="cb999-7"><a href="13.2-advanced-varying-slopes.html#cb999-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">group =</span> block),</span>
+<span id="cb999-8"><a href="13.2-advanced-varying-slopes.html#cb999-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">2</span>), <span class="at">class =</span> cor, <span class="at">group =</span> actor),</span>
+<span id="cb999-9"><a href="13.2-advanced-varying-slopes.html#cb999-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">2</span>), <span class="at">class =</span> cor, <span class="at">group =</span> block)),</span>
+<span id="cb999-10"><a href="13.2-advanced-varying-slopes.html#cb999-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,  </span>
+<span id="cb999-11"><a href="13.2-advanced-varying-slopes.html#cb999-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">4387510</span>,</span>
+<span id="cb999-12"><a href="13.2-advanced-varying-slopes.html#cb999-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b14.03&quot;</span>)</span></code></pre></div>
+<p>Check out the trank plot:</p>
+<div class="sourceCode" id="cb1000"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1000-1"><a href="13.2-advanced-varying-slopes.html#cb1000-1" aria-hidden="true" tabindex="-1"></a><span class="co"># give the parameters fancy names</span></span>
+<span id="cb1000-2"><a href="13.2-advanced-varying-slopes.html#cb1000-2" aria-hidden="true" tabindex="-1"></a>names <span class="ot">&lt;-</span> </span>
+<span id="cb1000-3"><a href="13.2-advanced-varying-slopes.html#cb1000-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="fu">str_c</span>(<span class="st">&quot;treatment[&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="st">&quot;]&quot;</span>), </span>
+<span id="cb1000-4"><a href="13.2-advanced-varying-slopes.html#cb1000-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(<span class="st">&quot;sigma[&#39;actor[&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="st">&quot;]&#39;]&quot;</span>), </span>
+<span id="cb1000-5"><a href="13.2-advanced-varying-slopes.html#cb1000-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(<span class="st">&quot;sigma[&#39;block[&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="st">&quot;]&#39;]&quot;</span>), </span>
+<span id="cb1000-6"><a href="13.2-advanced-varying-slopes.html#cb1000-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(<span class="st">&quot;rho[&#39;actor:treatment[&quot;</span>, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="st">&quot;,&quot;</span>, <span class="fu">rep</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">times =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="st">&quot;]&#39;]&quot;</span>), </span>
+<span id="cb1000-7"><a href="13.2-advanced-varying-slopes.html#cb1000-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(<span class="st">&quot;rho[&#39;block:treatment[&quot;</span>, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="st">&quot;,&quot;</span>, <span class="fu">rep</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">times =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>), <span class="st">&quot;]&#39;]&quot;</span>), </span>
+<span id="cb1000-8"><a href="13.2-advanced-varying-slopes.html#cb1000-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;chain&quot;</span>)</span>
+<span id="cb1000-9"><a href="13.2-advanced-varying-slopes.html#cb1000-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1000-10"><a href="13.2-advanced-varying-slopes.html#cb1000-10" aria-hidden="true" tabindex="-1"></a><span class="co"># wrangle</span></span>
+<span id="cb1000-11"><a href="13.2-advanced-varying-slopes.html#cb1000-11" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_samples</span>(b14<span class="fl">.3</span>, <span class="at">add_chain =</span> T) <span class="sc">%&gt;%</span> </span>
+<span id="cb1000-12"><a href="13.2-advanced-varying-slopes.html#cb1000-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(b_treatment1<span class="sc">:</span><span class="st">`</span><span class="at">cor_block__treatment3__treatment4</span><span class="st">`</span>, chain) <span class="sc">%&gt;%</span> </span>
+<span id="cb1000-13"><a href="13.2-advanced-varying-slopes.html#cb1000-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(names) <span class="sc">%&gt;%</span> </span>
+<span id="cb1000-14"><a href="13.2-advanced-varying-slopes.html#cb1000-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1000-15"><a href="13.2-advanced-varying-slopes.html#cb1000-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb1000-16"><a href="13.2-advanced-varying-slopes.html#cb1000-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_rank_overlay</span>() <span class="sc">+</span></span>
+<span id="cb1000-17"><a href="13.2-advanced-varying-slopes.html#cb1000-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#80A0C7&quot;</span>, <span class="st">&quot;#B1934A&quot;</span>, <span class="st">&quot;#A65141&quot;</span>, <span class="st">&quot;#EEDA9D&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb1000-18"><a href="13.2-advanced-varying-slopes.html#cb1000-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span> <span class="sc">*</span> <span class="fl">1e3</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">str_c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="st">&quot;K&quot;</span>))) <span class="sc">+</span></span>
+<span id="cb1000-19"><a href="13.2-advanced-varying-slopes.html#cb1000-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb1000-20"><a href="13.2-advanced-varying-slopes.html#cb1000-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1000-21"><a href="13.2-advanced-varying-slopes.html#cb1000-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> parameter, <span class="at">labeller =</span> label_parsed, <span class="at">ncol =</span> <span class="dv">4</span>)</span></code></pre></div>
+<pre><code>## Scale for &#39;colour&#39; is already present. Adding another scale for &#39;colour&#39;,
+## which will replace the existing scale.</code></pre>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-69-1.png" width="672" /></p>
+<div class="sourceCode" id="cb1002"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1002-1"><a href="13.2-advanced-varying-slopes.html#cb1002-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(posterior)</span></code></pre></div>
+<pre><code>## This is posterior version 1.0.1</code></pre>
+<pre><code>## 
+## Attaching package: &#39;posterior&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:brms&#39;:
+## 
+##     rhat</code></pre>
+<pre><code>## The following object is masked from &#39;package:bayesplot&#39;:
+## 
+##     rhat</code></pre>
+<pre><code>## The following objects are masked from &#39;package:rstan&#39;:
+## 
+##     ess_bulk, ess_tail</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     mad, sd, var</code></pre>
+<div class="sourceCode" id="cb1009"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1009-1"><a href="13.2-advanced-varying-slopes.html#cb1009-1" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_samples</span>(b14<span class="fl">.3</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1009-2"><a href="13.2-advanced-varying-slopes.html#cb1009-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_draws</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1009-3"><a href="13.2-advanced-varying-slopes.html#cb1009-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">starts_with</span>(<span class="st">&quot;ess&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1009-4"><a href="13.2-advanced-varying-slopes.html#cb1009-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1009-5"><a href="13.2-advanced-varying-slopes.html#cb1009-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value)) <span class="sc">+</span></span>
+<span id="cb1009-6"><a href="13.2-advanced-varying-slopes.html#cb1009-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">250</span>, <span class="at">fill =</span> <span class="st">&quot;#EEDA9D&quot;</span>, <span class="at">color =</span> <span class="st">&quot;#DCA258&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1009-7"><a href="13.2-advanced-varying-slopes.html#cb1009-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb1009-8"><a href="13.2-advanced-varying-slopes.html#cb1009-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name)</span></code></pre></div>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_bar).</code></pre>
+<p><img src="14_adventures_in_covariance_files/figure-html/14.20%20b-1.png" width="672" /></p>
+<p><img src="slides/L17/52.png" width="80%" /></p>
+<div class="sourceCode" id="cb1011"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1011-1"><a href="13.2-advanced-varying-slopes.html#cb1011-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b14<span class="fl">.3</span>)</span></code></pre></div>
+<pre><code>##  Family: binomial 
+##   Links: mu = logit 
+## Formula: pulled_left | trials(1) ~ 0 + treatment + (0 + treatment | actor) + (0 + treatment | block) 
+##    Data: d (Number of observations: 504) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Group-Level Effects: 
+## ~actor (Number of levels: 7) 
+##                            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+## sd(treatment1)                 1.40      0.50     0.69     2.64 1.00     2180
+## sd(treatment2)                 0.91      0.41     0.33     1.91 1.00     2810
+## sd(treatment3)                 1.84      0.55     1.03     3.15 1.00     3534
+## sd(treatment4)                 1.56      0.59     0.73     3.01 1.00     3092
+## cor(treatment1,treatment2)     0.42      0.28    -0.22     0.87 1.00     3004
+## cor(treatment1,treatment3)     0.52      0.25    -0.06     0.89 1.00     2874
+## cor(treatment2,treatment3)     0.49      0.26    -0.10     0.89 1.00     3276
+## cor(treatment1,treatment4)     0.44      0.26    -0.14     0.87 1.00     3030
+## cor(treatment2,treatment4)     0.44      0.28    -0.19     0.88 1.00     3560
+## cor(treatment3,treatment4)     0.58      0.24     0.01     0.92 1.00     3481
+##                            Tail_ESS
+## sd(treatment1)                 2417
+## sd(treatment2)                 2411
+## sd(treatment3)                 3178
+## sd(treatment4)                 2254
+## cor(treatment1,treatment2)     3131
+## cor(treatment1,treatment3)     2709
+## cor(treatment2,treatment3)     3535
+## cor(treatment1,treatment4)     2697
+## cor(treatment2,treatment4)     3247
+## cor(treatment3,treatment4)     2826
+## 
+## ~block (Number of levels: 6) 
+##                            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+## sd(treatment1)                 0.42      0.34     0.01     1.26 1.00     2235
+## sd(treatment2)                 0.43      0.35     0.02     1.29 1.00     1901
+## sd(treatment3)                 0.30      0.27     0.01     0.99 1.00     2864
+## sd(treatment4)                 0.47      0.38     0.02     1.41 1.00     2116
+## cor(treatment1,treatment2)    -0.07      0.37    -0.74     0.64 1.00     5342
+## cor(treatment1,treatment3)    -0.02      0.38    -0.72     0.71 1.00     8111
+## cor(treatment2,treatment3)    -0.02      0.38    -0.72     0.69 1.00     5309
+## cor(treatment1,treatment4)     0.05      0.37    -0.68     0.72 1.00     4579
+## cor(treatment2,treatment4)     0.05      0.38    -0.66     0.73 1.00     4518
+## cor(treatment3,treatment4)     0.02      0.38    -0.67     0.72 1.00     3951
+##                            Tail_ESS
+## sd(treatment1)                 2066
+## sd(treatment2)                 2460
+## sd(treatment3)                 1930
+## sd(treatment4)                 2359
+## cor(treatment1,treatment2)     3066
+## cor(treatment1,treatment3)     2730
+## cor(treatment2,treatment3)     2914
+## cor(treatment1,treatment4)     2891
+## cor(treatment2,treatment4)     3276
+## cor(treatment3,treatment4)     3405
+## 
+## Population-Level Effects: 
+##            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## treatment1     0.22      0.52    -0.80     1.27 1.00     2221     2356
+## treatment2     0.64      0.40    -0.17     1.43 1.00     2906     2486
+## treatment3    -0.02      0.57    -1.16     1.09 1.00     3243     3001
+## treatment4     0.66      0.54    -0.40     1.73 1.00     3365     2678
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p>Compute the WAIC estimate:</p>
+<div class="sourceCode" id="cb1013"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1013-1"><a href="13.2-advanced-varying-slopes.html#cb1013-1" aria-hidden="true" tabindex="-1"></a>b14<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b14<span class="fl">.3</span>, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb1013-2"><a href="13.2-advanced-varying-slopes.html#cb1013-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1013-3"><a href="13.2-advanced-varying-slopes.html#cb1013-3" aria-hidden="true" tabindex="-1"></a><span class="fu">waic</span>(b14<span class="fl">.3</span>)</span></code></pre></div>
+<pre><code>## 
+## Computed from 4000 by 504 log-likelihood matrix
+## 
+##           Estimate   SE
+## elpd_waic   -272.5  9.8
+## p_waic        27.0  1.4
+## waic         545.1 19.7
+## 
+## 1 (0.2%) p_waic estimates greater than 0.4. We recommend trying loo instead.</code></pre>
+<p><img src="slides/L17/53.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L17/54.png" alt=" " width="80%" />
+<p class="caption marginnote shownote">
+</p>
+</div>
+<div class="sourceCode" id="cb1015"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1015-1"><a href="13.2-advanced-varying-slopes.html#cb1015-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for annotation</span></span>
+<span id="cb1015-2"><a href="13.2-advanced-varying-slopes.html#cb1015-2" aria-hidden="true" tabindex="-1"></a>text <span class="ot">&lt;-</span></span>
+<span id="cb1015-3"><a href="13.2-advanced-varying-slopes.html#cb1015-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(d, labels) <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-4"><a href="13.2-advanced-varying-slopes.html#cb1015-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">actor =</span> <span class="dv">1</span>,</span>
+<span id="cb1015-5"><a href="13.2-advanced-varying-slopes.html#cb1015-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">prop  =</span> <span class="fu">c</span>(.<span class="dv">07</span>, .<span class="dv">8</span>, .<span class="dv">08</span>, .<span class="dv">795</span>))</span>
+<span id="cb1015-6"><a href="13.2-advanced-varying-slopes.html#cb1015-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1015-7"><a href="13.2-advanced-varying-slopes.html#cb1015-7" aria-hidden="true" tabindex="-1"></a>nd <span class="ot">&lt;-</span></span>
+<span id="cb1015-8"><a href="13.2-advanced-varying-slopes.html#cb1015-8" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-9"><a href="13.2-advanced-varying-slopes.html#cb1015-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(actor, condition, labels, prosoc_left, treatment) <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-10"><a href="13.2-advanced-varying-slopes.html#cb1015-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">block =</span> <span class="dv">5</span>)</span>
+<span id="cb1015-11"><a href="13.2-advanced-varying-slopes.html#cb1015-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1015-12"><a href="13.2-advanced-varying-slopes.html#cb1015-12" aria-hidden="true" tabindex="-1"></a><span class="co"># compute and wrangle the posterior predictions</span></span>
+<span id="cb1015-13"><a href="13.2-advanced-varying-slopes.html#cb1015-13" aria-hidden="true" tabindex="-1"></a><span class="fu">fitted</span>(b14<span class="fl">.3</span>,</span>
+<span id="cb1015-14"><a href="13.2-advanced-varying-slopes.html#cb1015-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">newdata =</span> nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-15"><a href="13.2-advanced-varying-slopes.html#cb1015-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-16"><a href="13.2-advanced-varying-slopes.html#cb1015-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-17"><a href="13.2-advanced-varying-slopes.html#cb1015-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add the empirical proportions</span></span>
+<span id="cb1015-18"><a href="13.2-advanced-varying-slopes.html#cb1015-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb1015-19"><a href="13.2-advanced-varying-slopes.html#cb1015-19" aria-hidden="true" tabindex="-1"></a>    d <span class="sc">%&gt;%</span></span>
+<span id="cb1015-20"><a href="13.2-advanced-varying-slopes.html#cb1015-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(actor, treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb1015-21"><a href="13.2-advanced-varying-slopes.html#cb1015-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">proportion =</span> <span class="fu">mean</span>(pulled_left)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-22"><a href="13.2-advanced-varying-slopes.html#cb1015-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">distinct</span>(actor, treatment, proportion),</span>
+<span id="cb1015-23"><a href="13.2-advanced-varying-slopes.html#cb1015-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;actor&quot;</span>, <span class="st">&quot;treatment&quot;</span>)</span>
+<span id="cb1015-24"><a href="13.2-advanced-varying-slopes.html#cb1015-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-25"><a href="13.2-advanced-varying-slopes.html#cb1015-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">factor</span>(condition)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1015-26"><a href="13.2-advanced-varying-slopes.html#cb1015-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1015-27"><a href="13.2-advanced-varying-slopes.html#cb1015-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot!</span></span>
+<span id="cb1015-28"><a href="13.2-advanced-varying-slopes.html#cb1015-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> labels)) <span class="sc">+</span></span>
+<span id="cb1015-29"><a href="13.2-advanced-varying-slopes.html#cb1015-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">&quot;#E8DCCF&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb1015-30"><a href="13.2-advanced-varying-slopes.html#cb1015-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># empirical proportions</span></span>
+<span id="cb1015-31"><a href="13.2-advanced-varying-slopes.html#cb1015-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> proportion, <span class="at">group =</span> prosoc_left),</span>
+<span id="cb1015-32"><a href="13.2-advanced-varying-slopes.html#cb1015-32" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">color =</span> <span class="st">&quot;#394165&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1015-33"><a href="13.2-advanced-varying-slopes.html#cb1015-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> proportion, <span class="at">shape =</span> condition),</span>
+<span id="cb1015-34"><a href="13.2-advanced-varying-slopes.html#cb1015-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;#394165&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#100F14&quot;</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">show.legend =</span> F) <span class="sc">+</span> </span>
+<span id="cb1015-35"><a href="13.2-advanced-varying-slopes.html#cb1015-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># posterior predictions</span></span>
+<span id="cb1015-36"><a href="13.2-advanced-varying-slopes.html#cb1015-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Estimate, <span class="at">group =</span> prosoc_left),</span>
+<span id="cb1015-37"><a href="13.2-advanced-varying-slopes.html#cb1015-37" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">color =</span> <span class="st">&quot;#80A0C7&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1015-38"><a href="13.2-advanced-varying-slopes.html#cb1015-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="fu">aes</span>(<span class="at">y =</span> Estimate, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>, <span class="at">shape =</span> condition),</span>
+<span id="cb1015-39"><a href="13.2-advanced-varying-slopes.html#cb1015-39" aria-hidden="true" tabindex="-1"></a>                  <span class="at">color =</span> <span class="st">&quot;#80A0C7&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#100F14&quot;</span>, <span class="at">fatten =</span> <span class="dv">8</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">show.legend =</span> F) <span class="sc">+</span> </span>
+<span id="cb1015-40"><a href="13.2-advanced-varying-slopes.html#cb1015-40" aria-hidden="true" tabindex="-1"></a>  <span class="co"># annotation for the conditions</span></span>
+<span id="cb1015-41"><a href="13.2-advanced-varying-slopes.html#cb1015-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> text,</span>
+<span id="cb1015-42"><a href="13.2-advanced-varying-slopes.html#cb1015-42" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">y =</span> prop, <span class="at">label =</span> labels), </span>
+<span id="cb1015-43"><a href="13.2-advanced-varying-slopes.html#cb1015-43" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;#DCA258&quot;</span>, <span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1015-44"><a href="13.2-advanced-varying-slopes.html#cb1015-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">19</span>)) <span class="sc">+</span></span>
+<span id="cb1015-45"><a href="13.2-advanced-varying-slopes.html#cb1015-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb1015-46"><a href="13.2-advanced-varying-slopes.html#cb1015-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">&quot;proportion left lever&quot;</span>, <span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span> <span class="sc">/</span> <span class="dv">2</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;.5&quot;</span>, <span class="st">&quot;1&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb1015-47"><a href="13.2-advanced-varying-slopes.html#cb1015-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Posterior predictions, in light blue, against the raw data, in dark blue, for</span><span class="sc">\n</span><span class="st">model b14.3, the cross-classified varying effects model.&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1015-48"><a href="13.2-advanced-varying-slopes.html#cb1015-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> actor, <span class="at">nrow =</span> <span class="dv">1</span>, <span class="at">labeller =</span> label_both)</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/14.22%20b-1.png" width="672" /></p>
+<hr />
+<div class="sourceCode" id="cb1016"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1016-1"><a href="13.2-advanced-varying-slopes.html#cb1016-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L18&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L18/01.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L18/02.png" alt="We had specified this complicated random model. Now trying to show you non-centering reparameterising when you have random slopes. French guy called Cholesky figured out this cool technique. Way to take a bunch of uncorrelated values and give them any correlation you want. Here it's not what you want, it's the one the data wants. To get a non-cetnerd parameterisation, we nee the prior not to be conditonal on other parameters. For some datasets and models, some centering is better. You need to be flexible. " width="80%" />
+<p class="caption marginnote shownote">
+We had specified this complicated random model. Now trying to show you non-centering reparameterising when you have random slopes. French guy called Cholesky figured out this cool technique. Way to take a bunch of uncorrelated values and give them any correlation you want. Here it’s not what you want, it’s the one the data wants. To get a non-cetnerd parameterisation, we nee the prior not to be conditonal on other parameters. For some datasets and models, some centering is better. You need to be flexible.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/03.png" alt="In red all the bits that have to do with actor effects. Parameter for each actor and treatment, doing it with shrinkage and pooling. That's what this `alpha[actor,tid]` is. Green is the analagous block effects. Column is again a treatment. So what's the average treatment on that day? Need to check for block effects. What we're doing here is almost exactly Stan code. What you want to see is that we're creating the matrix. Defined by `compose_noncentered`. Multiply them by the z-score gives us the right scale again. Last bit down the bottom, now it doesn't contain a correlation matrix, it's a cholesky factor. " width="80%" />
+<p class="caption marginnote shownote">
+In red all the bits that have to do with actor effects. Parameter for each actor and treatment, doing it with shrinkage and pooling. That’s what this <code>alpha[actor,tid]</code> is. Green is the analagous block effects. Column is again a treatment. So what’s the average treatment on that day? Need to check for block effects. What we’re doing here is almost exactly Stan code. What you want to see is that we’re creating the matrix. Defined by <code>compose_noncentered</code>. Multiply them by the z-score gives us the right scale again. Last bit down the bottom, now it doesn’t contain a correlation matrix, it’s a cholesky factor.
+</p>
+</div>
+<p><img src="slides/L18/04.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L18/05.png" alt="What you get from this is really amazing. They produce the same inferences, but some do them more effectively than others. Each point is a parameter in the posterior distribution. The horizontal axis is the number of effective samples from the centered model, that looks how the way we talk about MLMs. The vertical si the corresponding number of effective samples. So sometimes there are more than double the number of effective samples. This is not unqiue to Hamiltonian Monte Carlo, but the difference is that it tells you." width="80%" />
+<p class="caption marginnote shownote">
+What you get from this is really amazing. They produce the same inferences, but some do them more effectively than others. Each point is a parameter in the posterior distribution. The horizontal axis is the number of effective samples from the centered model, that looks how the way we talk about MLMs. The vertical si the corresponding number of effective samples. So sometimes there are more than double the number of effective samples. This is not unqiue to Hamiltonian Monte Carlo, but the difference is that it tells you.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/06.png" alt="Why are we doing this? We care about inference. Just the standard deviations from the random effects. For now, what do we learn from the SDs? They generate the stregth of pooling. The amount of variation is learned, and these are embodying that learning or information. The first four are actor effects that correspond to treatment factors. 1 was prosocial option on the right, and no partner present. 2 was prosocial left, no partner. 3 was prosocial right, parter, 4 prosocial left, partner present. And there's a lot less variation in treatment 2. The blocks are pretty much all the same. So it does more shrinkage than on actors, because the actors are diffferent due to handedlness. " width="80%" />
+<p class="caption marginnote shownote">
+Why are we doing this? We care about inference. Just the standard deviations from the random effects. For now, what do we learn from the SDs? They generate the stregth of pooling. The amount of variation is learned, and these are embodying that learning or information. The first four are actor effects that correspond to treatment factors. 1 was prosocial option on the right, and no partner present. 2 was prosocial left, no partner. 3 was prosocial right, parter, 4 prosocial left, partner present. And there’s a lot less variation in treatment 2. The blocks are pretty much all the same. So it does more shrinkage than on actors, because the actors are diffferent due to handedlness.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/07.png" alt="Here are the correlation efffects. You can transform the Choleky factors by tranposing - rotating and multiplying by itself to get the correlation matrix. Diagonal is all 1s. All the things on the 1s show up as points. Then the others are correlations between the different treatments. Note they're all positive. What does that mean? It's handedness. At the individual level, the correlations are hgih because of handedness. Now you see it arises as a correlation among the treatments at the actor level. A lot of the information is like this where you can capture it. Looks different when you inspect it. But if you made parameters for left and right, these correlations won't appear. Homework has a similar problem. " width="80%" />
+<p class="caption marginnote shownote">
+Here are the correlation efffects. You can transform the Choleky factors by tranposing - rotating and multiplying by itself to get the correlation matrix. Diagonal is all 1s. All the things on the 1s show up as points. Then the others are correlations between the different treatments. Note they’re all positive. What does that mean? It’s handedness. At the individual level, the correlations are hgih because of handedness. Now you see it arises as a correlation among the treatments at the actor level. A lot of the information is like this where you can capture it. Looks different when you inspect it. But if you made parameters for left and right, these correlations won’t appear. Homework has a similar problem.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/08.png" alt="Posterior predictions. Take the posterior and push it back through the model. Why? To make sure the model works, adn caputres the texture of the data, but isn't identical due to shrinkage. Each actor going across. Each is a point. Tilt tells you what happens when you add the partner. Answer is not much. But moving the food to the other side of the table makes them attracted to more food. Actor 2 doesn't respond that way because actor 2 doesn't change. But notic ehthe model doesn't retrodict, because of shrinkage. SO the predictions are pulled a little bit towards the mean of the population, and most in treatment 2. The variance of treatment 2 was lower, so you get more shirnkage. sigma actor 2 is about 1, where sigma for the others were above 1." width="80%" />
+<p class="caption marginnote shownote">
+Posterior predictions. Take the posterior and push it back through the model. Why? To make sure the model works, adn caputres the texture of the data, but isn’t identical due to shrinkage. Each actor going across. Each is a point. Tilt tells you what happens when you add the partner. Answer is not much. But moving the food to the other side of the table makes them attracted to more food. Actor 2 doesn’t respond that way because actor 2 doesn’t change. But notic ehthe model doesn’t retrodict, because of shrinkage. SO the predictions are pulled a little bit towards the mean of the population, and most in treatment 2. The variance of treatment 2 was lower, so you get more shirnkage. sigma actor 2 is about 1, where sigma for the others were above 1.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/09.png" alt="Only advice I can often give is horoscopic. The design of a proper analysis is outside the table, so the table is not enough. Nevertheless, it's nice to have a default; a place to start. I fyou had the bare minimum of information, you could use a horoscopes, adn the predictions are terrible. So you should feel fine about deviating from them when you learn something. So use a causal model first. Start with the empty model. Itdentify the clusters of interest (chimps, blocks, treatments) then put them in as varying intercepts. Like a shriking ANOVA. Where's the variation? Then you get the machine humming before you start adding predictors. Standardise unless ordered categories. Good default behaviour. Always pregularise by simulating from the piror. THen add in predictors and vary their slopes. Find to drop varying effects whens sigmas are small, but you could also leave them in and they'll aggressively shrink. Consider if you're trying to expmlain the sample, you'll focus on the units. More linkely that you're not interested in lefty, but in the variation in the population. We care about the indivdiuals, but they're exchangeable in the sense we're trying to generalise to the population, not making predictions about the same individuals.  " width="80%" />
+<p class="caption marginnote shownote">
+Only advice I can often give is horoscopic. The design of a proper analysis is outside the table, so the table is not enough. Nevertheless, it’s nice to have a default; a place to start. I fyou had the bare minimum of information, you could use a horoscopes, adn the predictions are terrible. So you should feel fine about deviating from them when you learn something. So use a causal model first. Start with the empty model. Itdentify the clusters of interest (chimps, blocks, treatments) then put them in as varying intercepts. Like a shriking ANOVA. Where’s the variation? Then you get the machine humming before you start adding predictors. Standardise unless ordered categories. Good default behaviour. Always pregularise by simulating from the piror. THen add in predictors and vary their slopes. Find to drop varying effects whens sigmas are small, but you could also leave them in and they’ll aggressively shrink. Consider if you’re trying to expmlain the sample, you’ll focus on the units. More linkely that you’re not interested in lefty, but in the variation in the population. We care about the indivdiuals, but they’re exchangeable in the sense we’re trying to generalise to the population, not making predictions about the same individuals.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/10.png" alt="Quick conceptual introduction to two families of covariance models that go beyond random slopes. All the cool things we can do with covariance matrixes. Quick guide to say that lods of models focus on covariance matrixes. Going to look at instrumental variables. MR *is* instrumental variables. Then social relations model. Network models also depend on covariation of behaviour among nodes. Factor analysis is also covariance. And animal model. Shows that height is just a big covariance matrix. (Probably want to de-center.) Spatial distances are another kind of distance you can specify the covariaiton of." width="80%" />
+<p class="caption marginnote shownote">
+Quick conceptual introduction to two families of covariance models that go beyond random slopes. All the cool things we can do with covariance matrixes. Quick guide to say that lods of models focus on covariance matrixes. Going to look at instrumental variables. MR <em>is</em> instrumental variables. Then social relations model. Network models also depend on covariation of behaviour among nodes. Factor analysis is also covariance. And animal model. Shows that height is just a big covariance matrix. (Probably want to de-center.) Spatial distances are another kind of distance you can specify the covariaiton of.
+</p>
+</div>
+</div>
+<p style="text-align: center;">
+<a href="13.1-varying-slopes-by-construction.html"><button class="btn btn-default">Previous</button></a>
+<a href="13.3-instruments-and-causal-designs.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

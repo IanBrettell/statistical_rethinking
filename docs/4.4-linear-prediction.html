@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="4.4 Linear prediction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="4.4 Linear prediction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>4.4 Linear prediction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="linear-prediction" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Linear prediction</h2>
+<p>Let’s look at how height in these Kalahari foragers covaries with weight.</p>
+<p><img src="slides/L03/38.png" width="80%" /></p>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb174-1"><a href="4.4-linear-prediction.html#cb174-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> d2, </span>
+<span id="cb174-2"><a href="4.4-linear-prediction.html#cb174-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb174-3"><a href="4.4-linear-prediction.html#cb174-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb174-4"><a href="4.4-linear-prediction.html#cb174-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb174-5"><a href="4.4-linear-prediction.html#cb174-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.37-1.png" width="672" /></p>
+<p>So now let’s add a line. When we learn the predictions, we can learn the statistical association between weight and height. The question is how would you statistically describe this relationship?</p>
+<p><strong><em>4.4.1 The linear model strategy</em></strong></p>
+<div class="figure">
+<img src="slides/L03/39.png" alt="So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there's an $i$ on $\mu$. That means it's different for each person. $\alpha$ is out population mean. $\beta$ describes the relationship between $x$ and $y$." width="80%" />
+<p class="caption marginnote shownote">
+So what do we do? We add another variable to the model, and now we have a linear regression. This model has all the standard features. Now there’s an <span class="math inline">\(i\)</span> on <span class="math inline">\(\mu\)</span>. That means it’s different for each person. <span class="math inline">\(\alpha\)</span> is out population mean. <span class="math inline">\(\beta\)</span> describes the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L03/40.png" alt="The equals sign mean that it's deterministically defined. $\beta$ is what you'd call a slope, or the rate of change in $mu$ for a unit change in $x$. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour." width="80%" />
+<p class="caption marginnote shownote">
+The equals sign mean that it’s deterministically defined. <span class="math inline">\(\beta\)</span> is what you’d call a slope, or the rate of change in <span class="math inline">\(mu\)</span> for a unit change in <span class="math inline">\(x\)</span>. Why do we subtract x bar? This is called centering the predictor. Should be your default behaviour.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L03/41.png" alt="It's now predicting lines. So what does the prior predictive distribution look like? A whole lot of lines." width="80%" />
+<p class="caption marginnote shownote">
+It’s now predicting lines. So what does the prior predictive distribution look like? A whole lot of lines.
+</p>
+</div>
+<p><img src="slides/L03/42.png" width="80%" /></p>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="4.4-linear-prediction.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2971</span>)</span>
+<span id="cb175-2"><a href="4.4-linear-prediction.html#cb175-2" aria-hidden="true" tabindex="-1"></a><span class="co"># how many lines would you like?</span></span>
+<span id="cb175-3"><a href="4.4-linear-prediction.html#cb175-3" aria-hidden="true" tabindex="-1"></a>n_lines <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb175-4"><a href="4.4-linear-prediction.html#cb175-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-5"><a href="4.4-linear-prediction.html#cb175-5" aria-hidden="true" tabindex="-1"></a>lines <span class="ot">&lt;-</span></span>
+<span id="cb175-6"><a href="4.4-linear-prediction.html#cb175-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">n =</span> <span class="dv">1</span><span class="sc">:</span>n_lines,</span>
+<span id="cb175-7"><a href="4.4-linear-prediction.html#cb175-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">a =</span> <span class="fu">rnorm</span>(n_lines, <span class="at">mean =</span> <span class="dv">178</span>, <span class="at">sd =</span> <span class="dv">20</span>),</span>
+<span id="cb175-8"><a href="4.4-linear-prediction.html#cb175-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">b =</span> <span class="fu">rnorm</span>(n_lines, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">10</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb175-9"><a href="4.4-linear-prediction.html#cb175-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand</span>(<span class="fu">nesting</span>(n, a, b), <span class="at">weight =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight)) <span class="sc">%&gt;%</span> </span>
+<span id="cb175-10"><a href="4.4-linear-prediction.html#cb175-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">height =</span> a <span class="sc">+</span> b <span class="sc">*</span> (weight <span class="sc">-</span> <span class="fu">mean</span>(d2<span class="sc">$</span>weight)))</span>
+<span id="cb175-11"><a href="4.4-linear-prediction.html#cb175-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-12"><a href="4.4-linear-prediction.html#cb175-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lines)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 5
+##       n     a      b weight height
+##   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1     1  191. -7.06    31.1  289. 
+## 2     1  191. -7.06    63.0   63.5
+## 3     2  199.  0.839   31.1  187. 
+## 4     2  199.  0.839   63.0  214. 
+## 5     3  202.  3.93    31.1  147. 
+## 6     3  202.  3.93    63.0  272.</code></pre>
+<p>Now we have 100 paris of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> values.</p>
+<p>Simulate 100 lines as before.</p>
+<p><img src="slides/L03/43.png" width="80%" /></p>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="4.4-linear-prediction.html#cb177-1" aria-hidden="true" tabindex="-1"></a>lines <span class="sc">%&gt;%</span> </span>
+<span id="cb177-2"><a href="4.4-linear-prediction.html#cb177-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> height, <span class="at">group =</span> n)) <span class="sc">+</span></span>
+<span id="cb177-3"><a href="4.4-linear-prediction.html#cb177-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">272</span>), <span class="at">linetype =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb177-4"><a href="4.4-linear-prediction.html#cb177-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb177-5"><a href="4.4-linear-prediction.html#cb177-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">100</span>, <span class="dv">400</span>)) <span class="sc">+</span></span>
+<span id="cb177-6"><a href="4.4-linear-prediction.html#cb177-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;b ~ dnorm(0, 10)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb177-7"><a href="4.4-linear-prediction.html#cb177-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.39-1.png" width="672" /></p>
+<p>Getting the scatter right is important, because you can see these impossibly steep lines. Some of them take you from impossibly short individuals to twice the tallest. Want to dampen these expectations. Practise on these safe examples.</p>
+<div class="figure">
+<img src="slides/L03/44.png" alt="We know that $\beta$ is positive, so let's make it positive. A log normal distribution is a normal distribution logged. What's nice is that they're all positive. We want to assume the relationship between weight and height is positive." width="80%" />
+<p class="caption marginnote shownote">
+We know that <span class="math inline">\(\beta\)</span> is positive, so let’s make it positive. A log normal distribution is a normal distribution logged. What’s nice is that they’re all positive. We want to assume the relationship between weight and height is positive.
+</p>
+</div>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="4.4-linear-prediction.html#cb178-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb178-2"><a href="4.4-linear-prediction.html#cb178-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb178-3"><a href="4.4-linear-prediction.html#cb178-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">b =</span> <span class="fu">rlnorm</span>(<span class="fl">1e4</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb178-4"><a href="4.4-linear-prediction.html#cb178-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> b)) <span class="sc">+</span></span>
+<span id="cb178-5"><a href="4.4-linear-prediction.html#cb178-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;grey92&quot;</span>) <span class="sc">+</span></span>
+<span id="cb178-6"><a href="4.4-linear-prediction.html#cb178-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb178-7"><a href="4.4-linear-prediction.html#cb178-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.40-1.png" width="672" /></p>
+<p>A log-normal distribution is the distibution whose logarithm is normally distributed.</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="4.4-linear-prediction.html#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb179-2"><a href="4.4-linear-prediction.html#cb179-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb179-3"><a href="4.4-linear-prediction.html#cb179-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">rnorm           =</span> <span class="fu">rnorm</span>(<span class="fl">1e5</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>),</span>
+<span id="cb179-4"><a href="4.4-linear-prediction.html#cb179-4" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">log(rlognorm)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">log</span>(<span class="fu">rlnorm</span>(<span class="fl">1e5</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb179-5"><a href="4.4-linear-prediction.html#cb179-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb179-6"><a href="4.4-linear-prediction.html#cb179-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb179-7"><a href="4.4-linear-prediction.html#cb179-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value)) <span class="sc">+</span></span>
+<span id="cb179-8"><a href="4.4-linear-prediction.html#cb179-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;grey92&quot;</span>) <span class="sc">+</span></span>
+<span id="cb179-9"><a href="4.4-linear-prediction.html#cb179-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb179-10"><a href="4.4-linear-prediction.html#cb179-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb179-11"><a href="4.4-linear-prediction.html#cb179-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<p><img src="slides/L03/45.png" width="80%" /></p>
+<p>Still a lot of scatter, but still one crazy line. Now at least we’re in the possible range.</p>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb180-1"><a href="4.4-linear-prediction.html#cb180-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make a tibble to annotate the plot</span></span>
+<span id="cb180-2"><a href="4.4-linear-prediction.html#cb180-2" aria-hidden="true" tabindex="-1"></a>text <span class="ot">&lt;-</span></span>
+<span id="cb180-3"><a href="4.4-linear-prediction.html#cb180-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">weight =</span> <span class="fu">c</span>(<span class="dv">34</span>, <span class="dv">43</span>),</span>
+<span id="cb180-4"><a href="4.4-linear-prediction.html#cb180-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">height =</span> <span class="fu">c</span>(<span class="dv">0</span> <span class="sc">-</span> <span class="dv">25</span>, <span class="dv">272</span> <span class="sc">+</span> <span class="dv">25</span>),</span>
+<span id="cb180-5"><a href="4.4-linear-prediction.html#cb180-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">label  =</span> <span class="fu">c</span>(<span class="st">&quot;Embryo&quot;</span>, <span class="st">&quot;World&#39;s tallest person (272 cm)&quot;</span>))</span>
+<span id="cb180-6"><a href="4.4-linear-prediction.html#cb180-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-7"><a href="4.4-linear-prediction.html#cb180-7" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate</span></span>
+<span id="cb180-8"><a href="4.4-linear-prediction.html#cb180-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2971</span>)</span>
+<span id="cb180-9"><a href="4.4-linear-prediction.html#cb180-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-10"><a href="4.4-linear-prediction.html#cb180-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">n =</span> <span class="dv">1</span><span class="sc">:</span>n_lines,</span>
+<span id="cb180-11"><a href="4.4-linear-prediction.html#cb180-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">a =</span> <span class="fu">rnorm</span>(n_lines, <span class="at">mean =</span> <span class="dv">178</span>, <span class="at">sd =</span> <span class="dv">20</span>),</span>
+<span id="cb180-12"><a href="4.4-linear-prediction.html#cb180-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">b =</span> <span class="fu">rlnorm</span>(n_lines, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb180-13"><a href="4.4-linear-prediction.html#cb180-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand</span>(<span class="fu">nesting</span>(n, a, b), <span class="at">weight =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight)) <span class="sc">%&gt;%</span> </span>
+<span id="cb180-14"><a href="4.4-linear-prediction.html#cb180-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">height =</span> a <span class="sc">+</span> b <span class="sc">*</span> (weight <span class="sc">-</span> <span class="fu">mean</span>(d2<span class="sc">$</span>weight))) <span class="sc">%&gt;%</span></span>
+<span id="cb180-15"><a href="4.4-linear-prediction.html#cb180-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb180-16"><a href="4.4-linear-prediction.html#cb180-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb180-17"><a href="4.4-linear-prediction.html#cb180-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> height, <span class="at">group =</span> n)) <span class="sc">+</span></span>
+<span id="cb180-18"><a href="4.4-linear-prediction.html#cb180-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">272</span>), <span class="at">linetype =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb180-19"><a href="4.4-linear-prediction.html#cb180-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb180-20"><a href="4.4-linear-prediction.html#cb180-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> text,</span>
+<span id="cb180-21"><a href="4.4-linear-prediction.html#cb180-21" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">label =</span> label),</span>
+<span id="cb180-22"><a href="4.4-linear-prediction.html#cb180-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb180-23"><a href="4.4-linear-prediction.html#cb180-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">100</span>, <span class="dv">400</span>)) <span class="sc">+</span></span>
+<span id="cb180-24"><a href="4.4-linear-prediction.html#cb180-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;log(b) ~ dnorm(0, 1)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb180-25"><a href="4.4-linear-prediction.html#cb180-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.41-1.png" width="672" /></p>
+<blockquote>
+<p>How to choose a prior? The procedure we’ve performed in this chapter is to choose priors conditional on pre-data knowledge of the variables - their constraints, ranges, and theoretical relationships.</p>
+</blockquote>
+<p><strong><em>4.4.2 Finding the posterior distribution</em></strong></p>
+<div class="figure">
+<img src="slides/L03/46.png" alt="Measure $\bar{x}$ Then define the `quap` model. Focus on the $\mu$ line. " width="80%" />
+<p class="caption marginnote shownote">
+Measure <span class="math inline">\(\bar{x}\)</span> Then define the <code>quap</code> model. Focus on the <span class="math inline">\(\mu\)</span> line.
+</p>
+</div>
+<p>To add a predictor, just use the <code>+</code> operator in the model <code>formula</code>.</p>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="4.4-linear-prediction.html#cb181-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make a new variable for `weight - xbar`</span></span>
+<span id="cb181-2"><a href="4.4-linear-prediction.html#cb181-2" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span></span>
+<span id="cb181-3"><a href="4.4-linear-prediction.html#cb181-3" aria-hidden="true" tabindex="-1"></a>  d2 <span class="sc">%&gt;%</span> </span>
+<span id="cb181-4"><a href="4.4-linear-prediction.html#cb181-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight_c =</span> weight <span class="sc">-</span> <span class="fu">mean</span>(weight))</span>
+<span id="cb181-5"><a href="4.4-linear-prediction.html#cb181-5" aria-hidden="true" tabindex="-1"></a><span class="co"># fit model</span></span>
+<span id="cb181-6"><a href="4.4-linear-prediction.html#cb181-6" aria-hidden="true" tabindex="-1"></a>b4<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb181-7"><a href="4.4-linear-prediction.html#cb181-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2, </span>
+<span id="cb181-8"><a href="4.4-linear-prediction.html#cb181-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb181-9"><a href="4.4-linear-prediction.html#cb181-9" aria-hidden="true" tabindex="-1"></a>      height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> weight_c,</span>
+<span id="cb181-10"><a href="4.4-linear-prediction.html#cb181-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">178</span>, <span class="dv">20</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb181-11"><a href="4.4-linear-prediction.html#cb181-11" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb181-12"><a href="4.4-linear-prediction.html#cb181-12" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">uniform</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb181-13"><a href="4.4-linear-prediction.html#cb181-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">28000</span>, <span class="at">warmup =</span> <span class="dv">27000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb181-14"><a href="4.4-linear-prediction.html#cb181-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb181-15"><a href="4.4-linear-prediction.html#cb181-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b04.03&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="4.4-linear-prediction.html#cb182-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(b4<span class="fl">.3</span>)</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="4.4-linear-prediction.html#cb183-1" aria-hidden="true" tabindex="-1"></a>b4<span class="fl">.3</span>b <span class="ot">&lt;-</span> </span>
+<span id="cb183-2"><a href="4.4-linear-prediction.html#cb183-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2, </span>
+<span id="cb183-3"><a href="4.4-linear-prediction.html#cb183-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb183-4"><a href="4.4-linear-prediction.html#cb183-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(height <span class="sc">~</span> a <span class="sc">+</span> <span class="fu">exp</span>(lb) <span class="sc">*</span> weight_c,</span>
+<span id="cb183-5"><a href="4.4-linear-prediction.html#cb183-5" aria-hidden="true" tabindex="-1"></a>         a <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb183-6"><a href="4.4-linear-prediction.html#cb183-6" aria-hidden="true" tabindex="-1"></a>         lb <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb183-7"><a href="4.4-linear-prediction.html#cb183-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">nl =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb183-8"><a href="4.4-linear-prediction.html#cb183-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">178</span>, <span class="dv">20</span>), <span class="at">class =</span> b, <span class="at">nlpar =</span> a),</span>
+<span id="cb183-9"><a href="4.4-linear-prediction.html#cb183-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b, <span class="at">nlpar =</span> lb),</span>
+<span id="cb183-10"><a href="4.4-linear-prediction.html#cb183-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">uniform</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb183-11"><a href="4.4-linear-prediction.html#cb183-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">31000</span>, <span class="at">warmup =</span> <span class="dv">30000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb183-12"><a href="4.4-linear-prediction.html#cb183-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb183-13"><a href="4.4-linear-prediction.html#cb183-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b04.03b&quot;</span>)</span></code></pre></div>
+<p><strong><em>4.4.3 Interpreting the posterior distribution</em></strong></p>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="4.4-linear-prediction.html#cb184-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">posterior_summary</span>(b4<span class="fl">.3</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, ] <span class="sc">%&gt;%</span> </span>
+<span id="cb184-2"><a href="4.4-linear-prediction.html#cb184-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##             Estimate Est.Error   Q2.5  Q97.5
+## b_Intercept    154.6      0.27 154.08 155.14
+## b_weight_c       0.9      0.04   0.83   0.99
+## sigma            5.1      0.19   4.75   5.50</code></pre>
+<p>See the covariances:</p>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="4.4-linear-prediction.html#cb186-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcov</span>(b4<span class="fl">.3</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb186-2"><a href="4.4-linear-prediction.html#cb186-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">3</span>)</span></code></pre></div>
+<pre><code>##           Intercept weight_c
+## Intercept     0.076    0.000
+## weight_c      0.000    0.002</code></pre>
+<p>No <span class="math inline">\(\sigma\)</span>. To get that we have to extract the posterior draws and use the <code>cov()</code> function instead:</p>
+<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="4.4-linear-prediction.html#cb188-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b4<span class="fl">.3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb188-2"><a href="4.4-linear-prediction.html#cb188-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>lp__, <span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">&quot;.&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb188-3"><a href="4.4-linear-prediction.html#cb188-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cov</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb188-4"><a href="4.4-linear-prediction.html#cb188-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>##             b_Intercept b_weight_c sigma
+## b_Intercept       0.076      0.000 0.000
+## b_weight_c        0.000      0.002 0.000
+## sigma             0.000      0.000 0.036</code></pre>
+<p>Very little covariation among the parameters in this case.</p>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="4.4-linear-prediction.html#cb190-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show both the marginal posteriors and the covariance</span></span>
+<span id="cb190-2"><a href="4.4-linear-prediction.html#cb190-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(b4<span class="fl">.3</span>)</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-61-1.png" width="672" />
+In the practice problems at the end of the chapter, you’ll see that the lack of covariance among the parameters results from <strong>Centering</strong>.</p>
+<p>Plot the data with the posterior mean values for <code>a</code> and <code>b</code>:</p>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb191-1"><a href="4.4-linear-prediction.html#cb191-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="sc">%&gt;%</span></span>
+<span id="cb191-2"><a href="4.4-linear-prediction.html#cb191-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weight_c, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb191-3"><a href="4.4-linear-prediction.html#cb191-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">fixef</span>(b4<span class="fl">.3</span>)[<span class="dv">1</span>], </span>
+<span id="cb191-4"><a href="4.4-linear-prediction.html#cb191-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope     =</span> <span class="fu">fixef</span>(b4<span class="fl">.3</span>)[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb191-5"><a href="4.4-linear-prediction.html#cb191-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb191-6"><a href="4.4-linear-prediction.html#cb191-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.46-1.png" width="672" /></p>
+<p>Adjust the x-axis breaks to return them to real values.</p>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="4.4-linear-prediction.html#cb192-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span></span>
+<span id="cb192-2"><a href="4.4-linear-prediction.html#cb192-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">+</span> <span class="fu">mean</span>(d2<span class="sc">$</span>weight) <span class="sc">%&gt;%</span> </span>
+<span id="cb192-3"><a href="4.4-linear-prediction.html#cb192-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">0</span>)</span>
+<span id="cb192-4"><a href="4.4-linear-prediction.html#cb192-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb192-5"><a href="4.4-linear-prediction.html#cb192-5" aria-hidden="true" tabindex="-1"></a>d2 <span class="sc">%&gt;%</span></span>
+<span id="cb192-6"><a href="4.4-linear-prediction.html#cb192-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weight_c, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb192-7"><a href="4.4-linear-prediction.html#cb192-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fu">fixef</span>(b4<span class="fl">.3</span>)[<span class="dv">1</span>], </span>
+<span id="cb192-8"><a href="4.4-linear-prediction.html#cb192-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope     =</span> <span class="fu">fixef</span>(b4<span class="fl">.3</span>)[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb192-9"><a href="4.4-linear-prediction.html#cb192-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb192-10"><a href="4.4-linear-prediction.html#cb192-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">&quot;weight&quot;</span>,</span>
+<span id="cb192-11"><a href="4.4-linear-prediction.html#cb192-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">10</span>),</span>
+<span id="cb192-12"><a href="4.4-linear-prediction.html#cb192-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> labels) <span class="sc">+</span></span>
+<span id="cb192-13"><a href="4.4-linear-prediction.html#cb192-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb192-14"><a href="4.4-linear-prediction.html#cb192-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-62-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L03/47.png" alt="We managed to get this posterior distribution, and we can take from the precis values the `a` and `b`b values and draw a line with those, where `a` is the expected value of height (155) when weight is at its average value. And the expected change in height is nearly 1. But the posterior distribution is not a single line, it's an infinite number of lines each with a probability. So let's get more lines on the graph to show the uncertainty in inference. " width="80%" />
+<p class="caption marginnote shownote">
+We managed to get this posterior distribution, and we can take from the precis values the <code>a</code> and <code>b</code>b values and draw a line with those, where <code>a</code> is the expected value of height (155) when weight is at its average value. And the expected change in height is nearly 1. But the posterior distribution is not a single line, it’s an infinite number of lines each with a probability. So let’s get more lines on the graph to show the uncertainty in inference.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L03/48.png" alt="Here's the basic idea. We're going to sample from the posterior distribution. But what's great is that you can use this process for any model you ever want to fit. You can sample from the posterior, then push the samples back through the model itself to plot the uncertainty." width="80%" />
+<p class="caption marginnote shownote">
+Here’s the basic idea. We’re going to sample from the posterior distribution. But what’s great is that you can use this process for any model you ever want to fit. You can sample from the posterior, then push the samples back through the model itself to plot the uncertainty.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L03/49.png" alt="You're doing calculus here, but just doesn't feel like it. Each row is a line. Lines that are more plausible have more ways to happen, so they're overlap more in the areas that are more plausible." width="80%" />
+<p class="caption marginnote shownote">
+You’re doing calculus here, but just doesn’t feel like it. Each row is a line. Lines that are more plausible have more ways to happen, so they’re overlap more in the areas that are more plausible.
+</p>
+</div>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="4.4-linear-prediction.html#cb193-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b4<span class="fl">.3</span>)</span>
+<span id="cb193-2"><a href="4.4-linear-prediction.html#cb193-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb193-3"><a href="4.4-linear-prediction.html#cb193-3" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb193-4"><a href="4.4-linear-prediction.html#cb193-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)  <span class="co"># this serves a similar function as `head()`</span></span></code></pre></div>
+<pre><code>##   b_Intercept b_weight_c    sigma      lp__
+## 1    154.0395  0.8883175 5.019815 -1081.040
+## 2    155.0064  0.8813894 5.149540 -1080.008
+## 3    154.2648  0.8641695 5.200915 -1080.066
+## 4    154.4480  0.9149853 4.956529 -1079.143
+## 5    154.7072  0.9176580 5.190356 -1079.014</code></pre>
+<div class="figure">
+<img src="slides/L03/50.png" alt="To see this work, and reinforce how Bayesian updating works, let's start with a reduced dataset of 10 randomly sampled adults. We fit our linear regression model, and get a quadratic approximation of the posterior distribution. You'll see they're very different from the prior. Now they're very concentrated around the data. You can see there's a lot of scatter because the model isn't sure where it should be." width="80%" />
+<p class="caption marginnote shownote">
+To see this work, and reinforce how Bayesian updating works, let’s start with a reduced dataset of 10 randomly sampled adults. We fit our linear regression model, and get a quadratic approximation of the posterior distribution. You’ll see they’re very different from the prior. Now they’re very concentrated around the data. You can see there’s a lot of scatter because the model isn’t sure where it should be.
+</p>
+</div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="4.4-linear-prediction.html#cb195-1" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb195-2"><a href="4.4-linear-prediction.html#cb195-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-3"><a href="4.4-linear-prediction.html#cb195-3" aria-hidden="true" tabindex="-1"></a>b4<span class="fl">.3</span>_010 <span class="ot">&lt;-</span> </span>
+<span id="cb195-4"><a href="4.4-linear-prediction.html#cb195-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2 <span class="sc">%&gt;%</span></span>
+<span id="cb195-5"><a href="4.4-linear-prediction.html#cb195-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span>N),  <span class="co"># note our tricky use of `N` and `slice()`</span></span>
+<span id="cb195-6"><a href="4.4-linear-prediction.html#cb195-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb195-7"><a href="4.4-linear-prediction.html#cb195-7" aria-hidden="true" tabindex="-1"></a>      height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> weight_c,</span>
+<span id="cb195-8"><a href="4.4-linear-prediction.html#cb195-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">178</span>, <span class="dv">20</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb195-9"><a href="4.4-linear-prediction.html#cb195-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb195-10"><a href="4.4-linear-prediction.html#cb195-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">uniform</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb195-11"><a href="4.4-linear-prediction.html#cb195-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">11000</span>, <span class="at">warmup =</span> <span class="dv">10000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb195-12"><a href="4.4-linear-prediction.html#cb195-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb195-13"><a href="4.4-linear-prediction.html#cb195-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b04.03_010&quot;</span>)</span>
+<span id="cb195-14"><a href="4.4-linear-prediction.html#cb195-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-15"><a href="4.4-linear-prediction.html#cb195-15" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb195-16"><a href="4.4-linear-prediction.html#cb195-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-17"><a href="4.4-linear-prediction.html#cb195-17" aria-hidden="true" tabindex="-1"></a>b4<span class="fl">.3</span>_050 <span class="ot">&lt;-</span> </span>
+<span id="cb195-18"><a href="4.4-linear-prediction.html#cb195-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2 <span class="sc">%&gt;%</span></span>
+<span id="cb195-19"><a href="4.4-linear-prediction.html#cb195-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span>N), </span>
+<span id="cb195-20"><a href="4.4-linear-prediction.html#cb195-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb195-21"><a href="4.4-linear-prediction.html#cb195-21" aria-hidden="true" tabindex="-1"></a>      height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> weight_c,</span>
+<span id="cb195-22"><a href="4.4-linear-prediction.html#cb195-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">178</span>, <span class="dv">20</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb195-23"><a href="4.4-linear-prediction.html#cb195-23" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb195-24"><a href="4.4-linear-prediction.html#cb195-24" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">uniform</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb195-25"><a href="4.4-linear-prediction.html#cb195-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">11000</span>, <span class="at">warmup =</span> <span class="dv">10000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb195-26"><a href="4.4-linear-prediction.html#cb195-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb195-27"><a href="4.4-linear-prediction.html#cb195-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b04.03_050&quot;</span>)</span>
+<span id="cb195-28"><a href="4.4-linear-prediction.html#cb195-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-29"><a href="4.4-linear-prediction.html#cb195-29" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">150</span></span>
+<span id="cb195-30"><a href="4.4-linear-prediction.html#cb195-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-31"><a href="4.4-linear-prediction.html#cb195-31" aria-hidden="true" tabindex="-1"></a>b4<span class="fl">.3</span>_150 <span class="ot">&lt;-</span> </span>
+<span id="cb195-32"><a href="4.4-linear-prediction.html#cb195-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2 <span class="sc">%&gt;%</span></span>
+<span id="cb195-33"><a href="4.4-linear-prediction.html#cb195-33" aria-hidden="true" tabindex="-1"></a>        <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span>N), </span>
+<span id="cb195-34"><a href="4.4-linear-prediction.html#cb195-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb195-35"><a href="4.4-linear-prediction.html#cb195-35" aria-hidden="true" tabindex="-1"></a>      height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> weight_c,</span>
+<span id="cb195-36"><a href="4.4-linear-prediction.html#cb195-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">178</span>, <span class="dv">20</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb195-37"><a href="4.4-linear-prediction.html#cb195-37" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb195-38"><a href="4.4-linear-prediction.html#cb195-38" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">uniform</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb195-39"><a href="4.4-linear-prediction.html#cb195-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">21000</span>, <span class="at">warmup =</span> <span class="dv">20000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb195-40"><a href="4.4-linear-prediction.html#cb195-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb195-41"><a href="4.4-linear-prediction.html#cb195-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b04.03_150&quot;</span>)</span>
+<span id="cb195-42"><a href="4.4-linear-prediction.html#cb195-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-43"><a href="4.4-linear-prediction.html#cb195-43" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">352</span></span>
+<span id="cb195-44"><a href="4.4-linear-prediction.html#cb195-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb195-45"><a href="4.4-linear-prediction.html#cb195-45" aria-hidden="true" tabindex="-1"></a>b4<span class="fl">.3</span>_352 <span class="ot">&lt;-</span> </span>
+<span id="cb195-46"><a href="4.4-linear-prediction.html#cb195-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d2 <span class="sc">%&gt;%</span></span>
+<span id="cb195-47"><a href="4.4-linear-prediction.html#cb195-47" aria-hidden="true" tabindex="-1"></a>        <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span>N), </span>
+<span id="cb195-48"><a href="4.4-linear-prediction.html#cb195-48" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb195-49"><a href="4.4-linear-prediction.html#cb195-49" aria-hidden="true" tabindex="-1"></a>      height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> weight_c,</span>
+<span id="cb195-50"><a href="4.4-linear-prediction.html#cb195-50" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">178</span>, <span class="dv">20</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb195-51"><a href="4.4-linear-prediction.html#cb195-51" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb195-52"><a href="4.4-linear-prediction.html#cb195-52" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">uniform</span>(<span class="dv">0</span>, <span class="dv">50</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb195-53"><a href="4.4-linear-prediction.html#cb195-53" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">28000</span>, <span class="at">warmup =</span> <span class="dv">27000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb195-54"><a href="4.4-linear-prediction.html#cb195-54" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">4</span>,</span>
+<span id="cb195-55"><a href="4.4-linear-prediction.html#cb195-55" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b04.03_352&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="4.4-linear-prediction.html#cb196-1" aria-hidden="true" tabindex="-1"></a>post010 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b4<span class="fl">.3</span>_010) <span class="sc">%&gt;%</span> </span>
+<span id="cb196-2"><a href="4.4-linear-prediction.html#cb196-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">&quot;.&quot;</span>))</span>
+<span id="cb196-3"><a href="4.4-linear-prediction.html#cb196-3" aria-hidden="true" tabindex="-1"></a>post050 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b4<span class="fl">.3</span>_050) <span class="sc">%&gt;%</span> </span>
+<span id="cb196-4"><a href="4.4-linear-prediction.html#cb196-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">&quot;.&quot;</span>))</span>
+<span id="cb196-5"><a href="4.4-linear-prediction.html#cb196-5" aria-hidden="true" tabindex="-1"></a>post150 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b4<span class="fl">.3</span>_150) <span class="sc">%&gt;%</span> </span>
+<span id="cb196-6"><a href="4.4-linear-prediction.html#cb196-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">&quot;.&quot;</span>))</span>
+<span id="cb196-7"><a href="4.4-linear-prediction.html#cb196-7" aria-hidden="true" tabindex="-1"></a>post352 <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b4<span class="fl">.3</span>_352) <span class="sc">%&gt;%</span> </span>
+<span id="cb196-8"><a href="4.4-linear-prediction.html#cb196-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">starts_with</span>(<span class="st">&quot;.&quot;</span>))</span></code></pre></div>
+<p>Now plot 20 of these lines:</p>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="4.4-linear-prediction.html#cb197-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> </span>
+<span id="cb197-2"><a href="4.4-linear-prediction.html#cb197-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span>  d2[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, ], </span>
+<span id="cb197-3"><a href="4.4-linear-prediction.html#cb197-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">aes</span>(<span class="at">x =</span> weight_c, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb197-4"><a href="4.4-linear-prediction.html#cb197-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> post010 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-5"><a href="4.4-linear-prediction.html#cb197-5" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-6"><a href="4.4-linear-prediction.html#cb197-6" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_Intercept&quot;</span>), </span>
+<span id="cb197-7"><a href="4.4-linear-prediction.html#cb197-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope     =</span> post010 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-8"><a href="4.4-linear-prediction.html#cb197-8" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-9"><a href="4.4-linear-prediction.html#cb197-9" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_weight_c&quot;</span>),</span>
+<span id="cb197-10"><a href="4.4-linear-prediction.html#cb197-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb197-11"><a href="4.4-linear-prediction.html#cb197-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb197-12"><a href="4.4-linear-prediction.html#cb197-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight_c),</span>
+<span id="cb197-13"><a href="4.4-linear-prediction.html#cb197-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>height)) <span class="sc">+</span></span>
+<span id="cb197-14"><a href="4.4-linear-prediction.html#cb197-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;N = 10&quot;</span>)</span>
+<span id="cb197-15"><a href="4.4-linear-prediction.html#cb197-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb197-16"><a href="4.4-linear-prediction.html#cb197-16" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb197-17"><a href="4.4-linear-prediction.html#cb197-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span>  d2[<span class="dv">1</span><span class="sc">:</span><span class="dv">50</span>, ], </span>
+<span id="cb197-18"><a href="4.4-linear-prediction.html#cb197-18" aria-hidden="true" tabindex="-1"></a>         <span class="fu">aes</span>(<span class="at">x =</span> weight_c, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb197-19"><a href="4.4-linear-prediction.html#cb197-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> post050 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-20"><a href="4.4-linear-prediction.html#cb197-20" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-21"><a href="4.4-linear-prediction.html#cb197-21" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_Intercept&quot;</span>), </span>
+<span id="cb197-22"><a href="4.4-linear-prediction.html#cb197-22" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope     =</span> post050 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-23"><a href="4.4-linear-prediction.html#cb197-23" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-24"><a href="4.4-linear-prediction.html#cb197-24" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_weight_c&quot;</span>),</span>
+<span id="cb197-25"><a href="4.4-linear-prediction.html#cb197-25" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb197-26"><a href="4.4-linear-prediction.html#cb197-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb197-27"><a href="4.4-linear-prediction.html#cb197-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight_c),</span>
+<span id="cb197-28"><a href="4.4-linear-prediction.html#cb197-28" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>height)) <span class="sc">+</span></span>
+<span id="cb197-29"><a href="4.4-linear-prediction.html#cb197-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;N = 50&quot;</span>)</span>
+<span id="cb197-30"><a href="4.4-linear-prediction.html#cb197-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb197-31"><a href="4.4-linear-prediction.html#cb197-31" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span></span>
+<span id="cb197-32"><a href="4.4-linear-prediction.html#cb197-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span>  d2[<span class="dv">1</span><span class="sc">:</span><span class="dv">150</span>, ], </span>
+<span id="cb197-33"><a href="4.4-linear-prediction.html#cb197-33" aria-hidden="true" tabindex="-1"></a>         <span class="fu">aes</span>(<span class="at">x =</span> weight_c, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb197-34"><a href="4.4-linear-prediction.html#cb197-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> post150 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-35"><a href="4.4-linear-prediction.html#cb197-35" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-36"><a href="4.4-linear-prediction.html#cb197-36" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_Intercept&quot;</span>), </span>
+<span id="cb197-37"><a href="4.4-linear-prediction.html#cb197-37" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope     =</span> post150 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-38"><a href="4.4-linear-prediction.html#cb197-38" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-39"><a href="4.4-linear-prediction.html#cb197-39" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_weight_c&quot;</span>),</span>
+<span id="cb197-40"><a href="4.4-linear-prediction.html#cb197-40" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb197-41"><a href="4.4-linear-prediction.html#cb197-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb197-42"><a href="4.4-linear-prediction.html#cb197-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight_c),</span>
+<span id="cb197-43"><a href="4.4-linear-prediction.html#cb197-43" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>height)) <span class="sc">+</span></span>
+<span id="cb197-44"><a href="4.4-linear-prediction.html#cb197-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;N = 150&quot;</span>)</span>
+<span id="cb197-45"><a href="4.4-linear-prediction.html#cb197-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb197-46"><a href="4.4-linear-prediction.html#cb197-46" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> </span>
+<span id="cb197-47"><a href="4.4-linear-prediction.html#cb197-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span>  d2[<span class="dv">1</span><span class="sc">:</span><span class="dv">352</span>, ], </span>
+<span id="cb197-48"><a href="4.4-linear-prediction.html#cb197-48" aria-hidden="true" tabindex="-1"></a>         <span class="fu">aes</span>(<span class="at">x =</span> weight_c, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb197-49"><a href="4.4-linear-prediction.html#cb197-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> post352 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-50"><a href="4.4-linear-prediction.html#cb197-50" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-51"><a href="4.4-linear-prediction.html#cb197-51" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_Intercept&quot;</span>), </span>
+<span id="cb197-52"><a href="4.4-linear-prediction.html#cb197-52" aria-hidden="true" tabindex="-1"></a>              <span class="at">slope     =</span> post352 <span class="sc">%&gt;%</span> </span>
+<span id="cb197-53"><a href="4.4-linear-prediction.html#cb197-53" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb197-54"><a href="4.4-linear-prediction.html#cb197-54" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;b_weight_c&quot;</span>),</span>
+<span id="cb197-55"><a href="4.4-linear-prediction.html#cb197-55" aria-hidden="true" tabindex="-1"></a>              <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">alpha =</span> .<span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb197-56"><a href="4.4-linear-prediction.html#cb197-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb197-57"><a href="4.4-linear-prediction.html#cb197-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight_c),</span>
+<span id="cb197-58"><a href="4.4-linear-prediction.html#cb197-58" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>height)) <span class="sc">+</span></span>
+<span id="cb197-59"><a href="4.4-linear-prediction.html#cb197-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;N = 352&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="4.4-linear-prediction.html#cb198-1" aria-hidden="true" tabindex="-1"></a>(p1 <span class="sc">+</span> p2 <span class="sc">+</span> p3 <span class="sc">+</span> p4) <span class="sc">&amp;</span></span>
+<span id="cb198-2"><a href="4.4-linear-prediction.html#cb198-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">&quot;weight&quot;</span>,</span>
+<span id="cb198-3"><a href="4.4-linear-prediction.html#cb198-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">0</span>, <span class="dv">10</span>),</span>
+<span id="cb198-4"><a href="4.4-linear-prediction.html#cb198-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> labels) <span class="sc">&amp;</span></span>
+<span id="cb198-5"><a href="4.4-linear-prediction.html#cb198-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-68-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L03/51.png" alt="Now add 50, and you'll see they get more concentrated. Note the uncertainty at the ends are more uncertain. They pivot around the means in the centre." width="80%" />
+<p class="caption marginnote shownote">
+Now add 50, and you’ll see they get more concentrated. Note the uncertainty at the ends are more uncertain. They pivot around the means in the centre.
+</p>
+</div>
+<p><img src="slides/L03/52.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L03/53.png" alt="With the whole dataset, it gets quite narrow. You constrained the model to pick a line, and these are the lines that it likes. Doesn't mean that it's right." width="80%" />
+<p class="caption marginnote shownote">
+With the whole dataset, it gets quite narrow. You constrained the model to pick a line, and these are the lines that it likes. Doesn’t mean that it’s right.
+</p>
+</div>
+<hr />
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="4.4-linear-prediction.html#cb199-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L04&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L04/01.png" width="80%" /></p>
+<p><img src="slides/L04/09.png" width="80%" /></p>
+<p>The basic idea that any particular value of the <span class="math inline">\(x\)</span> variables, <span class="math inline">\(\mu\)</span> has some density. It’s confident of the values on the inside, less of the values on the outside. As an example, what does the model expect the height of the individual is if weight is 50? <span class="math inline">\(\mu\)</span> at 50 is now going to create a distribution.</p>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="4.4-linear-prediction.html#cb200-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(d2<span class="sc">$</span>weight)</span></code></pre></div>
+<pre><code>## [1] 44.99049</code></pre>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="4.4-linear-prediction.html#cb202-1" aria-hidden="true" tabindex="-1"></a>mu_at_50 <span class="ot">&lt;-</span> </span>
+<span id="cb202-2"><a href="4.4-linear-prediction.html#cb202-2" aria-hidden="true" tabindex="-1"></a>  post <span class="sc">%&gt;%</span> </span>
+<span id="cb202-3"><a href="4.4-linear-prediction.html#cb202-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">mu_at_50 =</span> b_Intercept <span class="sc">+</span> b_weight_c <span class="sc">+</span> <span class="fl">5.01</span>)</span>
+<span id="cb202-4"><a href="4.4-linear-prediction.html#cb202-4" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb202-5"><a href="4.4-linear-prediction.html#cb202-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mu_at_50)</span></code></pre></div>
+<pre><code>##   mu_at_50
+## 1 159.9379
+## 2 160.8978
+## 3 160.1390
+## 4 160.3730
+## 5 160.6349
+## 6 160.3570</code></pre>
+<p><code>mu_at_50</code> is a vector of predicted means, one for each random sample from the posterior.</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="4.4-linear-prediction.html#cb204-1" aria-hidden="true" tabindex="-1"></a>mu_at_50 <span class="sc">%&gt;%</span></span>
+<span id="cb204-2"><a href="4.4-linear-prediction.html#cb204-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mu_at_50)) <span class="sc">+</span></span>
+<span id="cb204-3"><a href="4.4-linear-prediction.html#cb204-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb204-4"><a href="4.4-linear-prediction.html#cb204-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb204-5"><a href="4.4-linear-prediction.html#cb204-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(mu[<span class="st">&quot;height | weight = 50&quot;</span>])) <span class="sc">+</span></span>
+<span id="cb204-6"><a href="4.4-linear-prediction.html#cb204-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.51-1.png" width="672" />
+Find the 89% compatibility interval</p>
+<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="4.4-linear-prediction.html#cb205-1" aria-hidden="true" tabindex="-1"></a>tidybayes<span class="sc">::</span><span class="fu">mean_hdi</span>(mu_at_50[, <span class="dv">1</span>], <span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">89</span>, .<span class="dv">95</span>))</span></code></pre></div>
+<pre><code>##          y     ymin     ymax .width .point .interval
+## 1 160.5127 160.0827 160.9675   0.89   mean       hdi
+## 2 160.5127 159.9828 161.0691   0.95   mean       hdi</code></pre>
+<p>Add them to the density plot:</p>
+<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="4.4-linear-prediction.html#cb207-1" aria-hidden="true" tabindex="-1"></a>mu_at_50 <span class="sc">%&gt;%</span></span>
+<span id="cb207-2"><a href="4.4-linear-prediction.html#cb207-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mu_at_50, <span class="at">y =</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb207-3"><a href="4.4-linear-prediction.html#cb207-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">point_interval =</span> mode_hdi, <span class="at">.width =</span> .<span class="dv">95</span>,</span>
+<span id="cb207-4"><a href="4.4-linear-prediction.html#cb207-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">fill =</span> <span class="st">&quot;royalblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb207-5"><a href="4.4-linear-prediction.html#cb207-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb207-6"><a href="4.4-linear-prediction.html#cb207-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(mu[<span class="st">&quot;height | weight = 50&quot;</span>])) <span class="sc">+</span></span>
+<span id="cb207-7"><a href="4.4-linear-prediction.html#cb207-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-75-1.png" width="672" /></p>
+<p><img src="slides/L04/10.png" width="80%" /></p>
+<p>It’s not sure how tall an individual is, but it thinks it’s in this region. But we want to do this for every x-axis value. This is what produces the smooth bowtie.</p>
+<p><img src="slides/L04/11.png" width="80%" /></p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="4.4-linear-prediction.html#cb208-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">fitted</span>(b4<span class="fl">.3</span>, <span class="at">summary =</span> F)</span>
+<span id="cb208-2"><a href="4.4-linear-prediction.html#cb208-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb208-3"><a href="4.4-linear-prediction.html#cb208-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(mu)</span></code></pre></div>
+<pre><code>##  num [1:4000, 1:352] 157 158 157 157 157 ...</code></pre>
+<p>When you specify <code>summary = F</code>, <code>fitted()</code> returns a matrix of values with as many rows as there were post-warmup iterations across your HMC chains and as many columns as there were cases in your analysis.</p>
+<p>You need to make a sequence of x-axis values (<code>weight.seq</code>). You could make it extraplote further if you like. Then you send these in to the funciton via <code>link</code>. There’s a box in the chapter that shows you how link works. It just loops, but saves you time.</p>
+<p>What you end up with in <span class="math inline">\(m\)</span> is 1000 rows, where each column is a value of weight. Then you can plot these up.</p>
+<p>There are 352 rows in <code>d2</code>, corresponding to 352 individuals. What to do with this big matrix? <code>link</code> provides a posterior distribution of <span class="math inline">\(\mu\)</span> for each case we feed it. We actually want a distribution of <span class="math inline">\(\mu\)</span> for each unique weight value on the horizontal axis. Just pass it some new data:</p>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="4.4-linear-prediction.html#cb210-1" aria-hidden="true" tabindex="-1"></a>weight_seq <span class="ot">&lt;-</span> </span>
+<span id="cb210-2"><a href="4.4-linear-prediction.html#cb210-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">weight =</span> <span class="dv">25</span><span class="sc">:</span><span class="dv">70</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb210-3"><a href="4.4-linear-prediction.html#cb210-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight_c =</span> weight <span class="sc">-</span> <span class="fu">mean</span>(d2<span class="sc">$</span>weight))</span>
+<span id="cb210-4"><a href="4.4-linear-prediction.html#cb210-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb210-5"><a href="4.4-linear-prediction.html#cb210-5" aria-hidden="true" tabindex="-1"></a><span class="co"># With `newdata`, you can accommodate custom predictor values.</span></span>
+<span id="cb210-6"><a href="4.4-linear-prediction.html#cb210-6" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span></span>
+<span id="cb210-7"><a href="4.4-linear-prediction.html#cb210-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fitted</span>(b4<span class="fl">.3</span>,</span>
+<span id="cb210-8"><a href="4.4-linear-prediction.html#cb210-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">summary =</span> F,</span>
+<span id="cb210-9"><a href="4.4-linear-prediction.html#cb210-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">newdata =</span> weight_seq) <span class="sc">%&gt;%</span></span>
+<span id="cb210-10"><a href="4.4-linear-prediction.html#cb210-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb210-11"><a href="4.4-linear-prediction.html#cb210-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># here we name the columns after the `weight` values from which they were computed</span></span>
+<span id="cb210-12"><a href="4.4-linear-prediction.html#cb210-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="dv">25</span><span class="sc">:</span><span class="dv">70</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb210-13"><a href="4.4-linear-prediction.html#cb210-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">iter =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>())</span></code></pre></div>
+<p>And now there are only 46 columns in <code>mu</code>, because we fed it 46 different values for <code>weight</code>. Let’s plot the distribution:</p>
+<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="4.4-linear-prediction.html#cb211-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to long format</span></span>
+<span id="cb211-2"><a href="4.4-linear-prediction.html#cb211-2" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> </span>
+<span id="cb211-3"><a href="4.4-linear-prediction.html#cb211-3" aria-hidden="true" tabindex="-1"></a>  mu <span class="sc">%&gt;%</span></span>
+<span id="cb211-4"><a href="4.4-linear-prediction.html#cb211-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>iter,</span>
+<span id="cb211-5"><a href="4.4-linear-prediction.html#cb211-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;weight&quot;</span>,</span>
+<span id="cb211-6"><a href="4.4-linear-prediction.html#cb211-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;height&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb211-7"><a href="4.4-linear-prediction.html#cb211-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># we might reformat `weight` to numerals</span></span>
+<span id="cb211-8"><a href="4.4-linear-prediction.html#cb211-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight =</span> <span class="fu">as.numeric</span>(weight))</span>
+<span id="cb211-9"><a href="4.4-linear-prediction.html#cb211-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb211-10"><a href="4.4-linear-prediction.html#cb211-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mu)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 3
+##    iter weight height
+##   &lt;int&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1     1     25   136.
+## 2     1     26   137.
+## 3     1     27   138.
+## 4     1     28   139.
+## 5     1     29   140.
+## 6     1     30   141.</code></pre>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="4.4-linear-prediction.html#cb213-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="sc">%&gt;%</span></span>
+<span id="cb213-2"><a href="4.4-linear-prediction.html#cb213-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb213-3"><a href="4.4-linear-prediction.html#cb213-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> mu <span class="sc">%&gt;%</span> <span class="fu">filter</span>(iter <span class="sc">&lt;</span> <span class="dv">101</span>), </span>
+<span id="cb213-4"><a href="4.4-linear-prediction.html#cb213-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;navyblue&quot;</span>, <span class="at">alpha =</span> .<span class="dv">05</span>) <span class="sc">+</span></span>
+<span id="cb213-5"><a href="4.4-linear-prediction.html#cb213-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">30</span>, <span class="dv">65</span>)) <span class="sc">+</span></span>
+<span id="cb213-6"><a href="4.4-linear-prediction.html#cb213-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.55-1.png" width="672" /></p>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="4.4-linear-prediction.html#cb214-1" aria-hidden="true" tabindex="-1"></a>mu_summary <span class="ot">&lt;-</span></span>
+<span id="cb214-2"><a href="4.4-linear-prediction.html#cb214-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fitted</span>(b4<span class="fl">.3</span>, </span>
+<span id="cb214-3"><a href="4.4-linear-prediction.html#cb214-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> weight_seq) <span class="sc">%&gt;%</span></span>
+<span id="cb214-4"><a href="4.4-linear-prediction.html#cb214-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb214-5"><a href="4.4-linear-prediction.html#cb214-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(weight_seq)</span>
+<span id="cb214-6"><a href="4.4-linear-prediction.html#cb214-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb214-7"><a href="4.4-linear-prediction.html#cb214-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mu_summary)</span></code></pre></div>
+<pre><code>##   Estimate Est.Error     Q2.5    Q97.5 weight  weight_c
+## 1 136.5262 0.8833715 134.7405 138.1822     25 -19.99049
+## 2 137.4303 0.8437461 135.7240 139.0135     26 -18.99049
+## 3 138.3343 0.8043407 136.7118 139.8447     27 -17.99049
+## 4 139.2384 0.7651894 137.7003 140.6785     28 -16.99049
+## 5 140.1424 0.7263331 138.6846 141.5160     29 -15.99049
+## 6 141.0465 0.6878220 139.6690 142.3502     30 -14.99049</code></pre>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="4.4-linear-prediction.html#cb216-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="sc">%&gt;%</span></span>
+<span id="cb216-2"><a href="4.4-linear-prediction.html#cb216-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weight, <span class="at">y =</span> height)) <span class="sc">+</span></span>
+<span id="cb216-3"><a href="4.4-linear-prediction.html#cb216-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> mu_summary,</span>
+<span id="cb216-4"><a href="4.4-linear-prediction.html#cb216-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">y =</span> Estimate, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>),</span>
+<span id="cb216-5"><a href="4.4-linear-prediction.html#cb216-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb216-6"><a href="4.4-linear-prediction.html#cb216-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey70&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb216-7"><a href="4.4-linear-prediction.html#cb216-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;navyblue&quot;</span>, <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb216-8"><a href="4.4-linear-prediction.html#cb216-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight)) <span class="sc">+</span></span>
+<span id="cb216-9"><a href="4.4-linear-prediction.html#cb216-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Times&quot;</span>),</span>
+<span id="cb216-10"><a href="4.4-linear-prediction.html#cb216-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.57-1.png" width="672" /></p>
+<p>Here’s the recipe for generating predictions and intervals from the posterior of a fit model:
+1. Use <code>link</code> to generate distributions of posteriro values for <span class="math inline">\(\mu\)</span>. The default behaviour os <code>link</code> is to use the original data, so you have to pass it a list of new horizontal axis values you want to plot posterior predictions across.
+1. Use summary functions like <code>mean</code> or <code>PI</code> to find averages and lower and upper bounds of <span class="math inline">\(\mu\)</span> for each value of the predictor variable.
+1. Finally, use plotting functions like <code>lines</code> and <code>shade</code> to draw the lines and intervals. Or you might plot the distributions of the predictions, or do further numerical calculations with them. It’s really up to you.</p>
+<div class="figure">
+<img src="slides/L04/12.png" alt="This is like rolling your own `link` here." width="80%" />
+<p class="caption marginnote shownote">
+This is like rolling your own <code>link</code> here.
+</p>
+</div>
+<p>Whatever model you find yourself with, this approach can be used to generate posterior predictions for any component of it.</p>
+<div class="figure">
+<img src="slides/L04/13.png" alt="Think what's going on with the distribution. Fuzzy bowtie. There's a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie." width="80%" />
+<p class="caption marginnote shownote">
+Think what’s going on with the distribution. Fuzzy bowtie. There’s a grey bowtie on the right that follows the same distribution on the left. Just comes from plotting the compatibility interval of the bowtie.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L04/14.png" alt="Again, there's a correspondence between the spaghetti lines, and the bowtie form..." width="80%" />
+<p class="caption marginnote shownote">
+Again, there’s a correspondence between the spaghetti lines, and the bowtie form…
+</p>
+</div>
+<div class="figure">
+<img src="slides/L04/15.png" alt="Same information, just a different visual style." width="80%" />
+<p class="caption marginnote shownote">
+Same information, just a different visual style.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L04/16.png" alt="One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space. We can do the same thing for sigma. There's an envelope we expect heights to be in. Helper function called `sim` that shows conceptually what's happening. " width="80%" />
+<p class="caption marginnote shownote">
+One benefit of the spaghetti lines is it prevents you from thinking the boundary is some magical event. Nothing happens at that boundary. Probability is a continuous space. We can do the same thing for sigma. There’s an envelope we expect heights to be in. Helper function called <code>sim</code> that shows conceptually what’s happening.
+</p>
+</div>
+<p>We’ve only been plotting the <span class="math inline">\(\mu\)</span> part. To bring in the variability expressed by <span class="math inline">\(\sigma\)</span>, we’ll have to switch to the <code>predict()</code> function, the analogue to <code>rethinking::sim()</code>.</p>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="4.4-linear-prediction.html#cb217-1" aria-hidden="true" tabindex="-1"></a>weight_seq <span class="ot">&lt;-</span> </span>
+<span id="cb217-2"><a href="4.4-linear-prediction.html#cb217-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">weight =</span> <span class="dv">25</span><span class="sc">:</span><span class="dv">70</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb217-3"><a href="4.4-linear-prediction.html#cb217-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">weight_c =</span> weight <span class="sc">-</span> <span class="fu">mean</span>(d2<span class="sc">$</span>weight))</span></code></pre></div>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="4.4-linear-prediction.html#cb218-1" aria-hidden="true" tabindex="-1"></a>pred_height <span class="ot">&lt;-</span></span>
+<span id="cb218-2"><a href="4.4-linear-prediction.html#cb218-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(b4<span class="fl">.3</span>,</span>
+<span id="cb218-3"><a href="4.4-linear-prediction.html#cb218-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">newdata =</span> weight_seq) <span class="sc">%&gt;%</span></span>
+<span id="cb218-4"><a href="4.4-linear-prediction.html#cb218-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb218-5"><a href="4.4-linear-prediction.html#cb218-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(weight_seq)</span>
+<span id="cb218-6"><a href="4.4-linear-prediction.html#cb218-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb218-7"><a href="4.4-linear-prediction.html#cb218-7" aria-hidden="true" tabindex="-1"></a>pred_height <span class="sc">%&gt;%</span></span>
+<span id="cb218-8"><a href="4.4-linear-prediction.html#cb218-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)</span></code></pre></div>
+<pre><code>##   Estimate Est.Error     Q2.5    Q97.5 weight  weight_c
+## 1 136.5044  5.155403 126.6730 146.5360     25 -19.99049
+## 2 137.2964  5.111683 127.0205 147.4790     26 -18.99049
+## 3 138.2894  5.188730 128.2625 148.6319     27 -17.99049
+## 4 139.2834  5.207064 128.5694 149.3074     28 -16.99049
+## 5 140.1359  5.169219 129.9008 149.9215     29 -15.99049
+## 6 140.9788  5.167895 131.2321 151.3942     30 -14.99049</code></pre>
+<p>Now <code>height.PI</code> contains the 89% posterior prediction interval of observable (according to the model) heights, across the values of weight in <code>weight.seq</code>.</p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="4.4-linear-prediction.html#cb220-1" aria-hidden="true" tabindex="-1"></a>d2 <span class="sc">%&gt;%</span></span>
+<span id="cb220-2"><a href="4.4-linear-prediction.html#cb220-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> weight)) <span class="sc">+</span></span>
+<span id="cb220-3"><a href="4.4-linear-prediction.html#cb220-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="at">data =</span> pred_height, </span>
+<span id="cb220-4"><a href="4.4-linear-prediction.html#cb220-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>),</span>
+<span id="cb220-5"><a href="4.4-linear-prediction.html#cb220-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey83&quot;</span>) <span class="sc">+</span></span>
+<span id="cb220-6"><a href="4.4-linear-prediction.html#cb220-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> mu_summary,</span>
+<span id="cb220-7"><a href="4.4-linear-prediction.html#cb220-7" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">y =</span> Estimate, <span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>),</span>
+<span id="cb220-8"><a href="4.4-linear-prediction.html#cb220-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb220-9"><a href="4.4-linear-prediction.html#cb220-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> <span class="st">&quot;grey70&quot;</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb220-10"><a href="4.4-linear-prediction.html#cb220-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> height),</span>
+<span id="cb220-11"><a href="4.4-linear-prediction.html#cb220-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;navyblue&quot;</span>, <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="fl">1.5</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb220-12"><a href="4.4-linear-prediction.html#cb220-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>weight),</span>
+<span id="cb220-13"><a href="4.4-linear-prediction.html#cb220-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(d2<span class="sc">$</span>height)) <span class="sc">+</span></span>
+<span id="cb220-14"><a href="4.4-linear-prediction.html#cb220-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Times&quot;</span>),</span>
+<span id="cb220-15"><a href="4.4-linear-prediction.html#cb220-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.61-1.png" width="672" /></p>
+<p>If the rough shaded interval bothers you, increase the number of samples from the posterior distribution.</p>
+</div>
+<p style="text-align: center;">
+<a href="4.3-gaussian-model-of-height.html"><button class="btn btn-default">Previous</button></a>
+<a href="4.5-curves-from-lines.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

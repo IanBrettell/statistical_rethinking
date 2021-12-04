@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="4.1 Why normal distributions are normal | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="4.1 Why normal distributions are normal | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>4.1 Why normal distributions are normal | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="why-normal-distributions-are-normal" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Why normal distributions are normal</h2>
+<div class="figure">
+<img src="slides/L03/07.png" alt="These appear all throughout nature. Why are they so normal? They arise from all over the place." width="80%" />
+<p class="caption marginnote shownote">
+These appear all throughout nature. Why are they so normal? They arise from all over the place.
+</p>
+</div>
+<p><strong><em>4.1.1 Normal by addition</em></strong></p>
+<p>One of the things that are nice about them is that they are additive. So easy to work with.
+Second is that they’re very common.</p>
+<div class="figure">
+<img src="slides/L03/08.png" alt="Imagine a football pitch. We all line up on the midfield line. Take a coin out of your pocket and flip it. One step left for heads, right for tails. Do it a few hundred times." width="80%" />
+<p class="caption marginnote shownote">
+Imagine a football pitch. We all line up on the midfield line. Take a coin out of your pocket and flip it. One step left for heads, right for tails. Do it a few hundred times.
+</p>
+</div>
+<p><img src="slides/L03/09.png" width="80%" /></p>
+<p><img src="slides/L03/10.png" width="80%" /></p>
+<p><img src="slides/L03/11.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L03/12.png" alt="The frequency distribution will be Gaussian." width="80%" />
+<p class="caption marginnote shownote">
+The frequency distribution will be Gaussian.
+</p>
+</div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="4.1-why-normal-distributions-are-normal.html#cb114-1" aria-hidden="true" tabindex="-1"></a>pos <span class="ot">=</span> <span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">sum</span>(<span class="fu">runif</span>(<span class="dv">16</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)))</span>
+<span id="cb114-2"><a href="4.1-why-normal-distributions-are-normal.html#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(pos))</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.1-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L03/13.png" alt="This is a simulation of the soccer field experiment. After four flips (steps). Black follows one particular student. A pattern forms in the aggregation. This isn't very Gaussian yet. " width="80%" />
+<p class="caption marginnote shownote">
+This is a simulation of the soccer field experiment. After four flips (steps). Black follows one particular student. A pattern forms in the aggregation. This isn’t very Gaussian yet.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L03/14.png" alt="After 8 it's pretty Gaussian." width="80%" />
+<p class="caption marginnote shownote">
+After 8 it’s pretty Gaussian.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L03/15.png" alt="And after 16 it's very Gaussian. It'll get wider and wider over time. Why does this happen? Lot's of mathematical theorems. But the intuition is that each coin flip is a fluctuation. And in the long run, fluctuations tend to cancel. If you get a string of lefts, eventually you'll get a string of rights, so the average student will end up near the middle. A very large number of them exactly cancel each other. There are more paths that will give you 0 than any other path. Then there are a few less that give you +1 or -1. And so forth." width="80%" />
+<p class="caption marginnote shownote">
+And after 16 it’s very Gaussian. It’ll get wider and wider over time. Why does this happen? Lot’s of mathematical theorems. But the intuition is that each coin flip is a fluctuation. And in the long run, fluctuations tend to cancel. If you get a string of lefts, eventually you’ll get a string of rights, so the average student will end up near the middle. A very large number of them exactly cancel each other. There are more paths that will give you 0 than any other path. Then there are a few less that give you +1 or -1. And so forth.
+</p>
+</div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="4.1-why-normal-distributions-are-normal.html#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="co"># we set the seed to make the results of `runif()` reproducible.</span></span>
+<span id="cb115-2"><a href="4.1-why-normal-distributions-are-normal.html#cb115-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb115-3"><a href="4.1-why-normal-distributions-are-normal.html#cb115-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-4"><a href="4.1-why-normal-distributions-are-normal.html#cb115-4" aria-hidden="true" tabindex="-1"></a>pos <span class="ot">&lt;-</span> </span>
+<span id="cb115-5"><a href="4.1-why-normal-distributions-are-normal.html#cb115-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make data with 100 people, 16 steps each with a starting point of `step == 0` (i.e., 17 rows per person)</span></span>
+<span id="cb115-6"><a href="4.1-why-normal-distributions-are-normal.html#cb115-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">crossing</span>(<span class="at">person =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>,</span>
+<span id="cb115-7"><a href="4.1-why-normal-distributions-are-normal.html#cb115-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">step   =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">16</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-8"><a href="4.1-why-normal-distributions-are-normal.html#cb115-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for all steps above `step == 0` simulate a `deviation`</span></span>
+<span id="cb115-9"><a href="4.1-why-normal-distributions-are-normal.html#cb115-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">deviation =</span> <span class="fu">map_dbl</span>(step, <span class="sc">~</span><span class="fu">if_else</span>(. <span class="sc">==</span> <span class="dv">0</span>, <span class="dv">0</span>, <span class="fu">runif</span>(<span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-10"><a href="4.1-why-normal-distributions-are-normal.html#cb115-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># after grouping by `person`, compute the cumulative sum of the deviations, then `ungroup()`</span></span>
+<span id="cb115-11"><a href="4.1-why-normal-distributions-are-normal.html#cb115-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(person) <span class="sc">%&gt;%</span></span>
+<span id="cb115-12"><a href="4.1-why-normal-distributions-are-normal.html#cb115-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">position =</span> <span class="fu">cumsum</span>(deviation)) <span class="sc">%&gt;%</span> </span>
+<span id="cb115-13"><a href="4.1-why-normal-distributions-are-normal.html#cb115-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() </span>
+<span id="cb115-14"><a href="4.1-why-normal-distributions-are-normal.html#cb115-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb115-15"><a href="4.1-why-normal-distributions-are-normal.html#cb115-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> pos, </span>
+<span id="cb115-16"><a href="4.1-why-normal-distributions-are-normal.html#cb115-16" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> step, <span class="at">y =</span> position, <span class="at">group =</span> person)) <span class="sc">+</span></span>
+<span id="cb115-17"><a href="4.1-why-normal-distributions-are-normal.html#cb115-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">16</span>), <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb115-18"><a href="4.1-why-normal-distributions-are-normal.html#cb115-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">color =</span> person <span class="sc">&lt;</span> <span class="dv">2</span>, <span class="at">alpha  =</span> person <span class="sc">&lt;</span> <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb115-19"><a href="4.1-why-normal-distributions-are-normal.html#cb115-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;skyblue4&quot;</span>, <span class="st">&quot;black&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb115-20"><a href="4.1-why-normal-distributions-are-normal.html#cb115-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">5</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb115-21"><a href="4.1-why-normal-distributions-are-normal.html#cb115-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">&quot;step number&quot;</span>, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">16</span>)) <span class="sc">+</span></span>
+<span id="cb115-22"><a href="4.1-why-normal-distributions-are-normal.html#cb115-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="4.1-why-normal-distributions-are-normal.html#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Figure 4.2.a.</span></span>
+<span id="cb116-2"><a href="4.1-why-normal-distributions-are-normal.html#cb116-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb116-3"><a href="4.1-why-normal-distributions-are-normal.html#cb116-3" aria-hidden="true" tabindex="-1"></a>  pos <span class="sc">%&gt;%</span></span>
+<span id="cb116-4"><a href="4.1-why-normal-distributions-are-normal.html#cb116-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(step <span class="sc">==</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb116-5"><a href="4.1-why-normal-distributions-are-normal.html#cb116-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> position)) <span class="sc">+</span></span>
+<span id="cb116-6"><a href="4.1-why-normal-distributions-are-normal.html#cb116-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">stat =</span> <span class="st">&quot;density&quot;</span>, <span class="at">color =</span> <span class="st">&quot;dodgerblue1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb116-7"><a href="4.1-why-normal-distributions-are-normal.html#cb116-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;4 steps&quot;</span>)</span>
+<span id="cb116-8"><a href="4.1-why-normal-distributions-are-normal.html#cb116-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-9"><a href="4.1-why-normal-distributions-are-normal.html#cb116-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Figure 4.2.b.</span></span>
+<span id="cb116-10"><a href="4.1-why-normal-distributions-are-normal.html#cb116-10" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb116-11"><a href="4.1-why-normal-distributions-are-normal.html#cb116-11" aria-hidden="true" tabindex="-1"></a>  pos <span class="sc">%&gt;%</span></span>
+<span id="cb116-12"><a href="4.1-why-normal-distributions-are-normal.html#cb116-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(step <span class="sc">==</span> <span class="dv">8</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb116-13"><a href="4.1-why-normal-distributions-are-normal.html#cb116-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> position)) <span class="sc">+</span></span>
+<span id="cb116-14"><a href="4.1-why-normal-distributions-are-normal.html#cb116-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">color =</span> <span class="st">&quot;dodgerblue2&quot;</span>, <span class="at">outline.type =</span> <span class="st">&quot;full&quot;</span>) <span class="sc">+</span></span>
+<span id="cb116-15"><a href="4.1-why-normal-distributions-are-normal.html#cb116-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;8 steps&quot;</span>)</span>
+<span id="cb116-16"><a href="4.1-why-normal-distributions-are-normal.html#cb116-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-17"><a href="4.1-why-normal-distributions-are-normal.html#cb116-17" aria-hidden="true" tabindex="-1"></a><span class="co"># this is an intermediary step to get an SD value</span></span>
+<span id="cb116-18"><a href="4.1-why-normal-distributions-are-normal.html#cb116-18" aria-hidden="true" tabindex="-1"></a>sd <span class="ot">&lt;-</span></span>
+<span id="cb116-19"><a href="4.1-why-normal-distributions-are-normal.html#cb116-19" aria-hidden="true" tabindex="-1"></a>  pos <span class="sc">%&gt;%</span></span>
+<span id="cb116-20"><a href="4.1-why-normal-distributions-are-normal.html#cb116-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(step <span class="sc">==</span> <span class="dv">16</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb116-21"><a href="4.1-why-normal-distributions-are-normal.html#cb116-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">sd =</span> <span class="fu">sd</span>(position)) <span class="sc">%&gt;%</span> </span>
+<span id="cb116-22"><a href="4.1-why-normal-distributions-are-normal.html#cb116-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(sd)</span>
+<span id="cb116-23"><a href="4.1-why-normal-distributions-are-normal.html#cb116-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-24"><a href="4.1-why-normal-distributions-are-normal.html#cb116-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Figure 4.2.c.</span></span>
+<span id="cb116-25"><a href="4.1-why-normal-distributions-are-normal.html#cb116-25" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span></span>
+<span id="cb116-26"><a href="4.1-why-normal-distributions-are-normal.html#cb116-26" aria-hidden="true" tabindex="-1"></a>  pos <span class="sc">%&gt;%</span></span>
+<span id="cb116-27"><a href="4.1-why-normal-distributions-are-normal.html#cb116-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(step <span class="sc">==</span> <span class="dv">16</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb116-28"><a href="4.1-why-normal-distributions-are-normal.html#cb116-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> position)) <span class="sc">+</span></span>
+<span id="cb116-29"><a href="4.1-why-normal-distributions-are-normal.html#cb116-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> dnorm, </span>
+<span id="cb116-30"><a href="4.1-why-normal-distributions-are-normal.html#cb116-30" aria-hidden="true" tabindex="-1"></a>                <span class="at">args =</span> <span class="fu">list</span>(<span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> sd),</span>
+<span id="cb116-31"><a href="4.1-why-normal-distributions-are-normal.html#cb116-31" aria-hidden="true" tabindex="-1"></a>                <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb116-32"><a href="4.1-why-normal-distributions-are-normal.html#cb116-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;dodgerblue3&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb116-33"><a href="4.1-why-normal-distributions-are-normal.html#cb116-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;16 steps&quot;</span>,</span>
+<span id="cb116-34"><a href="4.1-why-normal-distributions-are-normal.html#cb116-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;density&quot;</span>)</span>
+<span id="cb116-35"><a href="4.1-why-normal-distributions-are-normal.html#cb116-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-36"><a href="4.1-why-normal-distributions-are-normal.html#cb116-36" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb116-37"><a href="4.1-why-normal-distributions-are-normal.html#cb116-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-38"><a href="4.1-why-normal-distributions-are-normal.html#cb116-38" aria-hidden="true" tabindex="-1"></a><span class="co"># combine the ggplots</span></span>
+<span id="cb116-39"><a href="4.1-why-normal-distributions-are-normal.html#cb116-39" aria-hidden="true" tabindex="-1"></a>(p1 <span class="sc">|</span> p2 <span class="sc">|</span> p3) <span class="sc">&amp;</span> <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">6</span>, <span class="dv">6</span>))</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L03/16.png" alt="That's why a bunch of natural systems are normally distributed. We don't need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you're left with are particular shapes, called *maximum entropy distributions*. For the Gaussian, **addition** is our friend. One of the things about it is that products of deviations are actually addition. So lots of multiplicative interactions also produce Gaussian distributions. You can measure things on logarithmic scales." width="80%" />
+<p class="caption marginnote shownote">
+That’s why a bunch of natural systems are normally distributed. We don’t need to know anything except that they cancel out. A lot of common statistics follow this kind of process. What you’re left with are particular shapes, called <em>maximum entropy distributions</em>. For the Gaussian, <strong>addition</strong> is our friend. One of the things about it is that products of deviations are actually addition. So lots of multiplicative interactions also produce Gaussian distributions. You can measure things on logarithmic scales.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L03/18.png" alt="This is the ontological perspective on distributions. When fluctuations tend to dampen one another, you end up with a symmetric curve. What neat and also frustrating is that you lose a lot of information about the generative processes. When you see heights are normally distributed, you learn basically nothing about it. This is cool because all that's preserved from the underlying process is the mean and the variance. What's terrible is that you can't figure out the process from the distribution. All the maximum entropy distributions have the same feature. Power laws arise through lots of processes, and it tells you nothing other than it has high variance. The other perspective is epistemological. If you're building a model and you want to be as conservative as possible, you should use the Gaussian distribution. Because any other distribution will be narrower. So it's a very good assumption to use when you don't have additional information. The Gaussian is the one where all you're willing to say is there's a mean and a variance, you should use the Gaussian. It assumes the least." width="80%" />
+<p class="caption marginnote shownote">
+This is the ontological perspective on distributions. When fluctuations tend to dampen one another, you end up with a symmetric curve. What neat and also frustrating is that you lose a lot of information about the generative processes. When you see heights are normally distributed, you learn basically nothing about it. This is cool because all that’s preserved from the underlying process is the mean and the variance. What’s terrible is that you can’t figure out the process from the distribution. All the maximum entropy distributions have the same feature. Power laws arise through lots of processes, and it tells you nothing other than it has high variance. The other perspective is epistemological. If you’re building a model and you want to be as conservative as possible, you should use the Gaussian distribution. Because any other distribution will be narrower. So it’s a very good assumption to use when you don’t have additional information. The Gaussian is the one where all you’re willing to say is there’s a mean and a variance, you should use the Gaussian. It assumes the least.
+</p>
+</div>
+<p><strong><em>4.1.2 Normal by multiplication</em></strong></p>
+<p>This code just samples 12 random numbers between 1.0 and 1.1, each representing a proportional increase in growth. Thus 1.0 means no additional growth and 1.1 means a 10% increase.</p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="4.1-why-normal-distributions-are-normal.html#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb117-2"><a href="4.1-why-normal-distributions-are-normal.html#cb117-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-3"><a href="4.1-why-normal-distributions-are-normal.html#cb117-3" aria-hidden="true" tabindex="-1"></a><span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, .<span class="dv">1</span>))</span></code></pre></div>
+<pre><code>## [1] 1.774719</code></pre>
+<p>Now what distribution do you think these random products will take? Let’s generate 10,000 of them and see:</p>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="4.1-why-normal-distributions-are-normal.html#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb119-2"><a href="4.1-why-normal-distributions-are-normal.html#cb119-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-3"><a href="4.1-why-normal-distributions-are-normal.html#cb119-3" aria-hidden="true" tabindex="-1"></a>growth <span class="ot">&lt;-</span> </span>
+<span id="cb119-4"><a href="4.1-why-normal-distributions-are-normal.html#cb119-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">growth =</span> <span class="fu">map_dbl</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10000</span>, <span class="sc">~</span> <span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, <span class="fl">0.1</span>))))</span>
+<span id="cb119-5"><a href="4.1-why-normal-distributions-are-normal.html#cb119-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb119-6"><a href="4.1-why-normal-distributions-are-normal.html#cb119-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> growth, <span class="fu">aes</span>(<span class="at">x =</span> growth)) <span class="sc">+</span></span>
+<span id="cb119-7"><a href="4.1-why-normal-distributions-are-normal.html#cb119-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>()</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.3-1.png" width="672" /></p>
+<p>Multiplying small numbers if approximately the same as addition.</p>
+<p>The smaller the effect of each locus, the better this additive approximation will be. In this way, small effects that multiply together are approximately additive, and so they also tend to stabilize on Gaussian distributions.</p>
+<p>Verify by comparing:</p>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="4.1-why-normal-distributions-are-normal.html#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate</span></span>
+<span id="cb120-2"><a href="4.1-why-normal-distributions-are-normal.html#cb120-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb120-3"><a href="4.1-why-normal-distributions-are-normal.html#cb120-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb120-4"><a href="4.1-why-normal-distributions-are-normal.html#cb120-4" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span></span>
+<span id="cb120-5"><a href="4.1-why-normal-distributions-are-normal.html#cb120-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">big   =</span> <span class="fu">map_dbl</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10000</span>, <span class="sc">~</span> <span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, <span class="fl">0.5</span>))),</span>
+<span id="cb120-6"><a href="4.1-why-normal-distributions-are-normal.html#cb120-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">small =</span> <span class="fu">map_dbl</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10000</span>, <span class="sc">~</span> <span class="fu">prod</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="dv">12</span>, <span class="dv">0</span>, <span class="fl">0.01</span>))))</span>
+<span id="cb120-7"><a href="4.1-why-normal-distributions-are-normal.html#cb120-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb120-8"><a href="4.1-why-normal-distributions-are-normal.html#cb120-8" aria-hidden="true" tabindex="-1"></a><span class="co"># wrangle</span></span>
+<span id="cb120-9"><a href="4.1-why-normal-distributions-are-normal.html#cb120-9" aria-hidden="true" tabindex="-1"></a>samples <span class="sc">%&gt;%</span> </span>
+<span id="cb120-10"><a href="4.1-why-normal-distributions-are-normal.html#cb120-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">values_to =</span> <span class="st">&quot;samples&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb120-11"><a href="4.1-why-normal-distributions-are-normal.html#cb120-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb120-12"><a href="4.1-why-normal-distributions-are-normal.html#cb120-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot</span></span>
+<span id="cb120-13"><a href="4.1-why-normal-distributions-are-normal.html#cb120-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> samples)) <span class="sc">+</span></span>
+<span id="cb120-14"><a href="4.1-why-normal-distributions-are-normal.html#cb120-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb120-15"><a href="4.1-why-normal-distributions-are-normal.html#cb120-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>) </span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.4-1.png" width="672" /></p>
+<p><strong><em>4.1.3 Normal by log-multiplication</em></strong></p>
+<p>Large deviates that are multiplied together do not produce Gaussian distributions, but they do tend to produce Gaussian distributions on the log scale. e.g.:</p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="4.1-why-normal-distributions-are-normal.html#cb121-1" aria-hidden="true" tabindex="-1"></a>samples <span class="sc">%&gt;%</span> </span>
+<span id="cb121-2"><a href="4.1-why-normal-distributions-are-normal.html#cb121-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_big =</span> <span class="fu">log</span>(big)) <span class="sc">%&gt;%</span> </span>
+<span id="cb121-3"><a href="4.1-why-normal-distributions-are-normal.html#cb121-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb121-4"><a href="4.1-why-normal-distributions-are-normal.html#cb121-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> log_big)) <span class="sc">+</span></span>
+<span id="cb121-5"><a href="4.1-why-normal-distributions-are-normal.html#cb121-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;gray33&quot;</span>) <span class="sc">+</span></span>
+<span id="cb121-6"><a href="4.1-why-normal-distributions-are-normal.html#cb121-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;the log of the big&quot;</span>)</span></code></pre></div>
+<p><img src="04_geocentric_models_files/figure-html/4.5-1.png" width="672" /></p>
+<p>Adding logs is equivalent to multiplying the original numbers.</p>
+<p><strong><em>4.1.4 Using Gaussian distributions</em></strong></p>
+<p><strong>Caution</strong>: Many natural (and unnatural) processes have much heavier tails - much higher probabilities of producing extreme events.</p>
+</div>
+<p style="text-align: center;">
+<a href="4-geocentric-models.html"><button class="btn btn-default">Previous</button></a>
+<a href="4.2-a-language-for-describing-models.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

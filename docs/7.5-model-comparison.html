@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="7.5 Model comparison | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="7.5 Model comparison | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>7.5 Model comparison | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="model-comparison" class="section level2" number="7.5">
+<h2><span class="header-section-number">7.5</span> Model comparison</h2>
+<p>Road so far:</p>
+<ul>
+<li>When there are several plausible (and hopefully un-confounded) models for the same set of observations, how should we compare the accuracy of these models?</li>
+<li>We need to somehow evaluate models out-of-sample. How can we do that? A meta-model of forecasting tells us two important things. First, flat priors produce bad predictions. Regularizing priors—priors which are skeptical of extreme parameter values—reduce fit to sample but tend to improve predictive accuracy.</li>
+<li>Second, we can get a useful guess of predictive accuracy with the criteria CV, PSIS, and WAIC. Regularizing priors and CV/PSIS/WAIC are complementary. Regularization reduces overfitting, and predictive criteria measure it.</li>
+</ul>
+<p>You should never just keep the model that scores the best, and discard the rest. This kind of selection procedure discards the information about relative model accuracy contained in the differences among the CV/PSIS/WAIC values. Why are the differences useful? Because sometimes the differences are large and sometimes they are small. Just as relative posterior probability provides advice about how confident we might be about parameters (conditional on the model), relative model accuracy provides advice about how confident we might be about models (conditional on the set of models compared).</p>
+<div class="figure">
+<img src="slides/L08/29.png" alt="Avoid model selection. We want to score the expected overfitting models to understand their properties. In the sciences we usually have an inferential objective, rather than a predictive one. But if you intend to intervene in the world, then we don't want to use these criteria to select a model, but rather to compare them." width="60%" />
+<p class="caption marginnote shownote">
+Avoid model selection. We want to score the expected overfitting models to understand their properties. In the sciences we usually have an inferential objective, rather than a predictive one. But if you intend to intervene in the world, then we don’t want to use these criteria to select a model, but rather to compare them.
+</p>
+</div>
+<p><strong><em>7.5.1. Model mis-selection</em></strong></p>
+<p>Remember: Inferring cause and making predictions are different tasks. Cross-validation and WAIC aim to find models that make good predictions.</p>
+<p>Run models from previous chapter again:</p>
+<div class="sourceCode" id="cb552"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb552-1"><a href="7.5-model-comparison.html#cb552-1" aria-hidden="true" tabindex="-1"></a>b6<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;fits/b06.06.rds&quot;</span>)</span>
+<span id="cb552-2"><a href="7.5-model-comparison.html#cb552-2" aria-hidden="true" tabindex="-1"></a>b6<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;fits/b06.07.rds&quot;</span>)</span>
+<span id="cb552-3"><a href="7.5-model-comparison.html#cb552-3" aria-hidden="true" tabindex="-1"></a>b6<span class="fl">.8</span> <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;fits/b06.08.rds&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb553"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb553-1"><a href="7.5-model-comparison.html#cb553-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">waic</span>(b6<span class="fl">.7</span>)</span></code></pre></div>
+<pre><code>## 
+## Computed from 4000 by 100 log-likelihood matrix
+## 
+##           Estimate   SE
+## elpd_waic   -180.7  6.7
+## p_waic         3.5  0.5
+## waic         361.5 13.4</code></pre>
+<p>As recommended, add the <code>waic</code> estimates to the <code>brm()</code> fit object itself.</p>
+<div class="sourceCode" id="cb555"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb555-1"><a href="7.5-model-comparison.html#cb555-1" aria-hidden="true" tabindex="-1"></a>b6<span class="fl">.7</span> <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">add_criterion</span>(b6<span class="fl">.7</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb556"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb556-1"><a href="7.5-model-comparison.html#cb556-1" aria-hidden="true" tabindex="-1"></a>b6<span class="fl">.7</span><span class="sc">$</span>criteria<span class="sc">$</span>waic</span></code></pre></div>
+<pre><code>## 
+## Computed from 4000 by 100 log-likelihood matrix
+## 
+##           Estimate   SE
+## elpd_waic   -180.7  6.7
+## p_waic         3.5  0.5
+## waic         361.5 13.4</code></pre>
+<div class="figure">
+<img src="slides/L08/30.png" alt="Smaller numbers are better, so the top model is 6.7 that includes the fungus. Can probably see the difference here. The fungus is what's causal. Inference about cause and finding a predictive model aren't the same thing. So you need to do both, but keep in mind that they're different. Because you haven't necessarily inferred a cause if you have good prediction error, because you might have blocked a pipe. Even spurious correlations are useful. The confounding really matters when you want to intervene. The highest preditive model won't necessary predict what will happen when you intervene. " width="60%" />
+<p class="caption marginnote shownote">
+Smaller numbers are better, so the top model is 6.7 that includes the fungus. Can probably see the difference here. The fungus is what’s causal. Inference about cause and finding a predictive model aren’t the same thing. So you need to do both, but keep in mind that they’re different. Because you haven’t necessarily inferred a cause if you have good prediction error, because you might have blocked a pipe. Even spurious correlations are useful. The confounding really matters when you want to intervene. The highest preditive model won’t necessary predict what will happen when you intervene.
+</p>
+</div>
+<div class="sourceCode" id="cb558"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb558-1"><a href="7.5-model-comparison.html#cb558-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute and save the WAIC information for the next three models</span></span>
+<span id="cb558-2"><a href="7.5-model-comparison.html#cb558-2" aria-hidden="true" tabindex="-1"></a>b6<span class="fl">.6</span> <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">add_criterion</span>(b6<span class="fl">.6</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb558-3"><a href="7.5-model-comparison.html#cb558-3" aria-hidden="true" tabindex="-1"></a>b6<span class="fl">.8</span> <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">add_criterion</span>(b6<span class="fl">.8</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb558-4"><a href="7.5-model-comparison.html#cb558-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb558-5"><a href="7.5-model-comparison.html#cb558-5" aria-hidden="true" tabindex="-1"></a><span class="co"># compare the WAIC estimates</span></span>
+<span id="cb558-6"><a href="7.5-model-comparison.html#cb558-6" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo_compare</span>(b6<span class="fl">.6</span>, b6<span class="fl">.7</span>, b6<span class="fl">.8</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb558-7"><a href="7.5-model-comparison.html#cb558-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb558-8"><a href="7.5-model-comparison.html#cb558-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(w)</span></code></pre></div>
+<pre><code>##      elpd_diff se_diff
+## b6.7   0.0       0.0  
+## b6.8 -20.5       4.9  
+## b6.6 -22.1       5.8</code></pre>
+<div class="sourceCode" id="cb560"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb560-1"><a href="7.5-model-comparison.html#cb560-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(w, <span class="at">simplify =</span> F)</span></code></pre></div>
+<pre><code>##      elpd_diff se_diff elpd_waic se_elpd_waic p_waic se_p_waic waic   se_waic
+## b6.7    0.0       0.0  -180.7       6.7          3.5    0.5     361.5   13.4 
+## b6.8  -20.5       4.9  -201.2       5.4          2.5    0.3     402.5   10.8 
+## b6.6  -22.1       5.8  -202.9       5.7          1.5    0.2     405.7   11.3</code></pre>
+<p><img src="slides/L08/31.png" width="60%" /></p>
+<div class="sourceCode" id="cb562"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb562-1"><a href="7.5-model-comparison.html#cb562-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="at">waic_diff =</span> w[, <span class="dv">1</span>] <span class="sc">*</span> <span class="sc">-</span><span class="dv">2</span>,</span>
+<span id="cb562-2"><a href="7.5-model-comparison.html#cb562-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">se        =</span> w[, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##      waic_diff        se
+## b6.7   0.00000  0.000000
+## b6.8  41.03941  9.832777
+## b6.6  44.28358 11.564703</code></pre>
+<p><img src="slides/L08/32.png" width="60%" /></p>
+<div class="sourceCode" id="cb564"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb564-1"><a href="7.5-model-comparison.html#cb564-1" aria-hidden="true" tabindex="-1"></a>w[, <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb564-2"><a href="7.5-model-comparison.html#cb564-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb564-3"><a href="7.5-model-comparison.html#cb564-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="st">&quot;model_name&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb564-4"><a href="7.5-model-comparison.html#cb564-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model_name =</span> <span class="fu">fct_reorder</span>(model_name, waic, <span class="at">.desc =</span> T)) <span class="sc">%&gt;%</span> </span>
+<span id="cb564-5"><a href="7.5-model-comparison.html#cb564-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb564-6"><a href="7.5-model-comparison.html#cb564-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> waic, <span class="at">y =</span> model_name, </span>
+<span id="cb564-7"><a href="7.5-model-comparison.html#cb564-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">xmin =</span> waic <span class="sc">-</span> se_waic, </span>
+<span id="cb564-8"><a href="7.5-model-comparison.html#cb564-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">xmax =</span> waic <span class="sc">+</span> se_waic)) <span class="sc">+</span></span>
+<span id="cb564-9"><a href="7.5-model-comparison.html#cb564-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>], </span>
+<span id="cb564-10"><a href="7.5-model-comparison.html#cb564-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fill =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">5</span>], <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb564-11"><a href="7.5-model-comparison.html#cb564-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;My custom WAIC plot&quot;</span>,</span>
+<span id="cb564-12"><a href="7.5-model-comparison.html#cb564-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb564-13"><a href="7.5-model-comparison.html#cb564-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="07_ulysses_compass_files/figure-html/7.29-1.png" width="672" /></p>
+<div class="sourceCode" id="cb565"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb565-1"><a href="7.5-model-comparison.html#cb565-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(b6<span class="fl">.7</span><span class="sc">$</span>criteria<span class="sc">$</span>waic<span class="sc">$</span>pointwise[, <span class="st">&quot;waic&quot;</span>])</span>
+<span id="cb565-2"><a href="7.5-model-comparison.html#cb565-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb565-3"><a href="7.5-model-comparison.html#cb565-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">waic_b6.7 =</span> b6<span class="fl">.7</span><span class="sc">$</span>criteria<span class="sc">$</span>waic<span class="sc">$</span>pointwise[, <span class="st">&quot;waic&quot;</span>],</span>
+<span id="cb565-4"><a href="7.5-model-comparison.html#cb565-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">waic_b6.8 =</span> b6<span class="fl">.8</span><span class="sc">$</span>criteria<span class="sc">$</span>waic<span class="sc">$</span>pointwise[, <span class="st">&quot;waic&quot;</span>]) <span class="sc">%&gt;%</span> </span>
+<span id="cb565-5"><a href="7.5-model-comparison.html#cb565-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">diff =</span> waic_b6<span class="fl">.7</span> <span class="sc">-</span> waic_b6<span class="fl">.8</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb565-6"><a href="7.5-model-comparison.html#cb565-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">diff_se =</span> <span class="fu">sqrt</span>(n <span class="sc">*</span> <span class="fu">var</span>(diff)))</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 1
+##   diff_se
+##     &lt;dbl&gt;
+## 1    9.83</code></pre>
+<div class="sourceCode" id="cb567"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb567-1"><a href="7.5-model-comparison.html#cb567-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">loo_compare</span>(b6<span class="fl">.6</span>, b6<span class="fl">.7</span>, b6<span class="fl">.8</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb567-2"><a href="7.5-model-comparison.html#cb567-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str</span>()</span></code></pre></div>
+<pre><code>##  &#39;compare.loo&#39; num [1:3, 1:8] 0 -20.52 -22.14 0 4.92 ...
+##  - attr(*, &quot;dimnames&quot;)=List of 2
+##   ..$ : chr [1:3] &quot;b6.7&quot; &quot;b6.8&quot; &quot;b6.6&quot;
+##   ..$ : chr [1:8] &quot;elpd_diff&quot; &quot;se_diff&quot; &quot;elpd_waic&quot; &quot;se_elpd_waic&quot; ...</code></pre>
+<div class="sourceCode" id="cb569"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb569-1"><a href="7.5-model-comparison.html#cb569-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">loo_compare</span>(b6<span class="fl">.6</span>, b6<span class="fl">.8</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>)</span></code></pre></div>
+<pre><code>##      elpd_diff se_diff
+## b6.8  0.0       0.0   
+## b6.6 -1.6       2.4</code></pre>
+<div class="sourceCode" id="cb571"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb571-1"><a href="7.5-model-comparison.html#cb571-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loo_compare</span>(b6<span class="fl">.6</span>, b6<span class="fl">.8</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>)[<span class="dv">2</span>, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">2</span></span></code></pre></div>
+<pre><code>## [1] 4.743149</code></pre>
+<p><strong><em>7.5.2. Outliers and other illusions</em></strong></p>
+<p>In the divorce example from Chapter 5, we saw in the posterior predictions that a few States were very hard for the model to retrodict. The State of Idaho in particular was something of an outlier. Individual points like Idaho tend to be very influential in ordinary regression models. Let’s see how PSIS and WAIC represent that importance.</p>
+<div class="sourceCode" id="cb573"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb573-1"><a href="7.5-model-comparison.html#cb573-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(WaffleDivorce, <span class="at">package =</span> <span class="st">&quot;rethinking&quot;</span>)</span>
+<span id="cb573-2"><a href="7.5-model-comparison.html#cb573-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb573-3"><a href="7.5-model-comparison.html#cb573-3" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span></span>
+<span id="cb573-4"><a href="7.5-model-comparison.html#cb573-4" aria-hidden="true" tabindex="-1"></a>  WaffleDivorce <span class="sc">%&gt;%</span> </span>
+<span id="cb573-5"><a href="7.5-model-comparison.html#cb573-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">d =</span> rethinking<span class="sc">::</span><span class="fu">standardize</span>(Divorce),</span>
+<span id="cb573-6"><a href="7.5-model-comparison.html#cb573-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">m =</span> rethinking<span class="sc">::</span><span class="fu">standardize</span>(Marriage),</span>
+<span id="cb573-7"><a href="7.5-model-comparison.html#cb573-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">a =</span> rethinking<span class="sc">::</span><span class="fu">standardize</span>(MedianAgeMarriage))</span>
+<span id="cb573-8"><a href="7.5-model-comparison.html#cb573-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb573-9"><a href="7.5-model-comparison.html#cb573-9" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(WaffleDivorce)</span>
+<span id="cb573-10"><a href="7.5-model-comparison.html#cb573-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb573-11"><a href="7.5-model-comparison.html#cb573-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Refit the divorce models</span></span>
+<span id="cb573-12"><a href="7.5-model-comparison.html#cb573-12" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.1</span> <span class="ot">&lt;-</span> </span>
+<span id="cb573-13"><a href="7.5-model-comparison.html#cb573-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb573-14"><a href="7.5-model-comparison.html#cb573-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb573-15"><a href="7.5-model-comparison.html#cb573-15" aria-hidden="true" tabindex="-1"></a>      d <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> a,</span>
+<span id="cb573-16"><a href="7.5-model-comparison.html#cb573-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb573-17"><a href="7.5-model-comparison.html#cb573-17" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">class =</span> b),</span>
+<span id="cb573-18"><a href="7.5-model-comparison.html#cb573-18" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb573-19"><a href="7.5-model-comparison.html#cb573-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb573-20"><a href="7.5-model-comparison.html#cb573-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">5</span>,</span>
+<span id="cb573-21"><a href="7.5-model-comparison.html#cb573-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">sample_prior =</span> T,</span>
+<span id="cb573-22"><a href="7.5-model-comparison.html#cb573-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b05.01&quot;</span>)</span>
+<span id="cb573-23"><a href="7.5-model-comparison.html#cb573-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb573-24"><a href="7.5-model-comparison.html#cb573-24" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.2</span> <span class="ot">&lt;-</span> </span>
+<span id="cb573-25"><a href="7.5-model-comparison.html#cb573-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb573-26"><a href="7.5-model-comparison.html#cb573-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb573-27"><a href="7.5-model-comparison.html#cb573-27" aria-hidden="true" tabindex="-1"></a>      d <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> m,</span>
+<span id="cb573-28"><a href="7.5-model-comparison.html#cb573-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb573-29"><a href="7.5-model-comparison.html#cb573-29" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">class =</span> b),</span>
+<span id="cb573-30"><a href="7.5-model-comparison.html#cb573-30" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb573-31"><a href="7.5-model-comparison.html#cb573-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb573-32"><a href="7.5-model-comparison.html#cb573-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">5</span>,</span>
+<span id="cb573-33"><a href="7.5-model-comparison.html#cb573-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b05.02&quot;</span>)</span>
+<span id="cb573-34"><a href="7.5-model-comparison.html#cb573-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb573-35"><a href="7.5-model-comparison.html#cb573-35" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb573-36"><a href="7.5-model-comparison.html#cb573-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb573-37"><a href="7.5-model-comparison.html#cb573-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb573-38"><a href="7.5-model-comparison.html#cb573-38" aria-hidden="true" tabindex="-1"></a>      d <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> m <span class="sc">+</span> a,</span>
+<span id="cb573-39"><a href="7.5-model-comparison.html#cb573-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb573-40"><a href="7.5-model-comparison.html#cb573-40" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">class =</span> b),</span>
+<span id="cb573-41"><a href="7.5-model-comparison.html#cb573-41" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb573-42"><a href="7.5-model-comparison.html#cb573-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb573-43"><a href="7.5-model-comparison.html#cb573-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">5</span>,</span>
+<span id="cb573-44"><a href="7.5-model-comparison.html#cb573-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b05.03&quot;</span>)</span></code></pre></div>
+<p>Let’s compare these models with PSIS</p>
+<div class="sourceCode" id="cb574"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb574-1"><a href="7.5-model-comparison.html#cb574-1" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b5<span class="fl">.1</span>, <span class="at">criterion =</span> <span class="st">&quot;loo&quot;</span>)</span>
+<span id="cb574-2"><a href="7.5-model-comparison.html#cb574-2" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b5<span class="fl">.2</span>, <span class="at">criterion =</span> <span class="st">&quot;loo&quot;</span>)</span>
+<span id="cb574-3"><a href="7.5-model-comparison.html#cb574-3" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b5<span class="fl">.3</span>, <span class="at">criterion =</span> <span class="st">&quot;loo&quot;</span>)</span>
+<span id="cb574-4"><a href="7.5-model-comparison.html#cb574-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb574-5"><a href="7.5-model-comparison.html#cb574-5" aria-hidden="true" tabindex="-1"></a><span class="fu">loo_compare</span>(b5<span class="fl">.1</span>, b5<span class="fl">.2</span>, b5<span class="fl">.3</span>, <span class="at">criterion =</span> <span class="st">&quot;loo&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb574-6"><a href="7.5-model-comparison.html#cb574-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">simplify =</span> F)</span></code></pre></div>
+<pre><code>##      elpd_diff se_diff elpd_loo se_elpd_loo p_loo se_p_loo looic se_looic
+## b5.1   0.0       0.0   -62.9      6.4         3.6   1.8    125.7  12.8   
+## b5.3  -1.0       0.4   -63.8      6.4         4.8   1.9    127.7  12.9   
+## b5.2  -6.8       4.6   -69.7      4.9         3.0   0.9    139.3   9.9</code></pre>
+<p>First note that the model that omits marriage rate, m5.1, lands on top. This is because marriage rate has very little association with the outcome. So the model that omits it has slightly better expected out-of-sample performance, even though it actually fits the sample slightly worse than m5.3, the model with both predictors.</p>
+<p><code>Some Pareto k values are very high (&gt;1).</code> means that the smoothing approximation that PSIS uses is unreliable for some points.</p>
+<p>Let’s look at the individual States, to see which are causing the problem. We can do this by adding <code>pointwise=TRUE</code> to PSIS. When you do this, you get a matrix with each observation on a row and the PSIS information, including individual Pareto k values, in columns.</p>
+<div class="sourceCode" id="cb576"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb576-1"><a href="7.5-model-comparison.html#cb576-1" aria-hidden="true" tabindex="-1"></a>loo<span class="sc">::</span><span class="fu">loo</span>(b5<span class="fl">.3</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb576-2"><a href="7.5-model-comparison.html#cb576-2" aria-hidden="true" tabindex="-1"></a>  loo<span class="sc">::</span><span class="fu">pareto_k_ids</span>(<span class="at">threshold =</span> <span class="fl">0.5</span>)</span></code></pre></div>
+<pre><code>## [1] 13</code></pre>
+<div class="sourceCode" id="cb578"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb578-1"><a href="7.5-model-comparison.html#cb578-1" aria-hidden="true" tabindex="-1"></a>d <span class="sc">%&gt;%</span> </span>
+<span id="cb578-2"><a href="7.5-model-comparison.html#cb578-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">13</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb578-3"><a href="7.5-model-comparison.html#cb578-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Location<span class="sc">:</span>Loc)</span></code></pre></div>
+<pre><code>##   Location Loc
+## 1    Idaho  ID</code></pre>
+<div class="sourceCode" id="cb580"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb580-1"><a href="7.5-model-comparison.html#cb580-1" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b5<span class="fl">.3</span>, <span class="st">&quot;waic&quot;</span>, <span class="at">file =</span> <span class="st">&quot;fits/b05.03&quot;</span>)</span>
+<span id="cb580-2"><a href="7.5-model-comparison.html#cb580-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb580-3"><a href="7.5-model-comparison.html#cb580-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">pareto_k =</span> b5<span class="fl">.3</span><span class="sc">$</span>criteria<span class="sc">$</span>loo<span class="sc">$</span>diagnostics<span class="sc">$</span>pareto_k,</span>
+<span id="cb580-4"><a href="7.5-model-comparison.html#cb580-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">p_waic   =</span> b5<span class="fl">.3</span><span class="sc">$</span>criteria<span class="sc">$</span>waic<span class="sc">$</span>pointwise[, <span class="st">&quot;p_waic&quot;</span>],</span>
+<span id="cb580-5"><a href="7.5-model-comparison.html#cb580-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">Loc      =</span> <span class="fu">pull</span>(d, Loc)) <span class="sc">%&gt;%</span> </span>
+<span id="cb580-6"><a href="7.5-model-comparison.html#cb580-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb580-7"><a href="7.5-model-comparison.html#cb580-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> pareto_k, <span class="at">y =</span> p_waic, <span class="at">color =</span> Loc <span class="sc">==</span> <span class="st">&quot;ID&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb580-8"><a href="7.5-model-comparison.html#cb580-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> .<span class="dv">5</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb580-9"><a href="7.5-model-comparison.html#cb580-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> Loc <span class="sc">==</span> <span class="st">&quot;ID&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb580-10"><a href="7.5-model-comparison.html#cb580-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> . <span class="sc">%&gt;%</span> <span class="fu">filter</span>(p_waic <span class="sc">&gt;</span> <span class="fl">0.5</span>),</span>
+<span id="cb580-11"><a href="7.5-model-comparison.html#cb580-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> pareto_k <span class="sc">-</span> <span class="fl">0.03</span>, <span class="at">label =</span> Loc),</span>
+<span id="cb580-12"><a href="7.5-model-comparison.html#cb580-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb580-13"><a href="7.5-model-comparison.html#cb580-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">7</span>)]) <span class="sc">+</span></span>
+<span id="cb580-14"><a href="7.5-model-comparison.html#cb580-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">19</span>)) <span class="sc">+</span></span>
+<span id="cb580-15"><a href="7.5-model-comparison.html#cb580-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Gaussian model (b5.3)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb580-16"><a href="7.5-model-comparison.html#cb580-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="07_ulysses_compass_files/figure-html/unnamed-chunk-82-1.png" width="672" /></p>
+<p>One way to both use these extreme observations and reduce their influence is to employ some kind of ROBUST REGRESSION. A “robust regression” can mean many different things, but usually it indicates a linear model in which the influence of extreme observations is reduced. A common and useful kind of robust regression is to replace the Gaussian model with a thicker-tailed distribution like STUDENT’S T (or “Student-t”) distribution.</p>
+<p>Let’s re-estimate the divorce model using a Student-t distribution with <span class="math inline">\(v = 2\)</span>.</p>
+<div class="sourceCode" id="cb581"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb581-1"><a href="7.5-model-comparison.html#cb581-1" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.3</span>t <span class="ot">&lt;-</span> </span>
+<span id="cb581-2"><a href="7.5-model-comparison.html#cb581-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb581-3"><a href="7.5-model-comparison.html#cb581-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> student,</span>
+<span id="cb581-4"><a href="7.5-model-comparison.html#cb581-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(d <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> m <span class="sc">+</span> a, <span class="at">nu =</span> <span class="dv">2</span>),</span>
+<span id="cb581-5"><a href="7.5-model-comparison.html#cb581-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.2</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb581-6"><a href="7.5-model-comparison.html#cb581-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">class =</span> b),</span>
+<span id="cb581-7"><a href="7.5-model-comparison.html#cb581-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb581-8"><a href="7.5-model-comparison.html#cb581-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb581-9"><a href="7.5-model-comparison.html#cb581-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">5</span>,</span>
+<span id="cb581-10"><a href="7.5-model-comparison.html#cb581-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b05.03t&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb582"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb582-1"><a href="7.5-model-comparison.html#cb582-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b5<span class="fl">.3</span>t)</span></code></pre></div>
+<pre><code>##  Family: student 
+##   Links: mu = identity; sigma = identity; nu = identity 
+## Formula: d ~ 1 + m + a 
+##          nu = 2
+##    Data: d (Number of observations: 50) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept     0.03      0.10    -0.17     0.23 1.00     4082     2803
+## m             0.05      0.20    -0.34     0.47 1.00     3549     3105
+## a            -0.70      0.14    -0.99    -0.42 1.00     3546     2945
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.58      0.08     0.43     0.76 1.00     3945     2833
+## nu        2.00      0.00     2.00     2.00 1.00     4000     4000
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="sourceCode" id="cb584"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb584-1"><a href="7.5-model-comparison.html#cb584-1" aria-hidden="true" tabindex="-1"></a>b5<span class="fl">.3</span>t <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b5<span class="fl">.3</span>t, <span class="at">criterion =</span> <span class="fu">c</span>(<span class="st">&quot;loo&quot;</span>, <span class="st">&quot;waic&quot;</span>))</span></code></pre></div>
+<div class="figure">
+<img src="slides/L08/33.png" alt="Incredibly clever and diabolical. Interested in life history evolution. Something to understand by looking at the whole field. Here's a dataset to consider. Why does lifespan vary so much? A typcial kind of conceptual model is this idea that body mass = fewer things kill you = living longer. And brain size = smart = avoiding danger. Should also season your DAG with some unobserved confounds." width="60%" />
+<p class="caption marginnote shownote">
+Incredibly clever and diabolical. Interested in life history evolution. Something to understand by looking at the whole field. Here’s a dataset to consider. Why does lifespan vary so much? A typcial kind of conceptual model is this idea that body mass = fewer things kill you = living longer. And brain size = smart = avoiding danger. Should also season your DAG with some unobserved confounds.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/34.png" alt="After you remove all the missing values, you get three models. The first is the industry standard m7.8 everyone expects to be the right prediction model. WIf we wnat ot figure out the infleucne of brainsize on lifespan, we need to block the backdoor path on body mass. Black dots are the in-sample, and open are the WAIC scores. Bars are standard errors. 7.8 and 7.9 are basically equivalent in their out-of-sample predictions. When you see something like this, you should see this as an invitiation to poke inside them. You can use IC to do that poiking." width="60%" />
+<p class="caption marginnote shownote">
+After you remove all the missing values, you get three models. The first is the industry standard m7.8 everyone expects to be the right prediction model. WIf we wnat ot figure out the infleucne of brainsize on lifespan, we need to block the backdoor path on body mass. Black dots are the in-sample, and open are the WAIC scores. Bars are standard errors. 7.8 and 7.9 are basically equivalent in their out-of-sample predictions. When you see something like this, you should see this as an invitiation to poke inside them. You can use IC to do that poiking.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/35.png" alt="bM is the slope for body mass, and bB is the slope for brain size. 7.9 only has bM, and says there's a positive correlation. The model with both has this catastrophic flipping. Now bM is negative? What's going on here? " width="60%" />
+<p class="caption marginnote shownote">
+bM is the slope for body mass, and bB is the slope for brain size. 7.9 only has bM, and says there’s a positive correlation. The model with both has this catastrophic flipping. Now bM is negative? What’s going on here?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/36.png" alt="The thing to do here is to do WAIC point-wise. For each species in the sample, say the Capuchin monkey which has those life history characteristics, which model expects to do the best out-of-sample on organisms with those same covariates? Or you could think about it as entropy scores, or divergence scores, to say how surprised is this model by a Capuchin monkey? The relative surprise between these models is plotted. " width="60%" />
+<p class="caption marginnote shownote">
+The thing to do here is to do WAIC point-wise. For each species in the sample, say the Capuchin monkey which has those life history characteristics, which model expects to do the best out-of-sample on organisms with those same covariates? Or you could think about it as entropy scores, or divergence scores, to say how surprised is this model by a Capuchin monkey? The relative surprise between these models is plotted.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/37.png" alt="The model with brain + mass does better with Capuchins because they have small brains, but they're really big for their body size. So if you don't control for body size, you can't explain their longevity. So the model without body size is really surprised by Cebus. Lepilemur on the other extreme with small brains and extremely short lifespans, where you'd be surprised if you ignore body size." width="60%" />
+<p class="caption marginnote shownote">
+The model with brain + mass does better with Capuchins because they have small brains, but they’re really big for their body size. So if you don’t control for body size, you can’t explain their longevity. So the model without body size is really surprised by Cebus. Lepilemur on the other extreme with small brains and extremely short lifespans, where you’d be surprised if you ignore body size.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/38.png" alt="On the other hand, for these you can make fine predictions by knowing body size. So you can understand how they perform if you look point-wise. This is a principled way to inspect and understand your golem. Also a way to find your high-leverage points." width="60%" />
+<p class="caption marginnote shownote">
+On the other hand, for these you can make fine predictions by knowing body size. So you can understand how they perform if you look point-wise. This is a principled way to inspect and understand your golem. Also a way to find your high-leverage points.
+</p>
+</div>
+<p><img src="slides/L08/39.png" width="80%" /></p>
+<p><img src="slides/L08/40.png" width="80%" /></p>
+<p><img src="slides/L08/41.png" width="80%" /></p>
+<p><img src="slides/L08/42.png" width="80%" /></p>
+</div>
+<p style="text-align: center;">
+<a href="7.4-predicting-predictive-accuracy.html"><button class="btn btn-default">Previous</button></a>
+<a href="7.6-practice-4.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

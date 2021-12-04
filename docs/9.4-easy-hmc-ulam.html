@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="9.4 Easy HMC: ulam | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="9.4 Easy HMC: ulam | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>9.4 Easy HMC: ulam | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="easy-hmc-ulam" class="section level2" number="9.4">
+<h2><span class="header-section-number">9.4</span> Easy HMC: <code>ulam</code></h2>
+<ul>
+<li>Preprocess any variable transformations</li>
+<li>Construct a clean data list with only the variables you will use.</li>
+</ul>
+<div class="sourceCode" id="cb650"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb650-1"><a href="9.4-easy-hmc-ulam.html#cb650-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(rugged, <span class="at">package =</span> <span class="st">&quot;rethinking&quot;</span>)</span>
+<span id="cb650-2"><a href="9.4-easy-hmc-ulam.html#cb650-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> rugged</span>
+<span id="cb650-3"><a href="9.4-easy-hmc-ulam.html#cb650-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(rugged)</span>
+<span id="cb650-4"><a href="9.4-easy-hmc-ulam.html#cb650-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb650-5"><a href="9.4-easy-hmc-ulam.html#cb650-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> </span>
+<span id="cb650-6"><a href="9.4-easy-hmc-ulam.html#cb650-6" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb650-7"><a href="9.4-easy-hmc-ulam.html#cb650-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp =</span> <span class="fu">log</span>(rgdppc_2000))</span>
+<span id="cb650-8"><a href="9.4-easy-hmc-ulam.html#cb650-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb650-9"><a href="9.4-easy-hmc-ulam.html#cb650-9" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span></span>
+<span id="cb650-10"><a href="9.4-easy-hmc-ulam.html#cb650-10" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb650-11"><a href="9.4-easy-hmc-ulam.html#cb650-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(rgdppc_2000) <span class="sc">%&gt;%</span> </span>
+<span id="cb650-12"><a href="9.4-easy-hmc-ulam.html#cb650-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> log_gdp <span class="sc">/</span> <span class="fu">mean</span>(log_gdp),</span>
+<span id="cb650-13"><a href="9.4-easy-hmc-ulam.html#cb650-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std  =</span> rugged <span class="sc">/</span> <span class="fu">max</span>(rugged),</span>
+<span id="cb650-14"><a href="9.4-easy-hmc-ulam.html#cb650-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">cid         =</span> <span class="fu">ifelse</span>(cont_africa <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb650-15"><a href="9.4-easy-hmc-ulam.html#cb650-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rugged_std_c =</span> rugged_std <span class="sc">-</span> <span class="fu">mean</span>(rugged_std))</span></code></pre></div>
+<div class="figure">
+<img src="slides/L10/55.png" alt="Run quap as before. Now let's do this with a MC." width="80%" />
+<p class="caption marginnote shownote">
+Run quap as before. Now let’s do this with a MC.
+</p>
+</div>
+<p><strong><em>9.4.1. Preparation</em></strong></p>
+<div class="figure">
+<img src="slides/L10/56.png" alt="Same formula, but slim dataset with just the variables of interest. 4 chains on separate cores." width="80%" />
+<p class="caption marginnote shownote">
+Same formula, but slim dataset with just the variables of interest. 4 chains on separate cores.
+</p>
+</div>
+<p><strong><em>9.4.2. Sampling from the posterior</em></strong></p>
+<div class="sourceCode" id="cb651"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb651-1"><a href="9.4-easy-hmc-ulam.html#cb651-1" aria-hidden="true" tabindex="-1"></a>b9<span class="fl">.1</span> <span class="ot">&lt;-</span> </span>
+<span id="cb651-2"><a href="9.4-easy-hmc-ulam.html#cb651-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> dd, </span>
+<span id="cb651-3"><a href="9.4-easy-hmc-ulam.html#cb651-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb651-4"><a href="9.4-easy-hmc-ulam.html#cb651-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(log_gdp_std <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> a <span class="sc">+</span> b <span class="sc">*</span> (rugged_std <span class="sc">-</span> <span class="fl">0.215</span>), </span>
+<span id="cb651-5"><a href="9.4-easy-hmc-ulam.html#cb651-5" aria-hidden="true" tabindex="-1"></a>         a <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cid, </span>
+<span id="cb651-6"><a href="9.4-easy-hmc-ulam.html#cb651-6" aria-hidden="true" tabindex="-1"></a>         b <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cid,</span>
+<span id="cb651-7"><a href="9.4-easy-hmc-ulam.html#cb651-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">nl =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb651-8"><a href="9.4-easy-hmc-ulam.html#cb651-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid1, <span class="at">nlpar =</span> a),</span>
+<span id="cb651-9"><a href="9.4-easy-hmc-ulam.html#cb651-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid2, <span class="at">nlpar =</span> a),</span>
+<span id="cb651-10"><a href="9.4-easy-hmc-ulam.html#cb651-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid1, <span class="at">nlpar =</span> b),</span>
+<span id="cb651-11"><a href="9.4-easy-hmc-ulam.html#cb651-11" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid2, <span class="at">nlpar =</span> b),</span>
+<span id="cb651-12"><a href="9.4-easy-hmc-ulam.html#cb651-12" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb651-13"><a href="9.4-easy-hmc-ulam.html#cb651-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">chains =</span> <span class="dv">1</span>, <span class="at">cores =</span> <span class="dv">1</span>,</span>
+<span id="cb651-14"><a href="9.4-easy-hmc-ulam.html#cb651-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">9</span>,</span>
+<span id="cb651-15"><a href="9.4-easy-hmc-ulam.html#cb651-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b09.01&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb652"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb652-1"><a href="9.4-easy-hmc-ulam.html#cb652-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b9<span class="fl">.1</span>)</span></code></pre></div>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: log_gdp_std ~ 0 + a + b * (rugged_std - 0.215) 
+##          a ~ 0 + cid
+##          b ~ 0 + cid
+##    Data: dd (Number of observations: 170) 
+## Samples: 1 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 1000
+## 
+## Population-Level Effects: 
+##        Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## a_cid1     0.89      0.02     0.86     0.92 1.00     1114      721
+## a_cid2     1.05      0.01     1.03     1.07 1.00     1106      658
+## b_cid1     0.13      0.08    -0.01     0.29 1.00     1015      773
+## b_cid2    -0.14      0.06    -0.26    -0.03 1.01     1241      712
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.11      0.01     0.10     0.13 1.00      997      720
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="figure">
+<img src="slides/L10/57.png" alt="`ulam` translates this into raw Stan code. A bunch of formal variable definitions. " width="80%" />
+<p class="caption marginnote shownote">
+<code>ulam</code> translates this into raw Stan code. A bunch of formal variable definitions.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/58.png" alt="What happens here is it reports each chain. Warmup figures out the step size. Total samples is the length of each chain minus the warmup. You won't need more than a couple of thousand samples to get a good estimate." width="80%" />
+<p class="caption marginnote shownote">
+What happens here is it reports each chain. Warmup figures out the step size. Total samples is the length of each chain minus the warmup. You won’t need more than a couple of thousand samples to get a good estimate.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L10/59.png" alt=" `n_eff` is the number of effective samples. Note that it's greater than the number of samples from the MC. True because it takes dispersed samples. The number of samples you would get if there was no auto-correlation between sequential samples. `Rhat` is the Gelman-Ruben diagnostic. You want it to converge across chains. They should all look the same and be exchangeable." width="80%" />
+<p class="caption marginnote shownote">
+<code>n_eff</code> is the number of effective samples. Note that it’s greater than the number of samples from the MC. True because it takes dispersed samples. The number of samples you would get if there was no auto-correlation between sequential samples. <code>Rhat</code> is the Gelman-Ruben diagnostic. You want it to converge across chains. They should all look the same and be exchangeable.
+</p>
+</div>
+<div class="sourceCode" id="cb654"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb654-1"><a href="9.4-easy-hmc-ulam.html#cb654-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b9<span class="fl">.1</span>)</span>
+<span id="cb654-2"><a href="9.4-easy-hmc-ulam.html#cb654-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb654-3"><a href="9.4-easy-hmc-ulam.html#cb654-3" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span> </span>
+<span id="cb654-4"><a href="9.4-easy-hmc-ulam.html#cb654-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>lp__) <span class="sc">%&gt;%</span> </span>
+<span id="cb654-5"><a href="9.4-easy-hmc-ulam.html#cb654-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span> </span>
+<span id="cb654-6"><a href="9.4-easy-hmc-ulam.html#cb654-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_hdi</span>(value, <span class="at">.width =</span> .<span class="dv">89</span>)  <span class="co"># note our rare use of 89% intervals</span></span></code></pre></div>
+<pre><code>## # A tibble: 5 × 7
+##   name      value  .lower  .upper .width .point .interval
+##   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1 b_a_cid1  0.887  0.858   0.910    0.89 mean   hdi      
+## 2 b_a_cid2  1.05   1.03    1.07     0.89 mean   hdi      
+## 3 b_b_cid1  0.132  0.0101  0.245    0.89 mean   hdi      
+## 4 b_b_cid2 -0.144 -0.228  -0.0505   0.89 mean   hdi      
+## 5 sigma     0.112  0.102   0.123    0.89 mean   hdi</code></pre>
+<p><strong><em>9.4.3. Sampling again, in parallel</em></strong></p>
+<div class="sourceCode" id="cb656"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb656-1"><a href="9.4-easy-hmc-ulam.html#cb656-1" aria-hidden="true" tabindex="-1"></a>b9<span class="fl">.1</span>b <span class="ot">&lt;-</span> </span>
+<span id="cb656-2"><a href="9.4-easy-hmc-ulam.html#cb656-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> dd, </span>
+<span id="cb656-3"><a href="9.4-easy-hmc-ulam.html#cb656-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb656-4"><a href="9.4-easy-hmc-ulam.html#cb656-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(log_gdp_std <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> a <span class="sc">+</span> b <span class="sc">*</span> (rugged_std <span class="sc">-</span> <span class="fl">0.215</span>), </span>
+<span id="cb656-5"><a href="9.4-easy-hmc-ulam.html#cb656-5" aria-hidden="true" tabindex="-1"></a>         a <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cid, </span>
+<span id="cb656-6"><a href="9.4-easy-hmc-ulam.html#cb656-6" aria-hidden="true" tabindex="-1"></a>         b <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cid,</span>
+<span id="cb656-7"><a href="9.4-easy-hmc-ulam.html#cb656-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">nl =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb656-8"><a href="9.4-easy-hmc-ulam.html#cb656-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid1, <span class="at">nlpar =</span> a),</span>
+<span id="cb656-9"><a href="9.4-easy-hmc-ulam.html#cb656-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid2, <span class="at">nlpar =</span> a),</span>
+<span id="cb656-10"><a href="9.4-easy-hmc-ulam.html#cb656-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid1, <span class="at">nlpar =</span> b),</span>
+<span id="cb656-11"><a href="9.4-easy-hmc-ulam.html#cb656-11" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid2, <span class="at">nlpar =</span> b),</span>
+<span id="cb656-12"><a href="9.4-easy-hmc-ulam.html#cb656-12" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb656-13"><a href="9.4-easy-hmc-ulam.html#cb656-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb656-14"><a href="9.4-easy-hmc-ulam.html#cb656-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">9</span>,</span>
+<span id="cb656-15"><a href="9.4-easy-hmc-ulam.html#cb656-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b09.01b&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb657"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb657-1"><a href="9.4-easy-hmc-ulam.html#cb657-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b9<span class="fl">.1</span>b)</span></code></pre></div>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: log_gdp_std ~ 0 + a + b * (rugged_std - 0.215) 
+##          a ~ 0 + cid
+##          b ~ 0 + cid
+##    Data: dd (Number of observations: 170) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##        Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## a_cid1     0.89      0.02     0.86     0.92 1.00     4613     2993
+## a_cid2     1.05      0.01     1.03     1.07 1.00     4782     3058
+## b_cid1     0.13      0.07    -0.01     0.28 1.00     4397     2724
+## b_cid2    -0.14      0.06    -0.25    -0.03 1.00     5029     3104
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.11      0.01     0.10     0.12 1.00     4693     3152
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p>Look at the <code>formula</code> and prior</p>
+<div class="sourceCode" id="cb659"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb659-1"><a href="9.4-easy-hmc-ulam.html#cb659-1" aria-hidden="true" tabindex="-1"></a>b9<span class="fl">.1</span>b<span class="sc">$</span>formula</span></code></pre></div>
+<pre><code>## log_gdp_std ~ 0 + a + b * (rugged_std - 0.215) 
+## a ~ 0 + cid
+## b ~ 0 + cid</code></pre>
+<div class="sourceCode" id="cb661"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb661-1"><a href="9.4-easy-hmc-ulam.html#cb661-1" aria-hidden="true" tabindex="-1"></a>b9<span class="fl">.1</span>b<span class="sc">$</span>prior</span></code></pre></div>
+<pre><code>##           prior class coef group resp dpar nlpar bound  source
+##          (flat)     b                          a       default
+##  normal(1, 0.1)     b cid1                     a          user
+##  normal(1, 0.1)     b cid2                     a          user
+##          (flat)     b                          b       default
+##  normal(0, 0.3)     b cid1                     b          user
+##  normal(0, 0.3)     b cid2                     b          user
+##  exponential(1) sigma                                     user</code></pre>
+<div class="sourceCode" id="cb663"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb663-1"><a href="9.4-easy-hmc-ulam.html#cb663-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(b9<span class="fl">.1</span>b)</span></code></pre></div>
+<pre><code>##           prior class coef group resp dpar nlpar bound  source
+##          (flat)     b                          a       default
+##  normal(1, 0.1)     b cid1                     a          user
+##  normal(1, 0.1)     b cid2                     a          user
+##          (flat)     b                          b       default
+##  normal(0, 0.3)     b cid1                     b          user
+##  normal(0, 0.3)     b cid2                     b          user
+##  exponential(1) sigma                                     user</code></pre>
+<p>If there were only 2000 samples in total, how can we have more than 2000 effective samples for each parameter? It’s no mistake. The adaptive sampler that Stan uses is so good, it can actually produce sequential samples that are better than uncorrelated. They are anti-correlated. This means it can explore the posterior distribution so efficiently that it can beat random.</p>
+<p><strong><em>9.4.4. Visualization</em></strong></p>
+<p><img src="slides/L10/60.png" width="80%" /></p>
+<div class="sourceCode" id="cb665"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb665-1"><a href="9.4-easy-hmc-ulam.html#cb665-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairs</span>(b9<span class="fl">.1</span>b,</span>
+<span id="cb665-2"><a href="9.4-easy-hmc-ulam.html#cb665-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">off_diag_args =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">5</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">5</span>))</span></code></pre></div>
+<p><img src="09_markov_chain_monte_carlo_files/figure-html/9.19-1.png" width="672" /></p>
+<div class="sourceCode" id="cb666"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb666-1"><a href="9.4-easy-hmc-ulam.html#cb666-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcov</span>(b9<span class="fl">.1</span>b, <span class="at">correlation =</span> T) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##        a_cid1 a_cid2 b_cid1 b_cid2
+## a_cid1   1.00  -0.03   0.17   0.05
+## a_cid2  -0.03   1.00   0.01  -0.09
+## b_cid1   0.17   0.01   1.00  -0.03
+## b_cid2   0.05  -0.09  -0.03   1.00</code></pre>
+<div class="sourceCode" id="cb668"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb668-1"><a href="9.4-easy-hmc-ulam.html#cb668-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">posterior_samples</span>(b9<span class="fl">.1</span>b)</span>
+<span id="cb668-2"><a href="9.4-easy-hmc-ulam.html#cb668-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb668-3"><a href="9.4-easy-hmc-ulam.html#cb668-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(post)</span></code></pre></div>
+<pre><code>## Rows: 4,000
+## Columns: 6
+## $ b_a_cid1 &lt;dbl&gt; 0.9064987, 0.8718809, 0.9012252, 0.8977892, 0.8703916, 0.9253…
+## $ b_a_cid2 &lt;dbl&gt; 1.050241, 1.060212, 1.044918, 1.047780, 1.041505, 1.035713, 1…
+## $ b_b_cid1 &lt;dbl&gt; 0.05395168, 0.17354574, 0.10481150, 0.12121863, 0.24473996, 0…
+## $ b_b_cid2 &lt;dbl&gt; -0.12886759, -0.12364289, -0.19158438, -0.18779887, -0.177450…
+## $ sigma    &lt;dbl&gt; 0.11045080, 0.11337407, 0.10222348, 0.10314139, 0.09620476, 0…
+## $ lp__     &lt;dbl&gt; 133.1505, 133.4317, 132.5007, 133.3072, 128.2402, 129.3591, 1…</code></pre>
+<div class="sourceCode" id="cb670"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb670-1"><a href="9.4-easy-hmc-ulam.html#cb670-1" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb670-2"><a href="9.4-easy-hmc-ulam.html#cb670-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>lp__ ) <span class="sc">%&gt;%</span></span>
+<span id="cb670-3"><a href="9.4-easy-hmc-ulam.html#cb670-3" aria-hidden="true" tabindex="-1"></a>  GGally<span class="sc">::</span><span class="fu">ggpairs</span>()</span></code></pre></div>
+<p><img src="09_markov_chain_monte_carlo_files/figure-html/unnamed-chunk-68-1.png" width="672" /></p>
+<p><strong><em>9.4.5. Checking the chain</em></strong></p>
+<p><img src="slides/L10/61.png" width="80%" /></p>
+<p><img src="slides/L10/62.png" width="80%" /></p>
+<div class="sourceCode" id="cb671"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb671-1"><a href="9.4-easy-hmc-ulam.html#cb671-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(b9<span class="fl">.1</span>b)</span></code></pre></div>
+<p><img src="09_markov_chain_monte_carlo_files/figure-html/unnamed-chunk-71-1.png" width="672" /></p>
+<div class="sourceCode" id="cb672"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb672-1"><a href="9.4-easy-hmc-ulam.html#cb672-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span>
+<span id="cb672-2"><a href="9.4-easy-hmc-ulam.html#cb672-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb672-3"><a href="9.4-easy-hmc-ulam.html#cb672-3" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b9<span class="fl">.1</span>b, <span class="at">add_chain =</span> T)</span>
+<span id="cb672-4"><a href="9.4-easy-hmc-ulam.html#cb672-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb672-5"><a href="9.4-easy-hmc-ulam.html#cb672-5" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">mcmc_trace</span>(post[, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">7</span>)],  <span class="co"># we need to include column 7 because it contains the chain info </span></span>
+<span id="cb672-6"><a href="9.4-easy-hmc-ulam.html#cb672-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">facet_args =</span> <span class="fu">list</span>(<span class="at">ncol =</span> <span class="dv">3</span>), </span>
+<span id="cb672-7"><a href="9.4-easy-hmc-ulam.html#cb672-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">size =</span> .<span class="dv">15</span>) <span class="sc">+</span></span>
+<span id="cb672-8"><a href="9.4-easy-hmc-ulam.html#cb672-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_pomological</span>() <span class="sc">+</span></span>
+<span id="cb672-9"><a href="9.4-easy-hmc-ulam.html#cb672-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;My custom trace plots&quot;</span>) <span class="sc">+</span></span>
+<span id="cb672-10"><a href="9.4-easy-hmc-ulam.html#cb672-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_pomological_fancy</span>(<span class="at">base_family =</span> <span class="st">&quot;Marck Script&quot;</span>) <span class="sc">+</span></span>
+<span id="cb672-11"><a href="9.4-easy-hmc-ulam.html#cb672-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">95</span>, .<span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb673"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb673-1"><a href="9.4-easy-hmc-ulam.html#cb673-1" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span> </span>
+<span id="cb673-2"><a href="9.4-easy-hmc-ulam.html#cb673-2" aria-hidden="true" tabindex="-1"></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_rank_overlay</span>(<span class="at">pars =</span> <span class="fu">vars</span>(b_a_cid1<span class="sc">:</span>sigma)) <span class="sc">+</span></span>
+<span id="cb673-3"><a href="9.4-easy-hmc-ulam.html#cb673-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_pomological</span>() <span class="sc">+</span></span>
+<span id="cb673-4"><a href="9.4-easy-hmc-ulam.html#cb673-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;My custom trank plots&quot;</span>) <span class="sc">+</span></span>
+<span id="cb673-5"><a href="9.4-easy-hmc-ulam.html#cb673-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb673-6"><a href="9.4-easy-hmc-ulam.html#cb673-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_pomological_fancy</span>(<span class="at">base_family =</span> <span class="st">&quot;Marck Script&quot;</span>) <span class="sc">+</span></span>
+<span id="cb673-7"><a href="9.4-easy-hmc-ulam.html#cb673-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">95</span>, .<span class="dv">2</span>))</span></code></pre></div>
+<pre><code>## Scale for &#39;colour&#39; is already present. Adding another scale for &#39;colour&#39;,
+## which will replace the existing scale.</code></pre>
+<pre><code>## Warning: Font &#39;Marck Script&#39; isn&#39;t in the extrafont font list (but it may still
+## work). If recently installed, you can try running `extrafont::font_import()`. To
+## install, visit: https://fonts.google.com/specimen/Marck+Script/</code></pre>
+<p><img src="09_markov_chain_monte_carlo_files/figure-html/9.21-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L10/63.png" alt="What you want to see are these hairy caterpillars." width="80%" />
+<p class="caption marginnote shownote">
+What you want to see are these hairy caterpillars.
+</p>
+</div>
+<p>Now, how is this chain a healthy one? Typically we look for three things in these trace plots: (1) stationarity, (2) good mixing, and (3) convergence.</p>
+</div>
+<p style="text-align: center;">
+<a href="9.3-hamiltonian-monte-carlo.html"><button class="btn btn-default">Previous</button></a>
+<a href="9.5-care-and-feeding-of-your-markov-chain.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

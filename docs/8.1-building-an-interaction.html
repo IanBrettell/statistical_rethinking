@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="8.1 Building an interaction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="8.1 Building an interaction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>8.1 Building an interaction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="building-an-interaction" class="section level2" number="8.1">
+<h2><span class="header-section-number">8.1</span> Building an interaction</h2>
+<div class="figure">
+<img src="slides/L09/15.png" alt="Economics of Africa. Africa is really really big. A lot of diversity - economies, language, environment - makes it interesting because it creates a lot of natural experiments." width="80%" />
+<p class="caption marginnote shownote">
+Economics of Africa. Africa is really really big. A lot of diversity - economies, language, environment - makes it interesting because it creates a lot of natural experiments.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/16.png" alt="There's a feature of the terrain which is ruggedness, which is bad becasuse it makes it hard to move things. On the right is normalised. 0 is perfectly flat, 1 is Lesotho, the world's most rugged place. Kind of like Switzerland. Really strong negative relationship with GDP. But in Africa, the relationship goes in the other direction. Removing outliers doesn't remove the difference between the continents. So what's going on?" width="80%" />
+<p class="caption marginnote shownote">
+There’s a feature of the terrain which is ruggedness, which is bad becasuse it makes it hard to move things. On the right is normalised. 0 is perfectly flat, 1 is Lesotho, the world’s most rugged place. Kind of like Switzerland. Really strong negative relationship with GDP. But in Africa, the relationship goes in the other direction. Removing outliers doesn’t remove the difference between the continents. So what’s going on?
+</p>
+</div>
+<div class="sourceCode" id="cb587"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb587-1"><a href="8.1-building-an-interaction.html#cb587-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(rugged, <span class="at">package =</span> <span class="st">&quot;rethinking&quot;</span>)</span>
+<span id="cb587-2"><a href="8.1-building-an-interaction.html#cb587-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> rugged</span>
+<span id="cb587-3"><a href="8.1-building-an-interaction.html#cb587-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(rugged)</span>
+<span id="cb587-4"><a href="8.1-building-an-interaction.html#cb587-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb587-5"><a href="8.1-building-an-interaction.html#cb587-5" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(</span>
+<span id="cb587-6"><a href="8.1-building-an-interaction.html#cb587-6" aria-hidden="true" tabindex="-1"></a>  ggthemes<span class="sc">::</span><span class="fu">theme_pander</span>() <span class="sc">+</span></span>
+<span id="cb587-7"><a href="8.1-building-an-interaction.html#cb587-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Times&quot;</span>),</span>
+<span id="cb587-8"><a href="8.1-building-an-interaction.html#cb587-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>)) </span>
+<span id="cb587-9"><a href="8.1-building-an-interaction.html#cb587-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Wrangle the data</p>
+<div class="sourceCode" id="cb588"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb588-1"><a href="8.1-building-an-interaction.html#cb588-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make the log version of criterion</span></span>
+<span id="cb588-2"><a href="8.1-building-an-interaction.html#cb588-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> </span>
+<span id="cb588-3"><a href="8.1-building-an-interaction.html#cb588-3" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb588-4"><a href="8.1-building-an-interaction.html#cb588-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp =</span> <span class="fu">log</span>(rgdppc_2000))</span>
+<span id="cb588-5"><a href="8.1-building-an-interaction.html#cb588-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb588-6"><a href="8.1-building-an-interaction.html#cb588-6" aria-hidden="true" tabindex="-1"></a><span class="co"># extract countries with GDP data</span></span>
+<span id="cb588-7"><a href="8.1-building-an-interaction.html#cb588-7" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span></span>
+<span id="cb588-8"><a href="8.1-building-an-interaction.html#cb588-8" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb588-9"><a href="8.1-building-an-interaction.html#cb588-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">complete.cases</span>(rgdppc_2000)) <span class="sc">%&gt;%</span> </span>
+<span id="cb588-10"><a href="8.1-building-an-interaction.html#cb588-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># re-scale variables</span></span>
+<span id="cb588-11"><a href="8.1-building-an-interaction.html#cb588-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> log_gdp <span class="sc">/</span> <span class="fu">mean</span>(log_gdp), </span>
+<span id="cb588-12"><a href="8.1-building-an-interaction.html#cb588-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std  =</span> rugged <span class="sc">/</span> <span class="fu">max</span>(rugged))</span></code></pre></div>
+<div class="sourceCode" id="cb589"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb589-1"><a href="8.1-building-an-interaction.html#cb589-1" aria-hidden="true" tabindex="-1"></a><span class="co"># African nations</span></span>
+<span id="cb589-2"><a href="8.1-building-an-interaction.html#cb589-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb589-3"><a href="8.1-building-an-interaction.html#cb589-3" aria-hidden="true" tabindex="-1"></a>  dd <span class="sc">%&gt;%</span> </span>
+<span id="cb589-4"><a href="8.1-building-an-interaction.html#cb589-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cont_africa <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb589-5"><a href="8.1-building-an-interaction.html#cb589-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rugged_std, <span class="at">y =</span> log_gdp_std)) <span class="sc">+</span></span>
+<span id="cb589-6"><a href="8.1-building-an-interaction.html#cb589-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x,</span>
+<span id="cb589-7"><a href="8.1-building-an-interaction.html#cb589-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">1</span>],</span>
+<span id="cb589-8"><a href="8.1-building-an-interaction.html#cb589-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">1</span>]) <span class="sc">+</span></span>
+<span id="cb589-9"><a href="8.1-building-an-interaction.html#cb589-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">1</span>]) <span class="sc">+</span></span>
+<span id="cb589-10"><a href="8.1-building-an-interaction.html#cb589-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> . <span class="sc">%&gt;%</span> </span>
+<span id="cb589-11"><a href="8.1-building-an-interaction.html#cb589-11" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">filter</span>(country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Lesotho&quot;</span>, <span class="st">&quot;Seychelles&quot;</span>)),  </span>
+<span id="cb589-12"><a href="8.1-building-an-interaction.html#cb589-12" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">label =</span> country), </span>
+<span id="cb589-13"><a href="8.1-building-an-interaction.html#cb589-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">size =</span> <span class="dv">3</span>, <span class="at">family =</span> <span class="st">&quot;Times&quot;</span>, <span class="at">seed =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
+<span id="cb589-14"><a href="8.1-building-an-interaction.html#cb589-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;African nations&quot;</span>,</span>
+<span id="cb589-15"><a href="8.1-building-an-interaction.html#cb589-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;ruggedness (standardized)&quot;</span>,</span>
+<span id="cb589-16"><a href="8.1-building-an-interaction.html#cb589-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;log GDP (as proportion of mean)&quot;</span>)</span>
+<span id="cb589-17"><a href="8.1-building-an-interaction.html#cb589-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb589-18"><a href="8.1-building-an-interaction.html#cb589-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Non-African nations</span></span>
+<span id="cb589-19"><a href="8.1-building-an-interaction.html#cb589-19" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb589-20"><a href="8.1-building-an-interaction.html#cb589-20" aria-hidden="true" tabindex="-1"></a>  dd <span class="sc">%&gt;%</span> </span>
+<span id="cb589-21"><a href="8.1-building-an-interaction.html#cb589-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cont_africa <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb589-22"><a href="8.1-building-an-interaction.html#cb589-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rugged_std, <span class="at">y =</span> log_gdp_std)) <span class="sc">+</span></span>
+<span id="cb589-23"><a href="8.1-building-an-interaction.html#cb589-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="at">formula =</span> y <span class="sc">~</span> x,</span>
+<span id="cb589-24"><a href="8.1-building-an-interaction.html#cb589-24" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">2</span>],</span>
+<span id="cb589-25"><a href="8.1-building-an-interaction.html#cb589-25" aria-hidden="true" tabindex="-1"></a>              <span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb589-26"><a href="8.1-building-an-interaction.html#cb589-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb589-27"><a href="8.1-building-an-interaction.html#cb589-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> . <span class="sc">%&gt;%</span> </span>
+<span id="cb589-28"><a href="8.1-building-an-interaction.html#cb589-28" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">filter</span>(country <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Switzerland&quot;</span>, <span class="st">&quot;Tajikistan&quot;</span>)),  </span>
+<span id="cb589-29"><a href="8.1-building-an-interaction.html#cb589-29" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">label =</span> country), </span>
+<span id="cb589-30"><a href="8.1-building-an-interaction.html#cb589-30" aria-hidden="true" tabindex="-1"></a>                  <span class="at">size =</span> <span class="dv">3</span>, <span class="at">family =</span> <span class="st">&quot;Times&quot;</span>, <span class="at">seed =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
+<span id="cb589-31"><a href="8.1-building-an-interaction.html#cb589-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb589-32"><a href="8.1-building-an-interaction.html#cb589-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Non-African nations&quot;</span>,</span>
+<span id="cb589-33"><a href="8.1-building-an-interaction.html#cb589-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;ruggedness (standardized)&quot;</span>,</span>
+<span id="cb589-34"><a href="8.1-building-an-interaction.html#cb589-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;log GDP (as proportion of mean)&quot;</span>)</span>
+<span id="cb589-35"><a href="8.1-building-an-interaction.html#cb589-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb589-36"><a href="8.1-building-an-interaction.html#cb589-36" aria-hidden="true" tabindex="-1"></a><span class="co"># combine</span></span>
+<span id="cb589-37"><a href="8.1-building-an-interaction.html#cb589-37" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">&quot;Figure 8.2. Separate linear regressions inside and outside of Africa&quot;</span>)</span></code></pre></div>
+<p><img src="08_conditional_manatees_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<div class="sourceCode" id="cb590"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb590-1"><a href="8.1-building-an-interaction.html#cb590-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(dd<span class="sc">$</span>rugged_std)</span></code></pre></div>
+<pre><code>## [1] 0.2149601</code></pre>
+<p>Make a mean-centered version of <code>rugged_std</code>.</p>
+<div class="sourceCode" id="cb592"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb592-1"><a href="8.1-building-an-interaction.html#cb592-1" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span></span>
+<span id="cb592-2"><a href="8.1-building-an-interaction.html#cb592-2" aria-hidden="true" tabindex="-1"></a>  dd <span class="sc">%&gt;%</span></span>
+<span id="cb592-3"><a href="8.1-building-an-interaction.html#cb592-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rugged_std_c  =</span> rugged_std <span class="sc">-</span> <span class="fu">mean</span>(rugged_std))</span></code></pre></div>
+<p>Remember that using <span class="math inline">\(\bar{r}\)</span> just makes it easier to assign a prior to the intercept <span class="math inline">\(\alpha\)</span>.</p>
+<p>Consider first the intercept, <span class="math inline">\(\alpha\)</span>, defined as the log GDP when ruggedness is at the sample mean. So it must be close to 1, because we scaled the outcome so that the mean is 1.</p>
+<p>Now for <span class="math inline">\(\beta\)</span>, the slope. If we center it on zero, that indicates no bias for positive or negative, which makes sense. But what about the standard deviation? Let’s start with a guess at 1.</p>
+<p>And finally, let’s assign <span class="math inline">\(\sigma\)</span> something very broad, <span class="math inline">\(\sigma \sim Exponential(1)\)</span>.</p>
+<div class="sourceCode" id="cb593"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb593-1"><a href="8.1-building-an-interaction.html#cb593-1" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.1</span> <span class="ot">&lt;-</span></span>
+<span id="cb593-2"><a href="8.1-building-an-interaction.html#cb593-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> dd, </span>
+<span id="cb593-3"><a href="8.1-building-an-interaction.html#cb593-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb593-4"><a href="8.1-building-an-interaction.html#cb593-4" aria-hidden="true" tabindex="-1"></a>      log_gdp_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> rugged_std_c,</span>
+<span id="cb593-5"><a href="8.1-building-an-interaction.html#cb593-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb593-6"><a href="8.1-building-an-interaction.html#cb593-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb593-7"><a href="8.1-building-an-interaction.html#cb593-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb593-8"><a href="8.1-building-an-interaction.html#cb593-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb593-9"><a href="8.1-building-an-interaction.html#cb593-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
+<span id="cb593-10"><a href="8.1-building-an-interaction.html#cb593-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">sample_prior =</span> T, <span class="co"># allows us to use `prior_samples()`</span></span>
+<span id="cb593-11"><a href="8.1-building-an-interaction.html#cb593-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b08.01&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="slides/L09/17.png" alt="We want to develop priors that constrain pre-data the outcomes to the possible outcome space. We've scaled the outcome between 0 and 1. Then I've taken log GDP, and scaled it in proportion to the average. 1.5 is 50% more. Think about doubling the economy - that would be a huge effect. The dashed lines are the world's GDPs. We've centered at 1 for the average GDP. We simulate priors and we get chaos. At least on the right you can stay within the world's possible economies." width="80%" />
+<p class="caption marginnote shownote">
+We want to develop priors that constrain pre-data the outcomes to the possible outcome space. We’ve scaled the outcome between 0 and 1. Then I’ve taken log GDP, and scaled it in proportion to the average. 1.5 is 50% more. Think about doubling the economy - that would be a huge effect. The dashed lines are the world’s GDPs. We’ve centered at 1 for the average GDP. We simulate priors and we get chaos. At least on the right you can stay within the world’s possible economies.
+</p>
+</div>
+<p>Let’s look at the prior predictions:</p>
+<div class="sourceCode" id="cb594"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb594-1"><a href="8.1-building-an-interaction.html#cb594-1" aria-hidden="true" tabindex="-1"></a>prior <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">prior_samples</span>(b8<span class="fl">.1</span>)</span>
+<span id="cb594-2"><a href="8.1-building-an-interaction.html#cb594-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb594-3"><a href="8.1-building-an-interaction.html#cb594-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">8</span>)</span>
+<span id="cb594-4"><a href="8.1-building-an-interaction.html#cb594-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb594-5"><a href="8.1-building-an-interaction.html#cb594-5" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb594-6"><a href="8.1-building-an-interaction.html#cb594-6" aria-hidden="true" tabindex="-1"></a>  prior <span class="sc">%&gt;%</span> </span>
+<span id="cb594-7"><a href="8.1-building-an-interaction.html#cb594-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb594-8"><a href="8.1-building-an-interaction.html#cb594-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb594-9"><a href="8.1-building-an-interaction.html#cb594-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand</span>(<span class="fu">nesting</span>(rowname, Intercept, b),</span>
+<span id="cb594-10"><a href="8.1-building-an-interaction.html#cb594-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std_c =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb594-11"><a href="8.1-building-an-interaction.html#cb594-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> Intercept <span class="sc">+</span> b <span class="sc">*</span> rugged_std_c,</span>
+<span id="cb594-12"><a href="8.1-building-an-interaction.html#cb594-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std  =</span> rugged_std_c <span class="sc">+</span> <span class="fu">mean</span>(dd<span class="sc">$</span>rugged_std)) <span class="sc">%&gt;%</span> </span>
+<span id="cb594-13"><a href="8.1-building-an-interaction.html#cb594-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb594-14"><a href="8.1-building-an-interaction.html#cb594-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rugged_std, <span class="at">y =</span> log_gdp_std, <span class="at">group =</span> rowname)) <span class="sc">+</span></span>
+<span id="cb594-15"><a href="8.1-building-an-interaction.html#cb594-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">range</span>(dd<span class="sc">$</span>log_gdp_std), <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb594-16"><a href="8.1-building-an-interaction.html#cb594-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">2</span>], <span class="at">alpha =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb594-17"><a href="8.1-building-an-interaction.html#cb594-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept =</span> <span class="fl">1.3</span>, <span class="at">slope =</span> <span class="sc">-</span><span class="fl">0.6</span>,</span>
+<span id="cb594-18"><a href="8.1-building-an-interaction.html#cb594-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">color =</span> ggthemes<span class="sc">::</span><span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">1</span>], <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb594-19"><a href="8.1-building-an-interaction.html#cb594-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Intercept ~ dnorm(1, 1)</span><span class="sc">\n</span><span class="st">b ~ dnorm(0, 1)&quot;</span>,</span>
+<span id="cb594-20"><a href="8.1-building-an-interaction.html#cb594-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;ruggedness&quot;</span>,</span>
+<span id="cb594-21"><a href="8.1-building-an-interaction.html#cb594-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;log GDP (prop of mean)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb594-22"><a href="8.1-building-an-interaction.html#cb594-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb594-23"><a href="8.1-building-an-interaction.html#cb594-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>))</span>
+<span id="cb594-24"><a href="8.1-building-an-interaction.html#cb594-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb594-25"><a href="8.1-building-an-interaction.html#cb594-25" aria-hidden="true" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="08_conditional_manatees_files/figure-html/8.3-1.png" width="672" /></p>
+<div class="sourceCode" id="cb595"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb595-1"><a href="8.1-building-an-interaction.html#cb595-1" aria-hidden="true" tabindex="-1"></a>prior <span class="sc">%&gt;%</span></span>
+<span id="cb595-2"><a href="8.1-building-an-interaction.html#cb595-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">a =</span> <span class="fu">sum</span>(<span class="fu">abs</span>(b) <span class="sc">&gt;</span> <span class="fu">abs</span>(<span class="sc">-</span><span class="fl">0.6</span>)) <span class="sc">/</span> <span class="fu">nrow</span>(prior))</span></code></pre></div>
+<pre><code>##         a
+## 1 0.55725</code></pre>
+<div class="sourceCode" id="cb597"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb597-1"><a href="8.1-building-an-interaction.html#cb597-1" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.1</span>b <span class="ot">&lt;-</span></span>
+<span id="cb597-2"><a href="8.1-building-an-interaction.html#cb597-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> dd, </span>
+<span id="cb597-3"><a href="8.1-building-an-interaction.html#cb597-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb597-4"><a href="8.1-building-an-interaction.html#cb597-4" aria-hidden="true" tabindex="-1"></a>      log_gdp_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> rugged_std_c,</span>
+<span id="cb597-5"><a href="8.1-building-an-interaction.html#cb597-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb597-6"><a href="8.1-building-an-interaction.html#cb597-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b),</span>
+<span id="cb597-7"><a href="8.1-building-an-interaction.html#cb597-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb597-8"><a href="8.1-building-an-interaction.html#cb597-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb597-9"><a href="8.1-building-an-interaction.html#cb597-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
+<span id="cb597-10"><a href="8.1-building-an-interaction.html#cb597-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">sample_prior =</span> T,</span>
+<span id="cb597-11"><a href="8.1-building-an-interaction.html#cb597-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b08.01b&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb598"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb598-1"><a href="8.1-building-an-interaction.html#cb598-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">8</span>)</span>
+<span id="cb598-2"><a href="8.1-building-an-interaction.html#cb598-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb598-3"><a href="8.1-building-an-interaction.html#cb598-3" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb598-4"><a href="8.1-building-an-interaction.html#cb598-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">prior_samples</span>(b8<span class="fl">.1</span>b) <span class="sc">%&gt;%</span> </span>
+<span id="cb598-5"><a href="8.1-building-an-interaction.html#cb598-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">50</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb598-6"><a href="8.1-building-an-interaction.html#cb598-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb598-7"><a href="8.1-building-an-interaction.html#cb598-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand</span>(<span class="fu">nesting</span>(rowname, Intercept, b),</span>
+<span id="cb598-8"><a href="8.1-building-an-interaction.html#cb598-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std_c =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb598-9"><a href="8.1-building-an-interaction.html#cb598-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp_std =</span> Intercept <span class="sc">+</span> b <span class="sc">*</span> rugged_std_c,</span>
+<span id="cb598-10"><a href="8.1-building-an-interaction.html#cb598-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">rugged_std  =</span> rugged_std_c <span class="sc">+</span> <span class="fu">mean</span>(dd<span class="sc">$</span>rugged_std)) <span class="sc">%&gt;%</span> </span>
+<span id="cb598-11"><a href="8.1-building-an-interaction.html#cb598-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb598-12"><a href="8.1-building-an-interaction.html#cb598-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rugged_std, <span class="at">y =</span> log_gdp_std, <span class="at">group =</span> rowname)) <span class="sc">+</span></span>
+<span id="cb598-13"><a href="8.1-building-an-interaction.html#cb598-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">range</span>(dd<span class="sc">$</span>log_gdp_std), <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb598-14"><a href="8.1-building-an-interaction.html#cb598-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="fu">palette_pander</span>(<span class="at">n =</span> <span class="dv">2</span>)[<span class="dv">2</span>], <span class="at">alpha =</span> .<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb598-15"><a href="8.1-building-an-interaction.html#cb598-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">&quot;&quot;</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb598-16"><a href="8.1-building-an-interaction.html#cb598-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Intercept ~ dnorm(1, 0.1)</span><span class="sc">\n</span><span class="st">b ~ dnorm(0, 0.3)&quot;</span>,</span>
+<span id="cb598-17"><a href="8.1-building-an-interaction.html#cb598-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;ruggedness&quot;</span>) <span class="sc">+</span></span>
+<span id="cb598-18"><a href="8.1-building-an-interaction.html#cb598-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb598-19"><a href="8.1-building-an-interaction.html#cb598-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>))</span>
+<span id="cb598-20"><a href="8.1-building-an-interaction.html#cb598-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb598-21"><a href="8.1-building-an-interaction.html#cb598-21" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">+</span> p2 <span class="sc">+</span> </span>
+<span id="cb598-22"><a href="8.1-building-an-interaction.html#cb598-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">&quot;Simulating in search of reasonable priors for the terrain ruggedness example.&quot;</span>,</span>
+<span id="cb598-23"><a href="8.1-building-an-interaction.html#cb598-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">theme =</span> <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>)))</span></code></pre></div>
+<div class="figure">
+<img src="08_conditional_manatees_files/figure-html/8.6-1.png" alt="Figure 8.3" width="672" />
+<p class="caption marginnote shownote">
+Figure 8.3
+</p>
+</div>
+<div class="sourceCode" id="cb599"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb599-1"><a href="8.1-building-an-interaction.html#cb599-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b8<span class="fl">.1</span>b)</span></code></pre></div>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: log_gdp_std ~ 1 + rugged_std_c 
+##    Data: dd (Number of observations: 170) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept        1.00      0.01     0.98     1.02 1.00     4316     2983
+## rugged_std_c     0.00      0.06    -0.11     0.12 1.00     3677     2896
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.14      0.01     0.12     0.15 1.00     3938     3028
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p>Really no overall association between terrain ruggedness and log GDP. Next we’ll see how to split apart the continents.</p>
+<p><strong><em>8.1.2. Adding an indicator variable isn’t enough</em></strong></p>
+<div class="sourceCode" id="cb601"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb601-1"><a href="8.1-building-an-interaction.html#cb601-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make variable to index Africa (1) or not (2)</span></span>
+<span id="cb601-2"><a href="8.1-building-an-interaction.html#cb601-2" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> </span>
+<span id="cb601-3"><a href="8.1-building-an-interaction.html#cb601-3" aria-hidden="true" tabindex="-1"></a>  dd <span class="sc">%&gt;%</span> </span>
+<span id="cb601-4"><a href="8.1-building-an-interaction.html#cb601-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cid =</span> <span class="fu">if_else</span>(cont_africa <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>))</span></code></pre></div>
+<p>Note we’re suppressing the default intercept via the <code>0 + ...</code> syntax.</p>
+<div class="sourceCode" id="cb602"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb602-1"><a href="8.1-building-an-interaction.html#cb602-1" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.2</span> <span class="ot">&lt;-</span></span>
+<span id="cb602-2"><a href="8.1-building-an-interaction.html#cb602-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> dd, </span>
+<span id="cb602-3"><a href="8.1-building-an-interaction.html#cb602-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb602-4"><a href="8.1-building-an-interaction.html#cb602-4" aria-hidden="true" tabindex="-1"></a>      log_gdp_std <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cid <span class="sc">+</span> rugged_std_c,</span>
+<span id="cb602-5"><a href="8.1-building-an-interaction.html#cb602-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid1),</span>
+<span id="cb602-6"><a href="8.1-building-an-interaction.html#cb602-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid2),</span>
+<span id="cb602-7"><a href="8.1-building-an-interaction.html#cb602-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b, <span class="at">coef =</span> rugged_std_c),</span>
+<span id="cb602-8"><a href="8.1-building-an-interaction.html#cb602-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb602-9"><a href="8.1-building-an-interaction.html#cb602-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb602-10"><a href="8.1-building-an-interaction.html#cb602-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
+<span id="cb602-11"><a href="8.1-building-an-interaction.html#cb602-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b08.02&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb603"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb603-1"><a href="8.1-building-an-interaction.html#cb603-1" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.1</span>b <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b8<span class="fl">.1</span>b, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb603-2"><a href="8.1-building-an-interaction.html#cb603-2" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b8<span class="fl">.2</span>, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb603-3"><a href="8.1-building-an-interaction.html#cb603-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb603-4"><a href="8.1-building-an-interaction.html#cb603-4" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">loo_compare</span>(b8<span class="fl">.1</span>b, b8<span class="fl">.2</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb603-5"><a href="8.1-building-an-interaction.html#cb603-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">simplify =</span> F)</span></code></pre></div>
+<pre><code>##       elpd_diff se_diff elpd_waic se_elpd_waic p_waic se_p_waic waic   se_waic
+## b8.2     0.0       0.0   126.1       7.4          4.1    0.8    -252.3   14.8 
+## b8.1b  -31.7       7.3    94.4       6.5          2.6    0.3    -188.8   13.0</code></pre>
+<div class="sourceCode" id="cb605"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb605-1"><a href="8.1-building-an-interaction.html#cb605-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model_weights</span>(b8<span class="fl">.1</span>b, b8<span class="fl">.2</span>, <span class="at">weights =</span> <span class="st">&quot;waic&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## b8.1b  b8.2 
+##     0     1</code></pre>
+<div class="sourceCode" id="cb607"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb607-1"><a href="8.1-building-an-interaction.html#cb607-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b8<span class="fl">.2</span>)</span></code></pre></div>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: log_gdp_std ~ 0 + cid + rugged_std_c 
+##    Data: dd (Number of observations: 170) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## cid1             0.88      0.02     0.85     0.91 1.00     4089     2944
+## cid2             1.05      0.01     1.03     1.07 1.00     4491     2987
+## rugged_std_c    -0.05      0.05    -0.14     0.04 1.00     3484     2736
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.11      0.01     0.10     0.13 1.00     3981     3176
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="sourceCode" id="cb609"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb609-1"><a href="8.1-building-an-interaction.html#cb609-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> </span>
+<span id="cb609-2"><a href="8.1-building-an-interaction.html#cb609-2" aria-hidden="true" tabindex="-1"></a>  brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b8<span class="fl">.2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb609-3"><a href="8.1-building-an-interaction.html#cb609-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">diff =</span> b_cid1 <span class="sc">-</span> b_cid2)</span>
+<span id="cb609-4"><a href="8.1-building-an-interaction.html#cb609-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb609-5"><a href="8.1-building-an-interaction.html#cb609-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidybayes)</span>
+<span id="cb609-6"><a href="8.1-building-an-interaction.html#cb609-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb609-7"><a href="8.1-building-an-interaction.html#cb609-7" aria-hidden="true" tabindex="-1"></a><span class="fu">qi</span>(post<span class="sc">$</span>diff, <span class="at">.width =</span> .<span class="dv">89</span>)</span></code></pre></div>
+<pre><code>##            [,1]       [,2]
+## [1,] -0.2004941 -0.1370836</code></pre>
+<p>The difference is reliably below zero.</p>
+<div class="sourceCode" id="cb611"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb611-1"><a href="8.1-building-an-interaction.html#cb611-1" aria-hidden="true" tabindex="-1"></a>nd <span class="ot">&lt;-</span> </span>
+<span id="cb611-2"><a href="8.1-building-an-interaction.html#cb611-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">crossing</span>(<span class="at">cid        =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,</span>
+<span id="cb611-3"><a href="8.1-building-an-interaction.html#cb611-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">rugged_std =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">to =</span> <span class="fl">1.2</span>, <span class="at">length.out =</span> <span class="dv">30</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb611-4"><a href="8.1-building-an-interaction.html#cb611-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">rugged_std_c =</span> rugged_std <span class="sc">-</span> <span class="fu">mean</span>(dd<span class="sc">$</span>rugged_std))</span>
+<span id="cb611-5"><a href="8.1-building-an-interaction.html#cb611-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb611-6"><a href="8.1-building-an-interaction.html#cb611-6" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span></span>
+<span id="cb611-7"><a href="8.1-building-an-interaction.html#cb611-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fitted</span>(b8<span class="fl">.2</span>, </span>
+<span id="cb611-8"><a href="8.1-building-an-interaction.html#cb611-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> nd,</span>
+<span id="cb611-9"><a href="8.1-building-an-interaction.html#cb611-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">015</span>, .<span class="dv">985</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb611-10"><a href="8.1-building-an-interaction.html#cb611-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb611-11"><a href="8.1-building-an-interaction.html#cb611-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span></span>
+<span id="cb611-12"><a href="8.1-building-an-interaction.html#cb611-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cont_africa =</span> <span class="fu">ifelse</span>(cid <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;Africa&quot;</span>, <span class="st">&quot;not Africa&quot;</span>))</span>
+<span id="cb611-13"><a href="8.1-building-an-interaction.html#cb611-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb611-14"><a href="8.1-building-an-interaction.html#cb611-14" aria-hidden="true" tabindex="-1"></a><span class="co"># what did we do?</span></span>
+<span id="cb611-15"><a href="8.1-building-an-interaction.html#cb611-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(f)</span></code></pre></div>
+<pre><code>##    Estimate  Est.Error      Q1.5     Q98.5 cid   rugged_std rugged_std_c
+## 1 0.8999853 0.02380766 0.8493229 0.9514257   1 -0.200000000   -0.4149601
+## 2 0.8977392 0.02231333 0.8501207 0.9451827   1 -0.151724138   -0.3666842
+## 3 0.8954931 0.02093972 0.8501513 0.9397260   1 -0.103448276   -0.3184083
+## 4 0.8932469 0.01971208 0.8517471 0.9355161   1 -0.055172414   -0.2701325
+## 5 0.8910008 0.01865925 0.8511358 0.9314925   1 -0.006896552   -0.2218566
+## 6 0.8887547 0.01781224 0.8504140 0.9274236   1  0.041379310   -0.1735808
+##   cont_africa
+## 1      Africa
+## 2      Africa
+## 3      Africa
+## 4      Africa
+## 5      Africa
+## 6      Africa</code></pre>
+<div class="sourceCode" id="cb613"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb613-1"><a href="8.1-building-an-interaction.html#cb613-1" aria-hidden="true" tabindex="-1"></a>dd <span class="sc">%&gt;%</span></span>
+<span id="cb613-2"><a href="8.1-building-an-interaction.html#cb613-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cont_africa =</span> <span class="fu">ifelse</span>(cont_africa <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;Africa&quot;</span>, <span class="st">&quot;not Africa&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb613-3"><a href="8.1-building-an-interaction.html#cb613-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb613-4"><a href="8.1-building-an-interaction.html#cb613-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rugged_std, <span class="at">fill =</span> cont_africa, <span class="at">color =</span> cont_africa)) <span class="sc">+</span></span>
+<span id="cb613-5"><a href="8.1-building-an-interaction.html#cb613-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> f,</span>
+<span id="cb613-6"><a href="8.1-building-an-interaction.html#cb613-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">y =</span> Estimate, <span class="at">ymin =</span> Q1<span class="fl">.5</span>, <span class="at">ymax =</span> Q98<span class="fl">.5</span>),</span>
+<span id="cb613-7"><a href="8.1-building-an-interaction.html#cb613-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb613-8"><a href="8.1-building-an-interaction.html#cb613-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb613-9"><a href="8.1-building-an-interaction.html#cb613-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> log_gdp_std),</span>
+<span id="cb613-10"><a href="8.1-building-an-interaction.html#cb613-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb613-11"><a href="8.1-building-an-interaction.html#cb613-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_pander</span>() <span class="sc">+</span></span>
+<span id="cb613-12"><a href="8.1-building-an-interaction.html#cb613-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_pander</span>() <span class="sc">+</span></span>
+<span id="cb613-13"><a href="8.1-building-an-interaction.html#cb613-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;b8.2&quot;</span>,</span>
+<span id="cb613-14"><a href="8.1-building-an-interaction.html#cb613-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;ruggedness (standardized)&quot;</span>,</span>
+<span id="cb613-15"><a href="8.1-building-an-interaction.html#cb613-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;log GDP (as proportion of mean)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb613-16"><a href="8.1-building-an-interaction.html#cb613-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb613-17"><a href="8.1-building-an-interaction.html#cb613-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb613-18"><a href="8.1-building-an-interaction.html#cb613-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.direction =</span> <span class="st">&quot;horizontal&quot;</span>,</span>
+<span id="cb613-19"><a href="8.1-building-an-interaction.html#cb613-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position =</span> <span class="fu">c</span>(.<span class="dv">67</span>, .<span class="dv">93</span>),</span>
+<span id="cb613-20"><a href="8.1-building-an-interaction.html#cb613-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<div class="figure">
+<img src="08_conditional_manatees_files/figure-html/unnamed-chunk-26-1.png" alt="Figure 8.4" width="672" />
+<p class="caption marginnote shownote">
+Figure 8.4
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/18.png" alt="These two plots come from splitting the data. This is cheating, because now you have no statistical criterion on which to evaluate the split. Need to estimate both of the lines in the same model. DOn't split it yourself - let the model split it and tell you how compelling it is." width="80%" />
+<p class="caption marginnote shownote">
+These two plots come from splitting the data. This is cheating, because now you have no statistical criterion on which to evaluate the split. Need to estimate both of the lines in the same model. DOn’t split it yourself - let the model split it and tell you how compelling it is.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/19.png" alt="Using an index variable that is continent ID. 1 means Africa, 2 means not Africa. Can do it for each continent. Different $\alpha$ for each continent. Now you can assign the same prior to all of the continents. We run the model and get the graphs on the right. The intercepts now have changed, and African countries are depressed relative to non-African countries." width="80%" />
+<p class="caption marginnote shownote">
+Using an index variable that is continent ID. 1 means Africa, 2 means not Africa. Can do it for each continent. Different <span class="math inline">\(\alpha\)</span> for each continent. Now you can assign the same prior to all of the continents. We run the model and get the graphs on the right. The intercepts now have changed, and African countries are depressed relative to non-African countries.
+</p>
+</div>
+<p><strong><em>8.1.3. Adding an interaction does work</em></strong></p>
+<p>This just means making the slope conditional on continent.</p>
+<div class="figure">
+<img src="slides/L09/20.png" alt="Just add the index variable to the slope. Now we have a separete slope for ecah continent. Centered the GDP so that the intercept makes sense. " width="80%" />
+<p class="caption marginnote shownote">
+Just add the index variable to the slope. Now we have a separete slope for ecah continent. Centered the GDP so that the intercept makes sense.
+</p>
+</div>
+<p><img src="slides/L09/21.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L09/22.png" alt="Here are the marginal posterior distributions. Index of 1 means Africa, 2 means not Africa. Average GDP is lower. At the mean ruggedness, in the world, an African country has 90% of the average GDP in the sample. How does GDP change? It's postivie for AFrican countries `b[1]`, and `b[2]` is negative. Basically the same magnitude." width="80%" />
+<p class="caption marginnote shownote">
+Here are the marginal posterior distributions. Index of 1 means Africa, 2 means not Africa. Average GDP is lower. At the mean ruggedness, in the world, an African country has 90% of the average GDP in the sample. How does GDP change? It’s postivie for AFrican countries <code>b[1]</code>, and <code>b[2]</code> is negative. Basically the same magnitude.
+</p>
+</div>
+<div class="sourceCode" id="cb614"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb614-1"><a href="8.1-building-an-interaction.html#cb614-1" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb614-2"><a href="8.1-building-an-interaction.html#cb614-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> dd, </span>
+<span id="cb614-3"><a href="8.1-building-an-interaction.html#cb614-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb614-4"><a href="8.1-building-an-interaction.html#cb614-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(log_gdp_std <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> a <span class="sc">+</span> b <span class="sc">*</span> rugged_std_c, </span>
+<span id="cb614-5"><a href="8.1-building-an-interaction.html#cb614-5" aria-hidden="true" tabindex="-1"></a>         a <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cid, </span>
+<span id="cb614-6"><a href="8.1-building-an-interaction.html#cb614-6" aria-hidden="true" tabindex="-1"></a>         b <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> cid,</span>
+<span id="cb614-7"><a href="8.1-building-an-interaction.html#cb614-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">nl =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb614-8"><a href="8.1-building-an-interaction.html#cb614-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid1, <span class="at">nlpar =</span> a),</span>
+<span id="cb614-9"><a href="8.1-building-an-interaction.html#cb614-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">1</span>, <span class="fl">0.1</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid2, <span class="at">nlpar =</span> a),</span>
+<span id="cb614-10"><a href="8.1-building-an-interaction.html#cb614-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid1, <span class="at">nlpar =</span> b),</span>
+<span id="cb614-11"><a href="8.1-building-an-interaction.html#cb614-11" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.3</span>), <span class="at">class =</span> b, <span class="at">coef =</span> cid2, <span class="at">nlpar =</span> b),</span>
+<span id="cb614-12"><a href="8.1-building-an-interaction.html#cb614-12" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb614-13"><a href="8.1-building-an-interaction.html#cb614-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb614-14"><a href="8.1-building-an-interaction.html#cb614-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">8</span>,</span>
+<span id="cb614-15"><a href="8.1-building-an-interaction.html#cb614-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b08.03&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="slides/L09/23.png" alt="Now they're from the same model. Looks the same. The slope on the left is less certain. Compatibility bowtie is bigger because there are fewer African countries. " width="80%" />
+<p class="caption marginnote shownote">
+Now they’re from the same model. Looks the same. The slope on the left is less certain. Compatibility bowtie is bigger because there are fewer African countries.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L09/24.png" alt="Here we're just looking at two categories, but it can get confusing quickly, especially if you don't center the variables. Need to plot to understand. **Whenever you have an interaction, the impact of a change in one predictor depends on more that one parameter.** So you can't look at a single row and guess what the effect is of changing things. You need them all. This is why plotting is so essential." width="80%" />
+<p class="caption marginnote shownote">
+Here we’re just looking at two categories, but it can get confusing quickly, especially if you don’t center the variables. Need to plot to understand. <strong>Whenever you have an interaction, the impact of a change in one predictor depends on more that one parameter.</strong> So you can’t look at a single row and guess what the effect is of changing things. You need them all. This is why plotting is so essential.
+</p>
+</div>
+<div class="sourceCode" id="cb615"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb615-1"><a href="8.1-building-an-interaction.html#cb615-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b8<span class="fl">.3</span>)</span></code></pre></div>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: log_gdp_std ~ 0 + a + b * rugged_std_c 
+##          a ~ 0 + cid
+##          b ~ 0 + cid
+##    Data: dd (Number of observations: 170) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##        Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## a_cid1     0.89      0.02     0.86     0.92 1.00     4808     3274
+## a_cid2     1.05      0.01     1.03     1.07 1.00     6227     3439
+## b_cid1     0.13      0.08    -0.02     0.28 1.00     5023     2991
+## b_cid2    -0.14      0.06    -0.25    -0.03 1.00     4639     2559
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.11      0.01     0.10     0.12 1.00     4913     2940
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="sourceCode" id="cb617"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb617-1"><a href="8.1-building-an-interaction.html#cb617-1" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.1</span>b <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b8<span class="fl">.1</span>b, <span class="st">&quot;loo&quot;</span>)</span>
+<span id="cb617-2"><a href="8.1-building-an-interaction.html#cb617-2" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b8<span class="fl">.2</span>, <span class="st">&quot;loo&quot;</span>)</span>
+<span id="cb617-3"><a href="8.1-building-an-interaction.html#cb617-3" aria-hidden="true" tabindex="-1"></a>b8<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b8<span class="fl">.3</span>, <span class="fu">c</span>(<span class="st">&quot;loo&quot;</span>, <span class="st">&quot;waic&quot;</span>))</span>
+<span id="cb617-4"><a href="8.1-building-an-interaction.html#cb617-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb617-5"><a href="8.1-building-an-interaction.html#cb617-5" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">loo_compare</span>(b8<span class="fl">.1</span>b, b8<span class="fl">.2</span>, b8<span class="fl">.3</span>, <span class="at">criterion =</span> <span class="st">&quot;loo&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb617-6"><a href="8.1-building-an-interaction.html#cb617-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">simplify =</span> F)</span></code></pre></div>
+<pre><code>##       elpd_diff se_diff elpd_loo se_elpd_loo p_loo  se_p_loo looic  se_looic
+## b8.3     0.0       0.0   129.6      7.3         5.0    0.9   -259.2   14.7  
+## b8.2    -3.5       3.2   126.1      7.4         4.1    0.8   -252.2   14.8  
+## b8.1b  -35.2       7.5    94.4      6.5         2.6    0.3   -188.8   13.0</code></pre>
+<p>Get the LOO weights</p>
+<div class="sourceCode" id="cb619"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb619-1"><a href="8.1-building-an-interaction.html#cb619-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model_weights</span>(b8<span class="fl">.1</span>b, b8<span class="fl">.2</span>, b8<span class="fl">.3</span>, <span class="at">weights =</span> <span class="st">&quot;loo&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## b8.1b  b8.2  b8.3 
+##  0.00  0.03  0.97</code></pre>
+<p>Model family b8.3 has more than 95% of the weight. That’s very strong support for including the interaction effect, if prediction is our goal. But the modicum of weight given to <code>m8.2</code> suggests that the posterior means for the slopes in <code>m8.3</code> are a little overfit.</p>
+<div class="sourceCode" id="cb621"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb621-1"><a href="8.1-building-an-interaction.html#cb621-1" aria-hidden="true" tabindex="-1"></a><span class="fu">loo</span>(b8<span class="fl">.3</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb621-2"><a href="8.1-building-an-interaction.html#cb621-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code></pre></div>
+<p><img src="08_conditional_manatees_files/figure-html/8.16-1.png" width="672" /></p>
+<p><strong><em>8.1.4. Plotting the interaction</em></strong></p>
+<div class="sourceCode" id="cb622"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb622-1"><a href="8.1-building-an-interaction.html#cb622-1" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Equatorial Guinea&quot;</span>, <span class="st">&quot;South Africa&quot;</span>, <span class="st">&quot;Seychelles&quot;</span>, <span class="st">&quot;Swaziland&quot;</span>, <span class="st">&quot;Lesotho&quot;</span>, <span class="st">&quot;Rwanda&quot;</span>, <span class="st">&quot;Burundi&quot;</span>, <span class="st">&quot;Luxembourg&quot;</span>, <span class="st">&quot;Greece&quot;</span>, <span class="st">&quot;Switzerland&quot;</span>, <span class="st">&quot;Lebanon&quot;</span>, <span class="st">&quot;Yemen&quot;</span>, <span class="st">&quot;Tajikistan&quot;</span>, <span class="st">&quot;Nepal&quot;</span>)</span>
+<span id="cb622-2"><a href="8.1-building-an-interaction.html#cb622-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb622-3"><a href="8.1-building-an-interaction.html#cb622-3" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span></span>
+<span id="cb622-4"><a href="8.1-building-an-interaction.html#cb622-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fitted</span>(b8<span class="fl">.3</span>, </span>
+<span id="cb622-5"><a href="8.1-building-an-interaction.html#cb622-5" aria-hidden="true" tabindex="-1"></a>         <span class="co"># we already defined `nd`, above</span></span>
+<span id="cb622-6"><a href="8.1-building-an-interaction.html#cb622-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> nd,</span>
+<span id="cb622-7"><a href="8.1-building-an-interaction.html#cb622-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">015</span>, .<span class="dv">985</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb622-8"><a href="8.1-building-an-interaction.html#cb622-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb622-9"><a href="8.1-building-an-interaction.html#cb622-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span></span>
+<span id="cb622-10"><a href="8.1-building-an-interaction.html#cb622-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cont_africa =</span> <span class="fu">ifelse</span>(cid <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;African nations&quot;</span>, <span class="st">&quot;Non-African nations&quot;</span>))</span>
+<span id="cb622-11"><a href="8.1-building-an-interaction.html#cb622-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb622-12"><a href="8.1-building-an-interaction.html#cb622-12" aria-hidden="true" tabindex="-1"></a>dd <span class="sc">%&gt;%</span></span>
+<span id="cb622-13"><a href="8.1-building-an-interaction.html#cb622-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cont_africa =</span> <span class="fu">ifelse</span>(cont_africa <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;African nations&quot;</span>, <span class="st">&quot;Non-African nations&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb622-14"><a href="8.1-building-an-interaction.html#cb622-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb622-15"><a href="8.1-building-an-interaction.html#cb622-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rugged_std, <span class="at">y =</span> log_gdp_std, <span class="at">fill =</span> cont_africa, <span class="at">color =</span> cont_africa)) <span class="sc">+</span></span>
+<span id="cb622-16"><a href="8.1-building-an-interaction.html#cb622-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">data =</span> f,</span>
+<span id="cb622-17"><a href="8.1-building-an-interaction.html#cb622-17" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">y =</span> Estimate, <span class="at">ymin =</span> Q1<span class="fl">.5</span>, <span class="at">ymax =</span> Q98<span class="fl">.5</span>),</span>
+<span id="cb622-18"><a href="8.1-building-an-interaction.html#cb622-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb622-19"><a href="8.1-building-an-interaction.html#cb622-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb622-20"><a href="8.1-building-an-interaction.html#cb622-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">data =</span> . <span class="sc">%&gt;%</span> <span class="fu">filter</span>(country <span class="sc">%in%</span> countries),  </span>
+<span id="cb622-21"><a href="8.1-building-an-interaction.html#cb622-21" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(<span class="at">label =</span> country), </span>
+<span id="cb622-22"><a href="8.1-building-an-interaction.html#cb622-22" aria-hidden="true" tabindex="-1"></a>                  <span class="at">size =</span> <span class="dv">3</span>, <span class="at">seed =</span> <span class="dv">8</span>, </span>
+<span id="cb622-23"><a href="8.1-building-an-interaction.html#cb622-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">segment.color =</span> <span class="st">&quot;grey25&quot;</span>, <span class="at">min.segment.length =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb622-24"><a href="8.1-building-an-interaction.html#cb622-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> log_gdp_std),</span>
+<span id="cb622-25"><a href="8.1-building-an-interaction.html#cb622-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb622-26"><a href="8.1-building-an-interaction.html#cb622-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_pander</span>() <span class="sc">+</span></span>
+<span id="cb622-27"><a href="8.1-building-an-interaction.html#cb622-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_pander</span>() <span class="sc">+</span></span>
+<span id="cb622-28"><a href="8.1-building-an-interaction.html#cb622-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;ruggedness (standardized)&quot;</span>,</span>
+<span id="cb622-29"><a href="8.1-building-an-interaction.html#cb622-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;log GDP (as proportion of mean)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb622-30"><a href="8.1-building-an-interaction.html#cb622-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb622-31"><a href="8.1-building-an-interaction.html#cb622-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb622-32"><a href="8.1-building-an-interaction.html#cb622-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> cont_africa)</span></code></pre></div>
+<div class="figure">
+<img src="08_conditional_manatees_files/figure-html/unnamed-chunk-35-1.png" alt="Figure 8.4" width="672" />
+<p class="caption marginnote shownote">
+Figure 8.4
+</p>
+</div>
+</div>
+<p style="text-align: center;">
+<a href="8-conditional-manatees.html"><button class="btn btn-default">Previous</button></a>
+<a href="8.2-symmetry-of-interactions.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

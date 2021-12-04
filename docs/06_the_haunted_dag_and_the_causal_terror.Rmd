@@ -927,7 +927,7 @@ d %>%
 
 What can we do about this? We have to measure $U$:
 
-```{r 6.28, results = "hide}
+```{r 6.28, results = "hide"}
 b6.12 <- 
   brm(data = d, 
       family = gaussian,

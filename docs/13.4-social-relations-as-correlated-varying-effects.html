@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="13.4 Social relations as correlated varying effects | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="13.4 Social relations as correlated varying effects | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>13.4 Social relations as correlated varying effects | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="social-relations-as-correlated-varying-effects" class="section level2" number="13.4">
+<h2><span class="header-section-number">13.4</span> Social relations as correlated varying effects</h2>
+<div class="figure">
+<img src="slides/L18/29.png" alt="One of my favourite types of models. Often in the social sciences and organismal biology, we're interested in dyadic interactionsb etween units. Complicated because there's a field of interactions. Pulling apart can be difficult. " width="80%" />
+<p class="caption marginnote shownote">
+One of my favourite types of models. Often in the social sciences and organismal biology, we’re interested in dyadic interactionsb etween units. Complicated because there’s a field of interactions. Pulling apart can be difficult.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/30.png" alt="Example from a collaborator. 25 households from rural Nicaragua. Outcome is gifts, usually of meat, from one household to another. Lots of reciprocity in these networks, but meausuring is tricky, becuase there are also generalised effects. 300 dyads. This dataset has 300 rows. Modest correalation of 0.24. But this isn't the way to measure reciprocity. " width="80%" />
+<p class="caption marginnote shownote">
+Example from a collaborator. 25 households from rural Nicaragua. Outcome is gifts, usually of meat, from one household to another. Lots of reciprocity in these networks, but meausuring is tricky, becuase there are also generalised effects. 300 dyads. This dataset has 300 rows. Modest correalation of 0.24. But this isn’t the way to measure reciprocity.
+</p>
+</div>
+<div class="sourceCode" id="cb1031"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1031-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1031-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rethinking)</span>
+<span id="cb1031-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1031-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(KosterLeckie)</span></code></pre></div>
+<div class="sourceCode" id="cb1032"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1032-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1032-1" aria-hidden="true" tabindex="-1"></a>kl_dyads <span class="sc">%&gt;%</span> <span class="fu">glimpse</span>()</span></code></pre></div>
+<pre><code>## Rows: 300
+## Columns: 13
+## $ hidA    &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+## $ hidB    &lt;int&gt; 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19…
+## $ did     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,…
+## $ giftsAB &lt;int&gt; 0, 6, 2, 4, 8, 2, 1, 0, 10, 1, 0, 0, 1, 6, 0, 0, 0, 0, 0, 0, 0…
+## $ giftsBA &lt;int&gt; 4, 31, 5, 2, 2, 1, 2, 1, 110, 0, 0, 6, 11, 0, 1, 4, 0, 2, 0, 7…
+## $ offset  &lt;dbl&gt; 0.000, -0.003, -0.019, 0.000, -0.003, 0.000, 0.000, 0.000, -0.…
+## $ drel1   &lt;int&gt; 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ drel2   &lt;int&gt; 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,…
+## $ drel3   &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0,…
+## $ drel4   &lt;int&gt; 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1,…
+## $ dlndist &lt;dbl&gt; -2.790, -2.817, -1.886, -1.892, -3.499, -1.853, -1.475, -1.644…
+## $ dass    &lt;dbl&gt; 0.000, 0.044, 0.025, 0.011, 0.022, 0.071, 0.046, 0.003, 0.552,…
+## $ d0125   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</code></pre>
+<div class="sourceCode" id="cb1034"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1034-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-1" aria-hidden="true" tabindex="-1"></a>kl_dyads <span class="sc">%&gt;%</span> </span>
+<span id="cb1034-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> hidA, <span class="at">y =</span> hidB, <span class="at">label =</span> did)) <span class="sc">+</span></span>
+<span id="cb1034-3"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> did),</span>
+<span id="cb1034-4"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">show.legend =</span> F) <span class="sc">+</span></span>
+<span id="cb1034-5"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">size =</span> <span class="fl">2.25</span>, <span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1034-6"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">24</span> <span class="sc">+</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;#394165&quot;</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb1034-7"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">25</span> <span class="sc">+</span> <span class="fl">0.5</span>, <span class="at">color =</span> <span class="st">&quot;#394165&quot;</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb1034-8"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;#DCA258&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#EEDA9D&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb1034-9"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">24</span>) <span class="sc">+</span></span>
+<span id="cb1034-10"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">25</span>) <span class="sc">+</span></span>
+<span id="cb1034-11"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),</span>
+<span id="cb1034-12"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1034-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-109-1.png" width="672" /></p>
+<p>Figure 14.8</p>
+<div class="sourceCode" id="cb1035"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1035-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-1" aria-hidden="true" tabindex="-1"></a>kl_dyads <span class="sc">%&gt;%</span> </span>
+<span id="cb1035-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> giftsAB, <span class="at">y =</span> giftsBA)) <span class="sc">+</span></span>
+<span id="cb1035-3"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hex</span>(<span class="at">bins =</span> <span class="dv">70</span>) <span class="sc">+</span></span>
+<span id="cb1035-4"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&quot;#DCA258&quot;</span>, <span class="at">linetype =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1035-5"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">&quot;#E7CDC2&quot;</span>, <span class="at">high =</span> <span class="st">&quot;#A65141&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb1035-6"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="st">&quot;gifts household A to household B&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">113</span>)) <span class="sc">+</span></span>
+<span id="cb1035-7"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">&quot;gifts from B to A&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">113</span>)) <span class="sc">+</span></span>
+<span id="cb1035-8"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Distribution of dyadic gifts&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1035-9"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1035-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>()</span></code></pre></div>
+<pre><code>## Warning: Removed 11 rows containing missing values (geom_hex).</code></pre>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-110-1.png" width="672" /></p>
+<p>Pearson’s correlation coefficient, collapsing across grouping levels.</p>
+<div class="sourceCode" id="cb1037"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1037-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1037-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(kl_dyads<span class="sc">$</span>giftsAB, kl_dyads<span class="sc">$</span>giftsBA) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## [1] 0.239</code></pre>
+<p>However, it would be a mistake to take this correlation seriously. It is a disentangled mixture of various kinds of associations, none of which are guaranteed to be even close to <span class="math inline">\(r=.24\)</span>. Remember this as we move along with the analyses and let the consequences burn a methodological mark into your soul.</p>
+<div class="figure">
+<img src="slides/L18/31.png" alt="Here's the problem. TThe 0.24 correlation is produced both by generalised effects, and household-specific (or dyadic) effects. Also a lot of predictors like kinship in the datsaaaset. We're going to ignore it. We think about the count from A to B. There's some average $\alpha$. There's also a generosity rate. Some households are more generous to others. There's also generalised receiving, $r_B$. These generalised effects are contaminating. Then there are dyad effects, consdiering only the household A and B, how much does A give to B, and how is that correlation to how much B gives to A. " width="80%" />
+<p class="caption marginnote shownote">
+Here’s the problem. TThe 0.24 correlation is produced both by generalised effects, and household-specific (or dyadic) effects. Also a lot of predictors like kinship in the datsaaaset. We’re going to ignore it. We think about the count from A to B. There’s some average <span class="math inline">\(\alpha\)</span>. There’s also a generosity rate. Some households are more generous to others. There’s also generalised receiving, <span class="math inline">\(r_B\)</span>. These generalised effects are contaminating. Then there are dyad effects, consdiering only the household A and B, how much does A give to B, and how is that correlation to how much B gives to A.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/32.png" alt="How to model it? We need covariances! One covariance matrix for the generalised effects. For each hosuefhold $i$, you have two parameters, $g$ - gleneralised offset, as in how much it's giving on average, offset, adn $r$, which is how much more than alpha it tends to receive. They're going to be correlated. We set upt this 2x2 covariance matrix as before. Variation in the givingness offset, and variation in the receivingness offset. Nothing new here really.  " width="80%" />
+<p class="caption marginnote shownote">
+How to model it? We need covariances! One covariance matrix for the generalised effects. For each hosuefhold <span class="math inline">\(i\)</span>, you have two parameters, <span class="math inline">\(g\)</span> - gleneralised offset, as in how much it’s giving on average, offset, adn <span class="math inline">\(r\)</span>, which is how much more than alpha it tends to receive. They’re going to be correlated. We set upt this 2x2 covariance matrix as before. Variation in the givingness offset, and variation in the receivingness offset. Nothing new here really.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/33.png" alt="Next we have the dyad effects. For each dyad $i$ and $j$, they're donation offsets in both directions. A can tend to give a lot to B, and B gives little to A, then these `d` parameters will have low correaltion. If they're negative, the pairs end up in depednence relationships. We capture these effects iwth this covariance matrix. It's new, and special, because it only has one sigma inside of it. Why? Because it's symmetrical. A and B are th same type of parameter. Like judo - blue and read shorts are random, so the variance between their wins must be the same because it's randomised." width="80%" />
+<p class="caption marginnote shownote">
+Next we have the dyad effects. For each dyad <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, they’re donation offsets in both directions. A can tend to give a lot to B, and B gives little to A, then these <code>d</code> parameters will have low correaltion. If they’re negative, the pairs end up in depednence relationships. We capture these effects iwth this covariance matrix. It’s new, and special, because it only has one sigma inside of it. Why? Because it’s symmetrical. A and B are th same type of parameter. Like judo - blue and read shorts are random, so the variance between their wins must be the same because it’s randomised.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/34.png" alt="Just copy the sigma twice into the matrix. Details are boring. Just one sigma - $\sigma_d$." width="80%" />
+<p class="caption marginnote shownote">
+Just copy the sigma twice into the matrix. Details are boring. Just one sigma - <span class="math inline">\(\sigma_d\)</span>.
+</p>
+</div>
+<div class="sourceCode" id="cb1039"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1039-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-1" aria-hidden="true" tabindex="-1"></a>kl_data <span class="ot">&lt;-</span> </span>
+<span id="cb1039-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb1039-3"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">N            =</span> <span class="fu">nrow</span>(kl_dyads),</span>
+<span id="cb1039-4"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">N_households =</span> <span class="fu">max</span>(kl_dyads<span class="sc">$</span>hidB), </span>
+<span id="cb1039-5"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">did          =</span> kl_dyads<span class="sc">$</span>did,</span>
+<span id="cb1039-6"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">hidA         =</span> kl_dyads<span class="sc">$</span>hidA,</span>
+<span id="cb1039-7"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">hidB         =</span> kl_dyads<span class="sc">$</span>hidB,</span>
+<span id="cb1039-8"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">giftsAB      =</span> kl_dyads<span class="sc">$</span>giftsAB, </span>
+<span id="cb1039-9"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">giftsBA      =</span> kl_dyads<span class="sc">$</span>giftsBA</span>
+<span id="cb1039-10"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1039-11"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1039-12"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-12" aria-hidden="true" tabindex="-1"></a>m14<span class="fl">.7</span> <span class="ot">&lt;-</span> </span>
+<span id="cb1039-13"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ulam</span>( </span>
+<span id="cb1039-14"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">alist</span>(</span>
+<span id="cb1039-15"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-15" aria-hidden="true" tabindex="-1"></a>      giftsAB <span class="sc">~</span> <span class="fu">poisson</span>(lambdaAB),</span>
+<span id="cb1039-16"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-16" aria-hidden="true" tabindex="-1"></a>      giftsBA <span class="sc">~</span> <span class="fu">poisson</span>(lambdaBA),</span>
+<span id="cb1039-17"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log</span>(lambdaAB) <span class="ot">&lt;-</span> a <span class="sc">+</span> gr[hidA, <span class="dv">1</span>] <span class="sc">+</span> gr[hidB, <span class="dv">2</span>] <span class="sc">+</span> d[did, <span class="dv">1</span>] , </span>
+<span id="cb1039-18"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log</span>(lambdaBA) <span class="ot">&lt;-</span> a <span class="sc">+</span> gr[hidB, <span class="dv">1</span>] <span class="sc">+</span> gr[hidA, <span class="dv">2</span>] <span class="sc">+</span> d[did, <span class="dv">2</span>] , </span>
+<span id="cb1039-19"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-19" aria-hidden="true" tabindex="-1"></a>      a <span class="sc">~</span> <span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb1039-20"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-20" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb1039-21"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-21" aria-hidden="true" tabindex="-1"></a>      <span class="do">## gr matrix of varying effects</span></span>
+<span id="cb1039-22"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-22" aria-hidden="true" tabindex="-1"></a>      vector[<span class="dv">2</span>]<span class="sc">:</span>gr[N_households] <span class="sc">~</span> <span class="fu">multi_normal</span>(<span class="dv">0</span>, Rho_gr, sigma_gr), </span>
+<span id="cb1039-23"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-23" aria-hidden="true" tabindex="-1"></a>      Rho_gr <span class="sc">~</span> <span class="fu">lkj_corr</span>(<span class="dv">4</span>),</span>
+<span id="cb1039-24"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-24" aria-hidden="true" tabindex="-1"></a>      sigma_gr <span class="sc">~</span> <span class="fu">exponential</span>(<span class="dv">1</span>),</span>
+<span id="cb1039-25"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-25" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb1039-26"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-26" aria-hidden="true" tabindex="-1"></a>      <span class="do">## dyad effects</span></span>
+<span id="cb1039-27"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-27" aria-hidden="true" tabindex="-1"></a>      transpars<span class="sc">&gt;</span> matrix[N,<span class="dv">2</span>]<span class="sc">:</span>d <span class="ot">&lt;-</span></span>
+<span id="cb1039-28"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-28" aria-hidden="true" tabindex="-1"></a>        <span class="fu">compose_noncentered</span>(<span class="fu">rep_vector</span>(sigma_d, <span class="dv">2</span>), L_Rho_d, z), </span>
+<span id="cb1039-29"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-29" aria-hidden="true" tabindex="-1"></a>      matrix[<span class="dv">2</span>,N]<span class="sc">:</span>z <span class="sc">~</span> <span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb1039-30"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-30" aria-hidden="true" tabindex="-1"></a>      cholesky_factor_corr[<span class="dv">2</span>]<span class="sc">:</span>L_Rho_d <span class="sc">~</span> <span class="fu">lkj_corr_cholesky</span>(<span class="dv">8</span>), </span>
+<span id="cb1039-31"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-31" aria-hidden="true" tabindex="-1"></a>      sigma_d <span class="sc">~</span> <span class="fu">exponential</span>(<span class="dv">1</span>),</span>
+<span id="cb1039-32"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-32" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb1039-33"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-33" aria-hidden="true" tabindex="-1"></a>      <span class="do">## compute correlation matrix for dyads</span></span>
+<span id="cb1039-34"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-34" aria-hidden="true" tabindex="-1"></a>      gq<span class="sc">&gt;</span> matrix[<span class="dv">2</span>, <span class="dv">2</span>]<span class="sc">:</span>Rho_d <span class="ot">&lt;&lt;-</span> <span class="fu">Chol_to_Corr</span>(L_Rho_d)</span>
+<span id="cb1039-35"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-35" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb1039-36"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> kl_data, </span>
+<span id="cb1039-37"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>, <span class="at">iter =</span> <span class="dv">2000</span></span>
+<span id="cb1039-38"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1039-38" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<pre><code>## This is cmdstanr version 0.4.0</code></pre>
+<pre><code>## - Online documentation and vignettes at mc-stan.org/cmdstanr</code></pre>
+<pre><code>## - CmdStan path set to: /homes/brettell/.cmdstanr/cmdstan-2.28.2</code></pre>
+<pre><code>## - Use set_cmdstan_path() to change the path</code></pre>
+<pre><code>## Running MCMC with 4 parallel chains, with 1 thread(s) per chain...
+## 
+## Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup)</code></pre>
+<pre><code>## Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 1 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 1</code></pre>
+<pre><code>## Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 1 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 1</code></pre>
+<pre><code>## Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 1 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 1</code></pre>
+<pre><code>## Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 1 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 1</code></pre>
+<pre><code>## Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 1 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 1</code></pre>
+<pre><code>## Chain 2 Iteration:    1 / 2000 [  0%]  (Warmup)</code></pre>
+<pre><code>## Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 2 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 2</code></pre>
+<pre><code>## Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 2 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 2</code></pre>
+<pre><code>## Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 2 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 2</code></pre>
+<pre><code>## Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 2 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 2</code></pre>
+<pre><code>## Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 2 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 2</code></pre>
+<pre><code>## Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 2 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 2</code></pre>
+<pre><code>## Chain 3 Iteration:    1 / 2000 [  0%]  (Warmup)</code></pre>
+<pre><code>## Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 3 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 3</code></pre>
+<pre><code>## Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 3 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 3</code></pre>
+<pre><code>## Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 3 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 3</code></pre>
+<pre><code>## Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 3 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 3</code></pre>
+<pre><code>## Chain 4 Iteration:    1 / 2000 [  0%]  (Warmup)</code></pre>
+<pre><code>## Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 4 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 4</code></pre>
+<pre><code>## Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 4 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 4</code></pre>
+<pre><code>## Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 4 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 4</code></pre>
+<pre><code>## Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 4 Exception: multi_normal_lpdf: Covariance matrix is not symmetric. Covariance matrix[1,2] = 4.70818e+22, but Covariance matrix[2,1] = 4.70818e+22 (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 31, column 4 to column 77)</code></pre>
+<pre><code>## Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 4</code></pre>
+<pre><code>## Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 4 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 4</code></pre>
+<pre><code>## Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</code></pre>
+<pre><code>## Chain 4 Exception: lkj_corr_lpdf: Correlation matrix is not positive definite. (in &#39;/tmp/RtmpezcR3b/model-2dd7716dc7e650.stan&#39;, line 30, column 4 to column 27)</code></pre>
+<pre><code>## Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</code></pre>
+<pre><code>## Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</code></pre>
+<pre><code>## Chain 4</code></pre>
+<pre><code>## Chain 3 Iteration:  100 / 2000 [  5%]  (Warmup) 
+## Chain 1 Iteration:  100 / 2000 [  5%]  (Warmup) 
+## Chain 2 Iteration:  100 / 2000 [  5%]  (Warmup) 
+## Chain 1 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+## Chain 4 Iteration:  100 / 2000 [  5%]  (Warmup) 
+## Chain 3 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+## Chain 1 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+## Chain 3 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+## Chain 2 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+## Chain 1 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+## Chain 3 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+## Chain 4 Iteration:  200 / 2000 [ 10%]  (Warmup) 
+## Chain 2 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+## Chain 1 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+## Chain 3 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+## Chain 2 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+## Chain 4 Iteration:  300 / 2000 [ 15%]  (Warmup) 
+## Chain 1 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+## Chain 2 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+## Chain 3 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+## Chain 4 Iteration:  400 / 2000 [ 20%]  (Warmup) 
+## Chain 1 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+## Chain 2 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+## Chain 3 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+## Chain 1 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+## Chain 4 Iteration:  500 / 2000 [ 25%]  (Warmup) 
+## Chain 3 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+## Chain 1 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+## Chain 2 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+## Chain 4 Iteration:  600 / 2000 [ 30%]  (Warmup) 
+## Chain 2 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+## Chain 3 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+## Chain 1 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+## Chain 1 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+## Chain 4 Iteration:  700 / 2000 [ 35%]  (Warmup) 
+## Chain 2 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+## Chain 1 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+## Chain 4 Iteration:  800 / 2000 [ 40%]  (Warmup) 
+## Chain 3 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+## Chain 3 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+## Chain 1 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+## Chain 4 Iteration:  900 / 2000 [ 45%]  (Warmup) 
+## Chain 3 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+## Chain 2 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+## Chain 2 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+## Chain 1 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+## Chain 4 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
+## Chain 4 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
+## Chain 3 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+## Chain 2 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+## Chain 1 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+## Chain 3 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+## Chain 4 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
+## Chain 1 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+## Chain 2 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+## Chain 4 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
+## Chain 3 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+## Chain 1 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+## Chain 2 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+## Chain 3 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+## Chain 1 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+## Chain 4 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
+## Chain 2 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+## Chain 1 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+## Chain 3 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+## Chain 4 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
+## Chain 1 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+## Chain 2 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+## Chain 3 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+## Chain 4 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
+## Chain 1 Iteration: 2000 / 2000 [100%]  (Sampling) 
+## Chain 1 finished in 16.3 seconds.
+## Chain 2 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+## Chain 4 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
+## Chain 3 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+## Chain 4 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+## Chain 2 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
+## Chain 3 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+## Chain 4 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+## Chain 2 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
+## Chain 3 Iteration: 2000 / 2000 [100%]  (Sampling) 
+## Chain 3 finished in 18.3 seconds.
+## Chain 4 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+## Chain 2 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
+## Chain 4 Iteration: 2000 / 2000 [100%]  (Sampling) 
+## Chain 4 finished in 19.4 seconds.
+## Chain 2 Iteration: 2000 / 2000 [100%]  (Sampling) 
+## Chain 2 finished in 19.7 seconds.
+## 
+## All 4 chains finished successfully.
+## Mean chain execution time: 18.5 seconds.
+## Total execution time: 19.9 seconds.</code></pre>
+<div class="sourceCode" id="cb1154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1154-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1154-1" aria-hidden="true" tabindex="-1"></a><span class="fu">precis</span>(m14<span class="fl">.7</span>, <span class="at">depth =</span> <span class="dv">3</span>, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">&quot;Rho_gr&quot;</span>, <span class="st">&quot;sigma_gr&quot;</span>))</span></code></pre></div>
+<pre><code>##                   mean         sd       5.5%       94.5%    n_eff     Rhat4
+## Rho_gr[1,1]  1.0000000 0.00000000  1.0000000  1.00000000      NaN       NaN
+## Rho_gr[1,2] -0.4137022 0.19504259 -0.6989984 -0.08187759 1346.884 0.9997828
+## Rho_gr[2,1] -0.4137022 0.19504259 -0.6989984 -0.08187759 1346.884 0.9997828
+## Rho_gr[2,2]  1.0000000 0.00000000  1.0000000  1.00000000      NaN       NaN
+## sigma_gr[1]  0.8280144 0.13839763  0.6319919  1.06595045 2201.960 1.0010170
+## sigma_gr[2]  0.4206280 0.09125567  0.2869814  0.57225325 1038.857 1.0039446</code></pre>
+<div class="figure">
+<img src="slides/L18/35.png" alt="Correlation matrix for the GR effects and the two SDs for it. Look at the correaltion: -0.4." width="80%" />
+<p class="caption marginnote shownote">
+Correlation matrix for the GR effects and the two SDs for it. Look at the correaltion: -0.4.
+</p>
+</div>
+<div class="sourceCode" id="cb1156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1156-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">extract.samples</span>(m14<span class="fl">.7</span>)</span>
+<span id="cb1156-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1156-3"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="st">`</span><span class="at">sigma[italic(g)]</span><span class="st">`</span>          <span class="ot">=</span> post<span class="sc">$</span>sigma_gr[, <span class="dv">1</span>],</span>
+<span id="cb1156-4"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-4" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">sigma[italic(r)]</span><span class="st">`</span>          <span class="ot">=</span> post<span class="sc">$</span>sigma_gr[, <span class="dv">2</span>],</span>
+<span id="cb1156-5"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-5" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">rho[italic(g)][italic(r)]</span><span class="st">`</span> <span class="ot">=</span> post<span class="sc">$</span>Rho_gr[, <span class="dv">2</span>, <span class="dv">1</span>]) <span class="sc">%&gt;%</span> </span>
+<span id="cb1156-6"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb1156-7"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1156-8"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> name, <span class="at">fill =</span> name)) <span class="sc">+</span></span>
+<span id="cb1156-9"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1156-10"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> .<span class="dv">89</span>, <span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">height =</span> <span class="fl">1.5</span>) <span class="sc">+</span> </span>
+<span id="cb1156-11"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#80A0C7&quot;</span>, <span class="st">&quot;#EEDA9D&quot;</span>, <span class="st">&quot;#DCA258&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb1156-12"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="cn">NULL</span>, <span class="at">labels =</span> ggplot2<span class="sc">:::</span>parse_safe) <span class="sc">+</span></span>
+<span id="cb1156-13"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;marginal posterior&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1156-14"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">1.5</span>, <span class="fl">3.9</span>)) <span class="sc">+</span></span>
+<span id="cb1156-15"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1156-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/14.33%20b-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L18/36.png" alt="Generalised giving  for each household against generalised receiving. Negative correlation meaning that generous households receive less, because thy're rich. Then poor households on the left. Having conditioned on dyad effects. Can see the needs-based structure. Parameters on both axes. Drawn an ellipss. " width="80%" />
+<p class="caption marginnote shownote">
+Generalised giving for each household against generalised receiving. Negative correlation meaning that generous households receive less, because thy’re rich. Then poor households on the left. Having conditioned on dyad effects. Can see the needs-based structure. Parameters on both axes. Drawn an ellipss.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L18/37.png" alt="Now let's think about dyads. `Rho_d` is 0.88. " width="80%" />
+<p class="caption marginnote shownote">
+Now let’s think about dyads. <code>Rho_d</code> is 0.88.
+</p>
+</div>
+<p>Try <code>plot(exp(g[,1]),exp(r[,1]))</code> to show the posterior distribution of giving/receiving for household 1.</p>
+<div class="sourceCode" id="cb1157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1157-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">25</span> , <span class="cf">function</span>(i) post<span class="sc">$</span>a <span class="sc">+</span> post<span class="sc">$</span>gr[,i,<span class="dv">1</span>] ) </span>
+<span id="cb1157-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-2" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> <span class="fu">sapply</span>( <span class="dv">1</span><span class="sc">:</span><span class="dv">25</span> , <span class="cf">function</span>(i) post<span class="sc">$</span>a <span class="sc">+</span> post<span class="sc">$</span>gr[,i,<span class="dv">2</span>] ) </span>
+<span id="cb1157-3"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1157-4"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">g =</span> <span class="fu">exp</span>(g[, <span class="dv">1</span>]),</span>
+<span id="cb1157-5"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">r =</span> <span class="fu">exp</span>(r[, <span class="dv">1</span>])) <span class="sc">%&gt;%</span> </span>
+<span id="cb1157-6"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> g, <span class="at">y =</span> r)) <span class="sc">+</span></span>
+<span id="cb1157-7"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span> <span class="co"># white &quot;#FCF9F0&quot; # gold &quot;#B1934A&quot;</span></span>
+<span id="cb1157-8"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;#B1934A&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb1157-9"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> .<span class="dv">5</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;#80A0C7&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1157-10"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> .<span class="dv">9</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;#80A0C7&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1157-11"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">expression</span>(giving[<span class="fu">italic</span>(i)<span class="sc">==</span><span class="dv">1</span>]),</span>
+<span id="cb1157-12"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">expression</span>(receiving[<span class="fu">italic</span>(i)<span class="sc">==</span><span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb1157-13"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>),</span>
+<span id="cb1157-14"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1157-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>))</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-119-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L18/38.png" alt="Some of these devaitions are small. 0s are very balanced. Reciprocity on 0s, and also for kinships. " width="80%" />
+<p class="caption marginnote shownote">
+Some of these devaitions are small. 0s are very balanced. Reciprocity on 0s, and also for kinships.
+</p>
+</div>
+<p>Figure 14.9a:</p>
+<div class="sourceCode" id="cb1158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1158-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="fu">exp</span>(g), <span class="fu">exp</span>(r)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-3"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">25</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-4"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;g&quot;</span>, <span class="st">&quot;r&quot;</span>), <span class="at">each =</span> <span class="fu">n</span>() <span class="sc">/</span> <span class="dv">2</span>),</span>
+<span id="cb1158-5"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">iter      =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4000</span>, <span class="at">times =</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-6"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(parameter, iter), <span class="at">names_to =</span> <span class="st">&quot;household&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-7"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> parameter, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-8"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(household) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-9"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mu_g =</span> <span class="fu">mean</span>(g),</span>
+<span id="cb1158-10"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">mu_r =</span> <span class="fu">mean</span>(r)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-11"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nest</span>(<span class="at">data =</span> <span class="fu">c</span>(<span class="st">&quot;g&quot;</span>, <span class="st">&quot;r&quot;</span>, <span class="st">&quot;iter&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1158-12"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1158-13"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">group =</span> household)) <span class="sc">+</span></span>
+<span id="cb1158-14"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1158-15"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">data =</span> . <span class="sc">%&gt;%</span> <span class="fu">unnest</span>(data),</span>
+<span id="cb1158-16"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-16" aria-hidden="true" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x =</span> g, <span class="at">y =</span> r),</span>
+<span id="cb1158-17"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> .<span class="dv">5</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;#80A0C7&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1158-18"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> mu_g, <span class="at">y =</span> mu_r),</span>
+<span id="cb1158-19"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-19" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;#DCA258&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1158-20"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;generalized giving&quot;</span>,</span>
+<span id="cb1158-21"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;generalized receiving&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1158-22"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">8.5</span>),</span>
+<span id="cb1158-23"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1158-23" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">8.5</span>))</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/14.34%20b-1.png" width="672" /></p>
+<p>Figure 14.9b</p>
+<div class="sourceCode" id="cb1159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1159-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">dy1 =</span> <span class="fu">apply</span>(post<span class="sc">$</span>d[, , <span class="dv">1</span>], <span class="dv">2</span>, mean),</span>
+<span id="cb1159-2"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">dy2 =</span> <span class="fu">apply</span>(post<span class="sc">$</span>d[, , <span class="dv">2</span>], <span class="dv">2</span>, mean)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1159-3"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1159-4"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> dy1, <span class="at">y =</span> dy2)) <span class="sc">+</span></span>
+<span id="cb1159-5"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1159-6"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1159-7"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1159-8"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;#8B9DAF&quot;</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb1159-9"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">x =</span> <span class="fu">mean</span>(post<span class="sc">$</span>d[, <span class="dv">1</span>, <span class="dv">1</span>]),</span>
+<span id="cb1159-10"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">y =</span> <span class="fu">mean</span>(post<span class="sc">$</span>d[, <span class="dv">1</span>, <span class="dv">2</span>]),</span>
+<span id="cb1159-11"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">label =</span> <span class="st">&quot;1&quot;</span>,</span>
+<span id="cb1159-12"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;#EEDA9D&quot;</span>, <span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1159-13"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;household A in dyad&quot;</span>,</span>
+<span id="cb1159-14"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;household B in dyad&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1159-15"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="fl">3.5</span>),</span>
+<span id="cb1159-16"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1159-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="fl">3.5</span>))</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-121-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L18/39.png" alt="Very pleased with this homework set. Going to go back to the Bangladesh data, going to do random slopes, then adding predictor variables: the woman's age, and the number of kids she already has. Big effects on contrcetpive use. Draw a DAG and use it to anlayse the causal influence of age and kids on contreption." width="80%" />
+<p class="caption marginnote shownote">
+Very pleased with this homework set. Going to go back to the Bangladesh data, going to do random slopes, then adding predictor variables: the woman’s age, and the number of kids she already has. Big effects on contrcetpive use. Draw a DAG and use it to anlayse the causal influence of age and kids on contreption.
+</p>
+</div>
+<div class="sourceCode" id="cb1160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1160-1"><a href="13.4-social-relations-as-correlated-varying-effects.html#cb1160-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L19&quot;</span>)</span></code></pre></div>
+</div>
+<p style="text-align: center;">
+<a href="13.3-instruments-and-causal-designs.html"><button class="btn btn-default">Previous</button></a>
+<a href="13.5-continuous-categories-and-the-gaussian-process.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

@@ -1107,7 +1107,7 @@ post %>%
   ggtitle("Chimp #5's density")
 ```
 
-```{r 13.35 b}
+```{r 13.35}
 f <-
   post %>% 
   pivot_longer(b_b_treatment1:b_b_treatment4) %>% 

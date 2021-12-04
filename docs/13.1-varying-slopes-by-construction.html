@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="13.1 Varying slopes by construction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="13.1 Varying slopes by construction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>13.1 Varying slopes by construction | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="varying-slopes-by-construction" class="section level2" number="13.1">
+<h2><span class="header-section-number">13.1</span> Varying slopes by construction</h2>
+<div class="figure">
+<img src="slides/L17/04.png" alt="Statistically, the major conceptual innovation is that with varying slopes is you could treat them the same as varying intercepts. But you can do even better than that by noticing that the intercepts and slopes are related in the population. When you learn about the intercetpp, you often get informatyion about the slope. Why? Because tye're lines, adn when you change the slope, you change the intercept. Now think about a single prior that has both the intercepts and slopes inside it. We'lll have a popualtion of features. There's a correlation structure among those features, which lets you transfer infomraiton across the features. Think about your friends or family, There is a correlation structure. There are now other things you expect Brendan to like when you find out he likes Death Metal. That's correlation structure." width="80%" />
+<p class="caption marginnote shownote">
+Statistically, the major conceptual innovation is that with varying slopes is you could treat them the same as varying intercepts. But you can do even better than that by noticing that the intercepts and slopes are related in the population. When you learn about the intercetpp, you often get informatyion about the slope. Why? Because tye’re lines, adn when you change the slope, you change the intercept. Now think about a single prior that has both the intercepts and slopes inside it. We’lll have a popualtion of features. There’s a correlation structure among those features, which lets you transfer infomraiton across the features. Think about your friends or family, There is a correlation structure. There are now other things you expect Brendan to like when you find out he likes Death Metal. That’s correlation structure.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/05.png" alt="Think back to the cafe example. Before you order your coffee in Berlin, you should update your estimate for Paris even though you left it behind. Now let's extend it. Your robot is your model. How do you get it to learn by visiting cafes. Now it keeps track of the time of day. Average wait time at 9am is longer than at 2pm. So we want to make that distinction. Code it as the difference between afternoon and evening. These two things are related by teh causal properties of cafes. This is toy data. Top is a popular cafe, with a big drop in wait time between morning and afternoon. Cafe B has a much smaller diffference in wait time because there's no morning saturation." width="80%" />
+<p class="caption marginnote shownote">
+Think back to the cafe example. Before you order your coffee in Berlin, you should update your estimate for Paris even though you left it behind. Now let’s extend it. Your robot is your model. How do you get it to learn by visiting cafes. Now it keeps track of the time of day. Average wait time at 9am is longer than at 2pm. So we want to make that distinction. Code it as the difference between afternoon and evening. These two things are related by teh causal properties of cafes. This is toy data. Top is a popular cafe, with a big drop in wait time between morning and afternoon. Cafe B has a much smaller diffference in wait time because there’s no morning saturation.
+</p>
+</div>
+<p><strong><em>14.1.1. Simulate the population</em></strong></p>
+<div class="figure">
+<img src="slides/L17/06.png" alt="Now we have some statistical population, and there's a negative correlation between the intercepts (average wait time in the morning, standardsied), and the slope (dfiference between morning and afternooon). Higher intercepts = lower slopes. So there are two sets of parameteres, and we could treat them as completely separate." width="80%" />
+<p class="caption marginnote shownote">
+Now we have some statistical population, and there’s a negative correlation between the intercepts (average wait time in the morning, standardsied), and the slope (dfiference between morning and afternooon). Higher intercepts = lower slopes. So there are two sets of parameteres, and we could treat them as completely separate.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/07.png" alt="The agent of our pooling now is a 2D Gaussian. We're going to have both parameters inside it. You need both a vector of means (average intercept and average slope). Then you need a variance-covarinace matrix. It assumes the posterior was multivariate Guassian, and approximated with this kind of entity. Now we'll be more explicit about it. We'll have covariances as part of the model now. THe simplest one is shown here - tey multi-dimensional analogue of sigma. If you add more dimensions to the Guassian distribution. Then there's the correlation between the two. SO you need three parameters to describe the covariance. $\sigma_a$ is the standard deviation of the intercepts. Square that for the variance. Then there's the covariance, which is the product of the two variances times this correlation coefficient $\rho$. The book has a box that explains why the covariance is the product of the variances times the correlation coefficient. That's the definition of correlation. " width="80%" />
+<p class="caption marginnote shownote">
+The agent of our pooling now is a 2D Gaussian. We’re going to have both parameters inside it. You need both a vector of means (average intercept and average slope). Then you need a variance-covarinace matrix. It assumes the posterior was multivariate Guassian, and approximated with this kind of entity. Now we’ll be more explicit about it. We’ll have covariances as part of the model now. THe simplest one is shown here - tey multi-dimensional analogue of sigma. If you add more dimensions to the Guassian distribution. Then there’s the correlation between the two. SO you need three parameters to describe the covariance. <span class="math inline">\(\sigma_a\)</span> is the standard deviation of the intercepts. Square that for the variance. Then there’s the covariance, which is the product of the two variances times this correlation coefficient <span class="math inline">\(\rho\)</span>. The book has a box that explains why the covariance is the product of the variances times the correlation coefficient. That’s the definition of correlation.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/08.png" alt="Let's do some work with this. Simulate the journey of your coffee robot. 10 data points per cafe. Small sample, so we'll do some pooling. " width="80%" />
+<p class="caption marginnote shownote">
+Let’s do some work with this. Simulate the journey of your coffee robot. 10 data points per cafe. Small sample, so we’ll do some pooling.
+</p>
+</div>
+<div class="sourceCode" id="cb966"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb966-1"><a href="13.1-varying-slopes-by-construction.html#cb966-1" aria-hidden="true" tabindex="-1"></a>a       <span class="ot">&lt;-</span>  <span class="fl">3.5</span>  <span class="co"># average morning wait time</span></span>
+<span id="cb966-2"><a href="13.1-varying-slopes-by-construction.html#cb966-2" aria-hidden="true" tabindex="-1"></a>b       <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span>    <span class="co"># average difference afternoon wait time</span></span>
+<span id="cb966-3"><a href="13.1-varying-slopes-by-construction.html#cb966-3" aria-hidden="true" tabindex="-1"></a>sigma_a <span class="ot">&lt;-</span>  <span class="dv">1</span>    <span class="co"># std dev in intercepts</span></span>
+<span id="cb966-4"><a href="13.1-varying-slopes-by-construction.html#cb966-4" aria-hidden="true" tabindex="-1"></a>sigma_b <span class="ot">&lt;-</span>  <span class="fl">0.5</span>  <span class="co"># std dev in slopes</span></span>
+<span id="cb966-5"><a href="13.1-varying-slopes-by-construction.html#cb966-5" aria-hidden="true" tabindex="-1"></a>rho     <span class="ot">&lt;-</span> <span class="sc">-</span>.<span class="dv">7</span>   <span class="co"># correlation between intercepts and slopes</span></span>
+<span id="cb966-6"><a href="13.1-varying-slopes-by-construction.html#cb966-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb966-7"><a href="13.1-varying-slopes-by-construction.html#cb966-7" aria-hidden="true" tabindex="-1"></a><span class="co"># the next three lines of code simply combine the terms, above</span></span>
+<span id="cb966-8"><a href="13.1-varying-slopes-by-construction.html#cb966-8" aria-hidden="true" tabindex="-1"></a>mu     <span class="ot">&lt;-</span> <span class="fu">c</span>(a, b)</span>
+<span id="cb966-9"><a href="13.1-varying-slopes-by-construction.html#cb966-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb966-10"><a href="13.1-varying-slopes-by-construction.html#cb966-10" aria-hidden="true" tabindex="-1"></a>cov_ab <span class="ot">&lt;-</span> sigma_a <span class="sc">*</span> sigma_b <span class="sc">*</span> rho</span>
+<span id="cb966-11"><a href="13.1-varying-slopes-by-construction.html#cb966-11" aria-hidden="true" tabindex="-1"></a>sigma  <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(sigma_a<span class="sc">^</span><span class="dv">2</span>, cov_ab, </span>
+<span id="cb966-12"><a href="13.1-varying-slopes-by-construction.html#cb966-12" aria-hidden="true" tabindex="-1"></a>                   cov_ab, sigma_b<span class="sc">^</span><span class="dv">2</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb967"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb967-1"><a href="13.1-varying-slopes-by-construction.html#cb967-1" aria-hidden="true" tabindex="-1"></a><span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##      [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4</code></pre>
+<div class="sourceCode" id="cb969"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb969-1"><a href="13.1-varying-slopes-by-construction.html#cb969-1" aria-hidden="true" tabindex="-1"></a>sigmas <span class="ot">&lt;-</span> <span class="fu">c</span>(sigma_a, sigma_b)          <span class="co"># standard deviations</span></span>
+<span id="cb969-2"><a href="13.1-varying-slopes-by-construction.html#cb969-2" aria-hidden="true" tabindex="-1"></a>rho    <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, rho,             <span class="co"># correlation matrix</span></span>
+<span id="cb969-3"><a href="13.1-varying-slopes-by-construction.html#cb969-3" aria-hidden="true" tabindex="-1"></a>                   rho, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb969-4"><a href="13.1-varying-slopes-by-construction.html#cb969-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb969-5"><a href="13.1-varying-slopes-by-construction.html#cb969-5" aria-hidden="true" tabindex="-1"></a><span class="co"># now matrix multiply to get covariance matrix</span></span>
+<span id="cb969-6"><a href="13.1-varying-slopes-by-construction.html#cb969-6" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fu">diag</span>(sigmas) <span class="sc">%*%</span> rho <span class="sc">%*%</span> <span class="fu">diag</span>(sigmas)</span>
+<span id="cb969-7"><a href="13.1-varying-slopes-by-construction.html#cb969-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb969-8"><a href="13.1-varying-slopes-by-construction.html#cb969-8" aria-hidden="true" tabindex="-1"></a><span class="co"># how many cafes would you like?</span></span>
+<span id="cb969-9"><a href="13.1-varying-slopes-by-construction.html#cb969-9" aria-hidden="true" tabindex="-1"></a>n_cafes <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb969-10"><a href="13.1-varying-slopes-by-construction.html#cb969-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb969-11"><a href="13.1-varying-slopes-by-construction.html#cb969-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)  <span class="co"># used to replicate example</span></span>
+<span id="cb969-12"><a href="13.1-varying-slopes-by-construction.html#cb969-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb969-13"><a href="13.1-varying-slopes-by-construction.html#cb969-13" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="ot">&lt;-</span> </span>
+<span id="cb969-14"><a href="13.1-varying-slopes-by-construction.html#cb969-14" aria-hidden="true" tabindex="-1"></a>  MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(n_cafes, mu, sigma) <span class="sc">%&gt;%</span> </span>
+<span id="cb969-15"><a href="13.1-varying-slopes-by-construction.html#cb969-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb969-16"><a href="13.1-varying-slopes-by-construction.html#cb969-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="st">&quot;a_cafe&quot;</span>, <span class="st">&quot;b_cafe&quot;</span>)</span>
+<span id="cb969-17"><a href="13.1-varying-slopes-by-construction.html#cb969-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb969-18"><a href="13.1-varying-slopes-by-construction.html#cb969-18" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(vary_effects)</span></code></pre></div>
+<pre><code>##     a_cafe     b_cafe
+## 1 4.223962 -1.6093565
+## 2 2.010498 -0.7517704
+## 3 4.565811 -1.9482646
+## 4 3.343635 -1.1926539
+## 5 1.700971 -0.5855618
+## 6 4.134373 -1.1444539</code></pre>
+<p>Set theme:</p>
+<div class="sourceCode" id="cb971"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb971-1"><a href="13.1-varying-slopes-by-construction.html#cb971-1" aria-hidden="true" tabindex="-1"></a>theme_pearl_earring <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">light_color =</span> <span class="st">&quot;#E8DCCF&quot;</span>, </span>
+<span id="cb971-2"><a href="13.1-varying-slopes-by-construction.html#cb971-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">dark_color =</span> <span class="st">&quot;#100F14&quot;</span>, </span>
+<span id="cb971-3"><a href="13.1-varying-slopes-by-construction.html#cb971-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">my_family =</span> <span class="st">&quot;Courier&quot;</span>,</span>
+<span id="cb971-4"><a href="13.1-varying-slopes-by-construction.html#cb971-4" aria-hidden="true" tabindex="-1"></a>                                ...) {</span>
+<span id="cb971-5"><a href="13.1-varying-slopes-by-construction.html#cb971-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb971-6"><a href="13.1-varying-slopes-by-construction.html#cb971-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">line =</span> <span class="fu">element_line</span>(<span class="at">color =</span> light_color),</span>
+<span id="cb971-7"><a href="13.1-varying-slopes-by-construction.html#cb971-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> light_color, <span class="at">family =</span> my_family),</span>
+<span id="cb971-8"><a href="13.1-varying-slopes-by-construction.html#cb971-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb971-9"><a href="13.1-varying-slopes-by-construction.html#cb971-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> light_color),</span>
+<span id="cb971-10"><a href="13.1-varying-slopes-by-construction.html#cb971-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.ticks =</span> <span class="fu">element_line</span>(<span class="at">color =</span> light_color),</span>
+<span id="cb971-11"><a href="13.1-varying-slopes-by-construction.html#cb971-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> dark_color, <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>),</span>
+<span id="cb971-12"><a href="13.1-varying-slopes-by-construction.html#cb971-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.key =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> dark_color, <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>),</span>
+<span id="cb971-13"><a href="13.1-varying-slopes-by-construction.html#cb971-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> dark_color, <span class="at">color =</span> light_color),</span>
+<span id="cb971-14"><a href="13.1-varying-slopes-by-construction.html#cb971-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb971-15"><a href="13.1-varying-slopes-by-construction.html#cb971-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> dark_color, <span class="at">color =</span> dark_color),</span>
+<span id="cb971-16"><a href="13.1-varying-slopes-by-construction.html#cb971-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> dark_color, <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>),</span>
+<span id="cb971-17"><a href="13.1-varying-slopes-by-construction.html#cb971-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> light_color, <span class="at">family =</span> my_family),</span>
+<span id="cb971-18"><a href="13.1-varying-slopes-by-construction.html#cb971-18" aria-hidden="true" tabindex="-1"></a>        ...)</span>
+<span id="cb971-19"><a href="13.1-varying-slopes-by-construction.html#cb971-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb971-20"><a href="13.1-varying-slopes-by-construction.html#cb971-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb971-21"><a href="13.1-varying-slopes-by-construction.html#cb971-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb971-22"><a href="13.1-varying-slopes-by-construction.html#cb971-22" aria-hidden="true" tabindex="-1"></a><span class="co"># now set `theme_pearl_earring()` as the default theme</span></span>
+<span id="cb971-23"><a href="13.1-varying-slopes-by-construction.html#cb971-23" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_pearl_earring</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb972"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb972-1"><a href="13.1-varying-slopes-by-construction.html#cb972-1" aria-hidden="true" tabindex="-1"></a>vary_effects <span class="sc">%&gt;%</span> </span>
+<span id="cb972-2"><a href="13.1-varying-slopes-by-construction.html#cb972-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> a_cafe, <span class="at">y =</span> b_cafe)) <span class="sc">+</span></span>
+<span id="cb972-3"><a href="13.1-varying-slopes-by-construction.html#cb972-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;#80A0C7&quot;</span>) <span class="sc">+</span></span>
+<span id="cb972-4"><a href="13.1-varying-slopes-by-construction.html#cb972-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="at">color =</span> <span class="st">&quot;#8B9DAF&quot;</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">7</span>)</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+Note these are not “data”, but rather a distribution of <em>parameters</em>. Here’s their correlation coefficient:</p>
+<div class="sourceCode" id="cb973"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb973-1"><a href="13.1-varying-slopes-by-construction.html#cb973-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(vary_effects<span class="sc">$</span>a_cafe, vary_effects<span class="sc">$</span>b_cafe)</span></code></pre></div>
+<pre><code>## [1] -0.5721537</code></pre>
+<p><strong><em>14.1.2. Simulate observations</em></strong></p>
+<div class="sourceCode" id="cb975"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb975-1"><a href="13.1-varying-slopes-by-construction.html#cb975-1" aria-hidden="true" tabindex="-1"></a>n_visits <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb975-2"><a href="13.1-varying-slopes-by-construction.html#cb975-2" aria-hidden="true" tabindex="-1"></a>sigma    <span class="ot">&lt;-</span>  <span class="fl">0.5</span>  <span class="co"># std dev within cafes</span></span>
+<span id="cb975-3"><a href="13.1-varying-slopes-by-construction.html#cb975-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb975-4"><a href="13.1-varying-slopes-by-construction.html#cb975-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">22</span>)  <span class="co"># used to replicate example</span></span>
+<span id="cb975-5"><a href="13.1-varying-slopes-by-construction.html#cb975-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb975-6"><a href="13.1-varying-slopes-by-construction.html#cb975-6" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span></span>
+<span id="cb975-7"><a href="13.1-varying-slopes-by-construction.html#cb975-7" aria-hidden="true" tabindex="-1"></a>  vary_effects <span class="sc">%&gt;%</span> </span>
+<span id="cb975-8"><a href="13.1-varying-slopes-by-construction.html#cb975-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">cafe =</span> <span class="dv">1</span><span class="sc">:</span>n_cafes) <span class="sc">%&gt;%</span> </span>
+<span id="cb975-9"><a href="13.1-varying-slopes-by-construction.html#cb975-9" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">expand</span>(<span class="fu">nesting</span>(cafe, a_cafe, b_cafe), <span class="at">visit =</span> <span class="dv">1</span><span class="sc">:</span>n_visits) <span class="sc">%&gt;%</span> </span>
+<span id="cb975-10"><a href="13.1-varying-slopes-by-construction.html#cb975-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">afternoon =</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">times =</span> <span class="fu">n</span>() <span class="sc">/</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb975-11"><a href="13.1-varying-slopes-by-construction.html#cb975-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mu =</span> a_cafe <span class="sc">+</span> b_cafe <span class="sc">*</span> afternoon) <span class="sc">%&gt;%</span> </span>
+<span id="cb975-12"><a href="13.1-varying-slopes-by-construction.html#cb975-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wait =</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean =</span> mu, <span class="at">sd =</span> sigma))</span></code></pre></div>
+<div class="sourceCode" id="cb976"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb976-1"><a href="13.1-varying-slopes-by-construction.html#cb976-1" aria-hidden="true" tabindex="-1"></a>d <span class="sc">%&gt;%</span></span>
+<span id="cb976-2"><a href="13.1-varying-slopes-by-construction.html#cb976-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>()</span></code></pre></div>
+<pre><code>## Rows: 200
+## Columns: 7
+## $ cafe      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, …
+## $ a_cafe    &lt;dbl&gt; 4.223962, 4.223962, 4.223962, 4.223962, 4.223962, 4.223962, …
+## $ b_cafe    &lt;dbl&gt; -1.6093565, -1.6093565, -1.6093565, -1.6093565, -1.6093565, …
+## $ visit     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10…
+## $ afternoon &lt;int&gt; 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, …
+## $ mu        &lt;dbl&gt; 4.223962, 2.614606, 4.223962, 2.614606, 4.223962, 2.614606, …
+## $ wait      &lt;dbl&gt; 3.9678929, 3.8571978, 4.7278755, 2.7610133, 4.1194827, 3.543…</code></pre>
+<p>Now make Figure 14.1:</p>
+<div class="sourceCode" id="cb978"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb978-1"><a href="13.1-varying-slopes-by-construction.html#cb978-1" aria-hidden="true" tabindex="-1"></a>d <span class="sc">%&gt;%</span></span>
+<span id="cb978-2"><a href="13.1-varying-slopes-by-construction.html#cb978-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">afternoon =</span> <span class="fu">ifelse</span>(afternoon <span class="sc">==</span> <span class="dv">0</span>, <span class="st">&quot;M&quot;</span>, <span class="st">&quot;A&quot;</span>),</span>
+<span id="cb978-3"><a href="13.1-varying-slopes-by-construction.html#cb978-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">day       =</span> <span class="fu">rep</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">each =</span> <span class="dv">2</span>), <span class="at">times =</span> n_cafes)) <span class="sc">%&gt;%</span></span>
+<span id="cb978-4"><a href="13.1-varying-slopes-by-construction.html#cb978-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cafe <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">5</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb978-5"><a href="13.1-varying-slopes-by-construction.html#cb978-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cafe =</span> <span class="fu">str_c</span>(<span class="st">&quot;café #&quot;</span>, cafe)) <span class="sc">%&gt;%</span> </span>
+<span id="cb978-6"><a href="13.1-varying-slopes-by-construction.html#cb978-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb978-7"><a href="13.1-varying-slopes-by-construction.html#cb978-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> visit, <span class="at">y =</span> wait, <span class="at">group =</span> day)) <span class="sc">+</span></span>
+<span id="cb978-8"><a href="13.1-varying-slopes-by-construction.html#cb978-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> afternoon), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb978-9"><a href="13.1-varying-slopes-by-construction.html#cb978-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;#8B9DAF&quot;</span>) <span class="sc">+</span></span>
+<span id="cb978-10"><a href="13.1-varying-slopes-by-construction.html#cb978-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#80A0C7&quot;</span>, <span class="st">&quot;#EEDA9D&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb978-11"><a href="13.1-varying-slopes-by-construction.html#cb978-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">labels =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;M&quot;</span>, <span class="st">&quot;A&quot;</span>), <span class="at">times =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb978-12"><a href="13.1-varying-slopes-by-construction.html#cb978-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">&quot;wait time in minutes&quot;</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>)) <span class="sc">+</span></span>
+<span id="cb978-13"><a href="13.1-varying-slopes-by-construction.html#cb978-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_pearl_earring</span>(<span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb978-14"><a href="13.1-varying-slopes-by-construction.html#cb978-14" aria-hidden="true" tabindex="-1"></a>                      <span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb978-15"><a href="13.1-varying-slopes-by-construction.html#cb978-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> cafe, <span class="at">ncol =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><strong><em>14.1.3. The varying slopes model</em></strong></p>
+<div class="figure">
+<img src="slides/L17/09.png" alt="This is your robot's brain. Step by step: Outcome variabes $W$ is the wait time for some cafe $i$. " width="80%" />
+<p class="caption marginnote shownote">
+This is your robot’s brain. Step by step: Outcome variabes <span class="math inline">\(W\)</span> is the wait time for some cafe <span class="math inline">\(i\)</span>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/10.png" alt="Then we have varying intercepts and slopes (difference between mornign and afternoon, denoted by the dummy variable $A$. If $A$ is 1, it's $\alpha + \beta$. " width="80%" />
+<p class="caption marginnote shownote">
+Then we have varying intercepts and slopes (difference between mornign and afternoon, denoted by the dummy variable <span class="math inline">\(A\)</span>. If <span class="math inline">\(A\)</span> is 1, it’s <span class="math inline">\(\alpha + \beta\)</span>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/11.png" alt="Here's the action. When we want to pool across alphas and betas, we have this 2D prior. For each cafe, there's a pair of parameters, alpha and beta, and they're distributed as a 2D normal They're averages are alpha and beta. Then they have this $S$, which is the covariance matrix. " width="80%" />
+<p class="caption marginnote shownote">
+Here’s the action. When we want to pool across alphas and betas, we have this 2D prior. For each cafe, there’s a pair of parameters, alpha and beta, and they’re distributed as a 2D normal They’re averages are alpha and beta. Then they have this <span class="math inline">\(S\)</span>, which is the covariance matrix.
+</p>
+</div>
+<p><img src="slides/L17/12.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L17/13.png" alt="Where does this covariance matrix come from? 5 slides on matrix multiplication. Thing to understand is they're matrixes, ways of working with systems of equations. Just a compact form to do things faster. It's compressed. That's all it is. Let's think about our covariance matrix, shuffle it around to put priors on the parameters. $m$ is some dimension (2, going to be 4 by the end of the day). That means you need $m$ standard deviations. And you need the correlations. Just a formula for how many unordered pairs there are. Still a very small number of parameters relative to varying effects." width="80%" />
+<p class="caption marginnote shownote">
+Where does this covariance matrix come from? 5 slides on matrix multiplication. Thing to understand is they’re matrixes, ways of working with systems of equations. Just a compact form to do things faster. It’s compressed. That’s all it is. Let’s think about our covariance matrix, shuffle it around to put priors on the parameters. <span class="math inline">\(m\)</span> is some dimension (2, going to be 4 by the end of the day). That means you need <span class="math inline">\(m\)</span> standard deviations. And you need the correlations. Just a formula for how many unordered pairs there are. Still a very small number of parameters relative to varying effects.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/14.png" alt="So how to put priors on all these parameters. Lots of different conventions. There's a big litereature on what's wrong with the inverse-Wishart. We can do much better in practical terms. Want to assign priors independently to each sigma and correlation coefficient. So we'll decompose our covariance matrix into three different matrices. Turns out it's a  product of a diagonal matrix with the two sigmas, times a correlation matrix, times the diagonal matrix again." width="80%" />
+<p class="caption marginnote shownote">
+So how to put priors on all these parameters. Lots of different conventions. There’s a big litereature on what’s wrong with the inverse-Wishart. We can do much better in practical terms. Want to assign priors independently to each sigma and correlation coefficient. So we’ll decompose our covariance matrix into three different matrices. Turns out it’s a product of a diagonal matrix with the two sigmas, times a correlation matrix, times the diagonal matrix again.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/15.png" alt="They're very nice, because they're shortcuts. Matrix derived from 'mother' or 'womb'. Something that somethign develops in. There are a few simple rules, which are ways to deal with systems of equations." width="80%" />
+<p class="caption marginnote shownote">
+They’re very nice, because they’re shortcuts. Matrix derived from ‘mother’ or ‘womb’. Something that somethign develops in. There are a few simple rules, which are ways to deal with systems of equations.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/16.png" alt="Two-minute version just to demystify. If you have two square matrixes with capital and lower case letters. Set them up like this. The rule is you take the row and the column relevant to it. " width="80%" />
+<p class="caption marginnote shownote">
+Two-minute version just to demystify. If you have two square matrixes with capital and lower case letters. Set them up like this. The rule is you take the row and the column relevant to it.
+</p>
+</div>
+<p><img src="slides/L17/17.png" width="80%" /></p>
+<p><img src="slides/L17/18.png" width="80%" /></p>
+<p><img src="slides/L17/19.png" width="80%" /></p>
+<p><img src="slides/L17/20.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L17/21.png" alt="Sometimes written as $\boldsymbol{SRS}$" width="80%" />
+<p class="caption marginnote shownote">
+Sometimes written as <span class="math inline">\(\boldsymbol{SRS}\)</span>
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/22.png" alt="You do two matrix multiplications and get the original back." width="80%" />
+<p class="caption marginnote shownote">
+You do two matrix multiplications and get the original back.
+</p>
+</div>
+<p><img src="slides/L17/23.png" width="80%" /></p>
+<p><img src="slides/L17/24.png" width="80%" /></p>
+<p><img src="slides/L17/25.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L17/26.png" alt="Now we can specify independent priors ont he correaltions adn the standard deviations. " width="80%" />
+<p class="caption marginnote shownote">
+Now we can specify independent priors ont he correaltions adn the standard deviations.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/27.png" alt="Need priors. Three SDs for this model. One at the top, one for the intercepts, one for the slopes." width="80%" />
+<p class="caption marginnote shownote">
+Need priors. Three SDs for this model. One at the top, one for the intercepts, one for the slopes.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/28.png" alt="How do you put a prior on a matrix? In general the matrix could be very big. You can't assign priors independently, because there are contstraints. The values can constrain one another. If you only have one correlation, it can vary between 1 and -1. If you have two values with a really strong correlation, that constrains the other values because they're also correlated with those two. As the matrix gets really big, the constraints get really strong. And in a big correlation matrix, it's really hard to get strong correlations. You can, but then all the others have to be really small. So you need a family of priors that deal with this problem. " width="80%" />
+<p class="caption marginnote shownote">
+How do you put a prior on a matrix? In general the matrix could be very big. You can’t assign priors independently, because there are contstraints. The values can constrain one another. If you only have one correlation, it can vary between 1 and -1. If you have two values with a really strong correlation, that constrains the other values because they’re also correlated with those two. As the matrix gets really big, the constraints get really strong. And in a big correlation matrix, it’s really hard to get strong correlations. You can, but then all the others have to be really small. So you need a family of priors that deal with this problem.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/29.png" alt="So there's this really nice family of priors. Present in almost all recent textbooks. LKJ named after the authors. There's one parameter that determines the shape, which specifies how concentrated it is relative to the identify matrix, which has no correlations. So if *eta* is higher, there are no correaltions. If lower, then flatter, and many more correaltions are possible. Eta = 1 is uniform. As you increase eta, you get more concentration around 0, which is the identity matrix. Usually you want to use something that is regularizing, skeptical of high correlations." width="80%" />
+<p class="caption marginnote shownote">
+So there’s this really nice family of priors. Present in almost all recent textbooks. LKJ named after the authors. There’s one parameter that determines the shape, which specifies how concentrated it is relative to the identify matrix, which has no correlations. So if <em>eta</em> is higher, there are no correaltions. If lower, then flatter, and many more correaltions are possible. Eta = 1 is uniform. As you increase eta, you get more concentration around 0, which is the identity matrix. Usually you want to use something that is regularizing, skeptical of high correlations.
+</p>
+</div>
+<div class="sourceCode" id="cb979"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb979-1"><a href="13.1-varying-slopes-by-construction.html#cb979-1" aria-hidden="true" tabindex="-1"></a>n_sim <span class="ot">&lt;-</span> <span class="fl">1e4</span></span>
+<span id="cb979-2"><a href="13.1-varying-slopes-by-construction.html#cb979-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb979-3"><a href="13.1-varying-slopes-by-construction.html#cb979-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">14</span>)</span>
+<span id="cb979-4"><a href="13.1-varying-slopes-by-construction.html#cb979-4" aria-hidden="true" tabindex="-1"></a>r_1 <span class="ot">&lt;-</span> </span>
+<span id="cb979-5"><a href="13.1-varying-slopes-by-construction.html#cb979-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rlkjcorr</span>(n_sim, <span class="at">K =</span> <span class="dv">2</span>, <span class="at">eta =</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb979-6"><a href="13.1-varying-slopes-by-construction.html#cb979-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>()</span>
+<span id="cb979-7"><a href="13.1-varying-slopes-by-construction.html#cb979-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb979-8"><a href="13.1-varying-slopes-by-construction.html#cb979-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">14</span>)</span>
+<span id="cb979-9"><a href="13.1-varying-slopes-by-construction.html#cb979-9" aria-hidden="true" tabindex="-1"></a>r_2 <span class="ot">&lt;-</span> </span>
+<span id="cb979-10"><a href="13.1-varying-slopes-by-construction.html#cb979-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rlkjcorr</span>(n_sim, <span class="at">K =</span> <span class="dv">2</span>, <span class="at">eta =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb979-11"><a href="13.1-varying-slopes-by-construction.html#cb979-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>()</span>
+<span id="cb979-12"><a href="13.1-varying-slopes-by-construction.html#cb979-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb979-13"><a href="13.1-varying-slopes-by-construction.html#cb979-13" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">14</span>)</span>
+<span id="cb979-14"><a href="13.1-varying-slopes-by-construction.html#cb979-14" aria-hidden="true" tabindex="-1"></a>r_4 <span class="ot">&lt;-</span> </span>
+<span id="cb979-15"><a href="13.1-varying-slopes-by-construction.html#cb979-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rlkjcorr</span>(n_sim, <span class="at">K =</span> <span class="dv">2</span>, <span class="at">eta =</span> <span class="dv">4</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb979-16"><a href="13.1-varying-slopes-by-construction.html#cb979-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb980"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb980-1"><a href="13.1-varying-slopes-by-construction.html#cb980-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for annotation</span></span>
+<span id="cb980-2"><a href="13.1-varying-slopes-by-construction.html#cb980-2" aria-hidden="true" tabindex="-1"></a>text <span class="ot">&lt;-</span></span>
+<span id="cb980-3"><a href="13.1-varying-slopes-by-construction.html#cb980-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">x     =</span> <span class="fu">c</span>(.<span class="dv">83</span>, .<span class="dv">625</span>, .<span class="dv">45</span>),</span>
+<span id="cb980-4"><a href="13.1-varying-slopes-by-construction.html#cb980-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">y     =</span> <span class="fu">c</span>(.<span class="dv">56</span>, .<span class="dv">75</span>, <span class="fl">1.07</span>),</span>
+<span id="cb980-5"><a href="13.1-varying-slopes-by-construction.html#cb980-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;eta = 1&quot;</span>, <span class="st">&quot;eta = 2&quot;</span>, <span class="st">&quot;eta = 4&quot;</span>))</span>
+<span id="cb980-6"><a href="13.1-varying-slopes-by-construction.html#cb980-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb980-7"><a href="13.1-varying-slopes-by-construction.html#cb980-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot</span></span>
+<span id="cb980-8"><a href="13.1-varying-slopes-by-construction.html#cb980-8" aria-hidden="true" tabindex="-1"></a>r_1 <span class="sc">%&gt;%</span> </span>
+<span id="cb980-9"><a href="13.1-varying-slopes-by-construction.html#cb980-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> X2)) <span class="sc">+</span></span>
+<span id="cb980-10"><a href="13.1-varying-slopes-by-construction.html#cb980-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#394165&quot;</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">adjust =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb980-11"><a href="13.1-varying-slopes-by-construction.html#cb980-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">data =</span> r_2,</span>
+<span id="cb980-12"><a href="13.1-varying-slopes-by-construction.html#cb980-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#DCA258&quot;</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">adjust =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb980-13"><a href="13.1-varying-slopes-by-construction.html#cb980-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">data =</span> r_4,</span>
+<span id="cb980-14"><a href="13.1-varying-slopes-by-construction.html#cb980-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">adjust =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb980-15"><a href="13.1-varying-slopes-by-construction.html#cb980-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> text,</span>
+<span id="cb980-16"><a href="13.1-varying-slopes-by-construction.html#cb980-16" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label),</span>
+<span id="cb980-17"><a href="13.1-varying-slopes-by-construction.html#cb980-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">&quot;#A65141&quot;</span>, <span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>) <span class="sc">+</span></span>
+<span id="cb980-18"><a href="13.1-varying-slopes-by-construction.html#cb980-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb980-19"><a href="13.1-varying-slopes-by-construction.html#cb980-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">expression</span>(<span class="fu">LKJcorr</span>(eta)),</span>
+<span id="cb980-20"><a href="13.1-varying-slopes-by-construction.html#cb980-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;correlation&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-39-1.png" alt="Figure 14.3" width="672" />
+<p class="caption marginnote shownote">
+Figure 14.3
+</p>
+</div>
+<p>It’s sensitive to both <span class="math inline">\(\eta\)</span> and <span class="math inline">\(K\)</span> dimensions of the correlation matrix, so let’s tkae a look:</p>
+<div class="sourceCode" id="cb981"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb981-1"><a href="13.1-varying-slopes-by-construction.html#cb981-1" aria-hidden="true" tabindex="-1"></a><span class="fu">crossing</span>(<span class="at">k   =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb981-2"><a href="13.1-varying-slopes-by-construction.html#cb981-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">eta =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb981-3"><a href="13.1-varying-slopes-by-construction.html#cb981-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prior =</span> <span class="fu">str_c</span>(<span class="st">&quot;lkjcorr_marginal(&quot;</span>, k, <span class="st">&quot;, &quot;</span>, eta, <span class="st">&quot;)&quot;</span>),</span>
+<span id="cb981-4"><a href="13.1-varying-slopes-by-construction.html#cb981-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">strip =</span> <span class="fu">str_c</span>(<span class="st">&quot;K==&quot;</span>, k)) <span class="sc">%&gt;%</span> </span>
+<span id="cb981-5"><a href="13.1-varying-slopes-by-construction.html#cb981-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">parse_dist</span>(prior) <span class="sc">%&gt;%</span></span>
+<span id="cb981-6"><a href="13.1-varying-slopes-by-construction.html#cb981-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb981-7"><a href="13.1-varying-slopes-by-construction.html#cb981-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> eta, <span class="at">dist =</span> .dist, <span class="at">args =</span> .args)) <span class="sc">+</span></span>
+<span id="cb981-8"><a href="13.1-varying-slopes-by-construction.html#cb981-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_dist_halfeye</span>(<span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">95</span>),</span>
+<span id="cb981-9"><a href="13.1-varying-slopes-by-construction.html#cb981-9" aria-hidden="true" tabindex="-1"></a>                    <span class="at">color =</span> <span class="st">&quot;#FCF9F0&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#A65141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb981-10"><a href="13.1-varying-slopes-by-construction.html#cb981-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="fu">expression</span>(rho), <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb981-11"><a href="13.1-varying-slopes-by-construction.html#cb981-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span>.<span class="dv">5</span>, <span class="dv">0</span>, .<span class="dv">5</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;-1&quot;</span>, <span class="st">&quot;-.5&quot;</span>, <span class="st">&quot;0&quot;</span>, <span class="st">&quot;.5&quot;</span>, <span class="st">&quot;1&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb981-12"><a href="13.1-varying-slopes-by-construction.html#cb981-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="fu">expression</span>(eta), <span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb981-13"><a href="13.1-varying-slopes-by-construction.html#cb981-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">expression</span>(<span class="st">&quot;Marginal correlation for the LKJ prior relative to K and &quot;</span><span class="sc">*</span>eta)) <span class="sc">+</span></span>
+<span id="cb981-14"><a href="13.1-varying-slopes-by-construction.html#cb981-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> strip, <span class="at">labeller =</span> label_parsed, <span class="at">ncol =</span> <span class="dv">4</span>)</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p><img src="slides/L17/30.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L17/31.png" alt="Have both random intercepts and slopes. Vector of alphas for each cafe, and beta for each cafe. Here's the most transparent - use `c` to put `a` and `b` together like making a two-column matrix. Then we write `multi_normal` instead of normal. Then a vector of means. Then our correlation matrix `Rho`. " width="80%" />
+<p class="caption marginnote shownote">
+Have both random intercepts and slopes. Vector of alphas for each cafe, and beta for each cafe. Here’s the most transparent - use <code>c</code> to put <code>a</code> and <code>b</code> together like making a two-column matrix. Then we write <code>multi_normal</code> instead of normal. Then a vector of means. Then our correlation matrix <code>Rho</code>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/32.png" alt="WHen this builds in Stan, it knows that `sigma_cafe` is fo length 2 because `multi_normal` has two elements. Does it automatically. But later we can specify the link manually because we have to. " width="80%" />
+<p class="caption marginnote shownote">
+WHen this builds in Stan, it knows that <code>sigma_cafe</code> is fo length 2 because <code>multi_normal</code> has two elements. Does it automatically. But later we can specify the link manually because we have to.
+</p>
+</div>
+<p><img src="slides/L17/33.png" width="80%" /></p>
+<div class="sourceCode" id="cb982"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb982-1"><a href="13.1-varying-slopes-by-construction.html#cb982-1" aria-hidden="true" tabindex="-1"></a>b14<span class="fl">.1</span> <span class="ot">&lt;-</span> </span>
+<span id="cb982-2"><a href="13.1-varying-slopes-by-construction.html#cb982-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb982-3"><a href="13.1-varying-slopes-by-construction.html#cb982-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb982-4"><a href="13.1-varying-slopes-by-construction.html#cb982-4" aria-hidden="true" tabindex="-1"></a>      wait <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> afternoon <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> afternoon <span class="sc">|</span> cafe),</span>
+<span id="cb982-5"><a href="13.1-varying-slopes-by-construction.html#cb982-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">5</span>, <span class="dv">2</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb982-6"><a href="13.1-varying-slopes-by-construction.html#cb982-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="fl">0.5</span>), <span class="at">class =</span> b),</span>
+<span id="cb982-7"><a href="13.1-varying-slopes-by-construction.html#cb982-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd),</span>
+<span id="cb982-8"><a href="13.1-varying-slopes-by-construction.html#cb982-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sigma),</span>
+<span id="cb982-9"><a href="13.1-varying-slopes-by-construction.html#cb982-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lkj</span>(<span class="dv">2</span>), <span class="at">class =</span> cor)),</span>
+<span id="cb982-10"><a href="13.1-varying-slopes-by-construction.html#cb982-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb982-11"><a href="13.1-varying-slopes-by-construction.html#cb982-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">867530</span>,</span>
+<span id="cb982-12"><a href="13.1-varying-slopes-by-construction.html#cb982-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b14.01&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="slides/L17/34.png" alt="Run the posterior distribution for the correlation. Extract the posterior and plot the density for the correlation matrix. [1,1] is always  1. [1,2] and [2,1] is the same value. The black dashed density is the prior. The blue is the posterior. Almost all the mass is below 0. What's the consequence of this? You get shrinkage." width="80%" />
+<p class="caption marginnote shownote">
+Run the posterior distribution for the correlation. Extract the posterior and plot the density for the correlation matrix. [1,1] is always 1. [1,2] and [2,1] is the same value. The black dashed density is the prior. The blue is the posterior. Almost all the mass is below 0. What’s the consequence of this? You get shrinkage.
+</p>
+</div>
+<div class="sourceCode" id="cb983"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb983-1"><a href="13.1-varying-slopes-by-construction.html#cb983-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">posterior_samples</span>(b14<span class="fl">.1</span>)</span>
+<span id="cb983-2"><a href="13.1-varying-slopes-by-construction.html#cb983-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb983-3"><a href="13.1-varying-slopes-by-construction.html#cb983-3" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb983-4"><a href="13.1-varying-slopes-by-construction.html#cb983-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb983-5"><a href="13.1-varying-slopes-by-construction.html#cb983-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">data =</span> r_2, <span class="fu">aes</span>(<span class="at">x =</span> X2),</span>
+<span id="cb983-6"><a href="13.1-varying-slopes-by-construction.html#cb983-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#EEDA9D&quot;</span>, <span class="at">alpha =</span> <span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb983-7"><a href="13.1-varying-slopes-by-construction.html#cb983-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x =</span> cor_cafe__Intercept__afternoon),</span>
+<span id="cb983-8"><a href="13.1-varying-slopes-by-construction.html#cb983-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;#A65141&quot;</span>, <span class="at">alpha =</span> <span class="dv">9</span><span class="sc">/</span><span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb983-9"><a href="13.1-varying-slopes-by-construction.html#cb983-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
+<span id="cb983-10"><a href="13.1-varying-slopes-by-construction.html#cb983-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.15</span>, <span class="dv">0</span>), <span class="at">y =</span> <span class="fu">c</span>(<span class="fl">2.21</span>, <span class="fl">0.85</span>), </span>
+<span id="cb983-11"><a href="13.1-varying-slopes-by-construction.html#cb983-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;posterior&quot;</span>, <span class="st">&quot;prior&quot;</span>), </span>
+<span id="cb983-12"><a href="13.1-varying-slopes-by-construction.html#cb983-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> <span class="fu">c</span>(<span class="st">&quot;#A65141&quot;</span>, <span class="st">&quot;#EEDA9D&quot;</span>), <span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>) <span class="sc">+</span></span>
+<span id="cb983-13"><a href="13.1-varying-slopes-by-construction.html#cb983-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb983-14"><a href="13.1-varying-slopes-by-construction.html#cb983-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Correlation between intercepts</span><span class="sc">\n</span><span class="st">and slopes, prior and posterior&quot;</span>,</span>
+<span id="cb983-15"><a href="13.1-varying-slopes-by-construction.html#cb983-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="st">&quot;correlation&quot;</span>)</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/14.13%20b-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L17/35.png" alt="Horizontal are the intercept estimates for each cafe. Vertical are th slope estimates. Drawn like a statistical population. Blue points are the raw data values. Fixed effect estimates. Raw, unregularised fixed effects estimate. Open circles are varying effects estimates." width="80%" />
+<p class="caption marginnote shownote">
+Horizontal are the intercept estimates for each cafe. Vertical are th slope estimates. Drawn like a statistical population. Blue points are the raw data values. Fixed effect estimates. Raw, unregularised fixed effects estimate. Open circles are varying effects estimates.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/36.png" alt="First thing to notice are the elipses. The contours of theinferred populations. The alpha and beta means and covrainces weren't nkown. Plotted the contours of the population with these ellipses. Any 2D Gaussian implies an ellipse. This is the statistical pouplation that generates shrinkage. Remember shinkage works where if the estimate is extrmee, thenn it gets shrunk towards the mean. We can highlight particular cafes liek the red one, and it has a very typical intercept, right in the middle of the popualtion. Boring, avergae cafe. Butits slope is unusual. Very extreme, out on the edges of theh population. Since it's extreme, it gets shrunk, but it also notices that intercepts and slopes are negatively correlated, so it also moves the intercept to the right. Even though the intercept is not extreme, it makes sense to adjust it because of the correlation strucutre. Why is this good? Helps to reduce overfitting. You can tour through. They're being drawn towards some contour twoards the angled middle. " width="80%" />
+<p class="caption marginnote shownote">
+First thing to notice are the elipses. The contours of theinferred populations. The alpha and beta means and covrainces weren’t nkown. Plotted the contours of the population with these ellipses. Any 2D Gaussian implies an ellipse. This is the statistical pouplation that generates shrinkage. Remember shinkage works where if the estimate is extrmee, thenn it gets shrunk towards the mean. We can highlight particular cafes liek the red one, and it has a very typical intercept, right in the middle of the popualtion. Boring, avergae cafe. Butits slope is unusual. Very extreme, out on the edges of theh population. Since it’s extreme, it gets shrunk, but it also notices that intercepts and slopes are negatively correlated, so it also moves the intercept to the right. Even though the intercept is not extreme, it makes sense to adjust it because of the correlation strucutre. Why is this good? Helps to reduce overfitting. You can tour through. They’re being drawn towards some contour twoards the angled middle.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L17/37.png" alt="Can also transform to the outcome scale. Now there's a positive correlation, and would expect to wait more int he morning than the afternoon. But everything is still being shrunk towards the middle. " width="80%" />
+<p class="caption marginnote shownote">
+Can also transform to the outcome scale. Now there’s a positive correlation, and would expect to wait more int he morning than the afternoon. But everything is still being shrunk towards the middle.
+</p>
+</div>
+<div class="sourceCode" id="cb984"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb984-1"><a href="13.1-varying-slopes-by-construction.html#cb984-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(b14<span class="fl">.1</span>)</span></code></pre></div>
+<pre><code>## $cafe
+## , , Intercept
+## 
+##    Estimate Est.Error     Q2.5    Q97.5
+## 1  4.216696 0.1993313 3.826785 4.606377
+## 2  2.157785 0.2042999 1.751544 2.565549
+## 3  4.376312 0.2052879 3.961862 4.778193
+## 4  3.241655 0.1997675 2.853799 3.629085
+## 5  1.875707 0.2032712 1.475846 2.272343
+## 6  4.259519 0.2040913 3.870432 4.659490
+## 7  3.609445 0.1932584 3.225994 3.997230
+## 8  3.946772 0.2060604 3.552232 4.352194
+## 9  3.981665 0.2002013 3.583096 4.377192
+## 10 3.559604 0.2009870 3.174088 3.948352
+## 11 1.931988 0.2060002 1.533306 2.333540
+## 12 3.838585 0.1972990 3.439314 4.223135
+## 13 3.883919 0.2067283 3.473713 4.284497
+## 14 3.174623 0.2008026 2.778669 3.560395
+## 15 4.453381 0.2056054 4.053133 4.848117
+## 16 3.390474 0.2002557 3.010207 3.790014
+## 17 4.222700 0.1938111 3.846177 4.611957
+## 18 5.745584 0.2014613 5.348419 6.146005
+## 19 3.244284 0.2032538 2.845847 3.644350
+## 20 3.736465 0.1983782 3.350465 4.119243
+## 
+## , , afternoon
+## 
+##      Estimate Est.Error       Q2.5      Q97.5
+## 1  -1.1539479 0.2683787 -1.6784707 -0.6347978
+## 2  -0.9132497 0.2660157 -1.4386466 -0.3765573
+## 3  -1.9394732 0.2721773 -2.4915366 -1.4146809
+## 4  -1.2347574 0.2673954 -1.7641862 -0.7055286
+## 5  -0.1319460 0.2771434 -0.6642467  0.4219599
+## 6  -1.2984953 0.2694507 -1.8251391 -0.7799761
+## 7  -1.0157580 0.2566564 -1.5246254 -0.5173951
+## 8  -1.6374434 0.2709313 -2.1798554 -1.1128193
+## 9  -1.3079207 0.2663182 -1.8157938 -0.7835424
+## 10 -0.9462419 0.2619188 -1.4567145 -0.4321138
+## 11 -0.4319153 0.2737102 -0.9616812  0.1106692
+## 12 -1.1807311 0.2669675 -1.7187254 -0.6584106
+## 13 -1.8196329 0.2732656 -2.3606439 -1.2880028
+## 14 -0.9436111 0.2597548 -1.4502848 -0.4451183
+## 15 -2.1977218 0.2805511 -2.7615255 -1.6357641
+## 16 -1.0487636 0.2652781 -1.5677353 -0.5353321
+## 17 -1.2249797 0.2580986 -1.7306851 -0.7230910
+## 18 -1.0204906 0.2819026 -1.5696446 -0.4603278
+## 19 -0.2559100 0.2750050 -0.7939099  0.2664067
+## 20 -1.0663943 0.2583372 -1.5802572 -0.5629665</code></pre>
+<p>Extract relevant elements from <code>coef()</code>, convert them to a tibble, and add the <code>cafe</code> index:</p>
+<div class="sourceCode" id="cb986"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb986-1"><a href="13.1-varying-slopes-by-construction.html#cb986-1" aria-hidden="true" tabindex="-1"></a>partially_pooled_params <span class="ot">&lt;-</span></span>
+<span id="cb986-2"><a href="13.1-varying-slopes-by-construction.html#cb986-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># with this line we select each of the 20 cafe&#39;s posterior mean (i.e., Estimate)</span></span>
+<span id="cb986-3"><a href="13.1-varying-slopes-by-construction.html#cb986-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for both `Intercept` and `afternoon`</span></span>
+<span id="cb986-4"><a href="13.1-varying-slopes-by-construction.html#cb986-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coef</span>(b14<span class="fl">.1</span>)<span class="sc">$</span>cafe[ , <span class="dv">1</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb986-5"><a href="13.1-varying-slopes-by-construction.html#cb986-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span>              <span class="co"># convert the two vectors to a data frame</span></span>
+<span id="cb986-6"><a href="13.1-varying-slopes-by-construction.html#cb986-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Slope =</span> afternoon) <span class="sc">%&gt;%</span></span>
+<span id="cb986-7"><a href="13.1-varying-slopes-by-construction.html#cb986-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cafe =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.)) <span class="sc">%&gt;%</span>  <span class="co"># add the `cafe` index</span></span>
+<span id="cb986-8"><a href="13.1-varying-slopes-by-construction.html#cb986-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(cafe, <span class="fu">everything</span>())    <span class="co"># simply moving `cafe` to the leftmost position</span></span></code></pre></div>
+<p>Compute unpooled estimates directly from the data:</p>
+<div class="sourceCode" id="cb987"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb987-1"><a href="13.1-varying-slopes-by-construction.html#cb987-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute unpooled estimates directly from data</span></span>
+<span id="cb987-2"><a href="13.1-varying-slopes-by-construction.html#cb987-2" aria-hidden="true" tabindex="-1"></a>un_pooled_params <span class="ot">&lt;-</span></span>
+<span id="cb987-3"><a href="13.1-varying-slopes-by-construction.html#cb987-3" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb987-4"><a href="13.1-varying-slopes-by-construction.html#cb987-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># with these two lines, we compute the mean value for each cafe&#39;s wait time </span></span>
+<span id="cb987-5"><a href="13.1-varying-slopes-by-construction.html#cb987-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># in the morning and then the afternoon</span></span>
+<span id="cb987-6"><a href="13.1-varying-slopes-by-construction.html#cb987-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(afternoon, cafe) <span class="sc">%&gt;%</span></span>
+<span id="cb987-7"><a href="13.1-varying-slopes-by-construction.html#cb987-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean =</span> <span class="fu">mean</span>(wait)) <span class="sc">%&gt;%</span></span>
+<span id="cb987-8"><a href="13.1-varying-slopes-by-construction.html#cb987-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span>  <span class="co"># ungrouping allows us to alter afternoon, one of the grouping variables</span></span>
+<span id="cb987-9"><a href="13.1-varying-slopes-by-construction.html#cb987-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">afternoon =</span> <span class="fu">ifelse</span>(afternoon <span class="sc">==</span> <span class="dv">0</span>, <span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;Slope&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb987-10"><a href="13.1-varying-slopes-by-construction.html#cb987-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(<span class="at">key =</span> afternoon, <span class="at">value =</span> mean) <span class="sc">%&gt;%</span>  <span class="co"># use `spread()` just as in the previous block</span></span>
+<span id="cb987-11"><a href="13.1-varying-slopes-by-construction.html#cb987-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Slope =</span> Slope <span class="sc">-</span> Intercept)          <span class="co"># finally, here&#39;s our slope!</span></span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;afternoon&#39;. You can override using the `.groups` argument.</code></pre>
+<div class="sourceCode" id="cb989"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb989-1"><a href="13.1-varying-slopes-by-construction.html#cb989-1" aria-hidden="true" tabindex="-1"></a><span class="co"># here we combine the partially-pooled and unpooled means into a single data object, </span></span>
+<span id="cb989-2"><a href="13.1-varying-slopes-by-construction.html#cb989-2" aria-hidden="true" tabindex="-1"></a><span class="co"># which will make plotting easier.</span></span>
+<span id="cb989-3"><a href="13.1-varying-slopes-by-construction.html#cb989-3" aria-hidden="true" tabindex="-1"></a>params <span class="ot">&lt;-</span></span>
+<span id="cb989-4"><a href="13.1-varying-slopes-by-construction.html#cb989-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># `bind_rows()` will stack the second tibble below the first</span></span>
+<span id="cb989-5"><a href="13.1-varying-slopes-by-construction.html#cb989-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(partially_pooled_params, un_pooled_params) <span class="sc">%&gt;%</span></span>
+<span id="cb989-6"><a href="13.1-varying-slopes-by-construction.html#cb989-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># index whether the estimates are pooled</span></span>
+<span id="cb989-7"><a href="13.1-varying-slopes-by-construction.html#cb989-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pooled =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;partially&quot;</span>, <span class="st">&quot;not&quot;</span>), <span class="at">each =</span> <span class="fu">nrow</span>(.)<span class="sc">/</span><span class="dv">2</span>)) </span>
+<span id="cb989-8"><a href="13.1-varying-slopes-by-construction.html#cb989-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb989-9"><a href="13.1-varying-slopes-by-construction.html#cb989-9" aria-hidden="true" tabindex="-1"></a><span class="co"># here&#39;s a glimpse at what we&#39;ve been working for</span></span>
+<span id="cb989-10"><a href="13.1-varying-slopes-by-construction.html#cb989-10" aria-hidden="true" tabindex="-1"></a>params <span class="sc">%&gt;%</span></span>
+<span id="cb989-11"><a href="13.1-varying-slopes-by-construction.html#cb989-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">36</span><span class="sc">:</span><span class="dv">40</span>))</span></code></pre></div>
+<pre><code>##       cafe Intercept       Slope    pooled
+## 1        1  4.216696 -1.15394786 partially
+## 2        2  2.157785 -0.91324975 partially
+## 3        3  4.376312 -1.93947320 partially
+## 4        4  3.241655 -1.23475741 partially
+## 5        5  1.875707 -0.13194596 partially
+## ...6    16  3.373496 -1.02563866       not
+## ...7    17  4.236192 -1.22236910       not
+## ...8    18  5.755987 -0.87660383       not
+## ...9    19  3.121060  0.01441784       not
+## ...10   20  3.728481 -1.03811567       not</code></pre>
+<p>Then plot:</p>
+<div class="sourceCode" id="cb991"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb991-1"><a href="13.1-varying-slopes-by-construction.html#cb991-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb991-2"><a href="13.1-varying-slopes-by-construction.html#cb991-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> params, <span class="fu">aes</span>(<span class="at">x =</span> Intercept, <span class="at">y =</span> Slope)) <span class="sc">+</span></span>
+<span id="cb991-3"><a href="13.1-varying-slopes-by-construction.html#cb991-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-4"><a href="13.1-varying-slopes-by-construction.html#cb991-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-5"><a href="13.1-varying-slopes-by-construction.html#cb991-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">3</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-6"><a href="13.1-varying-slopes-by-construction.html#cb991-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">4</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-7"><a href="13.1-varying-slopes-by-construction.html#cb991-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">5</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-8"><a href="13.1-varying-slopes-by-construction.html#cb991-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">6</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-9"><a href="13.1-varying-slopes-by-construction.html#cb991-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">7</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-10"><a href="13.1-varying-slopes-by-construction.html#cb991-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">8</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-11"><a href="13.1-varying-slopes-by-construction.html#cb991-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> <span class="dv">9</span><span class="sc">/</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-12"><a href="13.1-varying-slopes-by-construction.html#cb991-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="at">geom =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>, <span class="at">level =</span> .<span class="dv">99</span>,  <span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb991-13"><a href="13.1-varying-slopes-by-construction.html#cb991-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group =</span> cafe, <span class="at">color =</span> pooled)) <span class="sc">+</span></span>
+<span id="cb991-14"><a href="13.1-varying-slopes-by-construction.html#cb991-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> cafe), <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb991-15"><a href="13.1-varying-slopes-by-construction.html#cb991-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="st">&quot;Pooled?&quot;</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#80A0C7&quot;</span>, <span class="st">&quot;#A65141&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb991-16"><a href="13.1-varying-slopes-by-construction.html#cb991-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(params<span class="sc">$</span>Intercept),</span>
+<span id="cb991-17"><a href="13.1-varying-slopes-by-construction.html#cb991-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(params<span class="sc">$</span>Slope))</span>
+<span id="cb991-18"><a href="13.1-varying-slopes-by-construction.html#cb991-18" aria-hidden="true" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/14.16%20b7-1.png" width="672" /></p>
+<p>Prep for Figure 4.5b:</p>
+<div class="sourceCode" id="cb992"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb992-1"><a href="13.1-varying-slopes-by-construction.html#cb992-1" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve the partially-pooled estimates with `coef()`</span></span>
+<span id="cb992-2"><a href="13.1-varying-slopes-by-construction.html#cb992-2" aria-hidden="true" tabindex="-1"></a>partially_pooled_estimates <span class="ot">&lt;-</span></span>
+<span id="cb992-3"><a href="13.1-varying-slopes-by-construction.html#cb992-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coef</span>(b14<span class="fl">.1</span>)<span class="sc">$</span>cafe[ , <span class="dv">1</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">%&gt;%</span></span>
+<span id="cb992-4"><a href="13.1-varying-slopes-by-construction.html#cb992-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert the two vectors to a data frame</span></span>
+<span id="cb992-5"><a href="13.1-varying-slopes-by-construction.html#cb992-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb992-6"><a href="13.1-varying-slopes-by-construction.html#cb992-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the Intercept is the wait time for morning (i.e., `afternoon == 0`)</span></span>
+<span id="cb992-7"><a href="13.1-varying-slopes-by-construction.html#cb992-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">morning =</span> Intercept) <span class="sc">%&gt;%</span></span>
+<span id="cb992-8"><a href="13.1-varying-slopes-by-construction.html#cb992-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># `afternoon` wait time is the `morning` wait time plus the afternoon slope</span></span>
+<span id="cb992-9"><a href="13.1-varying-slopes-by-construction.html#cb992-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">afternoon =</span> morning <span class="sc">+</span> afternoon,</span>
+<span id="cb992-10"><a href="13.1-varying-slopes-by-construction.html#cb992-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">cafe      =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span>  <span class="co"># add the `cafe` index</span></span>
+<span id="cb992-11"><a href="13.1-varying-slopes-by-construction.html#cb992-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(cafe, <span class="fu">everything</span>()) </span>
+<span id="cb992-12"><a href="13.1-varying-slopes-by-construction.html#cb992-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb992-13"><a href="13.1-varying-slopes-by-construction.html#cb992-13" aria-hidden="true" tabindex="-1"></a><span class="co"># compute unpooled estimates directly from data</span></span>
+<span id="cb992-14"><a href="13.1-varying-slopes-by-construction.html#cb992-14" aria-hidden="true" tabindex="-1"></a>un_pooled_estimates <span class="ot">&lt;-</span></span>
+<span id="cb992-15"><a href="13.1-varying-slopes-by-construction.html#cb992-15" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb992-16"><a href="13.1-varying-slopes-by-construction.html#cb992-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># as above, with these two lines, we compute each cafe&#39;s mean wait value by time of day</span></span>
+<span id="cb992-17"><a href="13.1-varying-slopes-by-construction.html#cb992-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(afternoon, cafe) <span class="sc">%&gt;%</span> </span>
+<span id="cb992-18"><a href="13.1-varying-slopes-by-construction.html#cb992-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean =</span> <span class="fu">mean</span>(wait)) <span class="sc">%&gt;%</span></span>
+<span id="cb992-19"><a href="13.1-varying-slopes-by-construction.html#cb992-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ungrouping allows us to alter the grouping variable, afternoon</span></span>
+<span id="cb992-20"><a href="13.1-varying-slopes-by-construction.html#cb992-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb992-21"><a href="13.1-varying-slopes-by-construction.html#cb992-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">afternoon =</span> <span class="fu">ifelse</span>(afternoon <span class="sc">==</span> <span class="dv">0</span>, <span class="st">&quot;morning&quot;</span>, <span class="st">&quot;afternoon&quot;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb992-22"><a href="13.1-varying-slopes-by-construction.html#cb992-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># this separates out the values into morning and afternoon columns</span></span>
+<span id="cb992-23"><a href="13.1-varying-slopes-by-construction.html#cb992-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">spread</span>(<span class="at">key =</span> afternoon, <span class="at">value =</span> mean)</span></code></pre></div>
+<pre><code>## `summarise()` has grouped output by &#39;afternoon&#39;. You can override using the `.groups` argument.</code></pre>
+<div class="sourceCode" id="cb994"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb994-1"><a href="13.1-varying-slopes-by-construction.html#cb994-1" aria-hidden="true" tabindex="-1"></a>estimates <span class="ot">&lt;-</span></span>
+<span id="cb994-2"><a href="13.1-varying-slopes-by-construction.html#cb994-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(partially_pooled_estimates, un_pooled_estimates) <span class="sc">%&gt;%</span></span>
+<span id="cb994-3"><a href="13.1-varying-slopes-by-construction.html#cb994-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">pooled =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;partially&quot;</span>, <span class="st">&quot;not&quot;</span>), <span class="at">each =</span> <span class="fu">n</span>() <span class="sc">/</span> <span class="dv">2</span>))</span></code></pre></div>
+<p>Figure 14.5b:</p>
+<div class="sourceCode" id="cb995"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb995-1"><a href="13.1-varying-slopes-by-construction.html#cb995-1" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb995-2"><a href="13.1-varying-slopes-by-construction.html#cb995-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> estimates, <span class="fu">aes</span>(<span class="at">x =</span> morning, <span class="at">y =</span> afternoon)) <span class="sc">+</span></span>
+<span id="cb995-3"><a href="13.1-varying-slopes-by-construction.html#cb995-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># nesting `stat_ellipse()` within `mapply()` is a less redundant way to produce the </span></span>
+<span id="cb995-4"><a href="13.1-varying-slopes-by-construction.html#cb995-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ten-layered semitransparent ellipses we did with ten lines of `stat_ellipse()` </span></span>
+<span id="cb995-5"><a href="13.1-varying-slopes-by-construction.html#cb995-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># functions in the previous plot</span></span>
+<span id="cb995-6"><a href="13.1-varying-slopes-by-construction.html#cb995-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapply</span>(<span class="cf">function</span>(level) {</span>
+<span id="cb995-7"><a href="13.1-varying-slopes-by-construction.html#cb995-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stat_ellipse</span>(<span class="at">geom  =</span> <span class="st">&quot;polygon&quot;</span>, <span class="at">type =</span> <span class="st">&quot;norm&quot;</span>,</span>
+<span id="cb995-8"><a href="13.1-varying-slopes-by-construction.html#cb995-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">size  =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;#E7CDC2&quot;</span>,</span>
+<span id="cb995-9"><a href="13.1-varying-slopes-by-construction.html#cb995-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">level =</span> level)</span>
+<span id="cb995-10"><a href="13.1-varying-slopes-by-construction.html#cb995-10" aria-hidden="true" tabindex="-1"></a>    }, </span>
+<span id="cb995-11"><a href="13.1-varying-slopes-by-construction.html#cb995-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># enter the levels here</span></span>
+<span id="cb995-12"><a href="13.1-varying-slopes-by-construction.html#cb995-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">level =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span> <span class="sc">/</span> <span class="dv">10</span>, .<span class="dv">99</span>)) <span class="sc">+</span></span>
+<span id="cb995-13"><a href="13.1-varying-slopes-by-construction.html#cb995-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">group =</span> cafe, <span class="at">color =</span> pooled)) <span class="sc">+</span></span>
+<span id="cb995-14"><a href="13.1-varying-slopes-by-construction.html#cb995-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> cafe), <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb995-15"><a href="13.1-varying-slopes-by-construction.html#cb995-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="st">&quot;Pooled?&quot;</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#80A0C7&quot;</span>, <span class="st">&quot;#A65141&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb995-16"><a href="13.1-varying-slopes-by-construction.html#cb995-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;morning wait (mins)&quot;</span>,</span>
+<span id="cb995-17"><a href="13.1-varying-slopes-by-construction.html#cb995-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;afternoon wait (mins)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb995-18"><a href="13.1-varying-slopes-by-construction.html#cb995-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(estimates<span class="sc">$</span>morning),</span>
+<span id="cb995-19"><a href="13.1-varying-slopes-by-construction.html#cb995-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(estimates<span class="sc">$</span>afternoon))</span></code></pre></div>
+<div class="sourceCode" id="cb996"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb996-1"><a href="13.1-varying-slopes-by-construction.html#cb996-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb996-2"><a href="13.1-varying-slopes-by-construction.html#cb996-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb996-3"><a href="13.1-varying-slopes-by-construction.html#cb996-3" aria-hidden="true" tabindex="-1"></a>(p1 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)) <span class="sc">+</span> </span>
+<span id="cb996-4"><a href="13.1-varying-slopes-by-construction.html#cb996-4" aria-hidden="true" tabindex="-1"></a>  p2 <span class="sc">+</span> </span>
+<span id="cb996-5"><a href="13.1-varying-slopes-by-construction.html#cb996-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">&quot;Shrinkage in two dimensions&quot;</span>)</span></code></pre></div>
+<p><img src="14_adventures_in_covariance_files/figure-html/unnamed-chunk-53-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L17/38.png" alt="Exploting multi-dimensional shrinkage here. Even better than pooling wihtin. Depends upon the correaltion between effects. " width="80%" />
+<p class="caption marginnote shownote">
+Exploting multi-dimensional shrinkage here. Even better than pooling wihtin. Depends upon the correaltion between effects.
+</p>
+</div>
+</div>
+<p style="text-align: center;">
+<a href="13-adventures-in-covariance.html"><button class="btn btn-default">Previous</button></a>
+<a href="13.2-advanced-varying-slopes.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

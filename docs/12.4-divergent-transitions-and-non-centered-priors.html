@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="12.4 Divergent transitions and non-centered priors | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="12.4 Divergent transitions and non-centered priors | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>12.4 Divergent transitions and non-centered priors | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="divergent-transitions-and-non-centered-priors" class="section level2" number="12.4">
+<h2><span class="header-section-number">12.4</span> Divergent transitions and non-centered priors</h2>
+<p>In a purely mathematical system, the energy is always conserved correctly. It’s just a fact about the physics.</p>
+<p>But in a numerical system, it might not be. Sometimes the total energy is not the same at the end as it was at the start. In these cases, the energy is divergent. How can this happen? It tends to happen when the posterior distribution is very steep in some region of parameter space. Steep changes in probability are hard for a discrete physics simulation to follow. When that happens, the algorithm notices by comparing the energy at the start to the energy at the end. When they don’t match, it indicates numerical problems exploring that part of the posterior distribution.</p>
+<p>Divergent transitions are rejected. They don’t directly damage your approximation of the posterior distribution. But they do hurt it indirectly, because the region where divergent transitions happen is hard to explore correctly. And even when there aren’t any divergent transitions, distributions with steep regions are hard to explore. The chains will be less efficient. And unfortunately this happens quite often in multilevel models.</p>
+<p>There are two easy tricks for reducing the impact of divergent transitions. The first is to tune the simulation so that it doesn’t overshoot the valley wall. This means doing more warmup with a higher target acceptance rate, Stan’s adapt_delta. But for many models, you can never tune the sampler enough to remove the divergent transitions. The second trick is to write the statistical model in a new way, to REPARAMETERIZE it.</p>
+<div class="figure">
+<img src="slides/L16/13.png" alt="You will get these warnings. Divergent transitions. They are your friend, in the sense that they are telling you something numerically inefficient about ht emodel. Easy to get rid of them. Teaches you someting really important. Even though mathematiclaly equivalent, the Markvov Chain will see them as quite different. Need to swtich between different ways of writing the same model. Gives you advice to increase `adapt_delta`. But sometimes that won't save you, and you just need to re-parameterise the modeo." width="80%" />
+<p class="caption marginnote shownote">
+You will get these warnings. Divergent transitions. They are your friend, in the sense that they are telling you something numerically inefficient about ht emodel. Easy to get rid of them. Teaches you someting really important. Even though mathematiclaly equivalent, the Markvov Chain will see them as quite different. Need to swtich between different ways of writing the same model. Gives you advice to increase <code>adapt_delta</code>. But sometimes that won’t save you, and you just need to re-parameterise the modeo.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/14.png" alt="Imagine you're on a frictionless rollercoaster. As it moves from A to D, there are two forms of energy. The energy is in two buckets. Start at A and going to B, it lost potential gravitational energy, and is converted to kinetic energy, to motion. Then as it goes from B to C, that conversion goes the other way. Then C to D, and will do it again. The sum of those two things is constant in a frictionless system." width="80%" />
+<p class="caption marginnote shownote">
+Imagine you’re on a frictionless rollercoaster. As it moves from A to D, there are two forms of energy. The energy is in two buckets. Start at A and going to B, it lost potential gravitational energy, and is converted to kinetic energy, to motion. Then as it goes from B to C, that conversion goes the other way. Then C to D, and will do it again. The sum of those two things is constant in a frictionless system.
+</p>
+</div>
+<p><strong><em>13.4.1. The Devil’s Funnel</em></strong></p>
+<div class="sourceCode" id="cb934"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb934-1"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-1" aria-hidden="true" tabindex="-1"></a>m13<span class="fl">.7</span> <span class="ot">&lt;-</span> </span>
+<span id="cb934-2"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ulam</span>(</span>
+<span id="cb934-3"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">list</span>(<span class="at">N =</span> <span class="dv">1</span>),</span>
+<span id="cb934-4"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">alist</span>(</span>
+<span id="cb934-5"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-5" aria-hidden="true" tabindex="-1"></a>      v <span class="sc">~</span> <span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">3</span>),</span>
+<span id="cb934-6"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-6" aria-hidden="true" tabindex="-1"></a>      x <span class="sc">~</span> <span class="fu">normal</span>(<span class="dv">0</span>, <span class="fu">exp</span>(v))</span>
+<span id="cb934-7"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-7" aria-hidden="true" tabindex="-1"></a>    ), </span>
+<span id="cb934-8"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">chains =</span> <span class="dv">4</span> </span>
+<span id="cb934-9"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb934-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb935"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb935-1"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb935-2"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb935-3"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">v =</span> <span class="fu">rnorm</span>(<span class="fl">1e3</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">3</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb935-4"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">x =</span> <span class="fu">rnorm</span>(<span class="fl">1e3</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fu">exp</span>(v))) <span class="sc">%&gt;%</span> </span>
+<span id="cb935-5"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb935-6"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
+<span id="cb935-7"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">&quot;orange2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb935-8"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb935-9"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="sc">-</span><span class="dv">100</span>, <span class="at">y =</span> <span class="dv">490</span>, <span class="at">hjust =</span> <span class="dv">0</span>,</span>
+<span id="cb935-10"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(v)<span class="sc">%~%</span><span class="fu">Normal</span>(<span class="dv">0</span>, <span class="dv">3</span>))) <span class="sc">+</span></span>
+<span id="cb935-11"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;text&quot;</span>,</span>
+<span id="cb935-12"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="sc">-</span><span class="dv">100</span>, <span class="at">y =</span> <span class="dv">440</span>, <span class="at">hjust =</span> <span class="dv">0</span>,</span>
+<span id="cb935-13"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">expression</span>(<span class="fu">italic</span>(x)<span class="sc">%~%</span><span class="fu">Normal</span>(<span class="dv">0</span>, <span class="fu">exp</span>(<span class="fu">italic</span>(v))))) <span class="sc">+</span></span>
+<span id="cb935-14"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">100</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb935-15"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb935-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<pre><code>## Warning in is.na(x): is.na() applied to non-(list or vector) of type
+## &#39;expression&#39;
+
+## Warning in is.na(x): is.na() applied to non-(list or vector) of type
+## &#39;expression&#39;</code></pre>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-70-1.png" width="672" /></p>
+<div class="sourceCode" id="cb937"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb937-1"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define the parameter space</span></span>
+<span id="cb937-2"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-2" aria-hidden="true" tabindex="-1"></a>parameter_space <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">4</span>, <span class="at">to =</span> <span class="dv">4</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb937-3"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb937-4"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-4" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate</span></span>
+<span id="cb937-5"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-5" aria-hidden="true" tabindex="-1"></a><span class="fu">crossing</span>(<span class="at">v =</span> parameter_space,</span>
+<span id="cb937-6"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> parameter_space) <span class="sc">%&gt;%</span> </span>
+<span id="cb937-7"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">likelihood_v =</span> <span class="fu">dnorm</span>(v, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">3</span>),</span>
+<span id="cb937-8"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">likelihood_x =</span> <span class="fu">dnorm</span>(x, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fu">exp</span>(v))) <span class="sc">%&gt;%</span> </span>
+<span id="cb937-9"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">joint_likelihood =</span> likelihood_v <span class="sc">*</span> likelihood_x) <span class="sc">%&gt;%</span> </span>
+<span id="cb937-10"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb937-11"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot!</span></span>
+<span id="cb937-12"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> v, <span class="at">fill =</span> joint_likelihood)) <span class="sc">+</span></span>
+<span id="cb937-13"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_raster</span>(<span class="at">interpolate =</span> T) <span class="sc">+</span></span>
+<span id="cb937-14"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;B&quot;</span>) <span class="sc">+</span></span>
+<span id="cb937-15"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Centered parameterization&quot;</span>) <span class="sc">+</span></span>
+<span id="cb937-16"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb937-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-71-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L16/15.png" alt="Divergent transitions are when your rollercoaster pops off the track. In Hamiltonian dynamics, it is the total energy in the system. If energy isn't conserved in the chain, something is wrong. We have little steps, we calculate the gradient, find a step, and get a piecewise approximation. When the rollercoaster track bends really violently, or the stepsize is big, it can happen. Divergent means it pops off the true surface. On the right is a posterior distribution that tends towards divergent transitions. It happens when you have parameters that is conditional on other parameters. Gibbs and Metropolis experience the same thing, but don't tell you when it's happening. Hamiltonian just works better especially in high dimensions, but also gives you diagnostic information." width="80%" />
+<p class="caption marginnote shownote">
+Divergent transitions are when your rollercoaster pops off the track. In Hamiltonian dynamics, it is the total energy in the system. If energy isn’t conserved in the chain, something is wrong. We have little steps, we calculate the gradient, find a step, and get a piecewise approximation. When the rollercoaster track bends really violently, or the stepsize is big, it can happen. Divergent means it pops off the true surface. On the right is a posterior distribution that tends towards divergent transitions. It happens when you have parameters that is conditional on other parameters. Gibbs and Metropolis experience the same thing, but don’t tell you when it’s happening. Hamiltonian just works better especially in high dimensions, but also gives you diagnostic information.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/16.png" alt="This is a routine situation where you get divergent transitions. Arises often in the funnel. Turn it on its side. Very simple posterior with two parameters, $v$ and $x$. $x$ is conditional on $v$. When this is true you can get very interesting shapes. As $v$ gets small, $x$ contracts and you get a very narrow valley. Curvature is really tight there. Out in the big plane you can take big steps. But out in the valley, there's no single step size that can efficiently explore both. You want a bigger one int he open area, and a smaller one in the tight area." width="80%" />
+<p class="caption marginnote shownote">
+This is a routine situation where you get divergent transitions. Arises often in the funnel. Turn it on its side. Very simple posterior with two parameters, <span class="math inline">\(v\)</span> and <span class="math inline">\(x\)</span>. <span class="math inline">\(x\)</span> is conditional on <span class="math inline">\(v\)</span>. When this is true you can get very interesting shapes. As <span class="math inline">\(v\)</span> gets small, <span class="math inline">\(x\)</span> contracts and you get a very narrow valley. Curvature is really tight there. Out in the big plane you can take big steps. But out in the valley, there’s no single step size that can efficiently explore both. You want a bigger one int he open area, and a smaller one in the tight area.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/17.png" alt="When energy at the start is different form the energy at the end, that's divergent. This doesn't necessarily corrupt your chain, but it's less efficient. The places where you do the rejections are particular regions of the posterior, and you won't be sampling that area of it. We can also make the step size small, but spend your time missing your funnel completely. Stan will do better than this, but as you increase the dimensionality, it gets pathological. So what do we do?" width="80%" />
+<p class="caption marginnote shownote">
+When energy at the start is different form the energy at the end, that’s divergent. This doesn’t necessarily corrupt your chain, but it’s less efficient. The places where you do the rejections are particular regions of the posterior, and you won’t be sampling that area of it. We can also make the step size small, but spend your time missing your funnel completely. Stan will do better than this, but as you increase the dimensionality, it gets pathological. So what do we do?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/18.png" alt="The first mean you could spend a long time finding the funnel. Also makes the chain run slower. Second is to re-parameterize. When the chain is inefficient, it's usually because I did something stupid, like leave out a prior." width="80%" />
+<p class="caption marginnote shownote">
+The first mean you could spend a long time finding the funnel. Also makes the chain run slower. Second is to re-parameterize. When the chain is inefficient, it’s usually because I did something stupid, like leave out a prior.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/19.png" alt="It's a wonderful fact that any statistical model can be expressed in a few identical ways. Alpha is conditional on mu and sigma. " width="80%" />
+<p class="caption marginnote shownote">
+It’s a wonderful fact that any statistical model can be expressed in a few identical ways. Alpha is conditional on mu and sigma.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/20.png" alt="Alpha has some probability distribution. This is another way to do it. Now alpha has the same distribution of alpha at the top, just took mu out and then added it back later. " width="80%" />
+<p class="caption marginnote shownote">
+Alpha has some probability distribution. This is another way to do it. Now alpha has the same distribution of alpha at the top, just took mu out and then added it back later.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/21.png" alt="We can go one step further and get $z$. When we multiply the zs by sigma, we're back on the scale. And add mu back in and we're in the same place." width="80%" />
+<p class="caption marginnote shownote">
+We can go one step further and get <span class="math inline">\(z\)</span>. When we multiply the zs by sigma, we’re back on the scale. And add mu back in and we’re in the same place.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/22.png" alt="Why do this? Even though it's mathematically the same, the geometry is different. On the left we have the default (centered) form. There are parameters inside the distribution. Non-centered is wehre we take all the conditioniing out. Let's look at the geometry of these equivalent distributions." width="80%" />
+<p class="caption marginnote shownote">
+Why do this? Even though it’s mathematically the same, the geometry is different. On the left we have the default (centered) form. There are parameters inside the distribution. Non-centered is wehre we take all the conditioniing out. Let’s look at the geometry of these equivalent distributions.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/23.png" alt="Same thing but we've got a Guassian bucket again. Same distribution, you can convert between them, but the one on the right is way easier to cruise around in. Can get many more effective samples." width="80%" />
+<p class="caption marginnote shownote">
+Same thing but we’ve got a Guassian bucket again. Same distribution, you can convert between them, but the one on the right is way easier to cruise around in. Can get many more effective samples.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/24.png" alt="Red points are transitions that are rejected. Start back over where you started again. A lot of them are down in the funnel. A loit of them start in the funnel. On the right, no divergences at all. So this is a big difference. " width="80%" />
+<p class="caption marginnote shownote">
+Red points are transitions that are rejected. Start back over where you started again. A lot of them are down in the funnel. A loit of them start in the funnel. On the right, no divergences at all. So this is a big difference.
+</p>
+</div>
+<p>All is well. If you plot x against v, you will see the funnel. We managed to sample it by sampling a different variable and then transforming it.</p>
+<p><strong><em>13.4.2. Non-centered chimpanzees</em></strong></p>
+<p>Before reparameterizing, the first thing you can try is to increase Stan’s target acceptance rate. This is controlled by the <code>adapt_delta</code> control parameter. The ulam default is 0.95, which means that it aims to attain a 95% acceptance rate. It tries this during the warmup phase, adjusting the step size of each leapfrog step (go back to Chapter 9 if these terms aren’t familiar). When adapt_delta is set high, it results in a smaller step size, which means a more accurate approximation of the curved surface. It can also mean slower exploration of the distribution.</p>
+<p>Increasing <code>adapt_delta</code> will often, but not always, help with divergent transitions.</p>
+<p>So that did help. But sometimes this won’t be enough. And while the divergent transitions are gone, the chain still isn’t very efficient — look at the <code>precis</code> output and notice that many of the <code>n_eff</code> values are still far below the true number of samples (2000 in this case: 4 chains, 500 from each).</p>
+<div class="figure">
+<img src="slides/L16/25.png" alt="This is what it looks like in a real model. As before, it's a centered model because it has paramters insdie the adaptive priors. And it sampled fine. But if we de-center it, it'll be more efficient.  " width="80%" />
+<p class="caption marginnote shownote">
+This is what it looks like in a real model. As before, it’s a centered model because it has paramters insdie the adaptive priors. And it sampled fine. But if we de-center it, it’ll be more efficient.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/26.png" alt="Let's focus on the linear model now. It's going to be written with the z socres in it. One zs per actor, times the sigma among actors, which rescales it. Alpha bar is outside too. Same for block. Treatments are still fixed effects so we leave them." width="80%" />
+<p class="caption marginnote shownote">
+Let’s focus on the linear model now. It’s going to be written with the z socres in it. One zs per actor, times the sigma among actors, which rescales it. Alpha bar is outside too. Same for block. Treatments are still fixed effects so we leave them.
+</p>
+</div>
+<p><img src="slides/L16/27.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L16/28.png" alt="The new bit is where we had alpha and gamma. We now have z and x Normal(0,1). This is the most importnat thing to get varying effects models working right. " width="80%" />
+<p class="caption marginnote shownote">
+The new bit is where we had alpha and gamma. We now have z and x Normal(0,1). This is the most importnat thing to get varying effects models working right.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/29.png" alt="In code, this is what it looks like. " width="80%" />
+<p class="caption marginnote shownote">
+In code, this is what it looks like.
+</p>
+</div>
+<div class="sourceCode" id="cb938"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb938-1"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-1" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_samples</span>(b13<span class="fl">.4</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb938-2"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_draws</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb938-3"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb938-4"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> ess_bulk, <span class="at">y =</span> ess_tail)) <span class="sc">+</span></span>
+<span id="cb938-5"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb938-6"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb938-7"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">4700</span>) <span class="sc">+</span></span>
+<span id="cb938-8"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">4700</span>) <span class="sc">+</span></span>
+<span id="cb938-9"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Effective sample size summaries for b13.4&quot;</span>,</span>
+<span id="cb938-10"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">subtitle =</span> <span class="st">&quot;ess_bulk is on the x and ess_tail is on the y&quot;</span>) <span class="sc">+</span></span>
+<span id="cb938-11"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb938-12"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="fl">11.5</span>),</span>
+<span id="cb938-13"><a href="12.4-divergent-transitions-and-non-centered-priors.html#cb938-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title.position =</span> <span class="st">&quot;plot&quot;</span>)</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/13.30%20b-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L16/30.png" alt="What does this get us? Going to compare the effective number of sample. Going to compare the effective number of samples per parameter for both models. Same posterior distribution, and the precis shows they're basically the same. `neff_c` is centered. Per parameter, those numbers are always bigger for the non-centered model. Means you don't need to run the model for that long. " width="80%" />
+<p class="caption marginnote shownote">
+What does this get us? Going to compare the effective number of sample. Going to compare the effective number of samples per parameter for both models. Same posterior distribution, and the precis shows they’re basically the same. <code>neff_c</code> is centered. Per parameter, those numbers are always bigger for the non-centered model. Means you don’t need to run the model for that long.
+</p>
+</div>
+<p>All but two parameters lie above the diagonal, indicating better sampling for the non-centered parameterization.</p>
+</div>
+<p style="text-align: center;">
+<a href="12.3-more-than-one-type-of-cluster.html"><button class="btn btn-default">Previous</button></a>
+<a href="12.5-multilevel-posterior-predictions.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

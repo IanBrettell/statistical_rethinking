@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="12.3 More than one type of cluster | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="12.3 More than one type of cluster | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>12.3 More than one type of cluster | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="more-than-one-type-of-cluster" class="section level2" number="12.3">
+<h2><span class="header-section-number">12.3</span> More than one type of cluster</h2>
+<p>We can use and often should use more than one type of cluster in the same model. Each pull is within a cluster of pulls belonging to an individual chimpanzee. But each pull is also within an experimental block, which represents a collection of observations that happened on the same day.</p>
+<div class="figure">
+<img src="slides/L16/02.png" alt="Experiment with a small number of chimps. Replicated on each. 4 treatments with prosocial option. Question is do they intepret it that way? " width="80%" />
+<p class="caption marginnote shownote">
+Experiment with a small number of chimps. Replicated on each. 4 treatments with prosocial option. Question is do they intepret it that way?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/03.png" alt="Want to use it to learn how to build a more complex vasrying effects model when we have more than one type of cluster. Called cross-classfication. The indivdual chimps are cross-classified, as is experimental day. In this dataset everything is balanced. All the chimps in all the blocks. Going to use both these types of clusters. Actors is a clsuter so we can estimate parameters specific to the chimp, like handedness. Also have repeated observations inside blocks. You can just design them liek a varying intercept model. " width="80%" />
+<p class="caption marginnote shownote">
+Want to use it to learn how to build a more complex vasrying effects model when we have more than one type of cluster. Called cross-classfication. The indivdual chimps are cross-classified, as is experimental day. In this dataset everything is balanced. All the chimps in all the blocks. Going to use both these types of clusters. Actors is a clsuter so we can estimate parameters specific to the chimp, like handedness. Also have repeated observations inside blocks. You can just design them liek a varying intercept model.
+</p>
+</div>
+<p><strong><em>13.3.1. Multilevel chimpanzees</em></strong></p>
+<div class="figure">
+<img src="slides/L16/04.png" alt="Here's the MLM with both actor and block intercepts. Alpha for each actor, gamma for each block, and beta for each treatment. Ordinary fixed effects, regularising, not adaptive. Just like tank effects. Interpretation is the handedness. Adaptive prior, with alpha bar. And a sigma alpha. So the model will learn the prior from the data." width="80%" />
+<p class="caption marginnote shownote">
+Here’s the MLM with both actor and block intercepts. Alpha for each actor, gamma for each block, and beta for each treatment. Ordinary fixed effects, regularising, not adaptive. Just like tank effects. Interpretation is the handedness. Adaptive prior, with alpha bar. And a sigma alpha. So the model will learn the prior from the data.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/05.png" alt="Then another adaptive prior, gamma for each block. It's conditional on each parameter. No gamma bar. You could put it there, but it would be redundant. Could just put a 0 there. Hyperpriors at the bottom. Blue bits are the block. You can extend this strategy for as many cluster types as you like. " width="80%" />
+<p class="caption marginnote shownote">
+Then another adaptive prior, gamma for each block. It’s conditional on each parameter. No gamma bar. You could put it there, but it would be redundant. Could just put a 0 there. Hyperpriors at the bottom. Blue bits are the block. You can extend this strategy for as many cluster types as you like.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/06.png" alt="Just a logistic regression with a bunch of stuff. `a[actor]`. " width="80%" />
+<p class="caption marginnote shownote">
+Just a logistic regression with a bunch of stuff. <code>a[actor]</code>.
+</p>
+</div>
+<p>In this case, you should see a warning about DIVERGENT TRANSITIONS. In the next section, I’ll show you how to fix this. For now, we can keep moving and interpret the posterior.</p>
+<div class="figure">
+<img src="slides/L16/07.png" alt="`a` for each actor. Vector of those. They each have a common prior, with two parameters inside it. Conditional on other parameters (which makes it adaptive.) Then at the bottom it gives it shape. " width="80%" />
+<p class="caption marginnote shownote">
+<code>a</code> for each actor. Vector of those. They each have a common prior, with two parameters inside it. Conditional on other parameters (which makes it adaptive.) Then at the bottom it gives it shape.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/08.png" alt="Same thing for blocks. Block in the model, black adaptive prior, then sigma. " width="80%" />
+<p class="caption marginnote shownote">
+Same thing for blocks. Block in the model, black adaptive prior, then sigma.
+</p>
+</div>
+<p>This is easily the most complicated model we’ve used in the book so far. So let’s look at the posterior and take note of a few important features:</p>
+<div class="sourceCode" id="cb912"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb912-1"><a href="12.3-more-than-one-type-of-cluster.html#cb912-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(chimpanzees, <span class="at">package =</span> <span class="st">&quot;rethinking&quot;</span>)</span>
+<span id="cb912-2"><a href="12.3-more-than-one-type-of-cluster.html#cb912-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> chimpanzees</span>
+<span id="cb912-3"><a href="12.3-more-than-one-type-of-cluster.html#cb912-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(chimpanzees)</span>
+<span id="cb912-4"><a href="12.3-more-than-one-type-of-cluster.html#cb912-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb912-5"><a href="12.3-more-than-one-type-of-cluster.html#cb912-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span></span>
+<span id="cb912-6"><a href="12.3-more-than-one-type-of-cluster.html#cb912-6" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb912-7"><a href="12.3-more-than-one-type-of-cluster.html#cb912-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">actor     =</span> <span class="fu">factor</span>(actor),</span>
+<span id="cb912-8"><a href="12.3-more-than-one-type-of-cluster.html#cb912-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">block     =</span> <span class="fu">factor</span>(block),</span>
+<span id="cb912-9"><a href="12.3-more-than-one-type-of-cluster.html#cb912-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">treatment =</span> <span class="fu">factor</span>(<span class="dv">1</span> <span class="sc">+</span> prosoc_left <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> condition))</span>
+<span id="cb912-10"><a href="12.3-more-than-one-type-of-cluster.html#cb912-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb912-11"><a href="12.3-more-than-one-type-of-cluster.html#cb912-11" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(d)</span></code></pre></div>
+<pre><code>## Rows: 504
+## Columns: 9
+## $ actor        &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ recipient    &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ condition    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ block        &lt;fct&gt; 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, …
+## $ trial        &lt;int&gt; 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 3…
+## $ prosoc_left  &lt;int&gt; 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, …
+## $ chose_prosoc &lt;int&gt; 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, …
+## $ pulled_left  &lt;int&gt; 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, …
+## $ treatment    &lt;fct&gt; 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 1, 2, 1, 2, 1, 2, 2, 1, 2, …</code></pre>
+<div class="sourceCode" id="cb914"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb914-1"><a href="12.3-more-than-one-type-of-cluster.html#cb914-1" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.4</span> <span class="ot">&lt;-</span> </span>
+<span id="cb914-2"><a href="12.3-more-than-one-type-of-cluster.html#cb914-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb914-3"><a href="12.3-more-than-one-type-of-cluster.html#cb914-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> binomial,</span>
+<span id="cb914-4"><a href="12.3-more-than-one-type-of-cluster.html#cb914-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(pulled_left <span class="sc">|</span> <span class="fu">trials</span>(<span class="dv">1</span>) <span class="sc">~</span> a <span class="sc">+</span> b,</span>
+<span id="cb914-5"><a href="12.3-more-than-one-type-of-cluster.html#cb914-5" aria-hidden="true" tabindex="-1"></a>         a <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> actor) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> block), </span>
+<span id="cb914-6"><a href="12.3-more-than-one-type-of-cluster.html#cb914-6" aria-hidden="true" tabindex="-1"></a>         b <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> treatment,</span>
+<span id="cb914-7"><a href="12.3-more-than-one-type-of-cluster.html#cb914-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">nl =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb914-8"><a href="12.3-more-than-one-type-of-cluster.html#cb914-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">nlpar =</span> b),</span>
+<span id="cb914-9"><a href="12.3-more-than-one-type-of-cluster.html#cb914-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> b, <span class="at">coef =</span> Intercept, <span class="at">nlpar =</span> a),</span>
+<span id="cb914-10"><a href="12.3-more-than-one-type-of-cluster.html#cb914-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">group =</span> actor, <span class="at">nlpar =</span> a),</span>
+<span id="cb914-11"><a href="12.3-more-than-one-type-of-cluster.html#cb914-11" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">group =</span> block, <span class="at">nlpar =</span> a)),</span>
+<span id="cb914-12"><a href="12.3-more-than-one-type-of-cluster.html#cb914-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb914-13"><a href="12.3-more-than-one-type-of-cluster.html#cb914-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">13</span>,</span>
+<span id="cb914-14"><a href="12.3-more-than-one-type-of-cluster.html#cb914-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b13.04&quot;</span>)</span></code></pre></div>
+<p>Check the trace plots:</p>
+<div class="sourceCode" id="cb915"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb915-1"><a href="12.3-more-than-one-type-of-cluster.html#cb915-1" aria-hidden="true" tabindex="-1"></a>bayesplot<span class="sc">::</span><span class="fu">color_scheme_set</span>(<span class="st">&quot;orange&quot;</span>)</span>
+<span id="cb915-2"><a href="12.3-more-than-one-type-of-cluster.html#cb915-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb915-3"><a href="12.3-more-than-one-type-of-cluster.html#cb915-3" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">posterior_samples</span>(b13<span class="fl">.4</span>, <span class="at">add_chain =</span> T)</span>
+<span id="cb915-4"><a href="12.3-more-than-one-type-of-cluster.html#cb915-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb915-5"><a href="12.3-more-than-one-type-of-cluster.html#cb915-5" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span> </span>
+<span id="cb915-6"><a href="12.3-more-than-one-type-of-cluster.html#cb915-6" aria-hidden="true" tabindex="-1"></a>  bayesplot<span class="sc">::</span><span class="fu">mcmc_trace</span>(<span class="at">pars =</span> <span class="fu">vars</span>(<span class="sc">-</span>iter, <span class="sc">-</span>lp__),</span>
+<span id="cb915-7"><a href="12.3-more-than-one-type-of-cluster.html#cb915-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">facet_args =</span> <span class="fu">list</span>(<span class="at">ncol =</span> <span class="dv">4</span>), </span>
+<span id="cb915-8"><a href="12.3-more-than-one-type-of-cluster.html#cb915-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">size =</span> .<span class="dv">15</span>) <span class="sc">+</span></span>
+<span id="cb915-9"><a href="12.3-more-than-one-type-of-cluster.html#cb915-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<div class="sourceCode" id="cb916"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb916-1"><a href="12.3-more-than-one-type-of-cluster.html#cb916-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b13<span class="fl">.4</span>)</span></code></pre></div>
+<pre><code>##  Family: binomial 
+##   Links: mu = logit 
+## Formula: pulled_left | trials(1) ~ a + b 
+##          a ~ 1 + (1 | actor) + (1 | block)
+##          b ~ 0 + treatment
+##    Data: d (Number of observations: 504) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Group-Level Effects: 
+## ~actor (Number of levels: 7) 
+##                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(a_Intercept)     1.98      0.63     1.08     3.52 1.00     1612     2195
+## 
+## ~block (Number of levels: 6) 
+##                 Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(a_Intercept)     0.20      0.17     0.01     0.62 1.00     1450     1567
+## 
+## Population-Level Effects: 
+##              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## a_Intercept      0.60      0.71    -0.83     2.07 1.01      999     1494
+## b_treatment1    -0.14      0.30    -0.74     0.43 1.00     2000     2559
+## b_treatment2     0.39      0.30    -0.20     0.97 1.00     2189     3051
+## b_treatment3    -0.48      0.30    -1.06     0.09 1.00     2094     2688
+## b_treatment4     0.28      0.30    -0.29     0.88 1.00     2113     2765
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="sourceCode" id="cb918"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb918-1"><a href="12.3-more-than-one-type-of-cluster.html#cb918-1" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_summary</span>(b13<span class="fl">.4</span>) <span class="sc">%&gt;%</span> <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##                         Estimate Est.Error    Q2.5   Q97.5
+## b_a_Intercept               0.60      0.71   -0.83    2.07
+## b_b_treatment1             -0.14      0.30   -0.74    0.43
+## b_b_treatment2              0.39      0.30   -0.20    0.97
+## b_b_treatment3             -0.48      0.30   -1.06    0.09
+## b_b_treatment4              0.28      0.30   -0.29    0.88
+## sd_actor__a_Intercept       1.98      0.63    1.08    3.52
+## sd_block__a_Intercept       0.20      0.17    0.01    0.62
+## r_actor__a[1,Intercept]    -0.96      0.72   -2.42    0.47
+## r_actor__a[2,Intercept]     4.08      1.35    2.01    7.29
+## r_actor__a[3,Intercept]    -1.26      0.73   -2.75    0.17
+## r_actor__a[4,Intercept]    -1.26      0.73   -2.71    0.19
+## r_actor__a[5,Intercept]    -0.96      0.72   -2.38    0.49
+## r_actor__a[6,Intercept]    -0.01      0.72   -1.46    1.46
+## r_actor__a[7,Intercept]     1.51      0.77    0.03    3.09
+## r_block__a[1,Intercept]    -0.16      0.22   -0.72    0.14
+## r_block__a[2,Intercept]     0.04      0.18   -0.29    0.45
+## r_block__a[3,Intercept]     0.05      0.18   -0.27    0.47
+## r_block__a[4,Intercept]     0.01      0.18   -0.35    0.41
+## r_block__a[5,Intercept]    -0.03      0.17   -0.40    0.32
+## r_block__a[6,Intercept]     0.11      0.20   -0.19    0.61
+## lp__                     -286.98      3.87 -295.39 -280.38</code></pre>
+<div class="figure">
+<img src="slides/L16/09.png" alt="Run this model at home. WOn't encounter any problems. Plot the precis on the left. Treatment parameters. No new story here. Atraacted to the prosocial option, but not more when there's a partner. `a[2]` has a big intecetpt. Why such a wide marginal posterior for left? `g` are block effects. All very small, around 0. Which means there's not much variation among blocks. Then down the bottom we have alpha bar, which is lslightly left-handed. THen the two sigmas teell the same story. The variation among actor and block, you cna see the actors vary more, and the sigmas are picking them up. For actor, sigma of 2 is very big. sigma[g] is practically 0. Plotted the two densities for the sigma variables. The consequence of this is there's a lot more shrinkage among blocks. The actors had very little shrinkage, becuase lefty proves that indibvdiuals are indiviuals, with personality." width="80%" />
+<p class="caption marginnote shownote">
+Run this model at home. WOn’t encounter any problems. Plot the precis on the left. Treatment parameters. No new story here. Atraacted to the prosocial option, but not more when there’s a partner. <code>a[2]</code> has a big intecetpt. Why such a wide marginal posterior for left? <code>g</code> are block effects. All very small, around 0. Which means there’s not much variation among blocks. Then down the bottom we have alpha bar, which is lslightly left-handed. THen the two sigmas teell the same story. The variation among actor and block, you cna see the actors vary more, and the sigmas are picking them up. For actor, sigma of 2 is very big. sigma[g] is practically 0. Plotted the two densities for the sigma variables. The consequence of this is there’s a lot more shrinkage among blocks. The actors had very little shrinkage, becuase lefty proves that indibvdiuals are indiviuals, with personality.
+</p>
+</div>
+<div class="sourceCode" id="cb920"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb920-1"><a href="12.3-more-than-one-type-of-cluster.html#cb920-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mcmc_plot</span>(b13<span class="fl">.4</span>, <span class="at">pars =</span> <span class="fu">c</span>(<span class="st">&quot;^r_&quot;</span>, <span class="st">&quot;^b_&quot;</span>, <span class="st">&quot;^sd_&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb920-2"><a href="12.3-more-than-one-type-of-cluster.html#cb920-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>))</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/13.22%20b-1.png" width="672" />
+Now use <code>post</code> to compare the group-level <span class="math inline">\(\sigma\)</span> parameters:</p>
+<div class="sourceCode" id="cb921"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb921-1"><a href="12.3-more-than-one-type-of-cluster.html#cb921-1" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb921-2"><a href="12.3-more-than-one-type-of-cluster.html#cb921-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">starts_with</span>(<span class="st">&quot;sd&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb921-3"><a href="12.3-more-than-one-type-of-cluster.html#cb921-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb921-4"><a href="12.3-more-than-one-type-of-cluster.html#cb921-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">fill =</span> name)) <span class="sc">+</span></span>
+<span id="cb921-5"><a href="12.3-more-than-one-type-of-cluster.html#cb921-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">adjust =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">show.legend =</span> F) <span class="sc">+</span></span>
+<span id="cb921-6"><a href="12.3-more-than-one-type-of-cluster.html#cb921-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fl">0.67</span>, <span class="at">y =</span> <span class="dv">2</span>, <span class="at">label =</span> <span class="st">&quot;block&quot;</span>, <span class="at">color =</span> <span class="st">&quot;orange4&quot;</span>) <span class="sc">+</span></span>
+<span id="cb921-7"><a href="12.3-more-than-one-type-of-cluster.html#cb921-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> <span class="fl">2.725</span>, <span class="at">y =</span> <span class="fl">0.5</span>, <span class="at">label =</span> <span class="st">&quot;actor&quot;</span>, <span class="at">color =</span> <span class="st">&quot;orange1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb921-8"><a href="12.3-more-than-one-type-of-cluster.html#cb921-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">str_c</span>(<span class="st">&quot;orange&quot;</span>, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>))) <span class="sc">+</span></span>
+<span id="cb921-9"><a href="12.3-more-than-one-type-of-cluster.html#cb921-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb921-10"><a href="12.3-more-than-one-type-of-cluster.html#cb921-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="fu">expression</span>(sigma[<span class="st">&quot;&lt;group&gt;&quot;</span>])) <span class="sc">+</span></span>
+<span id="cb921-11"><a href="12.3-more-than-one-type-of-cluster.html#cb921-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">4</span>))</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-62-1.png" width="672" /></p>
+<p>First, notice that the number of effective samples, <code>n_eff</code>, varies quite a lot across parameters. This is common in complex models. Why? There are many reasons for this. But in this sort of model a common reason is that some parameter spends a lot of time near a boundary. Here, that parameter is <code>sigma_g.</code> It spends a lot of time near its minimum of zero. Some Rhat values are also slightly above 1.00 now. All of this is a sign of inefficient sampling, which we’ll fix in the next section.</p>
+<div class="figure">
+<img src="slides/L16/10.png" alt="Natural to ask then, should we even have varying intercepts on block. Doesn't matter. Leave them out and get the same inference. Nice feature of varying effects is if there's not much vasriation, not harmful to add varying effects. Here's the same model, but we've taken out the block effects entirely, but with varying intercepts on individuals, and can compare with WAIC or LOO, and see that they're very similar models. Effectively the same. Notice the parameter counts have a small difference. 2 effective parameter difference, even though it has 7 more parameters. Lots of machine learning works this way.  " width="80%" />
+<p class="caption marginnote shownote">
+Natural to ask then, should we even have varying intercepts on block. Doesn’t matter. Leave them out and get the same inference. Nice feature of varying effects is if there’s not much vasriation, not harmful to add varying effects. Here’s the same model, but we’ve taken out the block effects entirely, but with varying intercepts on individuals, and can compare with WAIC or LOO, and see that they’re very similar models. Effectively the same. Notice the parameter counts have a small difference. 2 effective parameter difference, even though it has 7 more parameters. Lots of machine learning works this way.
+</p>
+</div>
+<div class="sourceCode" id="cb922"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb922-1"><a href="12.3-more-than-one-type-of-cluster.html#cb922-1" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.5</span> <span class="ot">&lt;-</span> </span>
+<span id="cb922-2"><a href="12.3-more-than-one-type-of-cluster.html#cb922-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb922-3"><a href="12.3-more-than-one-type-of-cluster.html#cb922-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> binomial,</span>
+<span id="cb922-4"><a href="12.3-more-than-one-type-of-cluster.html#cb922-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">bf</span>(pulled_left <span class="sc">|</span> <span class="fu">trials</span>(<span class="dv">1</span>) <span class="sc">~</span> a <span class="sc">+</span> b,</span>
+<span id="cb922-5"><a href="12.3-more-than-one-type-of-cluster.html#cb922-5" aria-hidden="true" tabindex="-1"></a>         a <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> actor), </span>
+<span id="cb922-6"><a href="12.3-more-than-one-type-of-cluster.html#cb922-6" aria-hidden="true" tabindex="-1"></a>         b <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> treatment,</span>
+<span id="cb922-7"><a href="12.3-more-than-one-type-of-cluster.html#cb922-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">nl =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb922-8"><a href="12.3-more-than-one-type-of-cluster.html#cb922-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">0.5</span>), <span class="at">nlpar =</span> b),</span>
+<span id="cb922-9"><a href="12.3-more-than-one-type-of-cluster.html#cb922-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> b, <span class="at">coef =</span> Intercept, <span class="at">nlpar =</span> a),</span>
+<span id="cb922-10"><a href="12.3-more-than-one-type-of-cluster.html#cb922-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd, <span class="at">group =</span> actor, <span class="at">nlpar =</span> a)),</span>
+<span id="cb922-11"><a href="12.3-more-than-one-type-of-cluster.html#cb922-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb922-12"><a href="12.3-more-than-one-type-of-cluster.html#cb922-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">13</span>,</span>
+<span id="cb922-13"><a href="12.3-more-than-one-type-of-cluster.html#cb922-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b13.05&quot;</span>)</span></code></pre></div>
+<p>Compare WAICs</p>
+<div class="sourceCode" id="cb923"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb923-1"><a href="12.3-more-than-one-type-of-cluster.html#cb923-1" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b13<span class="fl">.4</span>, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb923-2"><a href="12.3-more-than-one-type-of-cluster.html#cb923-2" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b13<span class="fl">.5</span>, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb923-3"><a href="12.3-more-than-one-type-of-cluster.html#cb923-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb923-4"><a href="12.3-more-than-one-type-of-cluster.html#cb923-4" aria-hidden="true" tabindex="-1"></a><span class="fu">loo_compare</span>(b13<span class="fl">.4</span>, b13<span class="fl">.5</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb923-5"><a href="12.3-more-than-one-type-of-cluster.html#cb923-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">simplify =</span> F)</span></code></pre></div>
+<pre><code>##       elpd_diff se_diff elpd_waic se_elpd_waic p_waic se_p_waic waic   se_waic
+## b13.5    0.0       0.0  -265.6       9.6          8.6    0.4     531.2   19.2 
+## b13.4   -0.4       0.8  -266.0       9.7         10.5    0.5     532.1   19.4</code></pre>
+<div class="sourceCode" id="cb925"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb925-1"><a href="12.3-more-than-one-type-of-cluster.html#cb925-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model_weights</span>(b13<span class="fl">.4</span>, b13<span class="fl">.5</span>, <span class="at">weights =</span> <span class="st">&quot;waic&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb925-2"><a href="12.3-more-than-one-type-of-cluster.html#cb925-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## b13.4 b13.5 
+##   0.4   0.6</code></pre>
+<p>There is nothing to gain here by selecting either model. The comparison of the two models tells a richer story—whether we include block or not hardly matters, and the g and sigma_g estimates tell us why.</p>
+<p><strong><em>13.3.2. Even more clusters</em></strong></p>
+<div class="figure">
+<img src="slides/L16/11.png" alt="Let's add some more random effects. Synonym of varying effects. Rnadom has a tendency to interpret effects in a stronger way. Just a statistcal way to regularise inference. Source of clusters is irrelevant to whethr to add random effects or not. Wnat to regularise, but not adaptively. If you care about mroe accurate inferences, use adaptive priors. All we have ot do is add a sigma beta. Give it a parameter and we learn it. " width="80%" />
+<p class="caption marginnote shownote">
+Let’s add some more random effects. Synonym of varying effects. Rnadom has a tendency to interpret effects in a stronger way. Just a statistcal way to regularise inference. Source of clusters is irrelevant to whethr to add random effects or not. Wnat to regularise, but not adaptively. If you care about mroe accurate inferences, use adaptive priors. All we have ot do is add a sigma beta. Give it a parameter and we learn it.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/12.png" alt="One more sigma down the bottom. Run it and compare to the preivous. They're basiclaly the same estimates. Why? Because there's tonnes of data per treatment. It trims the posterior uncertainty a little bit, but doesn't change the effective inference." width="80%" />
+<p class="caption marginnote shownote">
+One more sigma down the bottom. Run it and compare to the preivous. They’re basiclaly the same estimates. Why? Because there’s tonnes of data per treatment. It trims the posterior uncertainty a little bit, but doesn’t change the effective inference.
+</p>
+</div>
+<div class="sourceCode" id="cb927"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb927-1"><a href="12.3-more-than-one-type-of-cluster.html#cb927-1" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.6</span> <span class="ot">&lt;-</span> </span>
+<span id="cb927-2"><a href="12.3-more-than-one-type-of-cluster.html#cb927-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb927-3"><a href="12.3-more-than-one-type-of-cluster.html#cb927-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> binomial,</span>
+<span id="cb927-4"><a href="12.3-more-than-one-type-of-cluster.html#cb927-4" aria-hidden="true" tabindex="-1"></a>      pulled_left <span class="sc">|</span> <span class="fu">trials</span>(<span class="dv">1</span>) <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> actor) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> block) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> treatment),</span>
+<span id="cb927-5"><a href="12.3-more-than-one-type-of-cluster.html#cb927-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb927-6"><a href="12.3-more-than-one-type-of-cluster.html#cb927-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd)),</span>
+<span id="cb927-7"><a href="12.3-more-than-one-type-of-cluster.html#cb927-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,  </span>
+<span id="cb927-8"><a href="12.3-more-than-one-type-of-cluster.html#cb927-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">13</span>,</span>
+<span id="cb927-9"><a href="12.3-more-than-one-type-of-cluster.html#cb927-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b13.06&quot;</span>)</span>
+<span id="cb927-10"><a href="12.3-more-than-one-type-of-cluster.html#cb927-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb927-11"><a href="12.3-more-than-one-type-of-cluster.html#cb927-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare coefficients</span></span>
+<span id="cb927-12"><a href="12.3-more-than-one-type-of-cluster.html#cb927-12" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">parameter =</span> <span class="fu">str_c</span>(<span class="st">&quot;b[&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="st">&quot;]&quot;</span>),</span>
+<span id="cb927-13"><a href="12.3-more-than-one-type-of-cluster.html#cb927-13" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">b13.4</span><span class="st">`</span>   <span class="ot">=</span> <span class="fu">fixef</span>(b13<span class="fl">.4</span>)[<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span>],</span>
+<span id="cb927-14"><a href="12.3-more-than-one-type-of-cluster.html#cb927-14" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">b13.6</span><span class="st">`</span>   <span class="ot">=</span> <span class="fu">ranef</span>(b13<span class="fl">.6</span>)<span class="sc">$</span>treatment[, <span class="dv">1</span>, <span class="st">&quot;Intercept&quot;</span>]) <span class="sc">%&gt;%</span> </span>
+<span id="cb927-15"><a href="12.3-more-than-one-type-of-cluster.html#cb927-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_if</span>(is.double, round, <span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 4 × 3
+##   parameter b13.4 b13.6
+##   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;
+## 1 b[1]      -0.14 -0.1 
+## 2 b[2]       0.39  0.4 
+## 3 b[3]      -0.48 -0.43
+## 4 b[4]       0.28  0.29</code></pre>
+<p>And there is a lot of data in each treatment, so they don’t get pooled much in any event. If you compare model m13.6 with m13.4, using either WAIC or PSIS, you’ll see they are no different on purely predictive criteria. This is the typical result, when each cluster (each treatment here) has a lot of data to inform its parameters.</p>
+<p>Compare group-level <span class="math inline">\(\sigma\)</span> parameters with a plot:</p>
+<div class="sourceCode" id="cb929"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb929-1"><a href="12.3-more-than-one-type-of-cluster.html#cb929-1" aria-hidden="true" tabindex="-1"></a><span class="fu">posterior_samples</span>(b13<span class="fl">.6</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb929-2"><a href="12.3-more-than-one-type-of-cluster.html#cb929-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">starts_with</span>(<span class="st">&quot;sd&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb929-3"><a href="12.3-more-than-one-type-of-cluster.html#cb929-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">group =</span> <span class="fu">str_remove</span>(name, <span class="st">&quot;sd_&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">str_remove</span>(., <span class="st">&quot;__Intercept&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb929-4"><a href="12.3-more-than-one-type-of-cluster.html#cb929-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parameter =</span> <span class="fu">str_c</span>(<span class="st">&quot;sigma[&quot;</span>, group,<span class="st">&quot;]&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb929-5"><a href="12.3-more-than-one-type-of-cluster.html#cb929-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb929-6"><a href="12.3-more-than-one-type-of-cluster.html#cb929-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> parameter)) <span class="sc">+</span></span>
+<span id="cb929-7"><a href="12.3-more-than-one-type-of-cluster.html#cb929-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> .<span class="dv">95</span>, <span class="at">size =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">adjust =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb929-8"><a href="12.3-more-than-one-type-of-cluster.html#cb929-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> ggplot2<span class="sc">:::</span>parse_safe) <span class="sc">+</span></span>
+<span id="cb929-9"><a href="12.3-more-than-one-type-of-cluster.html#cb929-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;The variation among treatment levels is small, but the</span><span class="sc">\n</span><span class="st">variation among the levels of block is still the smallest.&quot;</span>) <span class="sc">+</span></span>
+<span id="cb929-10"><a href="12.3-more-than-one-type-of-cluster.html#cb929-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">1.5</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb929-11"><a href="12.3-more-than-one-type-of-cluster.html#cb929-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>))</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-66-1.png" width="672" /></p>
+<p>Now compare <code>b13.6</code> with the last two models:</p>
+<div class="sourceCode" id="cb930"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb930-1"><a href="12.3-more-than-one-type-of-cluster.html#cb930-1" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">add_criterion</span>(b13<span class="fl">.6</span>, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb930-2"><a href="12.3-more-than-one-type-of-cluster.html#cb930-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb930-3"><a href="12.3-more-than-one-type-of-cluster.html#cb930-3" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">loo_compare</span>(b13<span class="fl">.4</span>, b13<span class="fl">.5</span>, b13<span class="fl">.6</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb930-4"><a href="12.3-more-than-one-type-of-cluster.html#cb930-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">simplify =</span> F)</span></code></pre></div>
+<pre><code>##       elpd_diff se_diff elpd_waic se_elpd_waic p_waic se_p_waic waic   se_waic
+## b13.5    0.0       0.0  -265.6       9.6          8.6    0.4     531.2   19.2 
+## b13.4   -0.4       0.8  -266.0       9.7         10.5    0.5     532.1   19.4 
+## b13.6   -1.0       0.8  -266.6       9.6         10.9    0.5     533.3   19.2</code></pre>
+<div class="sourceCode" id="cb932"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb932-1"><a href="12.3-more-than-one-type-of-cluster.html#cb932-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model_weights</span>(b13<span class="fl">.4</span>, b13<span class="fl">.5</span>, b13<span class="fl">.6</span>, <span class="at">weights =</span> <span class="st">&quot;loo&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb932-2"><a href="12.3-more-than-one-type-of-cluster.html#cb932-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## b13.4 b13.5 b13.6 
+##  0.33  0.50  0.18</code></pre>
+</div>
+<p style="text-align: center;">
+<a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html"><button class="btn btn-default">Previous</button></a>
+<a href="12.4-divergent-transitions-and-non-centered-priors.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

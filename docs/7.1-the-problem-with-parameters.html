@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="7.1 The problem with parameters | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="7.1 The problem with parameters | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>7.1 The problem with parameters | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="the-problem-with-parameters" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> The problem with parameters</h2>
+<div class="figure">
+<img src="slides/L07/22.png" alt="The basic problem is that models that are too simple don't know enough; and models that are too complex learn too much. On the extrmee, you can encrypt every data point as a parameter, but it will make terrible predictions. Want to learn the &quot;regular features&quot; of the sample. Multilevel models don't work like this because they're less liekly to overfit. I have a model with 27K parameters, and it overfits very little because of this hierarchical structure." width="80%" />
+<p class="caption marginnote shownote">
+The basic problem is that models that are too simple don’t know enough; and models that are too complex learn too much. On the extrmee, you can encrypt every data point as a parameter, but it will make terrible predictions. Want to learn the “regular features” of the sample. Multilevel models don’t work like this because they’re less liekly to overfit. I have a model with 27K parameters, and it overfits very little because of this hierarchical structure.
+</p>
+</div>
+<p><strong><em>7.1.1. More parameters (almost) always improve fit</em></strong></p>
+<div class="figure">
+<img src="slides/L07/23.png" alt="Humans have big brains. If we look at body mass v brain volume, there is some association. What's the statistical relationship?" width="80%" />
+<p class="caption marginnote shownote">
+Humans have big brains. If we look at body mass v brain volume, there is some association. What’s the statistical relationship?
+</p>
+</div>
+<div class="sourceCode" id="cb489"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb489-1"><a href="7.1-the-problem-with-parameters.html#cb489-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb489-2"><a href="7.1-the-problem-with-parameters.html#cb489-2" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> </span>
+<span id="cb489-3"><a href="7.1-the-problem-with-parameters.html#cb489-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">species =</span> <span class="fu">c</span>(<span class="st">&quot;afarensis&quot;</span>, <span class="st">&quot;africanus&quot;</span>, <span class="st">&quot;habilis&quot;</span>, <span class="st">&quot;boisei&quot;</span>, <span class="st">&quot;rudolfensis&quot;</span>, <span class="st">&quot;ergaster&quot;</span>, <span class="st">&quot;sapiens&quot;</span>), </span>
+<span id="cb489-4"><a href="7.1-the-problem-with-parameters.html#cb489-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">brain   =</span> <span class="fu">c</span>(<span class="dv">438</span>, <span class="dv">452</span>, <span class="dv">612</span>, <span class="dv">521</span>, <span class="dv">752</span>, <span class="dv">871</span>, <span class="dv">1350</span>), </span>
+<span id="cb489-5"><a href="7.1-the-problem-with-parameters.html#cb489-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">mass    =</span> <span class="fu">c</span>(<span class="fl">37.0</span>, <span class="fl">35.5</span>, <span class="fl">34.5</span>, <span class="fl">41.5</span>, <span class="fl">55.5</span>, <span class="fl">61.0</span>, <span class="fl">53.5</span>))</span>
+<span id="cb489-6"><a href="7.1-the-problem-with-parameters.html#cb489-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<pre><code>## # A tibble: 7 × 3
+##   species     brain  mass
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+## 1 afarensis     438  37  
+## 2 africanus     452  35.5
+## 3 habilis       612  34.5
+## 4 boisei        521  41.5
+## 5 rudolfensis   752  55.5
+## 6 ergaster      871  61  
+## 7 sapiens      1350  53.5</code></pre>
+<div class="figure">
+<img src="slides/L07/24.png" alt="$R^2$ is one of the most over-used measures. If there's no variance in the residuals, $R^2$ = 1. It's trivial to get there. A bit of a joke, but I've seen it in _Nature_." width="80%" />
+<p class="caption marginnote shownote">
+<span class="math inline">\(R^2\)</span> is one of the most over-used measures. If there’s no variance in the residuals, <span class="math inline">\(R^2\)</span> = 1. It’s trivial to get there. A bit of a joke, but I’ve seen it in <em>Nature</em>.
+</p>
+</div>
+<div class="sourceCode" id="cb491"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb491-1"><a href="7.1-the-problem-with-parameters.html#cb491-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rcartocolor)</span></code></pre></div>
+<div class="sourceCode" id="cb492"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb492-1"><a href="7.1-the-problem-with-parameters.html#cb492-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb492-2"><a href="7.1-the-problem-with-parameters.html#cb492-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb492-3"><a href="7.1-the-problem-with-parameters.html#cb492-3" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(</span>
+<span id="cb492-4"><a href="7.1-the-problem-with-parameters.html#cb492-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb492-5"><a href="7.1-the-problem-with-parameters.html#cb492-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>),</span>
+<span id="cb492-6"><a href="7.1-the-problem-with-parameters.html#cb492-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="fu">alpha</span>(rcartocolor<span class="sc">::</span><span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">3</span>], <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>)))</span>
+<span id="cb492-7"><a href="7.1-the-problem-with-parameters.html#cb492-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb492-8"><a href="7.1-the-problem-with-parameters.html#cb492-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb492-9"><a href="7.1-the-problem-with-parameters.html#cb492-9" aria-hidden="true" tabindex="-1"></a>d <span class="sc">%&gt;%</span></span>
+<span id="cb492-10"><a href="7.1-the-problem-with-parameters.html#cb492-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span>  mass, <span class="at">y =</span> brain, <span class="at">label =</span> species)) <span class="sc">+</span></span>
+<span id="cb492-11"><a href="7.1-the-problem-with-parameters.html#cb492-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">5</span>]) <span class="sc">+</span></span>
+<span id="cb492-12"><a href="7.1-the-problem-with-parameters.html#cb492-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> rcartocolor<span class="sc">::</span><span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>], <span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>, <span class="at">seed =</span> <span class="dv">438</span>) <span class="sc">+</span></span>
+<span id="cb492-13"><a href="7.1-the-problem-with-parameters.html#cb492-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;Average brain volume by body</span><span class="sc">\n</span><span class="st">mass for six hominin species&quot;</span>,</span>
+<span id="cb492-14"><a href="7.1-the-problem-with-parameters.html#cb492-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;body mass (kg)&quot;</span>,</span>
+<span id="cb492-15"><a href="7.1-the-problem-with-parameters.html#cb492-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;brain volume (cc)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb492-16"><a href="7.1-the-problem-with-parameters.html#cb492-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">30</span>, <span class="dv">65</span>)</span></code></pre></div>
+<p><img src="07_ulysses_compass_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<blockquote>
+<p>we want to standardize body mass–give it mean zero and standard deviation one–and rescale the outcome, brain volume, so that the largest observed value is 1. Why not standardize brain volume as well? Because we want to preserve zero as a reference point: No brain at all. You can’t have negative brain. I don’t think. (p. 195)</p>
+</blockquote>
+<div class="sourceCode" id="cb493"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb493-1"><a href="7.1-the-problem-with-parameters.html#cb493-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span></span>
+<span id="cb493-2"><a href="7.1-the-problem-with-parameters.html#cb493-2" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb493-3"><a href="7.1-the-problem-with-parameters.html#cb493-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">mass_std  =</span> (mass <span class="sc">-</span> <span class="fu">mean</span>(mass)) <span class="sc">/</span> <span class="fu">sd</span>(mass),</span>
+<span id="cb493-4"><a href="7.1-the-problem-with-parameters.html#cb493-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">brain_std =</span> brain <span class="sc">/</span> <span class="fu">max</span>(brain))</span></code></pre></div>
+<blockquote>
+<p>This simply says that the average brain volume bi of species i is a linear function of its body mass mi. Now consider what the priors imply. The prior for α is just centered on the mean brain volume (rescaled) in the data. So it says that the average species with an average body mass has a brain volume with an 89% credible interval from about −1 to 2. That is ridiculously wide and includes impossible (negative) values. The prior for β is very flat and centered on zero. It allows for absurdly large positive and negative relationships. These priors allow for absurd inferences, especially as the model gets more complex. And that’s part of the lesson. (p. 196)</p>
+</blockquote>
+<div class="sourceCode" id="cb494"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb494-1"><a href="7.1-the-problem-with-parameters.html#cb494-1" aria-hidden="true" tabindex="-1"></a>b7<span class="fl">.1</span> <span class="ot">&lt;-</span> </span>
+<span id="cb494-2"><a href="7.1-the-problem-with-parameters.html#cb494-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb494-3"><a href="7.1-the-problem-with-parameters.html#cb494-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb494-4"><a href="7.1-the-problem-with-parameters.html#cb494-4" aria-hidden="true" tabindex="-1"></a>      brain_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> mass_std,</span>
+<span id="cb494-5"><a href="7.1-the-problem-with-parameters.html#cb494-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb494-6"><a href="7.1-the-problem-with-parameters.html#cb494-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb494-7"><a href="7.1-the-problem-with-parameters.html#cb494-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb494-8"><a href="7.1-the-problem-with-parameters.html#cb494-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb494-9"><a href="7.1-the-problem-with-parameters.html#cb494-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">7</span>,</span>
+<span id="cb494-10"><a href="7.1-the-problem-with-parameters.html#cb494-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b07.01&quot;</span>)</span></code></pre></div>
+<p>I’ve used <code>exp(log_sigma)</code> in the likelihood, so that the result is always greater than zero.</p>
+<div class="sourceCode" id="cb495"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb495-1"><a href="7.1-the-problem-with-parameters.html#cb495-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b7<span class="fl">.1</span>)</span></code></pre></div>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: brain_std ~ 1 + mass_std 
+##    Data: d (Number of observations: 7) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept     0.53      0.10     0.31     0.74 1.00     2487     1978
+## mass_std      0.17      0.11    -0.06     0.41 1.00     2619     2123
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.26      0.11     0.13     0.55 1.00     1543     2174
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<hr />
+<p><strong>Rethinking:</strong></p>
+<p>You could use OLS to get posteriors for these brain size model, e.g. by using <code>lm</code>. But you won’t get a posterior for <code>sigma</code>.</p>
+<blockquote>
+<p>Bayesian inference means approximating the posterior distribution. It does not specify how that approximation is done.</p>
+</blockquote>
+<hr />
+<p>We’ll compute <span class="math inline">\(R^2\)</span> ourselves by computing the variance of the residuals, and the variance of the outcome variable. This means the actual empirical variance, not the variance that R returns with the <code>var</code> function, which is a frequentist estimator and therefore has the wrong denominator. So we’ll compute variance the old fashioned way: the average squared deviation from the mean. <code>rethinking::var2</code> does this.</p>
+<p>Let’s write a function to do this again:</p>
+<div class="sourceCode" id="cb497"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb497-1"><a href="7.1-the-problem-with-parameters.html#cb497-1" aria-hidden="true" tabindex="-1"></a>R2_is_bad <span class="ot">&lt;-</span> <span class="cf">function</span>(brm_fit, <span class="at">seed =</span> <span class="dv">7</span>, ...) {</span>
+<span id="cb497-2"><a href="7.1-the-problem-with-parameters.html#cb497-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb497-3"><a href="7.1-the-problem-with-parameters.html#cb497-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(seed)</span>
+<span id="cb497-4"><a href="7.1-the-problem-with-parameters.html#cb497-4" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">predict</span>(brm_fit, <span class="at">summary =</span> F, ...)</span>
+<span id="cb497-5"><a href="7.1-the-problem-with-parameters.html#cb497-5" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">apply</span>(p, <span class="dv">2</span>, mean) <span class="sc">-</span> d<span class="sc">$</span>brain_std</span>
+<span id="cb497-6"><a href="7.1-the-problem-with-parameters.html#cb497-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span> <span class="sc">-</span> rethinking<span class="sc">::</span><span class="fu">var2</span>(r) <span class="sc">/</span> rethinking<span class="sc">::</span><span class="fu">var2</span>(d<span class="sc">$</span>brain_std)</span>
+<span id="cb497-7"><a href="7.1-the-problem-with-parameters.html#cb497-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb497-8"><a href="7.1-the-problem-with-parameters.html#cb497-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb497-9"><a href="7.1-the-problem-with-parameters.html#cb497-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb497-10"><a href="7.1-the-problem-with-parameters.html#cb497-10" aria-hidden="true" tabindex="-1"></a><span class="fu">R2_is_bad</span>(b7<span class="fl">.1</span>)</span></code></pre></div>
+<pre><code>## [1] 0.4847697</code></pre>
+<p>Now we’ll compare 5 models, each just a polynomial of higher degree.</p>
+<div class="sourceCode" id="cb499"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb499-1"><a href="7.1-the-problem-with-parameters.html#cb499-1" aria-hidden="true" tabindex="-1"></a>b7<span class="fl">.2</span> <span class="ot">&lt;-</span> </span>
+<span id="cb499-2"><a href="7.1-the-problem-with-parameters.html#cb499-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb499-3"><a href="7.1-the-problem-with-parameters.html#cb499-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb499-4"><a href="7.1-the-problem-with-parameters.html#cb499-4" aria-hidden="true" tabindex="-1"></a>      brain_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> mass_std <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">2</span>),</span>
+<span id="cb499-5"><a href="7.1-the-problem-with-parameters.html#cb499-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb499-6"><a href="7.1-the-problem-with-parameters.html#cb499-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb499-7"><a href="7.1-the-problem-with-parameters.html#cb499-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb499-8"><a href="7.1-the-problem-with-parameters.html#cb499-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb499-9"><a href="7.1-the-problem-with-parameters.html#cb499-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">7</span>,</span>
+<span id="cb499-10"><a href="7.1-the-problem-with-parameters.html#cb499-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b07.02&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb500"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb500-1"><a href="7.1-the-problem-with-parameters.html#cb500-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cubic</span></span>
+<span id="cb500-2"><a href="7.1-the-problem-with-parameters.html#cb500-2" aria-hidden="true" tabindex="-1"></a>b7<span class="fl">.3</span> <span class="ot">&lt;-</span> </span>
+<span id="cb500-3"><a href="7.1-the-problem-with-parameters.html#cb500-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb500-4"><a href="7.1-the-problem-with-parameters.html#cb500-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb500-5"><a href="7.1-the-problem-with-parameters.html#cb500-5" aria-hidden="true" tabindex="-1"></a>      brain_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> mass_std <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">3</span>),</span>
+<span id="cb500-6"><a href="7.1-the-problem-with-parameters.html#cb500-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb500-7"><a href="7.1-the-problem-with-parameters.html#cb500-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb500-8"><a href="7.1-the-problem-with-parameters.html#cb500-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb500-9"><a href="7.1-the-problem-with-parameters.html#cb500-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb500-10"><a href="7.1-the-problem-with-parameters.html#cb500-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">7</span>,</span>
+<span id="cb500-11"><a href="7.1-the-problem-with-parameters.html#cb500-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b07.03&quot;</span>)</span>
+<span id="cb500-12"><a href="7.1-the-problem-with-parameters.html#cb500-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb500-13"><a href="7.1-the-problem-with-parameters.html#cb500-13" aria-hidden="true" tabindex="-1"></a><span class="co"># fourth-order</span></span>
+<span id="cb500-14"><a href="7.1-the-problem-with-parameters.html#cb500-14" aria-hidden="true" tabindex="-1"></a>b7<span class="fl">.4</span> <span class="ot">&lt;-</span> </span>
+<span id="cb500-15"><a href="7.1-the-problem-with-parameters.html#cb500-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb500-16"><a href="7.1-the-problem-with-parameters.html#cb500-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb500-17"><a href="7.1-the-problem-with-parameters.html#cb500-17" aria-hidden="true" tabindex="-1"></a>      brain_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> mass_std <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">4</span>),</span>
+<span id="cb500-18"><a href="7.1-the-problem-with-parameters.html#cb500-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb500-19"><a href="7.1-the-problem-with-parameters.html#cb500-19" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb500-20"><a href="7.1-the-problem-with-parameters.html#cb500-20" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb500-21"><a href="7.1-the-problem-with-parameters.html#cb500-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb500-22"><a href="7.1-the-problem-with-parameters.html#cb500-22" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">7</span>,</span>
+<span id="cb500-23"><a href="7.1-the-problem-with-parameters.html#cb500-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b07.04&quot;</span>)</span>
+<span id="cb500-24"><a href="7.1-the-problem-with-parameters.html#cb500-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb500-25"><a href="7.1-the-problem-with-parameters.html#cb500-25" aria-hidden="true" tabindex="-1"></a><span class="co"># fifth-order</span></span>
+<span id="cb500-26"><a href="7.1-the-problem-with-parameters.html#cb500-26" aria-hidden="true" tabindex="-1"></a>b7<span class="fl">.5</span> <span class="ot">&lt;-</span> </span>
+<span id="cb500-27"><a href="7.1-the-problem-with-parameters.html#cb500-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb500-28"><a href="7.1-the-problem-with-parameters.html#cb500-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb500-29"><a href="7.1-the-problem-with-parameters.html#cb500-29" aria-hidden="true" tabindex="-1"></a>      brain_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> mass_std <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">4</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">5</span>),</span>
+<span id="cb500-30"><a href="7.1-the-problem-with-parameters.html#cb500-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb500-31"><a href="7.1-the-problem-with-parameters.html#cb500-31" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb500-32"><a href="7.1-the-problem-with-parameters.html#cb500-32" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb500-33"><a href="7.1-the-problem-with-parameters.html#cb500-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb500-34"><a href="7.1-the-problem-with-parameters.html#cb500-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">7</span>,</span>
+<span id="cb500-35"><a href="7.1-the-problem-with-parameters.html#cb500-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b07.05&quot;</span>)</span></code></pre></div>
+<p>For the last one we replace the standard deviation with 0.001.</p>
+<p>By “last model, m7.6,” McElreath was referring to the sixth-order polynomial, fit on page 199. McElreath’s rethinking package is set up so the syntax is simple to replacing σ with a constant value. We can do this with brms, too, but it’ll take more effort. If we want to fix σ to a constant, we’ll need to define a custom likelihood. Bürkner explained how to do so in his (2021a) vignette, Define custom response distributions with brms. I’m not going to explain this in great detail, here. In brief, first we use the <code>custom_family()</code> function to define the name and parameters of a <code>custom_normal()</code> likelihood that will set σ to a constant value, 0.001. Second, we’ll define some functions for Stan which are not defined in Stan itself and save them as <code>stan_funs</code>. Third, we make a <code>stanvar()</code> statement which will allow us to pass our <code>stan_funs</code> to <code>brm()</code>.</p>
+<div class="sourceCode" id="cb501"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb501-1"><a href="7.1-the-problem-with-parameters.html#cb501-1" aria-hidden="true" tabindex="-1"></a>custom_normal <span class="ot">&lt;-</span> <span class="fu">custom_family</span>(</span>
+<span id="cb501-2"><a href="7.1-the-problem-with-parameters.html#cb501-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;custom_normal&quot;</span>, <span class="at">dpars =</span> <span class="st">&quot;mu&quot;</span>,</span>
+<span id="cb501-3"><a href="7.1-the-problem-with-parameters.html#cb501-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">links =</span> <span class="st">&quot;identity&quot;</span>,</span>
+<span id="cb501-4"><a href="7.1-the-problem-with-parameters.html#cb501-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;real&quot;</span></span>
+<span id="cb501-5"><a href="7.1-the-problem-with-parameters.html#cb501-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb501-6"><a href="7.1-the-problem-with-parameters.html#cb501-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb501-7"><a href="7.1-the-problem-with-parameters.html#cb501-7" aria-hidden="true" tabindex="-1"></a>stan_funs  <span class="ot">&lt;-</span> <span class="st">&quot;real custom_normal_lpdf(real y, real mu) {</span></span>
+<span id="cb501-8"><a href="7.1-the-problem-with-parameters.html#cb501-8" aria-hidden="true" tabindex="-1"></a><span class="st">  return normal_lpdf(y | mu, 0.001);</span></span>
+<span id="cb501-9"><a href="7.1-the-problem-with-parameters.html#cb501-9" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb501-10"><a href="7.1-the-problem-with-parameters.html#cb501-10" aria-hidden="true" tabindex="-1"></a><span class="st">real custom_normal_rng(real mu) {</span></span>
+<span id="cb501-11"><a href="7.1-the-problem-with-parameters.html#cb501-11" aria-hidden="true" tabindex="-1"></a><span class="st">  return normal_rng(mu, 0.001);</span></span>
+<span id="cb501-12"><a href="7.1-the-problem-with-parameters.html#cb501-12" aria-hidden="true" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb501-13"><a href="7.1-the-problem-with-parameters.html#cb501-13" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span> </span>
+<span id="cb501-14"><a href="7.1-the-problem-with-parameters.html#cb501-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb501-15"><a href="7.1-the-problem-with-parameters.html#cb501-15" aria-hidden="true" tabindex="-1"></a>stanvars <span class="ot">&lt;-</span> <span class="fu">stanvar</span>(<span class="at">scode =</span> stan_funs, <span class="at">block =</span> <span class="st">&quot;functions&quot;</span>)</span>
+<span id="cb501-16"><a href="7.1-the-problem-with-parameters.html#cb501-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb501-17"><a href="7.1-the-problem-with-parameters.html#cb501-17" aria-hidden="true" tabindex="-1"></a>b7<span class="fl">.6</span> <span class="ot">&lt;-</span> </span>
+<span id="cb501-18"><a href="7.1-the-problem-with-parameters.html#cb501-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb501-19"><a href="7.1-the-problem-with-parameters.html#cb501-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> custom_normal,</span>
+<span id="cb501-20"><a href="7.1-the-problem-with-parameters.html#cb501-20" aria-hidden="true" tabindex="-1"></a>      brain_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> mass_std <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">4</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">5</span>) <span class="sc">+</span> <span class="fu">I</span>(mass_std<span class="sc">^</span><span class="dv">6</span>),</span>
+<span id="cb501-21"><a href="7.1-the-problem-with-parameters.html#cb501-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb501-22"><a href="7.1-the-problem-with-parameters.html#cb501-22" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b)),</span>
+<span id="cb501-23"><a href="7.1-the-problem-with-parameters.html#cb501-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb501-24"><a href="7.1-the-problem-with-parameters.html#cb501-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">7</span>,</span>
+<span id="cb501-25"><a href="7.1-the-problem-with-parameters.html#cb501-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">stanvars =</span> stanvars,</span>
+<span id="cb501-26"><a href="7.1-the-problem-with-parameters.html#cb501-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b07.06&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb502"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb502-1"><a href="7.1-the-problem-with-parameters.html#cb502-1" aria-hidden="true" tabindex="-1"></a><span class="fu">expose_functions</span>(b7<span class="fl">.6</span>, <span class="at">vectorize =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb502-2"><a href="7.1-the-problem-with-parameters.html#cb502-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb502-3"><a href="7.1-the-problem-with-parameters.html#cb502-3" aria-hidden="true" tabindex="-1"></a>posterior_epred_custom_normal <span class="ot">&lt;-</span> <span class="cf">function</span>(prep) {</span>
+<span id="cb502-4"><a href="7.1-the-problem-with-parameters.html#cb502-4" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> prep<span class="sc">$</span>dpars<span class="sc">$</span>mu</span>
+<span id="cb502-5"><a href="7.1-the-problem-with-parameters.html#cb502-5" aria-hidden="true" tabindex="-1"></a>  mu </span>
+<span id="cb502-6"><a href="7.1-the-problem-with-parameters.html#cb502-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb502-7"><a href="7.1-the-problem-with-parameters.html#cb502-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb502-8"><a href="7.1-the-problem-with-parameters.html#cb502-8" aria-hidden="true" tabindex="-1"></a>posterior_predict_custom_normal <span class="ot">&lt;-</span> <span class="cf">function</span>(i, prep, ...) {</span>
+<span id="cb502-9"><a href="7.1-the-problem-with-parameters.html#cb502-9" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> prep<span class="sc">$</span>dpars<span class="sc">$</span>mu</span>
+<span id="cb502-10"><a href="7.1-the-problem-with-parameters.html#cb502-10" aria-hidden="true" tabindex="-1"></a>  mu </span>
+<span id="cb502-11"><a href="7.1-the-problem-with-parameters.html#cb502-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">custom_normal_rng</span>(mu)</span>
+<span id="cb502-12"><a href="7.1-the-problem-with-parameters.html#cb502-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb502-13"><a href="7.1-the-problem-with-parameters.html#cb502-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb502-14"><a href="7.1-the-problem-with-parameters.html#cb502-14" aria-hidden="true" tabindex="-1"></a>log_lik_custom_normal <span class="ot">&lt;-</span> <span class="cf">function</span>(i, prep) {</span>
+<span id="cb502-15"><a href="7.1-the-problem-with-parameters.html#cb502-15" aria-hidden="true" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> prep<span class="sc">$</span>dpars<span class="sc">$</span>mu</span>
+<span id="cb502-16"><a href="7.1-the-problem-with-parameters.html#cb502-16" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> prep<span class="sc">$</span>data<span class="sc">$</span>Y[i]</span>
+<span id="cb502-17"><a href="7.1-the-problem-with-parameters.html#cb502-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">custom_normal_lpdf</span>(y, mu)</span>
+<span id="cb502-18"><a href="7.1-the-problem-with-parameters.html#cb502-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb503"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb503-1"><a href="7.1-the-problem-with-parameters.html#cb503-1" aria-hidden="true" tabindex="-1"></a>nd <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">mass_std =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="at">to =</span> <span class="dv">2</span>, <span class="at">length.out =</span> <span class="dv">100</span>))</span>
+<span id="cb503-2"><a href="7.1-the-problem-with-parameters.html#cb503-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb503-3"><a href="7.1-the-problem-with-parameters.html#cb503-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fitted</span>(b7<span class="fl">.1</span>, </span>
+<span id="cb503-4"><a href="7.1-the-problem-with-parameters.html#cb503-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">newdata =</span> nd, </span>
+<span id="cb503-5"><a href="7.1-the-problem-with-parameters.html#cb503-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">055</span>, .<span class="dv">945</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb503-6"><a href="7.1-the-problem-with-parameters.html#cb503-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb503-7"><a href="7.1-the-problem-with-parameters.html#cb503-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb503-8"><a href="7.1-the-problem-with-parameters.html#cb503-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb503-9"><a href="7.1-the-problem-with-parameters.html#cb503-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mass_std, <span class="at">y =</span> Estimate)) <span class="sc">+</span></span>
+<span id="cb503-10"><a href="7.1-the-problem-with-parameters.html#cb503-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_lineribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> Q5<span class="fl">.5</span>, <span class="at">ymax =</span> Q94<span class="fl">.5</span>),</span>
+<span id="cb503-11"><a href="7.1-the-problem-with-parameters.html#cb503-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>], <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, </span>
+<span id="cb503-12"><a href="7.1-the-problem-with-parameters.html#cb503-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">fill =</span> <span class="fu">alpha</span>(<span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">6</span>], <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb503-13"><a href="7.1-the-problem-with-parameters.html#cb503-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> d,</span>
+<span id="cb503-14"><a href="7.1-the-problem-with-parameters.html#cb503-14" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> brain_std),</span>
+<span id="cb503-15"><a href="7.1-the-problem-with-parameters.html#cb503-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>]) <span class="sc">+</span></span>
+<span id="cb503-16"><a href="7.1-the-problem-with-parameters.html#cb503-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">bquote</span>(<span class="fu">italic</span>(R)<span class="sc">^</span><span class="dv">2</span><span class="sc">==</span>.(<span class="fu">round</span>(<span class="fu">R2_is_bad</span>(b7<span class="fl">.1</span>), <span class="at">digits =</span> <span class="dv">2</span>))),</span>
+<span id="cb503-17"><a href="7.1-the-problem-with-parameters.html#cb503-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;body mass (standardized)&quot;</span>,</span>
+<span id="cb503-18"><a href="7.1-the-problem-with-parameters.html#cb503-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;brain volume (standardized)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb503-19"><a href="7.1-the-problem-with-parameters.html#cb503-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d<span class="sc">$</span>mass_std))</span></code></pre></div>
+<p><img src="07_ulysses_compass_files/figure-html/7.10-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L07/25.png" alt="This isn't a bad model. $R^2$ is 0.5 - that's pretty good. But can you do better?" width="80%" />
+<p class="caption marginnote shownote">
+This isn’t a bad model. <span class="math inline">\(R^2\)</span> is 0.5 - that’s pretty good. But can you do better?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/26.png" alt="Sure, make it a parabola. Does a little better. Why stop there?" width="80%" />
+<p class="caption marginnote shownote">
+Sure, make it a parabola. Does a little better. Why stop there?
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/27.png" alt="We can make it all the way to 6 parameters, then we run out of data points." width="80%" />
+<p class="caption marginnote shownote">
+We can make it all the way to 6 parameters, then we run out of data points.
+</p>
+</div>
+<p><img src="slides/L07/28.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L07/29.png" alt="Maybe brain evolution is cubic." width="80%" />
+<p class="caption marginnote shownote">
+Maybe brain evolution is cubic.
+</p>
+</div>
+<p><img src="slides/L07/30.png" width="80%" /></p>
+<p><img src="slides/L07/31.png" width="80%" /></p>
+<div class="figure">
+<img src="slides/L07/32.png" alt="Finally, we've reached nirvana - the singularity. If all you do basing your model on $R^2$, this is the danger. In multiple regression, it's less obvious that it's happening." width="80%" />
+<p class="caption marginnote shownote">
+Finally, we’ve reached nirvana - the singularity. If all you do basing your model on <span class="math inline">\(R^2\)</span>, this is the danger. In multiple regression, it’s less obvious that it’s happening.
+</p>
+</div>
+<div class="sourceCode" id="cb504"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb504-1"><a href="7.1-the-problem-with-parameters.html#cb504-1" aria-hidden="true" tabindex="-1"></a>make_figure7<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="cf">function</span>(brms_fit, <span class="at">ylim =</span> <span class="fu">range</span>(d<span class="sc">$</span>brain_std)) {</span>
+<span id="cb504-2"><a href="7.1-the-problem-with-parameters.html#cb504-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb504-3"><a href="7.1-the-problem-with-parameters.html#cb504-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the R2</span></span>
+<span id="cb504-4"><a href="7.1-the-problem-with-parameters.html#cb504-4" aria-hidden="true" tabindex="-1"></a>  r2 <span class="ot">&lt;-</span> <span class="fu">R2_is_bad</span>(brms_fit)</span>
+<span id="cb504-5"><a href="7.1-the-problem-with-parameters.html#cb504-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb504-6"><a href="7.1-the-problem-with-parameters.html#cb504-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># define the new data </span></span>
+<span id="cb504-7"><a href="7.1-the-problem-with-parameters.html#cb504-7" aria-hidden="true" tabindex="-1"></a>  nd <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">mass_std =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="at">to =</span> <span class="dv">2</span>, <span class="at">length.out =</span> <span class="dv">200</span>))</span>
+<span id="cb504-8"><a href="7.1-the-problem-with-parameters.html#cb504-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb504-9"><a href="7.1-the-problem-with-parameters.html#cb504-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># simulate and wrangle</span></span>
+<span id="cb504-10"><a href="7.1-the-problem-with-parameters.html#cb504-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fitted</span>(brms_fit, <span class="at">newdata =</span> nd, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">055</span>, .<span class="dv">945</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb504-11"><a href="7.1-the-problem-with-parameters.html#cb504-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb504-12"><a href="7.1-the-problem-with-parameters.html#cb504-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb504-13"><a href="7.1-the-problem-with-parameters.html#cb504-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb504-14"><a href="7.1-the-problem-with-parameters.html#cb504-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># plot!  </span></span>
+<span id="cb504-15"><a href="7.1-the-problem-with-parameters.html#cb504-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mass_std)) <span class="sc">+</span></span>
+<span id="cb504-16"><a href="7.1-the-problem-with-parameters.html#cb504-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_lineribbon</span>(<span class="fu">aes</span>(<span class="at">y =</span> Estimate, <span class="at">ymin =</span> Q5<span class="fl">.5</span>, <span class="at">ymax =</span> Q94<span class="fl">.5</span>),</span>
+<span id="cb504-17"><a href="7.1-the-problem-with-parameters.html#cb504-17" aria-hidden="true" tabindex="-1"></a>                    <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>], <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, </span>
+<span id="cb504-18"><a href="7.1-the-problem-with-parameters.html#cb504-18" aria-hidden="true" tabindex="-1"></a>                    <span class="at">fill =</span> <span class="fu">alpha</span>(<span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">6</span>], <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb504-19"><a href="7.1-the-problem-with-parameters.html#cb504-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">data =</span> d,</span>
+<span id="cb504-20"><a href="7.1-the-problem-with-parameters.html#cb504-20" aria-hidden="true" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">y =</span> brain_std),</span>
+<span id="cb504-21"><a href="7.1-the-problem-with-parameters.html#cb504-21" aria-hidden="true" tabindex="-1"></a>               <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>]) <span class="sc">+</span></span>
+<span id="cb504-22"><a href="7.1-the-problem-with-parameters.html#cb504-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">bquote</span>(<span class="fu">italic</span>(R)<span class="sc">^</span><span class="dv">2</span><span class="sc">==</span>.(<span class="fu">round</span>(r2, <span class="at">digits =</span> <span class="dv">2</span>))),</span>
+<span id="cb504-23"><a href="7.1-the-problem-with-parameters.html#cb504-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="st">&quot;body mass (std)&quot;</span>,</span>
+<span id="cb504-24"><a href="7.1-the-problem-with-parameters.html#cb504-24" aria-hidden="true" tabindex="-1"></a>         <span class="at">y =</span> <span class="st">&quot;brain volume (std)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb504-25"><a href="7.1-the-problem-with-parameters.html#cb504-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.2</span>, <span class="fl">1.5</span>),</span>
+<span id="cb504-26"><a href="7.1-the-problem-with-parameters.html#cb504-26" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ylim =</span> ylim)</span>
+<span id="cb504-27"><a href="7.1-the-problem-with-parameters.html#cb504-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb504-28"><a href="7.1-the-problem-with-parameters.html#cb504-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb504-29"><a href="7.1-the-problem-with-parameters.html#cb504-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb504-30"><a href="7.1-the-problem-with-parameters.html#cb504-30" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">make_figure7.3</span>(b7<span class="fl">.1</span>)</span>
+<span id="cb504-31"><a href="7.1-the-problem-with-parameters.html#cb504-31" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">make_figure7.3</span>(b7<span class="fl">.2</span>)</span>
+<span id="cb504-32"><a href="7.1-the-problem-with-parameters.html#cb504-32" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">make_figure7.3</span>(b7<span class="fl">.3</span>)</span>
+<span id="cb504-33"><a href="7.1-the-problem-with-parameters.html#cb504-33" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">&lt;-</span> <span class="fu">make_figure7.3</span>(b7<span class="fl">.4</span>, <span class="at">ylim =</span> <span class="fu">c</span>(.<span class="dv">25</span>, <span class="fl">1.1</span>))</span>
+<span id="cb504-34"><a href="7.1-the-problem-with-parameters.html#cb504-34" aria-hidden="true" tabindex="-1"></a>p5 <span class="ot">&lt;-</span> <span class="fu">make_figure7.3</span>(b7<span class="fl">.5</span>, <span class="at">ylim =</span> <span class="fu">c</span>(.<span class="dv">1</span>, <span class="fl">1.4</span>))</span>
+<span id="cb504-35"><a href="7.1-the-problem-with-parameters.html#cb504-35" aria-hidden="true" tabindex="-1"></a>p6 <span class="ot">&lt;-</span> <span class="fu">make_figure7.3</span>(b7<span class="fl">.6</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.25</span>, <span class="fl">1.5</span>)) <span class="sc">+</span></span>
+<span id="cb504-36"><a href="7.1-the-problem-with-parameters.html#cb504-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">2</span>], <span class="at">linetype =</span> <span class="dv">2</span>) </span>
+<span id="cb504-37"><a href="7.1-the-problem-with-parameters.html#cb504-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb504-38"><a href="7.1-the-problem-with-parameters.html#cb504-38" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb504-39"><a href="7.1-the-problem-with-parameters.html#cb504-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb504-40"><a href="7.1-the-problem-with-parameters.html#cb504-40" aria-hidden="true" tabindex="-1"></a>((p1 <span class="sc">|</span> p2) <span class="sc">/</span> (p3 <span class="sc">|</span> p4) <span class="sc">/</span> (p5 <span class="sc">|</span> p6)) <span class="sc">+</span></span>
+<span id="cb504-41"><a href="7.1-the-problem-with-parameters.html#cb504-41" aria-hidden="true" tabindex="-1"></a>  patchwork<span class="sc">::</span><span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">&quot;Figure7.3. Polynomial linear models of increasing</span><span class="sc">\n</span><span class="st">degree for the hominin data.&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="07_ulysses_compass_files/figure-html/unnamed-chunk-26-1.png" alt="Figure 7.3" width="672" />
+<p class="caption marginnote shownote">
+Figure 7.3
+</p>
+</div>
+<p><strong><em>7.1.2. Too few parameters hurts, too</em></strong></p>
+<div class="figure">
+<img src="slides/L07/33.png" alt="The model is overly sensitive. We can repeat the linear regression, removing one data point at a time. The lines don't move very much. Drops a lot when we drop _homo sapiens_." width="80%" />
+<p class="caption marginnote shownote">
+The model is overly sensitive. We can repeat the linear regression, removing one data point at a time. The lines don’t move very much. Drops a lot when we drop <em>homo sapiens</em>.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/34.png" alt="This fifth-order polynomial." width="80%" />
+<p class="caption marginnote shownote">
+This fifth-order polynomial.
+</p>
+</div>
+<div class="sourceCode" id="cb505"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb505-1"><a href="7.1-the-problem-with-parameters.html#cb505-1" aria-hidden="true" tabindex="-1"></a><span class="co">#d_minus_i &lt;- d[ -i , ]</span></span></code></pre></div>
+<div class="sourceCode" id="cb506"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb506-1"><a href="7.1-the-problem-with-parameters.html#cb506-1" aria-hidden="true" tabindex="-1"></a>b7.<span class="fl">1.1</span> <span class="ot">&lt;-</span> </span>
+<span id="cb506-2"><a href="7.1-the-problem-with-parameters.html#cb506-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> <span class="fu">filter</span>(d, <span class="fu">row_number</span>() <span class="sc">!=</span> <span class="dv">1</span>), </span>
+<span id="cb506-3"><a href="7.1-the-problem-with-parameters.html#cb506-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> gaussian,</span>
+<span id="cb506-4"><a href="7.1-the-problem-with-parameters.html#cb506-4" aria-hidden="true" tabindex="-1"></a>      brain_std <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> mass_std,</span>
+<span id="cb506-5"><a href="7.1-the-problem-with-parameters.html#cb506-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb506-6"><a href="7.1-the-problem-with-parameters.html#cb506-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="at">class =</span> b),</span>
+<span id="cb506-7"><a href="7.1-the-problem-with-parameters.html#cb506-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">lognormal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sigma)),</span>
+<span id="cb506-8"><a href="7.1-the-problem-with-parameters.html#cb506-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb506-9"><a href="7.1-the-problem-with-parameters.html#cb506-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">7</span>,</span>
+<span id="cb506-10"><a href="7.1-the-problem-with-parameters.html#cb506-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b07.01.1&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb507"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb507-1"><a href="7.1-the-problem-with-parameters.html#cb507-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b7.<span class="fl">1.1</span>)</span></code></pre></div>
+<pre><code>##  Family: gaussian 
+##   Links: mu = identity; sigma = identity 
+## Formula: brain_std ~ 1 + mass_std 
+##    Data: filter(d, row_number() != 1) (Number of observations: 6) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept     0.54      0.14     0.25     0.83 1.00     2007     1625
+## mass_std      0.16      0.15    -0.15     0.49 1.00     2416     1595
+## 
+## Family Specific Parameters: 
+##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sigma     0.31      0.16     0.14     0.74 1.00     1169     1657
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<div class="sourceCode" id="cb509"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb509-1"><a href="7.1-the-problem-with-parameters.html#cb509-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fitted</span>(b7.<span class="fl">1.1</span>, </span>
+<span id="cb509-2"><a href="7.1-the-problem-with-parameters.html#cb509-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">newdata =</span> nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb509-3"><a href="7.1-the-problem-with-parameters.html#cb509-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb509-4"><a href="7.1-the-problem-with-parameters.html#cb509-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb509-5"><a href="7.1-the-problem-with-parameters.html#cb509-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb509-6"><a href="7.1-the-problem-with-parameters.html#cb509-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> mass_std)) <span class="sc">+</span></span>
+<span id="cb509-7"><a href="7.1-the-problem-with-parameters.html#cb509-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> Estimate),</span>
+<span id="cb509-8"><a href="7.1-the-problem-with-parameters.html#cb509-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>], <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb509-9"><a href="7.1-the-problem-with-parameters.html#cb509-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> d,</span>
+<span id="cb509-10"><a href="7.1-the-problem-with-parameters.html#cb509-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> brain_std),</span>
+<span id="cb509-11"><a href="7.1-the-problem-with-parameters.html#cb509-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>]) <span class="sc">+</span></span>
+<span id="cb509-12"><a href="7.1-the-problem-with-parameters.html#cb509-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">&quot;b7.1.1&quot;</span>,</span>
+<span id="cb509-13"><a href="7.1-the-problem-with-parameters.html#cb509-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;body mass (std)&quot;</span>,</span>
+<span id="cb509-14"><a href="7.1-the-problem-with-parameters.html#cb509-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;brain volume (std)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb509-15"><a href="7.1-the-problem-with-parameters.html#cb509-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">range</span>(d<span class="sc">$</span>mass_std),</span>
+<span id="cb509-16"><a href="7.1-the-problem-with-parameters.html#cb509-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ylim =</span> <span class="fu">range</span>(d<span class="sc">$</span>brain_std))</span></code></pre></div>
+<p><img src="07_ulysses_compass_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+</div>
+<p style="text-align: center;">
+<a href="7-ulysses-compass.html"><button class="btn btn-default">Previous</button></a>
+<a href="7.2-entropy-and-accuracy.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

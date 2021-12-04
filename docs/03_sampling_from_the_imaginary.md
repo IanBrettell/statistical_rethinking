@@ -1,15 +1,3 @@
----
-title: "Notes for Statistical Rethinking 2nd ed. by Richard McElreath"
-date: '2021-11-15'
-output:
-  bookdown::tufte_html_book:
-    toc: yes
-    css: toc.css
-    pandoc_args: --lua-filter=color-text.lua
-    highlight: pygments
-    link-citations: yes
----
-
 # Sampling from the Imaginary
 
 
@@ -24,15 +12,19 @@ slides_dir = here::here("docs/slides/L02")
 ```
 
 <div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-3)When I work with Bayesian models, we work with random numbers drawn from the posterior distribution. That's nice, because you can easily summarise the sample. And you can make inferences from the sample. Cognitively a prosthetic because it helps us transform hard calculus problems into easy data summary problems. </p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/45.png" alt="When I work with Bayesian models, we work with random numbers drawn from the posterior distribution. That's nice, because you can easily summarise the sample. And you can make inferences from the sample. Cognitively a prosthetic because it helps us transform hard calculus problems into easy data summary problems. " width="80%"  /></div>
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/45.png" alt="When I work with Bayesian models, we work with random numbers drawn from the posterior distribution. That's nice, because you can easily summarise the sample. And you can make inferences from the sample. Cognitively a prosthetic because it helps us transform hard calculus problems into easy data summary problems. " width="80%" />
+<p class="caption">When I work with Bayesian models, we work with random numbers drawn from the posterior distribution. That's nice, because you can easily summarise the sample. And you can make inferences from the sample. Cognitively a prosthetic because it helps us transform hard calculus problems into easy data summary problems. </p>
+</div>
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/46.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/46.png" width="80%" />
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/47.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/47.png" width="80%" />
 
 
 <div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-6)One line in R is sufficient to do the sampling. `p` are the possibilities of our grid. We'll get a big bag of numbers, and they'll be in the same distribution as our posterior. When you use Markov chains, they only spit out samples.</p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/48.png" alt="One line in R is sufficient to do the sampling. `p` are the possibilities of our grid. We'll get a big bag of numbers, and they'll be in the same distribution as our posterior. When you use Markov chains, they only spit out samples." width="80%"  /></div>
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/48.png" alt="One line in R is sufficient to do the sampling. `p` are the possibilities of our grid. We'll get a big bag of numbers, and they'll be in the same distribution as our posterior. When you use Markov chains, they only spit out samples." width="80%" />
+<p class="caption">One line in R is sufficient to do the sampling. `p` are the possibilities of our grid. We'll get a big bag of numbers, and they'll be in the same distribution as our posterior. When you use Markov chains, they only spit out samples.</p>
+</div>
 
 ## Sampling from a grid-approximate posterior
 
@@ -98,13 +90,6 @@ glimpse(samples)
 ## $ posterior  <dbl> 0.0022478473, 0.0027217490, 0.0020987643, 0.0024485355, 0.0…
 ```
 
-<p><span class="marginnote shownote">
-<!--
-<div class="figure">-->
-<img src="03_sampling_from_the_imaginary_files/figure-html/3.4-1.png" alt=" " width="672"  />
-<!--
-<p class="caption marginnote">--> <!--</p>-->
-<!--</div>--></span></p>
 
 ```r
 samples %>% 
@@ -116,13 +101,8 @@ samples %>%
   xlab("sample number")
 ```
 
-<p><span class="marginnote shownote">
-<!--
-<div class="figure">-->
-<img src="03_sampling_from_the_imaginary_files/figure-html/3.5-1.png" alt=" " width="672"  />
-<!--
-<p class="caption marginnote">--> <!--</p>-->
-<!--</div>--></span></p>
+<img src="03_sampling_from_the_imaginary_files/figure-html/3.4-1.png" width="672" />
+
 
 ```r
 samples %>% 
@@ -130,6 +110,8 @@ samples %>%
   geom_density(fill = "black") +
   scale_x_continuous("proportion of water (p)", limits = c(0, 1))
 ```
+
+<img src="03_sampling_from_the_imaginary_files/figure-html/3.5-1.png" width="672" />
 
 Here's what it looks like with `1e6`:
 
@@ -144,14 +126,16 @@ d %>%
   scale_x_continuous("proportion of water (p)", limits = c(0, 1))
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-7-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-7-1.png" width="672" />
 
 >All you’ve done so far is crudely replicate the posterior density you had already computed. That isn’t of much value. But next it is time to use these samples to describe and understand the posterior. That is of great value.
 
 ## Sampling to summarize
 
 <div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-8)What might you want to compute? Commonly people want to construct intervals.</p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/49.png" alt="What might you want to compute? Commonly people want to construct intervals." width="80%"  /></div>
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/49.png" alt="What might you want to compute? Commonly people want to construct intervals." width="80%" />
+<p class="caption">What might you want to compute? Commonly people want to construct intervals.</p>
+</div>
 
 ***3.2.1 Intervals of defined boudaries***
 
@@ -209,7 +193,9 @@ samples %>%
 
 
 <div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-10)Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals.</p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/50.png" alt="Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals." width="80%"  /></div>
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/50.png" alt="Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals." width="80%" />
+<p class="caption">Two general kinds of intervals. One is an interval of defined boundaries. Upper left is the probability that less than half the world is covered by water. Compute by counting the number of samples that satisfy the criteria, then dividing by the total number of samples. Upper right is the probability between 50% and 70%. Lower right - there's an infinite number of 80% intervals.</p>
+</div>
 
 Using the same approach, how much posterior probability lies between 0.5 and 0.75?
 
@@ -254,7 +240,7 @@ library(patchwork)
 p1 + p2
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-11-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-11-1.png" width="672" />
 
 
 ***3.2.2 Intervals of defined mass***
@@ -332,7 +318,7 @@ p2 <-
 p1 + p2
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-13-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-13-1.png" width="672" />
 
 
 Intervals of this sort are very common in the scientific literature. We'll call them **Percentile Intervals** (PI). These do a good job of communicating the shape of a distribution, as long as it's not too asymmetrical. 
@@ -404,9 +390,11 @@ rethinking::PI(samples$p_grid, prob = .5)
 
 
 <div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-15)Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They're not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries.</p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/51.png" alt="Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They're not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries." width="80%"  /></div>
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/51.png" alt="Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They're not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries." width="80%" />
+<p class="caption">Two basic kinds of specified mass intervals. PI gives you the central area, where .25 is left over in each tail. They're not necessarily the right thing to use. What if you have an asymmetric distribution? Now the 50 percentile interval omits the highest value. Use the HPDI to keep the highest point. But remember these are just summaries.</p>
+</div>
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/52.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/52.png" width="80%" />
 
 
 ```r
@@ -489,12 +477,12 @@ p2 <-
 p1 | p2
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-19-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-19-1.png" width="672" />
 
 
 ***3.2.3 Point estimates***
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/53.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/53.png" width="80%" />
 
 
 ```r
@@ -562,7 +550,7 @@ d %>%
   theme(panel.grid = element_blank())
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-23-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-23-1.png" width="672" />
 
 We care about uncertainty, and we want to summarise that. To use a point estimate, you need to provide a cost-benefit analysis. e.g. conservation or forecasting. 
 
@@ -640,7 +628,7 @@ l %>%
   theme(panel.grid = element_blank())
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-25-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-25-1.png" width="672" />
 
 And this is actually the posterior median.
 
@@ -659,13 +647,13 @@ samples %>%
 
 Usually it's better to communicate as much as you can about the posterior distribution, as well as the data and the model itself. 
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/54.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/54.png" width="80%" />
 
 You can't have confidence in an interval. It's doublespeak. *Compatibility* emphasises the uncertainty. Credibility is the next conversation. 
 
 ## Sampling to simulate prediction
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/55.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/55.png" width="80%" />
 
 We've got the model and now we want to know what it expects. So we get it to simulate predictions. 
 
@@ -740,13 +728,6 @@ d %>%
 
 Let's now simulate the sample size as before, with 9 tosses
 
-<p><span class="marginnote shownote">
-<!--
-<div class="figure">-->
-<img src="03_sampling_from_the_imaginary_files/figure-html/3.24-1.png" alt=" " width="672"  />
-<!--
-<p class="caption marginnote">--> <!--</p>-->
-<!--</div>--></span></p>
 
 ```r
 set.seed(3)
@@ -763,6 +744,8 @@ d %>%
   coord_cartesian(xlim = c(0, 9)) +
   theme(panel.grid = element_blank())
 ```
+
+<img src="03_sampling_from_the_imaginary_files/figure-html/3.24-1.png" width="672" />
 
 Play around with different values of `size` and `prob`:
 
@@ -812,7 +795,7 @@ d %>%
   facet_grid(n ~ probability)
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-29-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-29-1.png" width="672" />
 
 ***3.3.2 Model checking***
 
@@ -821,45 +804,41 @@ Means:
 2. Evaluating the adequacy of a model for some purpose. 
 
 <div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-30)Let's consider three values from it. If we took the true value A and simulated a bunch of globe tosses, what would the sampling distribution look like? </p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/56.png" alt="Let's consider three values from it. If we took the true value A and simulated a bunch of globe tosses, what would the sampling distribution look like? " width="80%"  /></div>
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/56.png" alt="Let's consider three values from it. If we took the true value A and simulated a bunch of globe tosses, what would the sampling distribution look like? " width="80%" />
+<p class="caption">Let's consider three values from it. If we took the true value A and simulated a bunch of globe tosses, what would the sampling distribution look like? </p>
+</div>
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/57.png" width="80%"  />
-
-<div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-32)If it were B instead, it would centre around 6.</p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/58.png" alt="If it were B instead, it would centre around 6." width="80%"  /></div>
-
-<div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-33)We want a posterior predictive distribution which mixes all these together in proportion to the posterior probability of each value of $p$. We want the actual predictions of the model are not any one of these sampling distributions, they're all of them mixed together in the proper weights to the improbable weights of $p$ are given little weight and vice versa. </p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/59.png" alt="We want a posterior predictive distribution which mixes all these together in proportion to the posterior probability of each value of $p$. We want the actual predictions of the model are not any one of these sampling distributions, they're all of them mixed together in the proper weights to the improbable weights of $p$ are given little weight and vice versa. " width="80%"  /></div>
-
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/60.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/57.png" width="80%" />
 
 <div class="figure">
-<p class="caption">(\#fig:unnamed-chunk-35)The probabilities come from the samples from the posterior distribution.</p><img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/61.png" alt="The probabilities come from the samples from the posterior distribution." width="80%"  /></div>
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/58.png" alt="If it were B instead, it would centre around 6." width="80%" />
+<p class="caption">If it were B instead, it would centre around 6.</p>
+</div>
 
-<p><span class="marginnote shownote">
-<!--
-<div class="figure">-->
-<img src="03_sampling_from_the_imaginary_files/figure-html/3.25-1.png" alt=" " width="672"  />
-<!--
-<p class="caption marginnote">--> <!--</p>-->
-<!--</div>--></span></p>
+<div class="figure">
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/59.png" alt="We want a posterior predictive distribution which mixes all these together in proportion to the posterior probability of each value of $p$. We want the actual predictions of the model are not any one of these sampling distributions, they're all of them mixed together in the proper weights to the improbable weights of $p$ are given little weight and vice versa. " width="80%" />
+<p class="caption">We want a posterior predictive distribution which mixes all these together in proportion to the posterior probability of each value of $p$. We want the actual predictions of the model are not any one of these sampling distributions, they're all of them mixed together in the proper weights to the improbable weights of $p$ are given little weight and vice versa. </p>
+</div>
+
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/60.png" width="80%" />
+
+<div class="figure">
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/61.png" alt="The probabilities come from the samples from the posterior distribution." width="80%" />
+<p class="caption">The probabilities come from the samples from the posterior distribution.</p>
+</div>
+
 
 ```r
 w =  rbinom(1e4, size = 9, prob = .6)
 rethinking::simplehist(w)
 ```
 
+<img src="03_sampling_from_the_imaginary_files/figure-html/3.25-1.png" width="672" />
+
 This generates 10,000 simulated predictions of 9 globe tosses `(size = 9)`, assuming $p$ = 0.6. The predictions are stored as counts of water. 
 
 To propagate parameter uncertainty into these predictions, replace the value of `0.6` with samples from the posterior.
 
-<p><span class="marginnote shownote">
-<!--
-<div class="figure">-->
-<img src="03_sampling_from_the_imaginary_files/figure-html/3.26-1.png" alt=" " width="672"  />
-<!--
-<p class="caption marginnote">--> <!--</p>-->
-<!--</div>--></span></p>
 
 ```r
 p_grid = seq(from = 0, to = 1, length.out = 1000)
@@ -872,9 +851,11 @@ w = rbinom(1e4, size = 9, prob = samples)
 rethinking::simplehist(w)
 ```
 
+<img src="03_sampling_from_the_imaginary_files/figure-html/3.26-1.png" width="672" />
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/62.png" width="80%"  />
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/63.png" width="80%"  />
+
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/62.png" width="80%" />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/63.png" width="80%" />
 
 ## Let's practice with brms
 
@@ -903,7 +884,7 @@ brms::posterior_summary(b3.1)["b_Intercept", ] %>%
 ```
 
 
-<img src="/Users/brettell/Documents/Repositories/statistical_rethinking/docs/slides/L02/64.png" width="80%"  />
+<img src="/hps/software/users/birney/ian/repos/statistical_rethinking/docs/slides/L02/64.png" width="80%" />
 
 ## Practice {-}
 
@@ -918,17 +899,12 @@ set.seed(100)
 samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
 ```
 
-<p><span class="marginnote shownote">
-<!--
-<div class="figure">-->
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-41-1.png" alt=" " width="672"  />
-<!--
-<p class="caption marginnote">--> <!--</p>-->
-<!--</div>--></span></p>
 
 ```r
 rethinking::dens(samples)
 ```
+
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-41-1.png" width="672" />
 
 
 ```r
@@ -1008,7 +984,7 @@ plot(p_grid, posterior, type = "b",
 mtext(grid_size)  
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-43-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-43-1.png" width="672" />
 
 2. Start over in 1, but now use a prior that is zero below $p$ = 0.5 and a constant above $p$ = 0.5. This corresponds to prior inforamtion that a majority of the Earth's surface is water. What difference does the better prior make? 
 
@@ -1038,7 +1014,7 @@ plot(p_grid, posterior, type = "b",
 mtext(grid_size)  
 ```
 
-<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-44-1.png" width="672"  />
+<img src="03_sampling_from_the_imaginary_files/figure-html/unnamed-chunk-44-1.png" width="672" />
 
 3. For the posterior distribution from **2**, compute 89% percentile and HPDI intervals. Compare the widths of these intervals. Which is wider? Why? If you had only the information in the interval, what might you misunderstand about the shape of the posterior distribution? 
 

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="7.2 Entropy and accuracy | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="7.2 Entropy and accuracy | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>7.2 Entropy and accuracy | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="entropy-and-accuracy" class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> Entropy and accuracy</h2>
+<div class="figure">
+<img src="slides/L07/35.png" alt="Multiple strategies. In Bayesian statistics, we regularise. Can be even omre aggressive. In non-Bayesian, it's mathematically identical to using a prior. Why do machine leanring people regularise? Because it makes better predictions. " width="80%" />
+<p class="caption marginnote shownote">
+Multiple strategies. In Bayesian statistics, we regularise. Can be even omre aggressive. In non-Bayesian, it’s mathematically identical to using a prior. Why do machine leanring people regularise? Because it makes better predictions.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L07/36.png" alt="We want to get to CV and WAIC, which replaced AIC. The jounrey to these appraoches requires some setups. First thing to answer is how to measure accuracy. Many bad ways to measure it. There's an actual gold standard. And once we've got it, we want to measure distance from the target. How do we decide how close the models are getting to it? Then we learn how to develop these instruments." width="80%" />
+<p class="caption marginnote shownote">
+We want to get to CV and WAIC, which replaced AIC. The jounrey to these appraoches requires some setups. First thing to answer is how to measure accuracy. Many bad ways to measure it. There’s an actual gold standard. And once we’ve got it, we want to measure distance from the target. How do we decide how close the models are getting to it? Then we learn how to develop these instruments.
+</p>
+</div>
+<p><strong><em>7.2.1. Firing the weatherperson</em></strong></p>
+<p>In defining a target, there are two major dimensions to worry about:</p>
+<ol style="list-style-type: decimal">
+<li><em>Cost-benefit analysis</em>. How much does it cost when we’re wrong? How much do we win when we’re right? Most scientists never ask these questions in any formal way, but applied scientists must routinely answer them.</li>
+<li><em>Accuracy in context</em>. Some prediction tasks are inherently easier than others. So even if we ignore costs and benefits, we still need a way to judge “accuracy” that accounts for how much a model could possibly improve prediction.</li>
+</ol>
+<p><img src="slides/L07/37.png" width="80%" /></p>
+<hr />
+<div class="sourceCode" id="cb510"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb510-1"><a href="7.2-entropy-and-accuracy.html#cb510-1" aria-hidden="true" tabindex="-1"></a>slides_dir <span class="ot">=</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">&quot;docs/slides/L08&quot;</span>)</span></code></pre></div>
+<p><img src="slides/L08/01.png" width="60%" /></p>
+<div class="figure">
+<img src="slides/L08/02.png" alt="We need to appeal to information theory because machine prediction works by following the laws of information theory. We'll drive the single gold-standard way to score a model's accuracy. Here's the basic problem information theory sets out to address. When we have some unknown event, there is uncertainty. When we know more, we become less uncertain. IC is a principle for saying when something is more uncertain than something else. There's uncertainty about the weather tomorrow. We may use cues from today to predict tomorrow." width="60%" />
+<p class="caption marginnote shownote">
+We need to appeal to information theory because machine prediction works by following the laws of information theory. We’ll drive the single gold-standard way to score a model’s accuracy. Here’s the basic problem information theory sets out to address. When we have some unknown event, there is uncertainty. When we know more, we become less uncertain. IC is a principle for saying when something is more uncertain than something else. There’s uncertainty about the weather tomorrow. We may use cues from today to predict tomorrow.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/03.png" alt="Presume you know that LA has no weather. Always sunny. 15-20 degrees. Little uncertainty. If it does rain, you'll be shocked. Contrast this with Glasgow, where it rains a lot. More rain than not. NY has highly-variable weather. There's great uncertainty about what the weather would be like, unlike the other two. This uncertainty arises from the frequency distributions of these microclimates." width="60%" />
+<p class="caption marginnote shownote">
+Presume you know that LA has no weather. Always sunny. 15-20 degrees. Little uncertainty. If it does rain, you’ll be shocked. Contrast this with Glasgow, where it rains a lot. More rain than not. NY has highly-variable weather. There’s great uncertainty about what the weather would be like, unlike the other two. This uncertainty arises from the frequency distributions of these microclimates.
+</p>
+</div>
+<p><strong><em>7.2.2. Information and uncertainty</em></strong></p>
+<p>The basic insight is to ask: How much is our uncertainty reduced by learning an outcome?</p>
+<blockquote>
+<p>Information: The reduction in uncertainty when we learn an outcome.</p>
+</blockquote>
+<p>There are many possible ways to measure uncertainty. The most common way begins by naming some properties a measure of uncertainty should possess. These are the three intuitive desiderata:</p>
+<ol style="list-style-type: decimal">
+<li><p>The measure of uncertainty should be continuous.</p></li>
+<li><p>The measure of uncertainty should increase as the number of possible events increases.</p></li>
+<li><p>The measure of uncertainty should be additive.</p></li>
+</ol>
+<p>There is only one function that satisfies these desiderata. This function is usually known as INFORMATION ENTROPY, and has a surprisingly simple definition.</p>
+<div class="figure">
+<img src="slides/L08/04.png" alt="Uncertainty $H$ of $p$, which is a vector of probability, is just the average log-probability of the event. This is a unique criterion. If you want a reasonable measure of surprise, you have to adopt something that is this or something proportional to this. Your mobile phones (3G and above) work because of this." width="60%" />
+<p class="caption marginnote shownote">
+Uncertainty <span class="math inline">\(H\)</span> of <span class="math inline">\(p\)</span>, which is a vector of probability, is just the average log-probability of the event. This is a unique criterion. If you want a reasonable measure of surprise, you have to adopt something that is this or something proportional to this. Your mobile phones (3G and above) work because of this.
+</p>
+</div>
+<p><strong><em>7.2.3. From entropy to accuracy</em></strong></p>
+<p>How can we use information entropy to say how far a model is from the target?</p>
+<blockquote>
+<p><strong>Divergence</strong>: The additional uncertainty induced by using probabilities from one distribution to describe another distribution.</p>
+</blockquote>
+<div class="figure">
+<img src="slides/L08/05.png" alt="What's the **potential for surprise**?. We are interested in this. Want to calculate the entropy of our model, and then there's the entropy of the true distribution, of nature. And we want to minimise the difference between them. This is called the $D_{KL}$ divergence. Two probabilities $p$ and $q$. $p$ is nature, say the frequencies of weather events, and $q$ is our forecast. If we want to score $q$, we look at the divergence. K is for Kulbak. The distance from $p$ to $q$ is the sum (averaging) between $p$ and $q$. It's a distance, but it's not symmetric. " width="60%" />
+<p class="caption marginnote shownote">
+What’s the <strong>potential for surprise</strong>?. We are interested in this. Want to calculate the entropy of our model, and then there’s the entropy of the true distribution, of nature. And we want to minimise the difference between them. This is called the <span class="math inline">\(D_{KL}\)</span> divergence. Two probabilities <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>. <span class="math inline">\(p\)</span> is nature, say the frequencies of weather events, and <span class="math inline">\(q\)</span> is our forecast. If we want to score <span class="math inline">\(q\)</span>, we look at the divergence. K is for Kulbak. The distance from <span class="math inline">\(p\)</span> to <span class="math inline">\(q\)</span> is the sum (averaging) between <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>. It’s a distance, but it’s not symmetric.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/06.png" alt="Easy to code. Take the vector `p`. Sum `p` time the difference between `log(p)` and `log(q)`. It's only 0 where `q = p`. " width="60%" />
+<p class="caption marginnote shownote">
+Easy to code. Take the vector <code>p</code>. Sum <code>p</code> time the difference between <code>log(p)</code> and <code>log(q)</code>. It’s only 0 where <code>q = p</code>.
+</p>
+</div>
+<div class="sourceCode" id="cb511"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb511-1"><a href="7.2-entropy-and-accuracy.html#cb511-1" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> </span>
+<span id="cb511-2"><a href="7.2-entropy-and-accuracy.html#cb511-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">p_1 =</span> .<span class="dv">3</span>,</span>
+<span id="cb511-3"><a href="7.2-entropy-and-accuracy.html#cb511-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">p_2 =</span> .<span class="dv">7</span>,</span>
+<span id="cb511-4"><a href="7.2-entropy-and-accuracy.html#cb511-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">q_1 =</span> <span class="fu">seq</span>(<span class="at">from =</span> .<span class="dv">01</span>, <span class="at">to =</span> .<span class="dv">99</span>, <span class="at">by =</span> .<span class="dv">01</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb511-5"><a href="7.2-entropy-and-accuracy.html#cb511-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">q_2 =</span> <span class="dv">1</span> <span class="sc">-</span> q_1) <span class="sc">%&gt;%</span></span>
+<span id="cb511-6"><a href="7.2-entropy-and-accuracy.html#cb511-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">d_kl =</span> (p_1 <span class="sc">*</span> <span class="fu">log</span>(p_1 <span class="sc">/</span> q_1)) <span class="sc">+</span> (p_2 <span class="sc">*</span> <span class="fu">log</span>(p_2 <span class="sc">/</span> q_2)))</span>
+<span id="cb511-7"><a href="7.2-entropy-and-accuracy.html#cb511-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb511-8"><a href="7.2-entropy-and-accuracy.html#cb511-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(t)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 5
+##     p_1   p_2   q_1   q_2  d_kl
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1   0.3   0.7  0.01  0.99 0.778
+## 2   0.3   0.7  0.02  0.98 0.577
+## 3   0.3   0.7  0.03  0.97 0.462
+## 4   0.3   0.7  0.04  0.96 0.383
+## 5   0.3   0.7  0.05  0.95 0.324
+## 6   0.3   0.7  0.06  0.94 0.276</code></pre>
+<div class="sourceCode" id="cb513"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb513-1"><a href="7.2-entropy-and-accuracy.html#cb513-1" aria-hidden="true" tabindex="-1"></a>t <span class="sc">%&gt;%</span> </span>
+<span id="cb513-2"><a href="7.2-entropy-and-accuracy.html#cb513-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> q_1, <span class="at">y =</span> d_kl)) <span class="sc">+</span></span>
+<span id="cb513-3"><a href="7.2-entropy-and-accuracy.html#cb513-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> .<span class="dv">3</span>, <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">5</span>], <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb513-4"><a href="7.2-entropy-and-accuracy.html#cb513-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">7</span>], <span class="at">size =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb513-5"><a href="7.2-entropy-and-accuracy.html#cb513-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="at">x =</span> .<span class="dv">4</span>, <span class="at">y =</span> <span class="fl">1.5</span>, <span class="at">label =</span> <span class="st">&quot;q = p&quot;</span>,</span>
+<span id="cb513-6"><a href="7.2-entropy-and-accuracy.html#cb513-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">color =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">5</span>], <span class="at">family =</span> <span class="st">&quot;Courier&quot;</span>, <span class="at">size =</span> <span class="fl">3.5</span>) <span class="sc">+</span></span>
+<span id="cb513-7"><a href="7.2-entropy-and-accuracy.html#cb513-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;q[1]&quot;</span>,</span>
+<span id="cb513-8"><a href="7.2-entropy-and-accuracy.html#cb513-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Divergence of q from p&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="07_ulysses_compass_files/figure-html/unnamed-chunk-42-1.png" alt="Figure 7.6" width="672" />
+<p class="caption marginnote shownote">
+Figure 7.6
+</p>
+</div>
+<p>Suppose instead we live in Abu Dhabi. Then the probabilities of rain and shine might be more like
+$p_1 = 0.01 $ and <span class="math inline">\(p_2 = 0.99\)</span>. Now the entropy would be approximately 0.06. Why has the uncertainty decreased? Because in Abu Dhabi it hardly ever rains. Therefore there’s much less uncertainty about any given day, compared to a place in which it rains 30% of the time. It’s in this way that information entropy measures the uncertainty inherent in a distribution of events. Similarly, if we add another kind of event to the distribution—forecasting into winter, so also predicting snow—entropy tends to increase, due to the added dimensionality of the prediction problem.</p>
+<div class="figure">
+<img src="slides/L08/07.png" alt="Here's a cartoon version. You're heading to Mars, or a Mars-like planet, but you don't know much about it. You can't control your rocket and you want to predict whether you'll land on water or land. You'll use Earth as your only model. Earth is a high-entropy planet because it has a lot of water and land. So you won't be surprised whether you get land or water. " width="60%" />
+<p class="caption marginnote shownote">
+Here’s a cartoon version. You’re heading to Mars, or a Mars-like planet, but you don’t know much about it. You can’t control your rocket and you want to predict whether you’ll land on water or land. You’ll use Earth as your only model. Earth is a high-entropy planet because it has a lot of water and land. So you won’t be surprised whether you get land or water.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/08.png" alt="But say you're going in the other direction. Your potential for surprise is now very high. When you get to Earth and discover all this blue liquid, you'll be surprised. Mars is the LA of planets. And as a consequence, the information distance from Earth to Mars is smaller than the information distance from Mars to Earth. Because if your model is the Earth, it expects all sorts of events, which means that it's less surprised, which means that its prediction error is lower, on average, across a huge number of potential planets across the universe, than if you came from Mars, where you'll be surprised by water all the time. **This is why simpler models work better - because they have higher entropy.** The distance between a simpler model and other things are on average lower, because it expects many things. Gneeralized linear models have higher entropy. All machine learning works this way." width="60%" />
+<p class="caption marginnote shownote">
+But say you’re going in the other direction. Your potential for surprise is now very high. When you get to Earth and discover all this blue liquid, you’ll be surprised. Mars is the LA of planets. And as a consequence, the information distance from Earth to Mars is smaller than the information distance from Mars to Earth. Because if your model is the Earth, it expects all sorts of events, which means that it’s less surprised, which means that its prediction error is lower, on average, across a huge number of potential planets across the universe, than if you came from Mars, where you’ll be surprised by water all the time. <strong>This is why simpler models work better - because they have higher entropy.</strong> The distance between a simpler model and other things are on average lower, because it expects many things. Gneeralized linear models have higher entropy. All machine learning works this way.
+</p>
+</div>
+<p><strong><em>7.2.4. Estimating divergence</em></strong></p>
+<div class="figure">
+<img src="slides/L08/09.png" alt="How to estimate this in practice: we want the gold standard way to score, but the problem is we can't score the truth. Turns out we don't need the truth part because it's just an additive term, so you can get the relative scores of the models without knowning the truth. THe log score is the gold standard, whether you're Bayesian or not. In practice, there's not a single log score, but a distribution of log scores. So we want the average log score, which unfortunately is called the *log-pointwise-predictive-density*. For each point `i`, we're taking the average probability of that observation conditional on the samples, and we average over the samples, and find the average probabiltiy that the model expects, then we take the log and sum across all observations in the model." width="60%" />
+<p class="caption marginnote shownote">
+How to estimate this in practice: we want the gold standard way to score, but the problem is we can’t score the truth. Turns out we don’t need the truth part because it’s just an additive term, so you can get the relative scores of the models without knowning the truth. THe log score is the gold standard, whether you’re Bayesian or not. In practice, there’s not a single log score, but a distribution of log scores. So we want the average log score, which unfortunately is called the <em>log-pointwise-predictive-density</em>. For each point <code>i</code>, we’re taking the average probability of that observation conditional on the samples, and we average over the samples, and find the average probabiltiy that the model expects, then we take the log and sum across all observations in the model.
+</p>
+</div>
+<blockquote>
+<p>This kind of score is a log-probability score, and it is the gold standard way to compare the predictive accuracy of different models. It is an estimate of <span class="math inline">\(E\ log(q_i)\)</span>, just without the final step of dividing by the number of observations.</p>
+</blockquote>
+<p>Compute lppd for the first model we fit in this chapter:</p>
+<div class="sourceCode" id="cb514"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb514-1"><a href="7.2-entropy-and-accuracy.html#cb514-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log_lik</span>(b7<span class="fl">.1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb514-2"><a href="7.2-entropy-and-accuracy.html#cb514-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb514-3"><a href="7.2-entropy-and-accuracy.html#cb514-3" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">set_names</span>(<span class="fu">pull</span>(d, species)) <span class="sc">%&gt;%</span> </span>
+<span id="cb514-4"><a href="7.2-entropy-and-accuracy.html#cb514-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
+<span id="cb514-5"><a href="7.2-entropy-and-accuracy.html#cb514-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;species&quot;</span>,</span>
+<span id="cb514-6"><a href="7.2-entropy-and-accuracy.html#cb514-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;logprob&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb514-7"><a href="7.2-entropy-and-accuracy.html#cb514-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prob =</span> <span class="fu">exp</span>(logprob)) <span class="sc">%&gt;%</span> </span>
+<span id="cb514-8"><a href="7.2-entropy-and-accuracy.html#cb514-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span> </span>
+<span id="cb514-9"><a href="7.2-entropy-and-accuracy.html#cb514-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">log_probability_score =</span> <span class="fu">mean</span>(prob) <span class="sc">%&gt;%</span> <span class="fu">log</span>())</span></code></pre></div>
+<pre><code>## # A tibble: 7 × 2
+##   species     log_probability_score
+##   &lt;chr&gt;                       &lt;dbl&gt;
+## 1 afarensis                   0.384
+## 2 africanus                   0.411
+## 3 boisei                      0.400
+## 4 ergaster                    0.231
+## 5 habilis                     0.336
+## 6 rudolfensis                 0.274
+## 7 sapiens                    -0.607</code></pre>
+<blockquote>
+<p>If you sum these values, you’ll have the total log-probability score for the model and data” (p. 210).</p>
+</blockquote>
+<p>Here we sum those <span class="math inline">\(log(q_i)\)</span> values up to compute <span class="math inline">\(S(q)\)</span>.</p>
+<div class="sourceCode" id="cb516"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb516-1"><a href="7.2-entropy-and-accuracy.html#cb516-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log_lik</span>(b7<span class="fl">.1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb516-2"><a href="7.2-entropy-and-accuracy.html#cb516-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb516-3"><a href="7.2-entropy-and-accuracy.html#cb516-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="fu">pull</span>(d, species)) <span class="sc">%&gt;%</span> </span>
+<span id="cb516-4"><a href="7.2-entropy-and-accuracy.html#cb516-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
+<span id="cb516-5"><a href="7.2-entropy-and-accuracy.html#cb516-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;species&quot;</span>,</span>
+<span id="cb516-6"><a href="7.2-entropy-and-accuracy.html#cb516-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;logprob&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb516-7"><a href="7.2-entropy-and-accuracy.html#cb516-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prob =</span> <span class="fu">exp</span>(logprob)) <span class="sc">%&gt;%</span> </span>
+<span id="cb516-8"><a href="7.2-entropy-and-accuracy.html#cb516-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span> </span>
+<span id="cb516-9"><a href="7.2-entropy-and-accuracy.html#cb516-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">log_probability_score =</span> <span class="fu">mean</span>(prob) <span class="sc">%&gt;%</span> <span class="fu">log</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb516-10"><a href="7.2-entropy-and-accuracy.html#cb516-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_log_probability_score =</span> <span class="fu">sum</span>(log_probability_score))</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 1
+##   total_log_probability_score
+##                         &lt;dbl&gt;
+## 1                        1.43</code></pre>
+<p>Larger values are better, because that indicates larger average accuracy.</p>
+<div class="sourceCode" id="cb518"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb518-1"><a href="7.2-entropy-and-accuracy.html#cb518-1" aria-hidden="true" tabindex="-1"></a>log_prob <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">log_lik</span>(b7<span class="fl">.1</span>) </span>
+<span id="cb518-2"><a href="7.2-entropy-and-accuracy.html#cb518-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb518-3"><a href="7.2-entropy-and-accuracy.html#cb518-3" aria-hidden="true" tabindex="-1"></a>log_prob <span class="sc">%&gt;%</span></span>
+<span id="cb518-4"><a href="7.2-entropy-and-accuracy.html#cb518-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>()</span></code></pre></div>
+<pre><code>##  num [1:4000, 1:7] 0.769 0.396 0.894 0.558 -0.235 ...
+##  - attr(*, &quot;dimnames&quot;)=List of 2
+##   ..$ : NULL
+##   ..$ : NULL</code></pre>
+<div class="sourceCode" id="cb520"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb520-1"><a href="7.2-entropy-and-accuracy.html#cb520-1" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span></span>
+<span id="cb520-2"><a href="7.2-entropy-and-accuracy.html#cb520-2" aria-hidden="true" tabindex="-1"></a>  log_prob <span class="sc">%&gt;%</span> </span>
+<span id="cb520-3"><a href="7.2-entropy-and-accuracy.html#cb520-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make it a data frame</span></span>
+<span id="cb520-4"><a href="7.2-entropy-and-accuracy.html#cb520-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb520-5"><a href="7.2-entropy-and-accuracy.html#cb520-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add case names, for convenience</span></span>
+<span id="cb520-6"><a href="7.2-entropy-and-accuracy.html#cb520-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="fu">pull</span>(d, species)) <span class="sc">%&gt;%</span> </span>
+<span id="cb520-7"><a href="7.2-entropy-and-accuracy.html#cb520-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add an s iteration index, for convenience</span></span>
+<span id="cb520-8"><a href="7.2-entropy-and-accuracy.html#cb520-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">s =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb520-9"><a href="7.2-entropy-and-accuracy.html#cb520-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make it long</span></span>
+<span id="cb520-10"><a href="7.2-entropy-and-accuracy.html#cb520-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>s,</span>
+<span id="cb520-11"><a href="7.2-entropy-and-accuracy.html#cb520-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;species&quot;</span>,</span>
+<span id="cb520-12"><a href="7.2-entropy-and-accuracy.html#cb520-12" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;logprob&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb520-13"><a href="7.2-entropy-and-accuracy.html#cb520-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute the probability scores</span></span>
+<span id="cb520-14"><a href="7.2-entropy-and-accuracy.html#cb520-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prob =</span> <span class="fu">exp</span>(logprob))</span>
+<span id="cb520-15"><a href="7.2-entropy-and-accuracy.html#cb520-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb520-16"><a href="7.2-entropy-and-accuracy.html#cb520-16" aria-hidden="true" tabindex="-1"></a>prob</span></code></pre></div>
+<pre><code>## # A tibble: 28,000 × 4
+##        s species     logprob  prob
+##    &lt;int&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;
+##  1     1 afarensis    0.769  2.16 
+##  2     1 africanus    0.837  2.31 
+##  3     1 habilis      0.647  1.91 
+##  4     1 boisei       0.690  1.99 
+##  5     1 rudolfensis  0.140  1.15 
+##  6     1 ergaster    -0.0126 0.987
+##  7     1 sapiens     -0.497  0.608
+##  8     2 afarensis    0.396  1.49 
+##  9     2 africanus    0.479  1.61 
+## 10     2 habilis      0.768  2.16 
+## # … with 27,990 more rows</code></pre>
+<div class="sourceCode" id="cb522"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb522-1"><a href="7.2-entropy-and-accuracy.html#cb522-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now for each case, take the aerage of each of the probability scores, then take the log of that</span></span>
+<span id="cb522-2"><a href="7.2-entropy-and-accuracy.html#cb522-2" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span></span>
+<span id="cb522-3"><a href="7.2-entropy-and-accuracy.html#cb522-3" aria-hidden="true" tabindex="-1"></a>  prob <span class="sc">%&gt;%</span> </span>
+<span id="cb522-4"><a href="7.2-entropy-and-accuracy.html#cb522-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span> </span>
+<span id="cb522-5"><a href="7.2-entropy-and-accuracy.html#cb522-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">log_probability_score =</span> <span class="fu">mean</span>(prob) <span class="sc">%&gt;%</span> <span class="fu">log</span>())</span>
+<span id="cb522-6"><a href="7.2-entropy-and-accuracy.html#cb522-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb522-7"><a href="7.2-entropy-and-accuracy.html#cb522-7" aria-hidden="true" tabindex="-1"></a>prob</span></code></pre></div>
+<pre><code>## # A tibble: 7 × 2
+##   species     log_probability_score
+##   &lt;chr&gt;                       &lt;dbl&gt;
+## 1 afarensis                   0.384
+## 2 africanus                   0.411
+## 3 boisei                      0.400
+## 4 ergaster                    0.231
+## 5 habilis                     0.336
+## 6 rudolfensis                 0.274
+## 7 sapiens                    -0.607</code></pre>
+<div class="sourceCode" id="cb524"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb524-1"><a href="7.2-entropy-and-accuracy.html#cb524-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Then sum up the values</span></span>
+<span id="cb524-2"><a href="7.2-entropy-and-accuracy.html#cb524-2" aria-hidden="true" tabindex="-1"></a>prob <span class="sc">%&gt;%</span> </span>
+<span id="cb524-3"><a href="7.2-entropy-and-accuracy.html#cb524-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_log_probability_score =</span> <span class="fu">sum</span>(log_probability_score))</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 1
+##   total_log_probability_score
+##                         &lt;dbl&gt;
+## 1                        1.43</code></pre>
+<div class="figure">
+<img src="slides/L08/10.png" alt="Why does this all matter in a practical sense? We can measure overfitting. Look at the difference between in- and out-of-sample. Smaller is better. The more negative it is, the better it is. Two samples from the same generative process. Training and testing set. Fit our model to the training sample, and get the deviance of train. Then we force it to predict the out-of-sample. The difference between them are our measure of overfitting." width="60%" />
+<p class="caption marginnote shownote">
+Why does this all matter in a practical sense? We can measure overfitting. Look at the difference between in- and out-of-sample. Smaller is better. The more negative it is, the better it is. Two samples from the same generative process. Training and testing set. Fit our model to the training sample, and get the deviance of train. Then we force it to predict the out-of-sample. The difference between them are our measure of overfitting.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/11.png" alt="We'll generate some samples based on a known &quot;truth&quot;. The first is our intercept model. " width="60%" />
+<p class="caption marginnote shownote">
+We’ll generate some samples based on a known “truth”. The first is our intercept model.
+</p>
+</div>
+<p><strong><em>7.2.5. Scoring the right data</em></strong></p>
+<p>Create custome function:</p>
+<div class="sourceCode" id="cb526"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb526-1"><a href="7.2-entropy-and-accuracy.html#cb526-1" aria-hidden="true" tabindex="-1"></a>my_lppd <span class="ot">&lt;-</span> <span class="cf">function</span>(brms_fit) {</span>
+<span id="cb526-2"><a href="7.2-entropy-and-accuracy.html#cb526-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb526-3"><a href="7.2-entropy-and-accuracy.html#cb526-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_lik</span>(brms_fit) <span class="sc">%&gt;%</span> </span>
+<span id="cb526-4"><a href="7.2-entropy-and-accuracy.html#cb526-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb526-5"><a href="7.2-entropy-and-accuracy.html#cb526-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
+<span id="cb526-6"><a href="7.2-entropy-and-accuracy.html#cb526-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">values_to =</span> <span class="st">&quot;logprob&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb526-7"><a href="7.2-entropy-and-accuracy.html#cb526-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">prob =</span> <span class="fu">exp</span>(logprob)) <span class="sc">%&gt;%</span> </span>
+<span id="cb526-8"><a href="7.2-entropy-and-accuracy.html#cb526-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(name) <span class="sc">%&gt;%</span> </span>
+<span id="cb526-9"><a href="7.2-entropy-and-accuracy.html#cb526-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">log_probability_score =</span> <span class="fu">mean</span>(prob) <span class="sc">%&gt;%</span> <span class="fu">log</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb526-10"><a href="7.2-entropy-and-accuracy.html#cb526-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">total_log_probability_score =</span> <span class="fu">sum</span>(log_probability_score))</span>
+<span id="cb526-11"><a href="7.2-entropy-and-accuracy.html#cb526-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb526-12"><a href="7.2-entropy-and-accuracy.html#cb526-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Let’s compute the log-score for each of the models from earlier in this chapter:</p>
+<div class="sourceCode" id="cb527"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb527-1"><a href="7.2-entropy-and-accuracy.html#cb527-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">name =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(<span class="st">&quot;b7.&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb527-2"><a href="7.2-entropy-and-accuracy.html#cb527-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">brms_fit =</span> purrr<span class="sc">::</span><span class="fu">map</span>(name, get)) <span class="sc">%&gt;%</span> </span>
+<span id="cb527-3"><a href="7.2-entropy-and-accuracy.html#cb527-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lppd =</span> purrr<span class="sc">::</span><span class="fu">map</span>(brms_fit, <span class="sc">~</span><span class="fu">my_lppd</span>(.))) <span class="sc">%&gt;%</span> </span>
+<span id="cb527-4"><a href="7.2-entropy-and-accuracy.html#cb527-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(lppd)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 3
+##   name  brms_fit  total_log_probability_score
+##   &lt;chr&gt; &lt;list&gt;                          &lt;dbl&gt;
+## 1 b7.1  &lt;brmsfit&gt;                       1.43 
+## 2 b7.2  &lt;brmsfit&gt;                       0.686
+## 3 b7.3  &lt;brmsfit&gt;                       0.168
+## 4 b7.4  &lt;brmsfit&gt;                       0.912
+## 5 b7.5  &lt;brmsfit&gt;                       0.102
+## 6 b7.6  &lt;brmsfit&gt;                      25.9</code></pre>
+<p>The more complex models have larger scores, but it is really the score on new data that interests us.</p>
+<div class="figure">
+<img src="slides/L08/12.png" alt="This is what happens in-sample. Lower deviance is better. The point is the average across all simulations, with one standard deviation on either side. Note the more complicated models do better. They're always going to fit in-sample better. Note there's a big jump at 3, then very little after 3. " width="60%" />
+<p class="caption marginnote shownote">
+This is what happens in-sample. Lower deviance is better. The point is the average across all simulations, with one standard deviation on either side. Note the more complicated models do better. They’re always going to fit in-sample better. Note there’s a big jump at 3, then very little after 3.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/13.png" alt="Here's out-of-sample. Unsurprisingly, everything does worse out-of-sample. There's a pattern to the amount of overfitting. You can see that model 3 is best on average. Models 4 and 5 get progressively worse, because they're fitting noise. " width="60%" />
+<p class="caption marginnote shownote">
+Here’s out-of-sample. Unsurprisingly, everything does worse out-of-sample. There’s a pattern to the amount of overfitting. You can see that model 3 is best on average. Models 4 and 5 get progressively worse, because they’re fitting noise.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L08/14.png" alt="In anthropology we're happy with 20. But with N = 100, you can more precisely estimate when a data point doesn't matter. So 4 and 5 are only slightly worse. Because you can get a really good posterior distribution. But they pattern is the same. There's a very special pattern in the distances between these points. On the left, you can see the distances are growing, and approximately twice the number of parameters in each case. Hold that in your mind." width="60%" />
+<p class="caption marginnote shownote">
+In anthropology we’re happy with 20. But with N = 100, you can more precisely estimate when a data point doesn’t matter. So 4 and 5 are only slightly worse. Because you can get a really good posterior distribution. But they pattern is the same. There’s a very special pattern in the distances between these points. On the left, you can see the distances are growing, and approximately twice the number of parameters in each case. Hold that in your mind.
+</p>
+</div>
+<div class="sourceCode" id="cb529"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb529-1"><a href="7.2-entropy-and-accuracy.html#cb529-1" aria-hidden="true" tabindex="-1"></a><span class="co"># I&#39;ve reduced this number by one order of magnitude to reduce computation time</span></span>
+<span id="cb529-2"><a href="7.2-entropy-and-accuracy.html#cb529-2" aria-hidden="true" tabindex="-1"></a>n_sim   <span class="ot">&lt;-</span> <span class="fl">1e3</span></span>
+<span id="cb529-3"><a href="7.2-entropy-and-accuracy.html#cb529-3" aria-hidden="true" tabindex="-1"></a>n_cores <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb529-4"><a href="7.2-entropy-and-accuracy.html#cb529-4" aria-hidden="true" tabindex="-1"></a>kseq    <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb529-5"><a href="7.2-entropy-and-accuracy.html#cb529-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb529-6"><a href="7.2-entropy-and-accuracy.html#cb529-6" aria-hidden="true" tabindex="-1"></a><span class="co"># define the simulation function</span></span>
+<span id="cb529-7"><a href="7.2-entropy-and-accuracy.html#cb529-7" aria-hidden="true" tabindex="-1"></a>my_sim <span class="ot">&lt;-</span> <span class="cf">function</span>(k) {</span>
+<span id="cb529-8"><a href="7.2-entropy-and-accuracy.html#cb529-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb529-9"><a href="7.2-entropy-and-accuracy.html#cb529-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(k);</span>
+<span id="cb529-10"><a href="7.2-entropy-and-accuracy.html#cb529-10" aria-hidden="true" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">mcreplicate</span>(n_sim, <span class="fu">sim_train_test</span>(<span class="at">N =</span> n, <span class="at">k =</span> k), <span class="at">mc.cores =</span> n_cores);</span>
+<span id="cb529-11"><a href="7.2-entropy-and-accuracy.html#cb529-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="fu">mean</span>(r[<span class="dv">1</span>, ]), <span class="fu">mean</span>(r[<span class="dv">2</span>, ]), <span class="fu">sd</span>(r[<span class="dv">1</span>, ]), <span class="fu">sd</span>(r[<span class="dv">2</span>, ]))</span>
+<span id="cb529-12"><a href="7.2-entropy-and-accuracy.html#cb529-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb529-13"><a href="7.2-entropy-and-accuracy.html#cb529-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb529-14"><a href="7.2-entropy-and-accuracy.html#cb529-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb529-15"><a href="7.2-entropy-and-accuracy.html#cb529-15" aria-hidden="true" tabindex="-1"></a><span class="co"># here&#39;s our dev object based on `N &lt;- 20`</span></span>
+<span id="cb529-16"><a href="7.2-entropy-and-accuracy.html#cb529-16" aria-hidden="true" tabindex="-1"></a>n      <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb529-17"><a href="7.2-entropy-and-accuracy.html#cb529-17" aria-hidden="true" tabindex="-1"></a>dev_20 <span class="ot">&lt;-</span></span>
+<span id="cb529-18"><a href="7.2-entropy-and-accuracy.html#cb529-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(kseq, my_sim)</span>
+<span id="cb529-19"><a href="7.2-entropy-and-accuracy.html#cb529-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb529-20"><a href="7.2-entropy-and-accuracy.html#cb529-20" aria-hidden="true" tabindex="-1"></a><span class="co"># here&#39;s our dev object based on N &lt;- 100</span></span>
+<span id="cb529-21"><a href="7.2-entropy-and-accuracy.html#cb529-21" aria-hidden="true" tabindex="-1"></a>n       <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb529-22"><a href="7.2-entropy-and-accuracy.html#cb529-22" aria-hidden="true" tabindex="-1"></a>dev_100 <span class="ot">&lt;-</span> </span>
+<span id="cb529-23"><a href="7.2-entropy-and-accuracy.html#cb529-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sapply</span>(kseq, my_sim)</span>
+<span id="cb529-24"><a href="7.2-entropy-and-accuracy.html#cb529-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb529-25"><a href="7.2-entropy-and-accuracy.html#cb529-25" aria-hidden="true" tabindex="-1"></a><span class="co"># bind together in a tibble to plot</span></span>
+<span id="cb529-26"><a href="7.2-entropy-and-accuracy.html#cb529-26" aria-hidden="true" tabindex="-1"></a>dev_tibble <span class="ot">&lt;-</span></span>
+<span id="cb529-27"><a href="7.2-entropy-and-accuracy.html#cb529-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind</span>(dev_20, dev_100) <span class="sc">%&gt;%</span> </span>
+<span id="cb529-28"><a href="7.2-entropy-and-accuracy.html#cb529-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb529-29"><a href="7.2-entropy-and-accuracy.html#cb529-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">statistic =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;mean&quot;</span>, <span class="st">&quot;sd&quot;</span>), <span class="at">each =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> <span class="fu">rep</span>(., <span class="at">times =</span> <span class="dv">2</span>),</span>
+<span id="cb529-30"><a href="7.2-entropy-and-accuracy.html#cb529-30" aria-hidden="true" tabindex="-1"></a>         <span class="at">sample    =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;in&quot;</span>, <span class="st">&quot;out&quot;</span>), <span class="at">times =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> <span class="fu">rep</span>(., <span class="at">times =</span> <span class="dv">2</span>),</span>
+<span id="cb529-31"><a href="7.2-entropy-and-accuracy.html#cb529-31" aria-hidden="true" tabindex="-1"></a>         <span class="at">n         =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;n = 20&quot;</span>, <span class="st">&quot;n = 100&quot;</span>), <span class="at">each =</span> <span class="dv">4</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb529-32"><a href="7.2-entropy-and-accuracy.html#cb529-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>(statistic<span class="sc">:</span>n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb529-33"><a href="7.2-entropy-and-accuracy.html#cb529-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> statistic, <span class="at">values_from =</span> value) <span class="sc">%&gt;%</span></span>
+<span id="cb529-34"><a href="7.2-entropy-and-accuracy.html#cb529-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n     =</span> <span class="fu">factor</span>(n, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;n = 20&quot;</span>, <span class="st">&quot;n = 100&quot;</span>)),</span>
+<span id="cb529-35"><a href="7.2-entropy-and-accuracy.html#cb529-35" aria-hidden="true" tabindex="-1"></a>         <span class="at">n_par =</span> <span class="fu">str_extract</span>(name, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">d+&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">as.double</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb529-36"><a href="7.2-entropy-and-accuracy.html#cb529-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_par =</span> <span class="fu">ifelse</span>(sample <span class="sc">==</span> <span class="st">&quot;in&quot;</span>, n_par <span class="sc">-</span> .<span class="dv">075</span>, n_par <span class="sc">+</span> .<span class="dv">075</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb530"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb530-1"><a href="7.2-entropy-and-accuracy.html#cb530-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dev_tibble)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 6
+##   sample n      name   mean    sd n_par
+##   &lt;chr&gt;  &lt;fct&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 in     n = 20 X1     55.9  6.02 0.925
+## 2 in     n = 20 X2     54.9  5.46 1.92 
+## 3 in     n = 20 X3     51.8  4.30 2.92 
+## 4 in     n = 20 X4     51.6  3.96 3.92 
+## 5 in     n = 20 X5     51.3  3.75 4.92 
+## 6 out    n = 20 X1     57.7  6.59 1.08</code></pre>
+<div class="sourceCode" id="cb532"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb532-1"><a href="7.2-entropy-and-accuracy.html#cb532-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for the annotation</span></span>
+<span id="cb532-2"><a href="7.2-entropy-and-accuracy.html#cb532-2" aria-hidden="true" tabindex="-1"></a>text <span class="ot">&lt;-</span></span>
+<span id="cb532-3"><a href="7.2-entropy-and-accuracy.html#cb532-3" aria-hidden="true" tabindex="-1"></a>  dev_tibble <span class="sc">%&gt;%</span> </span>
+<span id="cb532-4"><a href="7.2-entropy-and-accuracy.html#cb532-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n_par <span class="sc">&gt;</span> <span class="fl">1.5</span>, </span>
+<span id="cb532-5"><a href="7.2-entropy-and-accuracy.html#cb532-5" aria-hidden="true" tabindex="-1"></a>         n_par <span class="sc">&lt;</span> <span class="fl">2.5</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb532-6"><a href="7.2-entropy-and-accuracy.html#cb532-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_par =</span> <span class="fu">ifelse</span>(sample <span class="sc">==</span> <span class="st">&quot;in&quot;</span>, n_par <span class="sc">-</span> <span class="fl">0.2</span>, n_par <span class="sc">+</span> <span class="fl">0.29</span>))</span>
+<span id="cb532-7"><a href="7.2-entropy-and-accuracy.html#cb532-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb532-8"><a href="7.2-entropy-and-accuracy.html#cb532-8" aria-hidden="true" tabindex="-1"></a><span class="co"># plot!</span></span>
+<span id="cb532-9"><a href="7.2-entropy-and-accuracy.html#cb532-9" aria-hidden="true" tabindex="-1"></a>dev_tibble <span class="sc">%&gt;%</span> </span>
+<span id="cb532-10"><a href="7.2-entropy-and-accuracy.html#cb532-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n_par, <span class="at">y =</span> mean,</span>
+<span id="cb532-11"><a href="7.2-entropy-and-accuracy.html#cb532-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">ymin =</span> mean <span class="sc">-</span> sd, <span class="at">ymax =</span> mean <span class="sc">+</span> sd,</span>
+<span id="cb532-12"><a href="7.2-entropy-and-accuracy.html#cb532-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">group =</span> sample, <span class="at">color =</span> sample, <span class="at">fill  =</span> sample)) <span class="sc">+</span></span>
+<span id="cb532-13"><a href="7.2-entropy-and-accuracy.html#cb532-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_pointrange</span>(<span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
+<span id="cb532-14"><a href="7.2-entropy-and-accuracy.html#cb532-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> text,</span>
+<span id="cb532-15"><a href="7.2-entropy-and-accuracy.html#cb532-15" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">label =</span> sample)) <span class="sc">+</span></span>
+<span id="cb532-16"><a href="7.2-entropy-and-accuracy.html#cb532-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values  =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">7</span>)]) <span class="sc">+</span></span>
+<span id="cb532-17"><a href="7.2-entropy-and-accuracy.html#cb532-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">5</span>)]) <span class="sc">+</span></span>
+<span id="cb532-18"><a href="7.2-entropy-and-accuracy.html#cb532-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Figure 7.6. Deviance in and out of sample.&quot;</span>,</span>
+<span id="cb532-19"><a href="7.2-entropy-and-accuracy.html#cb532-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;number of parameters&quot;</span>,</span>
+<span id="cb532-20"><a href="7.2-entropy-and-accuracy.html#cb532-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;deviance&quot;</span>) <span class="sc">+</span></span>
+<span id="cb532-21"><a href="7.2-entropy-and-accuracy.html#cb532-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb532-22"><a href="7.2-entropy-and-accuracy.html#cb532-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="fu">alpha</span>(<span class="fu">carto_pal</span>(<span class="dv">7</span>, <span class="st">&quot;BurgYl&quot;</span>)[<span class="dv">1</span>], <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>), <span class="at">color =</span> <span class="st">&quot;transparent&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb532-23"><a href="7.2-entropy-and-accuracy.html#cb532-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> n, <span class="at">scale =</span> <span class="st">&quot;free_y&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="07_ulysses_compass_files/figure-html/7.18-1.png" alt="Figure 7.6" width="672" />
+<p class="caption marginnote shownote">
+Figure 7.6
+</p>
+</div>
+</div>
+<p style="text-align: center;">
+<a href="7.1-the-problem-with-parameters.html"><button class="btn btn-default">Previous</button></a>
+<a href="7.3-golem-taming-regularization.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

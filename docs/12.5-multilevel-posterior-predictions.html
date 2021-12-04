@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="12.5 Multilevel posterior predictions | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="12.5 Multilevel posterior predictions | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>12.5 Multilevel posterior predictions | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="multilevel-posterior-predictions" class="section level2" number="12.5">
+<h2><span class="header-section-number">12.5</span> Multilevel posterior predictions</h2>
+<p><strong><em>13.5.1. Posterior prediction for same clusters</em></strong></p>
+<div class="figure">
+<img src="slides/L16/31.png" alt="Last thing to talk about is how to do posterior predictions. You have to make some choices. You get to decide how to think about the generalisation of the model. The most direct way to consider the choices is, when you generalise inferences, are you interested in new units, or the same chimps. If you interested in new ones, you wouldn't get to use the alphas. However the other parameters are definitely relevant, because you've learned about the variation in a popoulation of chimps, which would give you a prior. So here's an example." width="80%" />
+<p class="caption marginnote shownote">
+Last thing to talk about is how to do posterior predictions. You have to make some choices. You get to decide how to think about the generalisation of the model. The most direct way to consider the choices is, when you generalise inferences, are you interested in new units, or the same chimps. If you interested in new ones, you wouldn’t get to use the alphas. However the other parameters are definitely relevant, because you’ve learned about the variation in a popoulation of chimps, which would give you a prior. So here’s an example.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/32.png" alt="Let's consider. Different ways to draw this. Take the statsitically average chimpanzee, and ask what the nmodel says it owuld do. Marginal of actor says let's sampel a bunch of chimps and average over their variation. this is differnet beause it cincludes the population variation. Then show the sample of actors fromt eh posterior." width="80%" />
+<p class="caption marginnote shownote">
+Let’s consider. Different ways to draw this. Take the statsitically average chimpanzee, and ask what the nmodel says it owuld do. Marginal of actor says let’s sampel a bunch of chimps and average over their variation. this is differnet beause it cincludes the population variation. Then show the sample of actors fromt eh posterior.
+</p>
+</div>
+<p><strong><em>13.5.1. Posterior prediction for same clusters</em></strong></p>
+<p>Construct posterior predictions with a link function and compute predictions:</p>
+<div class="sourceCode" id="cb939"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb939-1"><a href="12.5-multilevel-posterior-predictions.html#cb939-1" aria-hidden="true" tabindex="-1"></a>chimp <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb939-2"><a href="12.5-multilevel-posterior-predictions.html#cb939-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb939-3"><a href="12.5-multilevel-posterior-predictions.html#cb939-3" aria-hidden="true" tabindex="-1"></a>nd <span class="ot">&lt;-</span></span>
+<span id="cb939-4"><a href="12.5-multilevel-posterior-predictions.html#cb939-4" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb939-5"><a href="12.5-multilevel-posterior-predictions.html#cb939-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(treatment) <span class="sc">%&gt;%</span> </span>
+<span id="cb939-6"><a href="12.5-multilevel-posterior-predictions.html#cb939-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">actor =</span> chimp,</span>
+<span id="cb939-7"><a href="12.5-multilevel-posterior-predictions.html#cb939-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">block =</span> <span class="dv">1</span>)</span>
+<span id="cb939-8"><a href="12.5-multilevel-posterior-predictions.html#cb939-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb939-9"><a href="12.5-multilevel-posterior-predictions.html#cb939-9" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;R/N&quot;</span>, <span class="st">&quot;L/N&quot;</span>, <span class="st">&quot;R/P&quot;</span>, <span class="st">&quot;L/P&quot;</span>)</span>
+<span id="cb939-10"><a href="12.5-multilevel-posterior-predictions.html#cb939-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb939-11"><a href="12.5-multilevel-posterior-predictions.html#cb939-11" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span></span>
+<span id="cb939-12"><a href="12.5-multilevel-posterior-predictions.html#cb939-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fitted</span>(b13<span class="fl">.4</span>,</span>
+<span id="cb939-13"><a href="12.5-multilevel-posterior-predictions.html#cb939-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">newdata =</span> nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb939-14"><a href="12.5-multilevel-posterior-predictions.html#cb939-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb939-15"><a href="12.5-multilevel-posterior-predictions.html#cb939-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(nd) <span class="sc">%&gt;%</span> </span>
+<span id="cb939-16"><a href="12.5-multilevel-posterior-predictions.html#cb939-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(treatment, <span class="at">labels =</span> labels))</span>
+<span id="cb939-17"><a href="12.5-multilevel-posterior-predictions.html#cb939-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb939-18"><a href="12.5-multilevel-posterior-predictions.html#cb939-18" aria-hidden="true" tabindex="-1"></a>f</span></code></pre></div>
+<pre><code>##    Estimate  Est.Error      Q2.5     Q97.5 treatment actor block
+## 1 0.9790908 0.01961220 0.9277346 0.9994592       R/N     2     1
+## 2 0.9873767 0.01242438 0.9547778 0.9996282       L/N     2     1
+## 3 0.9711403 0.02662191 0.9008207 0.9991563       R/P     2     1
+## 4 0.9860410 0.01340503 0.9501147 0.9996183       L/P     2     1</code></pre>
+<p>Empirical probabilities computed directly from the data (i.e. no pooling)</p>
+<div class="sourceCode" id="cb941"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb941-1"><a href="12.5-multilevel-posterior-predictions.html#cb941-1" aria-hidden="true" tabindex="-1"></a>chimp_2_d <span class="ot">&lt;-</span></span>
+<span id="cb941-2"><a href="12.5-multilevel-posterior-predictions.html#cb941-2" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb941-3"><a href="12.5-multilevel-posterior-predictions.html#cb941-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(actor <span class="sc">==</span> chimp) <span class="sc">%&gt;%</span> </span>
+<span id="cb941-4"><a href="12.5-multilevel-posterior-predictions.html#cb941-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(treatment) <span class="sc">%&gt;%</span> </span>
+<span id="cb941-5"><a href="12.5-multilevel-posterior-predictions.html#cb941-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">prob =</span> <span class="fu">mean</span>(pulled_left)) <span class="sc">%&gt;%</span> </span>
+<span id="cb941-6"><a href="12.5-multilevel-posterior-predictions.html#cb941-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb941-7"><a href="12.5-multilevel-posterior-predictions.html#cb941-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(treatment, <span class="at">labels =</span> labels))</span>
+<span id="cb941-8"><a href="12.5-multilevel-posterior-predictions.html#cb941-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb941-9"><a href="12.5-multilevel-posterior-predictions.html#cb941-9" aria-hidden="true" tabindex="-1"></a>chimp_2_d</span></code></pre></div>
+<pre><code>## # A tibble: 4 × 2
+##   treatment  prob
+##   &lt;fct&gt;     &lt;dbl&gt;
+## 1 R/N           1
+## 2 L/N           1
+## 3 R/P           1
+## 4 L/P           1</code></pre>
+<p>And the corresponding plot:</p>
+<div class="sourceCode" id="cb943"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb943-1"><a href="12.5-multilevel-posterior-predictions.html#cb943-1" aria-hidden="true" tabindex="-1"></a>f <span class="sc">%&gt;%</span></span>
+<span id="cb943-2"><a href="12.5-multilevel-posterior-predictions.html#cb943-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># if you want to use `geom_line()` or `geom_ribbon()` with a factor on the x-axis,</span></span>
+<span id="cb943-3"><a href="12.5-multilevel-posterior-predictions.html#cb943-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># you need to code something like `group = 1` in `aes()`</span></span>
+<span id="cb943-4"><a href="12.5-multilevel-posterior-predictions.html#cb943-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> treatment, <span class="at">y =</span> Estimate, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb943-5"><a href="12.5-multilevel-posterior-predictions.html#cb943-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> Q2<span class="fl">.5</span>, <span class="at">ymax =</span> Q97<span class="fl">.5</span>), <span class="at">fill =</span> <span class="st">&quot;orange1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb943-6"><a href="12.5-multilevel-posterior-predictions.html#cb943-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb943-7"><a href="12.5-multilevel-posterior-predictions.html#cb943-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> chimp_2_d,</span>
+<span id="cb943-8"><a href="12.5-multilevel-posterior-predictions.html#cb943-8" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> prob),</span>
+<span id="cb943-9"><a href="12.5-multilevel-posterior-predictions.html#cb943-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;grey25&quot;</span>) <span class="sc">+</span></span>
+<span id="cb943-10"><a href="12.5-multilevel-posterior-predictions.html#cb943-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Chimp #2&quot;</span>,</span>
+<span id="cb943-11"><a href="12.5-multilevel-posterior-predictions.html#cb943-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">subtitle =</span> <span class="st">&quot;The posterior mean and 95%</span><span class="sc">\n</span><span class="st">intervals are the blue line</span><span class="sc">\n</span><span class="st">and orange band, respectively.</span><span class="sc">\n</span><span class="st">The empirical means are</span><span class="sc">\n</span><span class="st">the charcoal dots.&quot;</span>) <span class="sc">+</span></span>
+<span id="cb943-12"><a href="12.5-multilevel-posterior-predictions.html#cb943-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(.<span class="dv">75</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb943-13"><a href="12.5-multilevel-posterior-predictions.html#cb943-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>))</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-92-1.png" width="672" /></p>
+<p>Extract the posterior samples and look at the structure of the data:</p>
+<div class="sourceCode" id="cb944"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb944-1"><a href="12.5-multilevel-posterior-predictions.html#cb944-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">posterior_samples</span>(b13<span class="fl">.4</span>)</span>
+<span id="cb944-2"><a href="12.5-multilevel-posterior-predictions.html#cb944-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb944-3"><a href="12.5-multilevel-posterior-predictions.html#cb944-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(post)</span></code></pre></div>
+<pre><code>## Rows: 4,000
+## Columns: 21
+## $ b_a_Intercept             &lt;dbl&gt; 1.3021558, 1.2230044, 1.4514463, 1.2493757, …
+## $ b_b_treatment1            &lt;dbl&gt; 0.045943207, 0.193764903, -0.144046413, 0.11…
+## $ b_b_treatment2            &lt;dbl&gt; 0.527943052, 0.607728359, 0.664090709, 0.427…
+## $ b_b_treatment3            &lt;dbl&gt; -0.65337805, -0.60835264, -0.33002358, -0.30…
+## $ b_b_treatment4            &lt;dbl&gt; 0.62706385, 0.62201381, 0.29950707, 0.552404…
+## $ sd_actor__a_Intercept     &lt;dbl&gt; 1.703332, 1.882084, 1.649978, 1.752502, 1.80…
+## $ sd_block__a_Intercept     &lt;dbl&gt; 0.22532974, 0.13789393, 0.44017726, 0.111468…
+## $ `r_actor__a[1,Intercept]` &lt;dbl&gt; -2.0639022, -2.0221336, -1.7018977, -1.73524…
+## $ `r_actor__a[2,Intercept]` &lt;dbl&gt; 3.445438, 3.504269, 3.045323, 3.254185, 2.97…
+## $ `r_actor__a[3,Intercept]` &lt;dbl&gt; -2.109574, -2.076856, -1.995991, -1.886381, …
+## $ `r_actor__a[4,Intercept]` &lt;dbl&gt; -2.2207650, -1.8723443, -2.2369024, -2.02334…
+## $ `r_actor__a[5,Intercept]` &lt;dbl&gt; -2.0945013, -2.1226541, -1.2873641, -2.09518…
+## $ `r_actor__a[6,Intercept]` &lt;dbl&gt; -1.0146662, -1.1288649, -0.6976608, -0.87739…
+## $ `r_actor__a[7,Intercept]` &lt;dbl&gt; 1.2575993, 0.9338849, 0.7456903, 0.7271162, …
+## $ `r_block__a[1,Intercept]` &lt;dbl&gt; 0.07314157, -0.21606731, -0.50680853, -0.030…
+## $ `r_block__a[2,Intercept]` &lt;dbl&gt; 0.2421557109, -0.0631763240, -0.1262601137, …
+## $ `r_block__a[3,Intercept]` &lt;dbl&gt; 0.14889112, 0.12668037, 0.24547520, -0.08049…
+## $ `r_block__a[4,Intercept]` &lt;dbl&gt; 0.010269812, -0.119706957, -0.264721041, 0.0…
+## $ `r_block__a[5,Intercept]` &lt;dbl&gt; -0.067246997, 0.043689655, -0.239099466, 0.0…
+## $ `r_block__a[6,Intercept]` &lt;dbl&gt; -0.0192112634, 0.0955534719, 0.1932751562, 0…
+## $ lp__                      &lt;dbl&gt; -285.4452, -285.5290, -281.8289, -282.9040, …</code></pre>
+<div class="sourceCode" id="cb946"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb946-1"><a href="12.5-multilevel-posterior-predictions.html#cb946-1" aria-hidden="true" tabindex="-1"></a>post <span class="sc">%&gt;%</span></span>
+<span id="cb946-2"><a href="12.5-multilevel-posterior-predictions.html#cb946-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">actor_5 =</span> <span class="st">`</span><span class="at">r_actor__a[5,Intercept]</span><span class="st">`</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb946-3"><a href="12.5-multilevel-posterior-predictions.html#cb946-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb946-4"><a href="12.5-multilevel-posterior-predictions.html#cb946-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> actor_5)) <span class="sc">+</span></span>
+<span id="cb946-5"><a href="12.5-multilevel-posterior-predictions.html#cb946-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb946-6"><a href="12.5-multilevel-posterior-predictions.html#cb946-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb946-7"><a href="12.5-multilevel-posterior-predictions.html#cb946-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Chimp #5&#39;s density&quot;</span>)</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/13.33%20b-1.png" width="672" /></p>
+<div class="sourceCode" id="cb947"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb947-1"><a href="12.5-multilevel-posterior-predictions.html#cb947-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span></span>
+<span id="cb947-2"><a href="12.5-multilevel-posterior-predictions.html#cb947-2" aria-hidden="true" tabindex="-1"></a>  post <span class="sc">%&gt;%</span> </span>
+<span id="cb947-3"><a href="12.5-multilevel-posterior-predictions.html#cb947-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(b_b_treatment1<span class="sc">:</span>b_b_treatment4) <span class="sc">%&gt;%</span> </span>
+<span id="cb947-4"><a href="12.5-multilevel-posterior-predictions.html#cb947-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fitted =</span> <span class="fu">inv_logit_scaled</span>(b_a_Intercept <span class="sc">+</span> value <span class="sc">+</span> <span class="st">`</span><span class="at">r_actor__a[1,Intercept]</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">r_block__a[1,Intercept]</span><span class="st">`</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb947-5"><a href="12.5-multilevel-posterior-predictions.html#cb947-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(<span class="fu">str_remove</span>(name, <span class="st">&quot;b_b_treatment&quot;</span>),</span>
+<span id="cb947-6"><a href="12.5-multilevel-posterior-predictions.html#cb947-6" aria-hidden="true" tabindex="-1"></a>                            <span class="at">labels =</span> labels)) <span class="sc">%&gt;%</span> </span>
+<span id="cb947-7"><a href="12.5-multilevel-posterior-predictions.html#cb947-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(name<span class="sc">:</span>treatment)</span>
+<span id="cb947-8"><a href="12.5-multilevel-posterior-predictions.html#cb947-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb947-9"><a href="12.5-multilevel-posterior-predictions.html#cb947-9" aria-hidden="true" tabindex="-1"></a>f</span></code></pre></div>
+<pre><code>## # A tibble: 16,000 × 4
+##    name             value fitted treatment
+##    &lt;chr&gt;            &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;    
+##  1 b_b_treatment1  0.0459  0.345 R/N      
+##  2 b_b_treatment2  0.528   0.460 L/N      
+##  3 b_b_treatment3 -0.653   0.207 R/P      
+##  4 b_b_treatment4  0.627   0.485 L/P      
+##  5 b_b_treatment1  0.194   0.305 R/N      
+##  6 b_b_treatment2  0.608   0.400 L/N      
+##  7 b_b_treatment3 -0.608   0.165 R/P      
+##  8 b_b_treatment4  0.622   0.403 L/P      
+##  9 b_b_treatment1 -0.144   0.289 R/N      
+## 10 b_b_treatment2  0.664   0.477 L/N      
+## # … with 15,990 more rows</code></pre>
+<p>Now summarise:</p>
+<div class="sourceCode" id="cb949"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb949-1"><a href="12.5-multilevel-posterior-predictions.html#cb949-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the posterior summaries</span></span>
+<span id="cb949-2"><a href="12.5-multilevel-posterior-predictions.html#cb949-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb949-3"><a href="12.5-multilevel-posterior-predictions.html#cb949-3" aria-hidden="true" tabindex="-1"></a>  f <span class="ot">&lt;-</span></span>
+<span id="cb949-4"><a href="12.5-multilevel-posterior-predictions.html#cb949-4" aria-hidden="true" tabindex="-1"></a>  f <span class="sc">%&gt;%</span></span>
+<span id="cb949-5"><a href="12.5-multilevel-posterior-predictions.html#cb949-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb949-6"><a href="12.5-multilevel-posterior-predictions.html#cb949-6" aria-hidden="true" tabindex="-1"></a>  tidybayes<span class="sc">::</span><span class="fu">mean_qi</span>(fitted)</span>
+<span id="cb949-7"><a href="12.5-multilevel-posterior-predictions.html#cb949-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## # A tibble: 4 × 7
+##   treatment fitted .lower .upper .width .point .interval
+##   &lt;fct&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1 R/N        0.346  0.200  0.503   0.95 mean   qi       
+## 2 L/N        0.470  0.303  0.631   0.95 mean   qi       
+## 3 R/P        0.275  0.153  0.420   0.95 mean   qi       
+## 4 L/P        0.443  0.273  0.604   0.95 mean   qi</code></pre>
+<div class="sourceCode" id="cb951"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb951-1"><a href="12.5-multilevel-posterior-predictions.html#cb951-1" aria-hidden="true" tabindex="-1"></a><span class="co"># the empirical summaries</span></span>
+<span id="cb951-2"><a href="12.5-multilevel-posterior-predictions.html#cb951-2" aria-hidden="true" tabindex="-1"></a>chimp <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb951-3"><a href="12.5-multilevel-posterior-predictions.html#cb951-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb951-4"><a href="12.5-multilevel-posterior-predictions.html#cb951-4" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb951-5"><a href="12.5-multilevel-posterior-predictions.html#cb951-5" aria-hidden="true" tabindex="-1"></a>  chimp_5_d <span class="ot">&lt;-</span></span>
+<span id="cb951-6"><a href="12.5-multilevel-posterior-predictions.html#cb951-6" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span> </span>
+<span id="cb951-7"><a href="12.5-multilevel-posterior-predictions.html#cb951-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(actor <span class="sc">==</span> chimp) <span class="sc">%&gt;%</span> </span>
+<span id="cb951-8"><a href="12.5-multilevel-posterior-predictions.html#cb951-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(treatment) <span class="sc">%&gt;%</span> </span>
+<span id="cb951-9"><a href="12.5-multilevel-posterior-predictions.html#cb951-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">prob =</span> <span class="fu">mean</span>(pulled_left)) <span class="sc">%&gt;%</span> </span>
+<span id="cb951-10"><a href="12.5-multilevel-posterior-predictions.html#cb951-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb951-11"><a href="12.5-multilevel-posterior-predictions.html#cb951-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(treatment, <span class="at">labels =</span> labels))</span>
+<span id="cb951-12"><a href="12.5-multilevel-posterior-predictions.html#cb951-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## # A tibble: 4 × 2
+##   treatment  prob
+##   &lt;fct&gt;     &lt;dbl&gt;
+## 1 R/N       0.333
+## 2 L/N       0.556
+## 3 R/P       0.278
+## 4 L/P       0.5</code></pre>
+<p>Now see how good at retrodicting the <code>pulled_left</code> probabilities for <code>actor == 5</code>:</p>
+<div class="sourceCode" id="cb953"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb953-1"><a href="12.5-multilevel-posterior-predictions.html#cb953-1" aria-hidden="true" tabindex="-1"></a>f <span class="sc">%&gt;%</span></span>
+<span id="cb953-2"><a href="12.5-multilevel-posterior-predictions.html#cb953-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> treatment, <span class="at">y =</span> fitted, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb953-3"><a href="12.5-multilevel-posterior-predictions.html#cb953-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper), <span class="at">fill =</span> <span class="st">&quot;orange1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb953-4"><a href="12.5-multilevel-posterior-predictions.html#cb953-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb953-5"><a href="12.5-multilevel-posterior-predictions.html#cb953-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> chimp_5_d,</span>
+<span id="cb953-6"><a href="12.5-multilevel-posterior-predictions.html#cb953-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">y =</span> prob),</span>
+<span id="cb953-7"><a href="12.5-multilevel-posterior-predictions.html#cb953-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">color =</span> <span class="st">&quot;grey25&quot;</span>) <span class="sc">+</span></span>
+<span id="cb953-8"><a href="12.5-multilevel-posterior-predictions.html#cb953-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Chimp #5&quot;</span>,</span>
+<span id="cb953-9"><a href="12.5-multilevel-posterior-predictions.html#cb953-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">subtitle =</span> <span class="st">&quot;This plot is like the last except</span><span class="sc">\n</span><span class="st">we did more by hand.&quot;</span>) <span class="sc">+</span></span>
+<span id="cb953-10"><a href="12.5-multilevel-posterior-predictions.html#cb953-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb953-11"><a href="12.5-multilevel-posterior-predictions.html#cb953-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>))</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-95-1.png" width="672" /></p>
+<p><strong><em>13.5.2. Posterior prediction for new clusters</em></strong></p>
+<p>One way to grasp the task of constructing posterior predictions for new clusters is to imagine leaving out one of the clusters when you fit the model to the data. For example, suppose we leave out actor number 7 when we fit the chimpanzees model. Now how can we assess the model’s accuracy for predicting actor number 7’s behavior? We can’t use any of the a parameter estimates, because those apply to other individuals. But we can make good use of the a_bar and sigma_a parameters. These parameters describe a statistical population of actors, and we can simulate new actors from it.</p>
+<div class="figure">
+<img src="slides/L16/33.png" alt="Chimp with alpha bar. All we have to do is replace all the intercepts with 0, then we can use link. Extract the samples, then put in a big matrix of 0s and run the link. " width="80%" />
+<p class="caption marginnote shownote">
+Chimp with alpha bar. All we have to do is replace all the intercepts with 0, then we can use link. Extract the samples, then put in a big matrix of 0s and run the link.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/34.png" alt="Here's the average actor. There's uncertainty about it. " width="80%" />
+<p class="caption marginnote shownote">
+Here’s the average actor. There’s uncertainty about it.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/35.png" alt="Now we have to create a prediction interval for all chimps. There's uncretainty re: handedness, which makes it wider." width="80%" />
+<p class="caption marginnote shownote">
+Now we have to create a prediction interval for all chimps. There’s uncretainty re: handedness, which makes it wider.
+</p>
+</div>
+<p>To show the variation among actors, we’ll need to use sigma_a in the calculation.</p>
+<div class="figure">
+<img src="slides/L16/36.png" alt="Why wider? Because chimps vary a lto. " width="80%" />
+<p class="caption marginnote shownote">
+Why wider? Because chimps vary a lto.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L16/37.png" alt="Finally, sample a bunch of chimps and draw them. One of the things that happens is because there's a posterior distribution for each parameter, the model things it's possible to get completely right-handed chimps. But the treatment effect is still there. " width="80%" />
+<p class="caption marginnote shownote">
+Finally, sample a bunch of chimps and draw them. One of the things that happens is because there’s a posterior distribution for each parameter, the model things it’s possible to get completely right-handed chimps. But the treatment effect is still there.
+</p>
+</div>
+<div class="sourceCode" id="cb954"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb954-1"><a href="12.5-multilevel-posterior-predictions.html#cb954-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span></span>
+<span id="cb954-2"><a href="12.5-multilevel-posterior-predictions.html#cb954-2" aria-hidden="true" tabindex="-1"></a>  post <span class="sc">%&gt;%</span> </span>
+<span id="cb954-3"><a href="12.5-multilevel-posterior-predictions.html#cb954-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(b_b_treatment1<span class="sc">:</span>b_b_treatment4) <span class="sc">%&gt;%</span> </span>
+<span id="cb954-4"><a href="12.5-multilevel-posterior-predictions.html#cb954-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">fitted =</span> <span class="fu">inv_logit_scaled</span>(b_a_Intercept <span class="sc">+</span> value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb954-5"><a href="12.5-multilevel-posterior-predictions.html#cb954-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(<span class="fu">str_remove</span>(name, <span class="st">&quot;b_b_treatment&quot;</span>),</span>
+<span id="cb954-6"><a href="12.5-multilevel-posterior-predictions.html#cb954-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">labels =</span> labels)) <span class="sc">%&gt;%</span> </span>
+<span id="cb954-7"><a href="12.5-multilevel-posterior-predictions.html#cb954-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(name<span class="sc">:</span>treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb954-8"><a href="12.5-multilevel-posterior-predictions.html#cb954-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb954-9"><a href="12.5-multilevel-posterior-predictions.html#cb954-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># note we&#39;re using 80% intervals</span></span>
+<span id="cb954-10"><a href="12.5-multilevel-posterior-predictions.html#cb954-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(fitted, <span class="at">.width =</span> .<span class="dv">8</span>)</span>
+<span id="cb954-11"><a href="12.5-multilevel-posterior-predictions.html#cb954-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb954-12"><a href="12.5-multilevel-posterior-predictions.html#cb954-12" aria-hidden="true" tabindex="-1"></a>f</span></code></pre></div>
+<pre><code>## # A tibble: 4 × 7
+##   treatment fitted .lower .upper .width .point .interval
+##   &lt;fct&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1 R/N        0.604  0.400  0.795    0.8 mean   qi       
+## 2 L/N        0.711  0.529  0.868    0.8 mean   qi       
+## 3 R/P        0.528  0.321  0.734    0.8 mean   qi       
+## 4 L/P        0.690  0.502  0.856    0.8 mean   qi</code></pre>
+<div class="sourceCode" id="cb956"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb956-1"><a href="12.5-multilevel-posterior-predictions.html#cb956-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make Figure 13.7a</span></span>
+<span id="cb956-2"><a href="12.5-multilevel-posterior-predictions.html#cb956-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb956-3"><a href="12.5-multilevel-posterior-predictions.html#cb956-3" aria-hidden="true" tabindex="-1"></a>  f <span class="sc">%&gt;%</span></span>
+<span id="cb956-4"><a href="12.5-multilevel-posterior-predictions.html#cb956-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> treatment, <span class="at">y =</span> fitted, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb956-5"><a href="12.5-multilevel-posterior-predictions.html#cb956-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper), <span class="at">fill =</span> <span class="st">&quot;orange1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb956-6"><a href="12.5-multilevel-posterior-predictions.html#cb956-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb956-7"><a href="12.5-multilevel-posterior-predictions.html#cb956-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Average actor&quot;</span>) <span class="sc">+</span></span>
+<span id="cb956-8"><a href="12.5-multilevel-posterior-predictions.html#cb956-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb956-9"><a href="12.5-multilevel-posterior-predictions.html#cb956-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> .<span class="dv">5</span>))</span>
+<span id="cb956-10"><a href="12.5-multilevel-posterior-predictions.html#cb956-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb956-11"><a href="12.5-multilevel-posterior-predictions.html#cb956-11" aria-hidden="true" tabindex="-1"></a>p1</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-101-1.png" width="672" /></p>
+<p>Average over <code>block</code></p>
+<div class="sourceCode" id="cb957"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb957-1"><a href="12.5-multilevel-posterior-predictions.html#cb957-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb957-2"><a href="12.5-multilevel-posterior-predictions.html#cb957-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb957-3"><a href="12.5-multilevel-posterior-predictions.html#cb957-3" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span></span>
+<span id="cb957-4"><a href="12.5-multilevel-posterior-predictions.html#cb957-4" aria-hidden="true" tabindex="-1"></a>  post <span class="sc">%&gt;%</span> </span>
+<span id="cb957-5"><a href="12.5-multilevel-posterior-predictions.html#cb957-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># simulated chimpanzees</span></span>
+<span id="cb957-6"><a href="12.5-multilevel-posterior-predictions.html#cb957-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">a_sim =</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="at">mean =</span> b_a_Intercept, <span class="at">sd =</span> sd_actor__a_Intercept)) <span class="sc">%&gt;%</span> </span>
+<span id="cb957-7"><a href="12.5-multilevel-posterior-predictions.html#cb957-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(b_b_treatment1<span class="sc">:</span>b_b_treatment4) <span class="sc">%&gt;%</span> </span>
+<span id="cb957-8"><a href="12.5-multilevel-posterior-predictions.html#cb957-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fitted =</span> <span class="fu">inv_logit_scaled</span>(a_sim <span class="sc">+</span> value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb957-9"><a href="12.5-multilevel-posterior-predictions.html#cb957-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(<span class="fu">str_remove</span>(name, <span class="st">&quot;b_b_treatment&quot;</span>),</span>
+<span id="cb957-10"><a href="12.5-multilevel-posterior-predictions.html#cb957-10" aria-hidden="true" tabindex="-1"></a>                            <span class="at">labels =</span> labels)) <span class="sc">%&gt;%</span> </span>
+<span id="cb957-11"><a href="12.5-multilevel-posterior-predictions.html#cb957-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb957-12"><a href="12.5-multilevel-posterior-predictions.html#cb957-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># note we&#39;re using 80% intervals</span></span>
+<span id="cb957-13"><a href="12.5-multilevel-posterior-predictions.html#cb957-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean_qi</span>(fitted, <span class="at">.width =</span> .<span class="dv">8</span>)</span>
+<span id="cb957-14"><a href="12.5-multilevel-posterior-predictions.html#cb957-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb957-15"><a href="12.5-multilevel-posterior-predictions.html#cb957-15" aria-hidden="true" tabindex="-1"></a>f</span></code></pre></div>
+<pre><code>## # A tibble: 4 × 7
+##   treatment fitted .lower .upper .width .point .interval
+##   &lt;fct&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    
+## 1 R/N        0.569 0.102   0.956    0.8 mean   qi       
+## 2 L/N        0.645 0.163   0.974    0.8 mean   qi       
+## 3 R/P        0.518 0.0754  0.939    0.8 mean   qi       
+## 4 L/P        0.630 0.148   0.969    0.8 mean   qi</code></pre>
+<p>Figure 13.7b</p>
+<div class="sourceCode" id="cb959"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb959-1"><a href="12.5-multilevel-posterior-predictions.html#cb959-1" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb959-2"><a href="12.5-multilevel-posterior-predictions.html#cb959-2" aria-hidden="true" tabindex="-1"></a>  f <span class="sc">%&gt;%</span></span>
+<span id="cb959-3"><a href="12.5-multilevel-posterior-predictions.html#cb959-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> treatment, <span class="at">y =</span> fitted, <span class="at">group =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb959-4"><a href="12.5-multilevel-posterior-predictions.html#cb959-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> .lower, <span class="at">ymax =</span> .upper), <span class="at">fill =</span> <span class="st">&quot;orange1&quot;</span>) <span class="sc">+</span></span>
+<span id="cb959-5"><a href="12.5-multilevel-posterior-predictions.html#cb959-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb959-6"><a href="12.5-multilevel-posterior-predictions.html#cb959-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Marginal of actor&quot;</span>) <span class="sc">+</span></span>
+<span id="cb959-7"><a href="12.5-multilevel-posterior-predictions.html#cb959-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb959-8"><a href="12.5-multilevel-posterior-predictions.html#cb959-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> .<span class="dv">5</span>))</span>
+<span id="cb959-9"><a href="12.5-multilevel-posterior-predictions.html#cb959-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb959-10"><a href="12.5-multilevel-posterior-predictions.html#cb959-10" aria-hidden="true" tabindex="-1"></a>p2</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/13.38%20b-1.png" width="672" /></p>
+<div class="sourceCode" id="cb960"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb960-1"><a href="12.5-multilevel-posterior-predictions.html#cb960-1" aria-hidden="true" tabindex="-1"></a><span class="co"># how many simulated chimps would you like?</span></span>
+<span id="cb960-2"><a href="12.5-multilevel-posterior-predictions.html#cb960-2" aria-hidden="true" tabindex="-1"></a>n_chimps <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb960-3"><a href="12.5-multilevel-posterior-predictions.html#cb960-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb960-4"><a href="12.5-multilevel-posterior-predictions.html#cb960-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb960-5"><a href="12.5-multilevel-posterior-predictions.html#cb960-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb960-6"><a href="12.5-multilevel-posterior-predictions.html#cb960-6" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span></span>
+<span id="cb960-7"><a href="12.5-multilevel-posterior-predictions.html#cb960-7" aria-hidden="true" tabindex="-1"></a>  post <span class="sc">%&gt;%</span> </span>
+<span id="cb960-8"><a href="12.5-multilevel-posterior-predictions.html#cb960-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">iter =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb960-9"><a href="12.5-multilevel-posterior-predictions.html#cb960-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> n_chimps) <span class="sc">%&gt;%</span> </span>
+<span id="cb960-10"><a href="12.5-multilevel-posterior-predictions.html#cb960-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># simulated chimpanzees</span></span>
+<span id="cb960-11"><a href="12.5-multilevel-posterior-predictions.html#cb960-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">a_sim =</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="at">mean =</span> b_a_Intercept, <span class="at">sd =</span> sd_actor__a_Intercept)) <span class="sc">%&gt;%</span> </span>
+<span id="cb960-12"><a href="12.5-multilevel-posterior-predictions.html#cb960-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(b_b_treatment1<span class="sc">:</span>b_b_treatment4) <span class="sc">%&gt;%</span> </span>
+<span id="cb960-13"><a href="12.5-multilevel-posterior-predictions.html#cb960-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fitted =</span> <span class="fu">inv_logit_scaled</span>(a_sim <span class="sc">+</span> value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb960-14"><a href="12.5-multilevel-posterior-predictions.html#cb960-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">treatment =</span> <span class="fu">factor</span>(<span class="fu">str_remove</span>(name, <span class="st">&quot;b_b_treatment&quot;</span>),</span>
+<span id="cb960-15"><a href="12.5-multilevel-posterior-predictions.html#cb960-15" aria-hidden="true" tabindex="-1"></a>                            <span class="at">labels =</span> labels)) <span class="sc">%&gt;%</span> </span>
+<span id="cb960-16"><a href="12.5-multilevel-posterior-predictions.html#cb960-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(iter<span class="sc">:</span>treatment)</span>
+<span id="cb960-17"><a href="12.5-multilevel-posterior-predictions.html#cb960-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb960-18"><a href="12.5-multilevel-posterior-predictions.html#cb960-18" aria-hidden="true" tabindex="-1"></a>f</span></code></pre></div>
+<pre><code>## # A tibble: 400 × 6
+##     iter  a_sim name            value   fitted treatment
+##    &lt;int&gt;  &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt;    
+##  1  1496 -6.53  b_b_treatment1 -1.03  0.000523 R/N      
+##  2  1496 -6.53  b_b_treatment2 -0.214 0.00118  L/N      
+##  3  1496 -6.53  b_b_treatment3 -1.80  0.000241 R/P      
+##  4  1496 -6.53  b_b_treatment4 -0.561 0.000832 L/P      
+##  5  3843 -0.978 b_b_treatment1 -0.100 0.254    R/N      
+##  6  3843 -0.978 b_b_treatment2  0.444 0.370    L/N      
+##  7  3843 -0.978 b_b_treatment3 -0.571 0.175    R/P      
+##  8  3843 -0.978 b_b_treatment4  0.329 0.343    L/P      
+##  9   960  1.39  b_b_treatment1 -0.114 0.782    R/N      
+## 10   960  1.39  b_b_treatment2  0.522 0.871    L/N      
+## # … with 390 more rows</code></pre>
+<div class="sourceCode" id="cb962"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb962-1"><a href="12.5-multilevel-posterior-predictions.html#cb962-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span></span>
+<span id="cb962-2"><a href="12.5-multilevel-posterior-predictions.html#cb962-2" aria-hidden="true" tabindex="-1"></a>  f <span class="sc">%&gt;%</span></span>
+<span id="cb962-3"><a href="12.5-multilevel-posterior-predictions.html#cb962-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> treatment, <span class="at">y =</span> fitted, <span class="at">group =</span> iter)) <span class="sc">+</span></span>
+<span id="cb962-4"><a href="12.5-multilevel-posterior-predictions.html#cb962-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;orange3&quot;</span>) <span class="sc">+</span></span>
+<span id="cb962-5"><a href="12.5-multilevel-posterior-predictions.html#cb962-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;100 simulated actors&quot;</span>) <span class="sc">+</span></span>
+<span id="cb962-6"><a href="12.5-multilevel-posterior-predictions.html#cb962-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb962-7"><a href="12.5-multilevel-posterior-predictions.html#cb962-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>, <span class="at">hjust =</span> .<span class="dv">5</span>))</span>
+<span id="cb962-8"><a href="12.5-multilevel-posterior-predictions.html#cb962-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb962-9"><a href="12.5-multilevel-posterior-predictions.html#cb962-9" aria-hidden="true" tabindex="-1"></a>p3</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/13.39%20b-1.png" width="672" /></p>
+<div class="sourceCode" id="cb963"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb963-1"><a href="12.5-multilevel-posterior-predictions.html#cb963-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb963-2"><a href="12.5-multilevel-posterior-predictions.html#cb963-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb963-3"><a href="12.5-multilevel-posterior-predictions.html#cb963-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">|</span> p2 <span class="sc">|</span> p3</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-104-1.png" width="672" /></p>
+<p><strong><em>13.5.3. Post-stratification</em></strong></p>
+<p>A common problem is how to use a non-representative sample of a population to generate representative predictions for the same population. For example, we might survey potential voters, asking about their voting intentions. Such samples are biased—different groups respond to such surveys at different rates. So if we just use the survey average, we’ll make the wrong prediction about the election. How can we do better?
+One technique is POST-STRATIFICATION.</p>
+<p>How does it work? Supposing you have estimates <span class="math inline">\(p_i\)</span> for each demographic category <span class="math inline">\(i\)</span>, then the post-stratified prediction for the whole population (not the sample) just re-weights these estimates using the number of individuals <span class="math inline">\(N_i\)</span> in each category:</p>
+<div class="figure">
+<img src="slides/L16/38.png" alt="Focus on the variation that adds to the tanks. Look at the sigma across different models, and there will be a pattern. The second dataset is a historical Bangladeshi dataset. Also will be a varying interecepts model, but now youll be exploring shrinkage. " width="80%" />
+<p class="caption marginnote shownote">
+Focus on the variation that adds to the tanks. Look at the sigma across different models, and there will be a pattern. The second dataset is a historical Bangladeshi dataset. Also will be a varying interecepts model, but now youll be exploring shrinkage.
+</p>
+</div>
+
+</div>
+<!-- </div> -->
+<p style="text-align: center;">
+<a href="12.4-divergent-transitions-and-non-centered-priors.html"><button class="btn btn-default">Previous</button></a>
+<a href="13-adventures-in-covariance.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>

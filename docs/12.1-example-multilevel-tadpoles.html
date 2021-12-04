@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="12.1 Example: Multilevel tadpoles | Notes for Statistical Rethinking 2nd ed. by Richard McElreath" />
+<meta property="og:type" content="book" />
+
+
+
+
+
+
+<meta name="date" content="2021-12-04" />
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<meta name="description" content="12.1 Example: Multilevel tadpoles | Notes for Statistical Rethinking 2nd ed. by Richard McElreath">
+
+<title>12.1 Example: Multilevel tadpoles | Notes for Statistical Rethinking 2nd ed. by Richard McElreath</title>
+
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<link href="libs/tufte-css-2015.12.29/tufte-fonts.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-background.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte-italics.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.18/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<link rel="stylesheet" href="toc.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div class="row">
+<div class="col-sm-12">
+<div id="TOC">
+<ul>
+<li><a href="index.html#index">Index</a></li>
+<li><a href="1-the-golem-of-prague.html#the-golem-of-prague"><span class="toc-section-number">1</span> The Golem of Prague</a></li>
+<li class="has-sub"><a href="2-small-worlds-and-large-worlds.html#small-worlds-and-large-worlds"><span class="toc-section-number">2</span> Small Worlds and Large Worlds</a>
+<ul>
+<li><a href="2.1-the-garden-of-forking-data.html#the-garden-of-forking-data"><span class="toc-section-number">2.1</span> The garden of forking data</a></li>
+<li><a href="2.2-building-a-model.html#building-a-model"><span class="toc-section-number">2.2</span> Building a model</a></li>
+<li><a href="2.3-components-of-the-model.html#components-of-the-model"><span class="toc-section-number">2.3</span> Components of the model</a></li>
+<li class="has-sub"><a href="2.4-making-the-model-go.html#making-the-model-go"><span class="toc-section-number">2.4</span> Making the model go</a>
+<ul>
+<li><a href="2.4-making-the-model-go.html#markov-chain-monte-carlo"><span class="toc-section-number">2.4.1</span> Markov chain Monte Carlo</a></li>
+</ul></li>
+</ul></li>
+<li class="has-sub"><a href="3-sampling-from-the-imaginary.html#sampling-from-the-imaginary"><span class="toc-section-number">3</span> Sampling from the Imaginary</a>
+<ul>
+<li><a href="3.1-sampling-from-a-grid-approximate-posterior.html#sampling-from-a-grid-approximate-posterior"><span class="toc-section-number">3.1</span> Sampling from a grid-approximate posterior</a></li>
+<li><a href="3.2-sampling-to-summarize.html#sampling-to-summarize"><span class="toc-section-number">3.2</span> Sampling to summarize</a></li>
+<li><a href="3.3-sampling-to-simulate-prediction.html#sampling-to-simulate-prediction"><span class="toc-section-number">3.3</span> Sampling to simulate prediction</a></li>
+<li><a href="3.4-lets-practice-with-brms.html#lets-practice-with-brms"><span class="toc-section-number">3.4</span> Let’s practice with brms</a></li>
+<li><a href="practice.html#practice">Practice</a></li>
+<li><a href="homework-week-1.html#homework-week-1">Homework: week 1</a></li>
+</ul></li>
+<li class="has-sub"><a href="4-geocentric-models.html#geocentric-models"><span class="toc-section-number">4</span> Geocentric Models</a>
+<ul>
+<li><a href="4.1-why-normal-distributions-are-normal.html#why-normal-distributions-are-normal"><span class="toc-section-number">4.1</span> Why normal distributions are normal</a></li>
+<li><a href="4.2-a-language-for-describing-models.html#a-language-for-describing-models"><span class="toc-section-number">4.2</span> A language for describing models</a></li>
+<li><a href="4.3-gaussian-model-of-height.html#gaussian-model-of-height"><span class="toc-section-number">4.3</span> Gaussian model of height</a></li>
+<li><a href="4.4-linear-prediction.html#linear-prediction"><span class="toc-section-number">4.4</span> Linear prediction</a></li>
+<li><a href="4.5-curves-from-lines.html#curves-from-lines"><span class="toc-section-number">4.5</span> Curves from lines</a></li>
+<li><a href="4.6-practice-1.html#practice-1"><span class="toc-section-number">4.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="5-the-many-variables-the-spurious-waffles.html#the-many-variables-the-spurious-waffles"><span class="toc-section-number">5</span> The Many Variables &amp; The Spurious Waffles</a>
+<ul>
+<li><a href="5.1-spurious-association.html#spurious-association"><span class="toc-section-number">5.1</span> Spurious association</a></li>
+<li><a href="5.2-masked-relationship.html#masked-relationship"><span class="toc-section-number">5.2</span> Masked relationship</a></li>
+<li><a href="5.3-categorical-variables.html#categorical-variables"><span class="toc-section-number">5.3</span> Categorical variables</a></li>
+<li><a href="5.4-practice-2.html#practice-2"><span class="toc-section-number">5.4</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="6-the-haunted-dag-the-causal-terror.html#the-haunted-dag-the-causal-terror"><span class="toc-section-number">6</span> The Haunted DAG &amp; The Causal Terror</a>
+<ul>
+<li><a href="6.1-multicollinearity.html#multicollinearity"><span class="toc-section-number">6.1</span> Multicollinearity</a></li>
+<li><a href="6.2-post-treatment-bias.html#post-treatment-bias"><span class="toc-section-number">6.2</span> Post-treatment bias</a></li>
+<li><a href="6.3-collider-bias.html#collider-bias"><span class="toc-section-number">6.3</span> Collider bias</a></li>
+<li><a href="6.4-confronting-confounding.html#confronting-confounding"><span class="toc-section-number">6.4</span> Confronting confounding</a></li>
+<li><a href="6.5-summary.html#summary"><span class="toc-section-number">6.5</span> Summary</a></li>
+<li><a href="6.6-practice-3.html#practice-3"><span class="toc-section-number">6.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="7-ulysses-compass.html#ulysses-compass"><span class="toc-section-number">7</span> Ulysses’ Compass</a>
+<ul>
+<li><a href="7.1-the-problem-with-parameters.html#the-problem-with-parameters"><span class="toc-section-number">7.1</span> The problem with parameters</a></li>
+<li><a href="7.2-entropy-and-accuracy.html#entropy-and-accuracy"><span class="toc-section-number">7.2</span> Entropy and accuracy</a></li>
+<li><a href="7.3-golem-taming-regularization.html#golem-taming-regularization"><span class="toc-section-number">7.3</span> Golem taming: regularization</a></li>
+<li><a href="7.4-predicting-predictive-accuracy.html#predicting-predictive-accuracy"><span class="toc-section-number">7.4</span> Predicting predictive accuracy</a></li>
+<li><a href="7.5-model-comparison.html#model-comparison"><span class="toc-section-number">7.5</span> Model comparison</a></li>
+<li><a href="7.6-practice-4.html#practice-4"><span class="toc-section-number">7.6</span> Practice</a></li>
+</ul></li>
+<li class="has-sub"><a href="8-conditional-manatees.html#conditional-manatees"><span class="toc-section-number">8</span> Conditional Manatees</a>
+<ul>
+<li><a href="8.1-building-an-interaction.html#building-an-interaction"><span class="toc-section-number">8.1</span> Building an interaction</a></li>
+<li><a href="8.2-symmetry-of-interactions.html#symmetry-of-interactions"><span class="toc-section-number">8.2</span> Symmetry of interactions</a></li>
+<li><a href="8.3-continuous-interactions.html#continuous-interactions"><span class="toc-section-number">8.3</span> Continuous interactions</a></li>
+</ul></li>
+<li class="has-sub"><a href="9-markov-chain-monte-carlo-1.html#markov-chain-monte-carlo-1"><span class="toc-section-number">9</span> Markov Chain Monte Carlo</a>
+<ul>
+<li><a href="9.1-good-king-markov-and-his-island-kingdom.html#good-king-markov-and-his-island-kingdom"><span class="toc-section-number">9.1</span> Good King Markov and his island kingdom</a></li>
+<li><a href="9.2-metropolis-algorithm.html#metropolis-algorithm"><span class="toc-section-number">9.2</span> Metropolis algorithm</a></li>
+<li><a href="9.3-hamiltonian-monte-carlo.html#hamiltonian-monte-carlo"><span class="toc-section-number">9.3</span> Hamiltonian Monte Carlo</a></li>
+<li><a href="9.4-easy-hmc-ulam.html#easy-hmc-ulam"><span class="toc-section-number">9.4</span> Easy HMC: <code>ulam</code></a></li>
+<li><a href="9.5-care-and-feeding-of-your-markov-chain.html#care-and-feeding-of-your-markov-chain"><span class="toc-section-number">9.5</span> Care and feeding of your Markov chain</a></li>
+</ul></li>
+<li class="has-sub"><a href="10-big-entropy-and-the-generalized-linear-model.html#big-entropy-and-the-generalized-linear-model"><span class="toc-section-number">10</span> Big Entropy and the Generalized Linear Model</a>
+<ul>
+<li><a href="10.1-maximum-entropy.html#maximum-entropy"><span class="toc-section-number">10.1</span> Maximum entropy</a></li>
+<li><a href="10.2-generalized-linear-models.html#generalized-linear-models"><span class="toc-section-number">10.2</span> Generalized linear models</a></li>
+</ul></li>
+<li class="has-sub"><a href="11-god-spiked-the-integers.html#god-spiked-the-integers"><span class="toc-section-number">11</span> God Spiked the Integers</a>
+<ul>
+<li><a href="11.1-binomial-regression.html#binomial-regression"><span class="toc-section-number">11.1</span> Binomial regression</a></li>
+<li><a href="11.2-poisson-regression.html#poisson-regression"><span class="toc-section-number">11.2</span> Poisson regression</a></li>
+<li><a href="11.3-multinomial-and-categorical-models.html#multinomial-and-categorical-models"><span class="toc-section-number">11.3</span> Multinomial and categorical models</a></li>
+</ul></li>
+<li class="has-sub"><a href="12-models-with-memory.html#models-with-memory"><span class="toc-section-number">12</span> Models With Memory</a>
+<ul>
+<li><a href="12.1-example-multilevel-tadpoles.html#example-multilevel-tadpoles"><span class="toc-section-number">12.1</span> Example: Multilevel tadpoles</a></li>
+<li><a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html#varying-effects-and-the-underfittingoverfitting-trade-off"><span class="toc-section-number">12.2</span> Varying effects and the underfitting/overfitting trade-off</a></li>
+<li><a href="12.3-more-than-one-type-of-cluster.html#more-than-one-type-of-cluster"><span class="toc-section-number">12.3</span> More than one type of cluster</a></li>
+<li><a href="12.4-divergent-transitions-and-non-centered-priors.html#divergent-transitions-and-non-centered-priors"><span class="toc-section-number">12.4</span> Divergent transitions and non-centered priors</a></li>
+<li><a href="12.5-multilevel-posterior-predictions.html#multilevel-posterior-predictions"><span class="toc-section-number">12.5</span> Multilevel posterior predictions</a></li>
+</ul></li>
+<li class="has-sub"><a href="13-adventures-in-covariance.html#adventures-in-covariance"><span class="toc-section-number">13</span> Adventures in Covariance</a>
+<ul>
+<li><a href="13.1-varying-slopes-by-construction.html#varying-slopes-by-construction"><span class="toc-section-number">13.1</span> Varying slopes by construction</a></li>
+<li><a href="13.2-advanced-varying-slopes.html#advanced-varying-slopes"><span class="toc-section-number">13.2</span> Advanced varying slopes</a></li>
+<li><a href="13.3-instruments-and-causal-designs.html#instruments-and-causal-designs"><span class="toc-section-number">13.3</span> Instruments and causal designs</a></li>
+<li><a href="13.4-social-relations-as-correlated-varying-effects.html#social-relations-as-correlated-varying-effects"><span class="toc-section-number">13.4</span> Social relations as correlated varying effects</a></li>
+<li><a href="13.5-continuous-categories-and-the-gaussian-process.html#continuous-categories-and-the-gaussian-process"><span class="toc-section-number">13.5</span> Continuous categories and the Gaussian process</a></li>
+<li><a href="13.6-bonus-multilevel-growth-models-and-the-melsm.html#bonus-multilevel-growth-models-and-the-melsm"><span class="toc-section-number">13.6</span> Bonus: Multilevel growth models and the MELSM</a></li>
+</ul></li>
+<li class="has-sub"><a href="14-missing-data-and-other-opportunities.html#missing-data-and-other-opportunities"><span class="toc-section-number">14</span> Missing Data and Other Opportunities</a>
+<ul>
+<li><a href="14.1-measurement-error.html#measurement-error"><span class="toc-section-number">14.1</span> Measurement error</a></li>
+<li><a href="14.2-missing-data.html#missing-data"><span class="toc-section-number">14.2</span> Missing data</a></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<div id="example-multilevel-tadpoles" class="section level2" number="12.1">
+<h2><span class="header-section-number">12.1</span> Example: Multilevel tadpoles</h2>
+<div class="figure">
+<img src="slides/L15/12.png" alt="Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond)." width="80%" />
+<p class="caption marginnote shownote">
+Reed frog tadpoles. Quasi-experimental field experiment. Eggs were suspended on leaves above buckets. When they hatch, the tadpoles fall down below. In this experiment they land in the bucket, which are microcosms which you can manipulate. The outcome of interest is the number of surivivors in each bucket (pond).
+</p>
+</div>
+<div class="sourceCode" id="cb871"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb871-1"><a href="12.1-example-multilevel-tadpoles.html#cb871-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(reedfrogs, <span class="at">package =</span> <span class="st">&quot;rethinking&quot;</span>)</span>
+<span id="cb871-2"><a href="12.1-example-multilevel-tadpoles.html#cb871-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> reedfrogs</span>
+<span id="cb871-3"><a href="12.1-example-multilevel-tadpoles.html#cb871-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(reedfrogs)</span>
+<span id="cb871-4"><a href="12.1-example-multilevel-tadpoles.html#cb871-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb871-5"><a href="12.1-example-multilevel-tadpoles.html#cb871-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Take a look</span></span>
+<span id="cb871-6"><a href="12.1-example-multilevel-tadpoles.html#cb871-6" aria-hidden="true" tabindex="-1"></a>d <span class="sc">%&gt;%</span></span>
+<span id="cb871-7"><a href="12.1-example-multilevel-tadpoles.html#cb871-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>()</span></code></pre></div>
+<pre><code>## Rows: 48
+## Columns: 5
+## $ density  &lt;int&gt; 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1…
+## $ pred     &lt;fct&gt; no, no, no, no, no, no, no, no, pred, pred, pred, pred, pred,…
+## $ size     &lt;fct&gt; big, big, big, big, small, small, small, small, big, big, big…
+## $ surv     &lt;int&gt; 9, 10, 7, 10, 9, 9, 10, 9, 4, 9, 7, 6, 7, 5, 9, 9, 24, 23, 22…
+## $ propsurv &lt;dbl&gt; 0.90, 1.00, 0.70, 1.00, 0.90, 0.90, 1.00, 0.90, 0.40, 0.90, 0…</code></pre>
+<p>Each row is a ‘tank’, and there are lots of unmeasured things peculiar to each tank which create variation in survival across tanks.</p>
+<div class="figure">
+<img src="slides/L15/13.png" alt="We have tadpoles in tanks (buckets). They're at different densities. Different maximums can survive. This will be binomial regression. Number at start and end. Dummy variable is what we've done before. Now MLM with different intercepts." width="80%" />
+<p class="caption marginnote shownote">
+We have tadpoles in tanks (buckets). They’re at different densities. Different maximums can survive. This will be binomial regression. Number at start and end. Dummy variable is what we’ve done before. Now MLM with different intercepts.
+</p>
+</div>
+<p>VARYING INTERCEPTS are the simplest kind of VARYING EFFECTS. For each cluster, we use a unique intercept parameter.</p>
+<div class="figure">
+<img src="slides/L15/14.png" alt="This is what we've done before. We have na index variable for tank. Different alpha. Regularising prior. Extreme mortality or survival will be viewed skeptivcally because of that 1.5. This is a fine model, but not a multi-level model. It has amnesia as you move from tank to tank. The only data in the dataset that informs each alpha is the data for that tank only. It learns about tank 1, using 7 tadpoles, estimates the alpha, then moves to the next tank and forgets all about it.  " width="80%" />
+<p class="caption marginnote shownote">
+This is what we’ve done before. We have na index variable for tank. Different alpha. Regularising prior. Extreme mortality or survival will be viewed skeptivcally because of that 1.5. This is a fine model, but not a multi-level model. It has amnesia as you move from tank to tank. The only data in the dataset that informs each alpha is the data for that tank only. It learns about tank 1, using 7 tadpoles, estimates the alpha, then moves to the next tank and forgets all about it.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/15.png" alt="We can do better than this. This is a reminder on how it's fitted." width="80%" />
+<p class="caption marginnote shownote">
+We can do better than this. This is a reminder on how it’s fitted.
+</p>
+</div>
+<div class="sourceCode" id="cb873"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb873-1"><a href="12.1-example-multilevel-tadpoles.html#cb873-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make tank cluster variable</span></span>
+<span id="cb873-2"><a href="12.1-example-multilevel-tadpoles.html#cb873-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> </span>
+<span id="cb873-3"><a href="12.1-example-multilevel-tadpoles.html#cb873-3" aria-hidden="true" tabindex="-1"></a>  d <span class="sc">%&gt;%</span></span>
+<span id="cb873-4"><a href="12.1-example-multilevel-tadpoles.html#cb873-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tank =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(d))</span>
+<span id="cb873-5"><a href="12.1-example-multilevel-tadpoles.html#cb873-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb873-6"><a href="12.1-example-multilevel-tadpoles.html#cb873-6" aria-hidden="true" tabindex="-1"></a>d <span class="sc">%&gt;%</span> </span>
+<span id="cb873-7"><a href="12.1-example-multilevel-tadpoles.html#cb873-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(density)</span></code></pre></div>
+<pre><code>##   density  n
+## 1      10 16
+## 2      25 16
+## 3      35 16</code></pre>
+<div class="sourceCode" id="cb875"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb875-1"><a href="12.1-example-multilevel-tadpoles.html#cb875-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now fit binomial model like in Chapter 11</span></span>
+<span id="cb875-2"><a href="12.1-example-multilevel-tadpoles.html#cb875-2" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.1</span> <span class="ot">&lt;-</span> </span>
+<span id="cb875-3"><a href="12.1-example-multilevel-tadpoles.html#cb875-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb875-4"><a href="12.1-example-multilevel-tadpoles.html#cb875-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> binomial,</span>
+<span id="cb875-5"><a href="12.1-example-multilevel-tadpoles.html#cb875-5" aria-hidden="true" tabindex="-1"></a>      surv <span class="sc">|</span> <span class="fu">trials</span>(density) <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> <span class="fu">factor</span>(tank),</span>
+<span id="cb875-6"><a href="12.1-example-multilevel-tadpoles.html#cb875-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> b),</span>
+<span id="cb875-7"><a href="12.1-example-multilevel-tadpoles.html#cb875-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb875-8"><a href="12.1-example-multilevel-tadpoles.html#cb875-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">13</span>,</span>
+<span id="cb875-9"><a href="12.1-example-multilevel-tadpoles.html#cb875-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b13.01&quot;</span>)</span>
+<span id="cb875-10"><a href="12.1-example-multilevel-tadpoles.html#cb875-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb875-11"><a href="12.1-example-multilevel-tadpoles.html#cb875-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b13<span class="fl">.1</span>)</span></code></pre></div>
+<pre><code>##  Family: binomial 
+##   Links: mu = logit 
+## Formula: surv | trials(density) ~ 0 + factor(tank) 
+##    Data: d (Number of observations: 48) 
+## Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 4000
+## 
+## Population-Level Effects: 
+##              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## factortank1      1.71      0.76     0.35     3.32 1.00     5968     2690
+## factortank2      2.41      0.90     0.77     4.38 1.00     4900     2558
+## factortank3      0.76      0.63    -0.40     2.04 1.00     6092     2689
+## factortank4      2.41      0.89     0.81     4.36 1.00     6258     3082
+## factortank5      1.71      0.77     0.34     3.36 1.00     4940     2499
+## factortank6      1.72      0.77     0.39     3.38 1.00     6044     3061
+## factortank7      2.41      0.91     0.88     4.40 1.00     5596     2867
+## factortank8      1.72      0.76     0.35     3.37 1.00     5477     2615
+## factortank9     -0.36      0.60    -1.56     0.82 1.00     6323     2826
+## factortank10     1.72      0.78     0.34     3.40 1.00     5799     2853
+## factortank11     0.76      0.62    -0.42     2.01 1.00     5467     2858
+## factortank12     0.35      0.63    -0.87     1.61 1.00     5133     3110
+## factortank13     0.76      0.65    -0.44     2.10 1.00     6180     2641
+## factortank14     0.01      0.59    -1.16     1.20 1.00     5359     3277
+## factortank15     1.72      0.79     0.31     3.41 1.00     6558     2823
+## factortank16     1.74      0.78     0.34     3.37 1.00     5035     2706
+## factortank17     2.55      0.69     1.36     4.06 1.00     4771     2989
+## factortank18     2.14      0.62     1.05     3.48 1.00     5673     2708
+## factortank19     1.82      0.55     0.84     3.00 1.00     6580     2789
+## factortank20     3.09      0.81     1.67     4.89 1.00     5512     2629
+## factortank21     2.16      0.63     1.06     3.56 1.00     4868     2438
+## factortank22     2.13      0.61     1.03     3.45 1.00     5752     2526
+## factortank23     2.14      0.58     1.11     3.36 1.00     5812     2941
+## factortank24     1.55      0.52     0.62     2.69 1.00     5606     2728
+## factortank25    -1.11      0.46    -2.05    -0.25 1.01     5548     2758
+## factortank26     0.07      0.41    -0.73     0.90 1.00     5360     2584
+## factortank27    -1.55      0.50    -2.60    -0.63 1.00     5138     2886
+## factortank28    -0.54      0.41    -1.35     0.24 1.00     5783     2878
+## factortank29     0.08      0.39    -0.67     0.84 1.00     5349     3120
+## factortank30     1.30      0.46     0.46     2.24 1.00     5681     2730
+## factortank31    -0.72      0.41    -1.58     0.04 1.00     5584     2848
+## factortank32    -0.39      0.41    -1.21     0.39 1.00     5755     3148
+## factortank33     2.84      0.65     1.70     4.18 1.00     4913     2760
+## factortank34     2.45      0.57     1.41     3.67 1.00     5085     2773
+## factortank35     2.48      0.59     1.41     3.73 1.00     6235     3034
+## factortank36     1.91      0.48     1.03     2.92 1.00     6056     3296
+## factortank37     1.91      0.48     1.03     2.91 1.00     5467     2841
+## factortank38     3.36      0.78     1.99     5.05 1.00     5907     2908
+## factortank39     2.44      0.59     1.40     3.73 1.00     6059     2850
+## factortank40     2.15      0.52     1.21     3.27 1.00     5156     2828
+## factortank41    -1.90      0.48    -2.93    -1.02 1.00     6242     2527
+## factortank42    -0.63      0.35    -1.34     0.03 1.00     6081     2929
+## factortank43    -0.52      0.34    -1.20     0.15 1.00     5480     2523
+## factortank44    -0.39      0.34    -1.08     0.25 1.00     6721     2985
+## factortank45     0.51      0.35    -0.16     1.20 1.00     6432     3238
+## factortank46    -0.63      0.35    -1.33     0.06 1.00     6303     2560
+## factortank47     1.91      0.49     1.04     2.93 1.00     5039     2543
+## factortank48    -0.06      0.34    -0.73     0.63 1.00     4892     3202
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p>Look at the distribution of the <span class="math inline">\(\alpha_j\)</span> parameters in density plots, in both log-odds and probability metrics.</p>
+<div class="sourceCode" id="cb877"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb877-1"><a href="12.1-example-multilevel-tadpoles.html#cb877-1" aria-hidden="true" tabindex="-1"></a><span class="co"># change the default</span></span>
+<span id="cb877-2"><a href="12.1-example-multilevel-tadpoles.html#cb877-2" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_gray</span>() <span class="sc">+</span> <span class="fu">theme_fivethirtyeight</span>())</span>
+<span id="cb877-3"><a href="12.1-example-multilevel-tadpoles.html#cb877-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb877-4"><a href="12.1-example-multilevel-tadpoles.html#cb877-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">estimate =</span> <span class="fu">fixef</span>(b13<span class="fl">.1</span>)[, <span class="dv">1</span>]) <span class="sc">%&gt;%</span> </span>
+<span id="cb877-5"><a href="12.1-example-multilevel-tadpoles.html#cb877-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p =</span> <span class="fu">inv_logit_scaled</span>(estimate)) <span class="sc">%&gt;%</span> </span>
+<span id="cb877-6"><a href="12.1-example-multilevel-tadpoles.html#cb877-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(estimate<span class="sc">:</span>p) <span class="sc">%&gt;%</span> </span>
+<span id="cb877-7"><a href="12.1-example-multilevel-tadpoles.html#cb877-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">name =</span> <span class="fu">if_else</span>(name <span class="sc">==</span> <span class="st">&quot;p&quot;</span>, <span class="st">&quot;expected survival probability&quot;</span>, <span class="st">&quot;expected survival log-odds&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb877-8"><a href="12.1-example-multilevel-tadpoles.html#cb877-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb877-9"><a href="12.1-example-multilevel-tadpoles.html#cb877-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">fill =</span> name)) <span class="sc">+</span></span>
+<span id="cb877-10"><a href="12.1-example-multilevel-tadpoles.html#cb877-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_dots</span>(<span class="at">size =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb877-11"><a href="12.1-example-multilevel-tadpoles.html#cb877-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;orange1&quot;</span>, <span class="st">&quot;orange4&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb877-12"><a href="12.1-example-multilevel-tadpoles.html#cb877-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb877-13"><a href="12.1-example-multilevel-tadpoles.html#cb877-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Tank-level intercepts from the no-pooling model&quot;</span>,</span>
+<span id="cb877-14"><a href="12.1-example-multilevel-tadpoles.html#cb877-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;Notice now inspecting the distributions of the posterior means can offer insights you</span><span class="sc">\n</span><span class="st">might not get if you looked at them one at a time.&quot;</span>) <span class="sc">+</span></span>
+<span id="cb877-15"><a href="12.1-example-multilevel-tadpoles.html#cb877-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb877-16"><a href="12.1-example-multilevel-tadpoles.html#cb877-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb877-17"><a href="12.1-example-multilevel-tadpoles.html#cb877-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> name, <span class="at">scales =</span> <span class="st">&quot;free_x&quot;</span>)</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>To get each tank’s expected survival probability, just take one of the a intercept values and then use the logistic transform. So far there is nothing new here.</p>
+<p>Now let’s do the multilevel model, which adaptively pools information across tanks. All that is required to enable adaptive pooling is to make the prior for the a parameters a function of some new parameters.</p>
+<div class="figure">
+<img src="slides/L15/16.png" alt="Now let's try something different. Added some stuff in blue. Let's step through. " width="80%" />
+<p class="caption marginnote shownote">
+Now let’s try something different. Added some stuff in blue. Let’s step through.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/17.png" alt="$\alpha_j$ is still there. But I've made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). $\bar{\alpha}$ is a parameter in and of itself that we're going to estimate. Represents the mean $\alpha$. Then $\sigma$, which is the SD in this population. So each $\alpha_j$ where $j$ is a tank has this prior. Then for these new parameters we have to give them priors. We give $\bar{\alpha}$ our regularizing prior, same with $\sigma$." width="80%" />
+<p class="caption marginnote shownote">
+<span class="math inline">\(\alpha_j\)</span> is still there. But I’ve made it into this magical thing called varying intercetps by inserting parameters inside the prior. Where there used to be (0, 1.5). <span class="math inline">\(\bar{\alpha}\)</span> is a parameter in and of itself that we’re going to estimate. Represents the mean <span class="math inline">\(\alpha\)</span>. Then <span class="math inline">\(\sigma\)</span>, which is the SD in this population. So each <span class="math inline">\(\alpha_j\)</span> where <span class="math inline">\(j\)</span> is a tank has this prior. Then for these new parameters we have to give them priors. We give <span class="math inline">\(\bar{\alpha}\)</span> our regularizing prior, same with <span class="math inline">\(\sigma\)</span>.
+</p>
+</div>
+<p><span class="math inline">\(\bar{\alpha}\)</span> and <span class="math inline">\(\sigma\)</span> are <strong>HYPERPARAMETERS</strong>. They create the second level. In the top level, the outcome is <span class="math inline">\(S\)</span>, and in the second, the outcome is the vector of intercept parameters, <span class="math inline">\(\alpha\)</span>.</p>
+<div class="figure">
+<img src="slides/L15/18.png" alt="Why would we do this? What are varying intercepts? What's distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we'll regularise because it gives better predictions. Now we'll learn it from the data itself, and it's like visiting cafés. As you learn the variation among them, you pool the information across. " width="80%" />
+<p class="caption marginnote shownote">
+Why would we do this? What are varying intercepts? What’s distinctive about this model, and the parameters inside the prior, is that you learn the prior from the data. So we’ll regularise because it gives better predictions. Now we’ll learn it from the data itself, and it’s like visiting cafés. As you learn the variation among them, you pool the information across.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/19.png" alt="We have to learn those parameters and get posterior distributions for each from the data." width="80%" />
+<p class="caption marginnote shownote">
+We have to learn those parameters and get posterior distributions for each from the data.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/20.png" alt="Then each of those gets a prior. A prior of a prior is called a hyperprior. They're all just priors. But now they're feeding up, with multiple levels of inference. You'll notice the line for $\alpha_j$ looks like the top line. The fact that it's not observed is irrelevant.  " width="80%" />
+<p class="caption marginnote shownote">
+Then each of those gets a prior. A prior of a prior is called a hyperprior. They’re all just priors. But now they’re feeding up, with multiple levels of inference. You’ll notice the line for <span class="math inline">\(\alpha_j\)</span> looks like the top line. The fact that it’s not observed is irrelevant.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/21.png" alt="In code. Just write what's up there into `ulam`. " width="80%" />
+<p class="caption marginnote shownote">
+In code. Just write what’s up there into <code>ulam</code>.
+</p>
+</div>
+<div class="sourceCode" id="cb878"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb878-1"><a href="12.1-example-multilevel-tadpoles.html#cb878-1" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.2</span> <span class="ot">&lt;-</span> </span>
+<span id="cb878-2"><a href="12.1-example-multilevel-tadpoles.html#cb878-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">brm</span>(<span class="at">data =</span> d, </span>
+<span id="cb878-3"><a href="12.1-example-multilevel-tadpoles.html#cb878-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">family =</span> binomial,</span>
+<span id="cb878-4"><a href="12.1-example-multilevel-tadpoles.html#cb878-4" aria-hidden="true" tabindex="-1"></a>      surv <span class="sc">|</span> <span class="fu">trials</span>(density) <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> tank),</span>
+<span id="cb878-5"><a href="12.1-example-multilevel-tadpoles.html#cb878-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),  <span class="co"># bar alpha</span></span>
+<span id="cb878-6"><a href="12.1-example-multilevel-tadpoles.html#cb878-6" aria-hidden="true" tabindex="-1"></a>                <span class="fu">prior</span>(<span class="fu">exponential</span>(<span class="dv">1</span>), <span class="at">class =</span> sd)),        <span class="co"># sigma</span></span>
+<span id="cb878-7"><a href="12.1-example-multilevel-tadpoles.html#cb878-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">iter =</span> <span class="dv">5000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb878-8"><a href="12.1-example-multilevel-tadpoles.html#cb878-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">sample_prior =</span> <span class="st">&quot;yes&quot;</span>,</span>
+<span id="cb878-9"><a href="12.1-example-multilevel-tadpoles.html#cb878-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">13</span>,</span>
+<span id="cb878-10"><a href="12.1-example-multilevel-tadpoles.html#cb878-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;fits/b13.02&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="slides/L15/22.png" alt="If you focus on the model structure, you can understand things. If you focus on terminology, you'll get confused. Let's compare these models. Want to show you something about flexibilty in random effects 13.1 is fixed effects. 13.2 is MLM. In terms of WAIC, they're very similar. Not much of a difference. But look at the effective number of parameters. 131. has 48 paramaters because there are 48 tanks. One parameter for each. It ends up with 25 effective. Why? Because of the regularising prior. It wasn't flat. That means there are tank where all the tadploles survived. What's the log-odds of that? Infinite. But because of the piror, you don't end up with an alpha of infinity. What's happening with 13.2 is we've addedd two more parameters  ($\bar{\alpha}$ and $\sigma$). But fewer effective parameters. When teaching you about overfitting, the caveat was that every time you add a paramter the fit in-sample imporoves. *Other than* with MLMs. They learn how regular to be from the data itself. The regularising prior ends up being narrower. One of the coolest facts in statistics. Deep learning works because it's deep. Parameters stacked on parameters.  " width="80%" />
+<p class="caption marginnote shownote">
+If you focus on the model structure, you can understand things. If you focus on terminology, you’ll get confused. Let’s compare these models. Want to show you something about flexibilty in random effects 13.1 is fixed effects. 13.2 is MLM. In terms of WAIC, they’re very similar. Not much of a difference. But look at the effective number of parameters. 131. has 48 paramaters because there are 48 tanks. One parameter for each. It ends up with 25 effective. Why? Because of the regularising prior. It wasn’t flat. That means there are tank where all the tadploles survived. What’s the log-odds of that? Infinite. But because of the piror, you don’t end up with an alpha of infinity. What’s happening with 13.2 is we’ve addedd two more parameters (<span class="math inline">\(\bar{\alpha}\)</span> and <span class="math inline">\(\sigma\)</span>). But fewer effective parameters. When teaching you about overfitting, the caveat was that every time you add a paramter the fit in-sample imporoves. <em>Other than</em> with MLMs. They learn how regular to be from the data itself. The regularising prior ends up being narrower. One of the coolest facts in statistics. Deep learning works because it’s deep. Parameters stacked on parameters.
+</p>
+</div>
+<p>Compute the WAIC comparisons:</p>
+<div class="sourceCode" id="cb879"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb879-1"><a href="12.1-example-multilevel-tadpoles.html#cb879-1" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.1</span> <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">add_criterion</span>(b13<span class="fl">.1</span>, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb879-2"><a href="12.1-example-multilevel-tadpoles.html#cb879-2" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.2</span> <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">add_criterion</span>(b13<span class="fl">.2</span>, <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb879-3"><a href="12.1-example-multilevel-tadpoles.html#cb879-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb879-4"><a href="12.1-example-multilevel-tadpoles.html#cb879-4" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">loo_compare</span>(b13<span class="fl">.1</span>, b13<span class="fl">.2</span>, <span class="at">criterion =</span> <span class="st">&quot;waic&quot;</span>)</span>
+<span id="cb879-5"><a href="12.1-example-multilevel-tadpoles.html#cb879-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb879-6"><a href="12.1-example-multilevel-tadpoles.html#cb879-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(w, <span class="at">simplify =</span> F)</span></code></pre></div>
+<pre><code>##       elpd_diff se_diff elpd_waic se_elpd_waic p_waic se_p_waic waic   se_waic
+## b13.2    0.0       0.0  -100.3       3.6         21.2    0.8     200.6    7.2 
+## b13.1   -7.5       1.8  -107.7       2.4         26.0    1.3     215.5    4.7</code></pre>
+<p>The se_diff is small relative to the elpd_diff. If we convert the elpd difference to the WAIC metric, the message stays the same.</p>
+<div class="sourceCode" id="cb881"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb881-1"><a href="12.1-example-multilevel-tadpoles.html#cb881-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="at">waic_diff =</span> w[, <span class="dv">1</span>] <span class="sc">*</span> <span class="sc">-</span><span class="dv">2</span>,</span>
+<span id="cb881-2"><a href="12.1-example-multilevel-tadpoles.html#cb881-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">se        =</span> w[, <span class="dv">2</span>] <span class="sc">*</span>  <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##       waic_diff       se
+## b13.2   0.00000 0.000000
+## b13.1  14.92095 3.663999</code></pre>
+<p>Here are the WAIC weights:</p>
+<div class="sourceCode" id="cb883"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb883-1"><a href="12.1-example-multilevel-tadpoles.html#cb883-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">model_weights</span>(b13<span class="fl">.1</span>, b13<span class="fl">.2</span>, <span class="at">weights =</span> <span class="st">&quot;waic&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb883-2"><a href="12.1-example-multilevel-tadpoles.html#cb883-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## b13.1 b13.2 
+##     0     1</code></pre>
+<p>Compare number of effective parameters:</p>
+<div class="sourceCode" id="cb885"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb885-1"><a href="12.1-example-multilevel-tadpoles.html#cb885-1" aria-hidden="true" tabindex="-1"></a>w[, <span class="st">&quot;p_waic&quot;</span>]</span></code></pre></div>
+<pre><code>##    b13.2    b13.1 
+## 21.15522 25.97493</code></pre>
+<div class="sourceCode" id="cb887"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb887-1"><a href="12.1-example-multilevel-tadpoles.html#cb887-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b13<span class="fl">.2</span>)</span></code></pre></div>
+<pre><code>##  Family: binomial 
+##   Links: mu = logit 
+## Formula: surv | trials(density) ~ 1 + (1 | tank) 
+##    Data: d (Number of observations: 48) 
+## Samples: 4 chains, each with iter = 5000; warmup = 1000; thin = 1;
+##          total post-warmup samples = 16000
+## 
+## Group-Level Effects: 
+## ~tank (Number of levels: 48) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     1.62      0.21     1.25     2.08 1.00     4165     7331
+## 
+## Population-Level Effects: 
+##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept     1.35      0.26     0.85     1.87 1.00     2713     5723
+## 
+## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p>There are 28 fewer effective parameters than actual parameters, because the prior assigned to each intercept shrinks them all towards the mean <span class="math inline">\(\bar{\alpha}\)</span>. In this case, the prior is reasonably strong. This is a REGULARIZING PRIOR, like you’ve used in previous chapters, but now the amount of regularization has been learned from the data itself.</p>
+<p>To appreciate the impact of this adaptive regularization, let’s plot and compare the posterior means from models <code>m13.1</code> and <code>m13.2</code>.</p>
+<div class="sourceCode" id="cb889"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb889-1"><a href="12.1-example-multilevel-tadpoles.html#cb889-1" aria-hidden="true" tabindex="-1"></a>post <span class="ot">&lt;-</span> <span class="fu">posterior_samples</span>(b13<span class="fl">.2</span>)</span>
+<span id="cb889-2"><a href="12.1-example-multilevel-tadpoles.html#cb889-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb889-3"><a href="12.1-example-multilevel-tadpoles.html#cb889-3" aria-hidden="true" tabindex="-1"></a>post_mdn <span class="ot">&lt;-</span> </span>
+<span id="cb889-4"><a href="12.1-example-multilevel-tadpoles.html#cb889-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coef</span>(b13<span class="fl">.2</span>, <span class="at">robust =</span> T)<span class="sc">$</span>tank[, , ] <span class="sc">%&gt;%</span> </span>
+<span id="cb889-5"><a href="12.1-example-multilevel-tadpoles.html#cb889-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb889-6"><a href="12.1-example-multilevel-tadpoles.html#cb889-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(d) <span class="sc">%&gt;%</span></span>
+<span id="cb889-7"><a href="12.1-example-multilevel-tadpoles.html#cb889-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">post_mdn =</span> <span class="fu">inv_logit_scaled</span>(Estimate))</span>
+<span id="cb889-8"><a href="12.1-example-multilevel-tadpoles.html#cb889-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb889-9"><a href="12.1-example-multilevel-tadpoles.html#cb889-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(post_mdn) <span class="sc">%&gt;%</span> </span>
+<span id="cb889-10"><a href="12.1-example-multilevel-tadpoles.html#cb889-10" aria-hidden="true" tabindex="-1"></a>  DT<span class="sc">::</span><span class="fu">datatable</span>(.)</span></code></pre></div>
+<div id="htmlwidget-2d6164bd3d4fa7084dae" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2d6164bd3d4fa7084dae">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[2.07101490702249,2.9601417851385,0.977219478393796,2.98225186804737,2.06776219958929,2.07753424130181],[0.848963345098701,1.07883706000414,0.668037927846341,1.08204013837234,0.847987576420224,0.842833444105403],[0.619945125467234,1.20174266154039,-0.235932669026868,1.16836753387363,0.577875768425798,0.616334889316982],[4.0045484922561,5.5189094947061,2.38397852383416,5.62364991057251,4.07854972271519,4.02129971300458],[10,10,10,10,10,10],["no","no","no","no","no","no"],["big","big","big","big","small","small"],[9,10,7,10,9,9],[0.9,1,0.7,1,0.9,0.9],[1,2,3,4,5,6],[0.888053897328874,0.950740634546783,0.726556151815982,0.951765854397906,0.887730123720208,0.888700373773134]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Estimate<\/th>\n      <th>Est.Error<\/th>\n      <th>Q2.5<\/th>\n      <th>Q97.5<\/th>\n      <th>density<\/th>\n      <th>pred<\/th>\n      <th>size<\/th>\n      <th>surv<\/th>\n      <th>propsurv<\/th>\n      <th>tank<\/th>\n      <th>post_mdn<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,8,9,10,11]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="sourceCode" id="cb890"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb890-1"><a href="12.1-example-multilevel-tadpoles.html#cb890-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Reproduce Figure 13.1</span></span>
+<span id="cb890-2"><a href="12.1-example-multilevel-tadpoles.html#cb890-2" aria-hidden="true" tabindex="-1"></a>post_mdn <span class="sc">%&gt;%</span></span>
+<span id="cb890-3"><a href="12.1-example-multilevel-tadpoles.html#cb890-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> tank)) <span class="sc">+</span></span>
+<span id="cb890-4"><a href="12.1-example-multilevel-tadpoles.html#cb890-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="fu">inv_logit_scaled</span>(<span class="fu">median</span>(post<span class="sc">$</span>b_Intercept)), <span class="at">linetype =</span> <span class="dv">2</span>, <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb890-5"><a href="12.1-example-multilevel-tadpoles.html#cb890-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="fl">16.5</span>, <span class="fl">32.5</span>), <span class="at">size =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="at">color =</span> <span class="st">&quot;grey25&quot;</span>) <span class="sc">+</span></span>
+<span id="cb890-6"><a href="12.1-example-multilevel-tadpoles.html#cb890-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> propsurv), <span class="at">color =</span> <span class="st">&quot;orange2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb890-7"><a href="12.1-example-multilevel-tadpoles.html#cb890-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> post_mdn), <span class="at">shape =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb890-8"><a href="12.1-example-multilevel-tadpoles.html#cb890-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="at">geom =</span> <span class="st">&quot;text&quot;</span>, </span>
+<span id="cb890-9"><a href="12.1-example-multilevel-tadpoles.html#cb890-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">16</span> <span class="sc">+</span> <span class="dv">8</span>, <span class="dv">32</span> <span class="sc">+</span> <span class="dv">8</span>), <span class="at">y =</span> <span class="dv">0</span>, </span>
+<span id="cb890-10"><a href="12.1-example-multilevel-tadpoles.html#cb890-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> <span class="fu">c</span>(<span class="st">&quot;small tanks&quot;</span>, <span class="st">&quot;medium tanks&quot;</span>, <span class="st">&quot;large tanks&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb890-11"><a href="12.1-example-multilevel-tadpoles.html#cb890-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">16</span>, <span class="dv">32</span>, <span class="dv">48</span>)) <span class="sc">+</span></span>
+<span id="cb890-12"><a href="12.1-example-multilevel-tadpoles.html#cb890-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span> <span class="sc">/</span> <span class="dv">5</span>, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb890-13"><a href="12.1-example-multilevel-tadpoles.html#cb890-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Multilevel shrinkage!&quot;</span>,</span>
+<span id="cb890-14"><a href="12.1-example-multilevel-tadpoles.html#cb890-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;The empirical proportions are in orange while the model-</span><span class="sc">\n</span><span class="st">implied proportions are the black circles. The dashed line is</span><span class="sc">\n</span><span class="st">the model-implied average survival proportion.&quot;</span>) <span class="sc">+</span></span>
+<span id="cb890-15"><a href="12.1-example-multilevel-tadpoles.html#cb890-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major =</span> <span class="fu">element_blank</span>())</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/13.5%20b-2.png" width="672" /></p>
+<p>First, notice that in every case, the multilevel estimate is closer to the dashed line than the raw empirical estimate is. It’s as if the entire distribution of black circles has been shrunk towards the dashed line at the center of the data, leaving the blue points behind on the outside.</p>
+<p>Second, notice that the estimates for the smaller tanks have shrunk farther from the blue points.</p>
+<p>Third, note that the farther a blue point is from the dashed line, the greater the distance between it and the corresponding multilevel estimate.</p>
+<p>All three of these phenomena arise from a common cause: pooling information across clusters (tanks) to improve estimates.</p>
+<p>First we’ll plot 100 Gaussian distributions, one for each of the first 100 samples from the posterior distribution of both α and σ. Then we’ll sample 8000 new log-odds of survival for individual tanks.</p>
+<div class="sourceCode" id="cb891"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb891-1"><a href="12.1-example-multilevel-tadpoles.html#cb891-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this makes the output of `slice_sample()` reproducible</span></span>
+<span id="cb891-2"><a href="12.1-example-multilevel-tadpoles.html#cb891-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb891-3"><a href="12.1-example-multilevel-tadpoles.html#cb891-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb891-4"><a href="12.1-example-multilevel-tadpoles.html#cb891-4" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span></span>
+<span id="cb891-5"><a href="12.1-example-multilevel-tadpoles.html#cb891-5" aria-hidden="true" tabindex="-1"></a>  post <span class="sc">%&gt;%</span> </span>
+<span id="cb891-6"><a href="12.1-example-multilevel-tadpoles.html#cb891-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">iter =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb891-7"><a href="12.1-example-multilevel-tadpoles.html#cb891-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb891-8"><a href="12.1-example-multilevel-tadpoles.html#cb891-8" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">expand</span>(<span class="fu">nesting</span>(iter, b_Intercept, sd_tank__Intercept),</span>
+<span id="cb891-9"><a href="12.1-example-multilevel-tadpoles.html#cb891-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">x =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">4</span>, <span class="at">to =</span> <span class="dv">5</span>, <span class="at">length.out =</span> <span class="dv">100</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb891-10"><a href="12.1-example-multilevel-tadpoles.html#cb891-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">density =</span> <span class="fu">dnorm</span>(x, <span class="at">mean =</span> b_Intercept, <span class="at">sd =</span> sd_tank__Intercept)) <span class="sc">%&gt;%</span> </span>
+<span id="cb891-11"><a href="12.1-example-multilevel-tadpoles.html#cb891-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb891-12"><a href="12.1-example-multilevel-tadpoles.html#cb891-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> density, <span class="at">group =</span> iter)) <span class="sc">+</span></span>
+<span id="cb891-13"><a href="12.1-example-multilevel-tadpoles.html#cb891-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> .<span class="dv">2</span>, <span class="at">color =</span> <span class="st">&quot;orange2&quot;</span>) <span class="sc">+</span></span>
+<span id="cb891-14"><a href="12.1-example-multilevel-tadpoles.html#cb891-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb891-15"><a href="12.1-example-multilevel-tadpoles.html#cb891-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population survival distribution&quot;</span>,</span>
+<span id="cb891-16"><a href="12.1-example-multilevel-tadpoles.html#cb891-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;log-odds scale&quot;</span>) <span class="sc">+</span></span>
+<span id="cb891-17"><a href="12.1-example-multilevel-tadpoles.html#cb891-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">4</span>))</span>
+<span id="cb891-18"><a href="12.1-example-multilevel-tadpoles.html#cb891-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb891-19"><a href="12.1-example-multilevel-tadpoles.html#cb891-19" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb891-20"><a href="12.1-example-multilevel-tadpoles.html#cb891-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb891-21"><a href="12.1-example-multilevel-tadpoles.html#cb891-21" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span></span>
+<span id="cb891-22"><a href="12.1-example-multilevel-tadpoles.html#cb891-22" aria-hidden="true" tabindex="-1"></a>  post <span class="sc">%&gt;%</span> </span>
+<span id="cb891-23"><a href="12.1-example-multilevel-tadpoles.html#cb891-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">8000</span>, <span class="at">replace =</span> T) <span class="sc">%&gt;%</span> </span>
+<span id="cb891-24"><a href="12.1-example-multilevel-tadpoles.html#cb891-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sim_tanks =</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="at">mean =</span> b_Intercept, <span class="at">sd =</span> sd_tank__Intercept)) <span class="sc">%&gt;%</span> </span>
+<span id="cb891-25"><a href="12.1-example-multilevel-tadpoles.html#cb891-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb891-26"><a href="12.1-example-multilevel-tadpoles.html#cb891-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">inv_logit_scaled</span>(sim_tanks))) <span class="sc">+</span></span>
+<span id="cb891-27"><a href="12.1-example-multilevel-tadpoles.html#cb891-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">size =</span> <span class="dv">0</span>, <span class="at">fill =</span> <span class="st">&quot;orange2&quot;</span>, <span class="at">adjust =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb891-28"><a href="12.1-example-multilevel-tadpoles.html#cb891-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb891-29"><a href="12.1-example-multilevel-tadpoles.html#cb891-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Probability of survival&quot;</span>,</span>
+<span id="cb891-30"><a href="12.1-example-multilevel-tadpoles.html#cb891-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;transformed by the inverse-logit function&quot;</span>)</span>
+<span id="cb891-31"><a href="12.1-example-multilevel-tadpoles.html#cb891-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb891-32"><a href="12.1-example-multilevel-tadpoles.html#cb891-32" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(patchwork)</span>
+<span id="cb891-33"><a href="12.1-example-multilevel-tadpoles.html#cb891-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb891-34"><a href="12.1-example-multilevel-tadpoles.html#cb891-34" aria-hidden="true" tabindex="-1"></a>(p1 <span class="sc">+</span> p2) <span class="sc">&amp;</span></span>
+<span id="cb891-35"><a href="12.1-example-multilevel-tadpoles.html#cb891-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb891-36"><a href="12.1-example-multilevel-tadpoles.html#cb891-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>))</span></code></pre></div>
+<p><img src="13_models_with_memory_files/figure-html/13.6%20b-1.png" width="672" /></p>
+<div class="figure">
+<img src="slides/L15/23.png" alt="Graphically, we'll compare the two models. Across the horizontal is all 48 tanks. They come in three sizes. You'll see that experimentally they were set up to be small, medium and large. Very cool experiment. Small have smaller initial density. Medium and large likewise. On the vertical, we're looking at the proportion survive. The outcome scale. Or the probability of survival. Blue dots are raw data. So you'll see the 1s on top. That's where all the lucky tadpoles lived. The open cricles are the multi-level estimates. THere's a pattern here - shrinkage. The model is not retrodicting the sample, but that's why it's a good model. Wnat to learn the regular features to make better predictions. The regularizing prior was learned from the data so it knows how to treat all the data. The dashed line is the popoulation mean, $\bar{\alpha}$that we have estimated from the data." width="80%" />
+<p class="caption marginnote shownote">
+Graphically, we’ll compare the two models. Across the horizontal is all 48 tanks. They come in three sizes. You’ll see that experimentally they were set up to be small, medium and large. Very cool experiment. Small have smaller initial density. Medium and large likewise. On the vertical, we’re looking at the proportion survive. The outcome scale. Or the probability of survival. Blue dots are raw data. So you’ll see the 1s on top. That’s where all the lucky tadpoles lived. The open cricles are the multi-level estimates. THere’s a pattern here - shrinkage. The model is not retrodicting the sample, but that’s why it’s a good model. Wnat to learn the regular features to make better predictions. The regularizing prior was learned from the data so it knows how to treat all the data. The dashed line is the popoulation mean, <span class="math inline">\(\bar{\alpha}\)</span>that we have estimated from the data.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/24.png" alt="The raw mean is in a different place. Why? The raw mean comes from taking all the tadpoles and putting them into one group. The ones on the right bias the estimate because ethe survival rate is lower. If you want the mean of a population in idniviaul tanks, it's not pappropriate. " width="80%" />
+<p class="caption marginnote shownote">
+The raw mean is in a different place. Why? The raw mean comes from taking all the tadpoles and putting them into one group. The ones on the right bias the estimate because ethe survival rate is lower. If you want the mean of a population in idniviaul tanks, it’s not pappropriate.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/25.png" alt="Above the dashed line, the open circles are off the blue lines towards the dashed line. The closer you are to it, the less difference between the two. If you're below the dashed line, you go up. This is shrinkage - shirnakge toward the poupatlion mean. If the divergence formt eh popuation mean is extreme, it's more sceptical and shrinks more. " width="80%" />
+<p class="caption marginnote shownote">
+Above the dashed line, the open circles are off the blue lines towards the dashed line. The closer you are to it, the less difference between the two. If you’re below the dashed line, you go up. This is shrinkage - shirnakge toward the poupatlion mean. If the divergence formt eh popuation mean is extreme, it’s more sceptical and shrinks more.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/26.png" alt="Large tanks you see the shrinkage is smaller because there's more evidence in each tank - greater sample size. So more precise estimate in each tank. Each tank can overwhelm the information in the population. Only observations are 0 or 1. Otherwise we'd have massive overfitting. In any particualr dataset the exact amount of shrinkage will depend on many variables. Here it's reducing the fit-to-sample to improve rpedictive accuracy. You add parameters, and get better predictions out-of-sample.  " width="80%" />
+<p class="caption marginnote shownote">
+Large tanks you see the shrinkage is smaller because there’s more evidence in each tank - greater sample size. So more precise estimate in each tank. Each tank can overwhelm the information in the population. Only observations are 0 or 1. Otherwise we’d have massive overfitting. In any particualr dataset the exact amount of shrinkage will depend on many variables. Here it’s reducing the fit-to-sample to improve rpedictive accuracy. You add parameters, and get better predictions out-of-sample.
+</p>
+</div>
+<div class="figure">
+<img src="slides/L15/27.png" alt="The more often you go to a cafe, the more data you have on that cafe, the less you need the population information. Extreme values are treated with sceticism of getting the same ones in the future." width="80%" />
+<p class="caption marginnote shownote">
+The more often you go to a cafe, the more data you have on that cafe, the less you need the population information. Extreme values are treated with sceticism of getting the same ones in the future.
+</p>
+</div>
+<p><strong>Overthinking: prior for variance components</strong></p>
+<div class="sourceCode" id="cb892"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb892-1"><a href="12.1-example-multilevel-tadpoles.html#cb892-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Error in unserialize(socklist[[n]]) : error reading from connection</span></span>
+<span id="cb892-2"><a href="12.1-example-multilevel-tadpoles.html#cb892-2" aria-hidden="true" tabindex="-1"></a>b13<span class="fl">.2</span>b <span class="ot">&lt;-</span> </span>
+<span id="cb892-3"><a href="12.1-example-multilevel-tadpoles.html#cb892-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">update</span>(b13<span class="fl">.2</span>,</span>
+<span id="cb892-4"><a href="12.1-example-multilevel-tadpoles.html#cb892-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">prior =</span> <span class="fu">c</span>(<span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="fl">1.5</span>), <span class="at">class =</span> Intercept),</span>
+<span id="cb892-5"><a href="12.1-example-multilevel-tadpoles.html#cb892-5" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> sd)),</span>
+<span id="cb892-6"><a href="12.1-example-multilevel-tadpoles.html#cb892-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">iter =</span> <span class="dv">5000</span>, <span class="at">warmup =</span> <span class="dv">1000</span>, <span class="at">chains =</span> <span class="dv">4</span>, <span class="at">cores =</span> <span class="dv">2</span>,</span>
+<span id="cb892-7"><a href="12.1-example-multilevel-tadpoles.html#cb892-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">sample_prior =</span> <span class="st">&quot;yes&quot;</span>,</span>
+<span id="cb892-8"><a href="12.1-example-multilevel-tadpoles.html#cb892-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">seed =</span> <span class="dv">13</span>,</span>
+<span id="cb892-9"><a href="12.1-example-multilevel-tadpoles.html#cb892-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">file =</span> <span class="st">&quot;fits/b13.02b&quot;</span>)</span>
+<span id="cb892-10"><a href="12.1-example-multilevel-tadpoles.html#cb892-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb892-11"><a href="12.1-example-multilevel-tadpoles.html#cb892-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(b13<span class="fl">.2</span>b)</span></code></pre></div>
+<p>Then compare:</p>
+<div class="sourceCode" id="cb893"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb893-1"><a href="12.1-example-multilevel-tadpoles.html#cb893-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for annotation</span></span>
+<span id="cb893-2"><a href="12.1-example-multilevel-tadpoles.html#cb893-2" aria-hidden="true" tabindex="-1"></a>text <span class="ot">&lt;-</span></span>
+<span id="cb893-3"><a href="12.1-example-multilevel-tadpoles.html#cb893-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">value        =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">2.4</span>),</span>
+<span id="cb893-4"><a href="12.1-example-multilevel-tadpoles.html#cb893-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">density      =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">1.85</span>),</span>
+<span id="cb893-5"><a href="12.1-example-multilevel-tadpoles.html#cb893-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">distribution =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">&quot;prior&quot;</span>, <span class="st">&quot;posterior&quot;</span>), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;prior&quot;</span>, <span class="st">&quot;posterior&quot;</span>)),</span>
+<span id="cb893-6"><a href="12.1-example-multilevel-tadpoles.html#cb893-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">prior        =</span> <span class="st">&quot;Exponential(1)&quot;</span>)</span>
+<span id="cb893-7"><a href="12.1-example-multilevel-tadpoles.html#cb893-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb893-8"><a href="12.1-example-multilevel-tadpoles.html#cb893-8" aria-hidden="true" tabindex="-1"></a><span class="co"># gather and wrangle the prior and posterior draws</span></span>
+<span id="cb893-9"><a href="12.1-example-multilevel-tadpoles.html#cb893-9" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="st">`</span><span class="at">prior_Exponential(1)</span><span class="st">`</span>        <span class="ot">=</span> <span class="fu">prior_samples</span>(b13<span class="fl">.2</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(sd_tank),</span>
+<span id="cb893-10"><a href="12.1-example-multilevel-tadpoles.html#cb893-10" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">posterior_Exponential(1)</span><span class="st">`</span>    <span class="ot">=</span> <span class="fu">posterior_samples</span>(b13<span class="fl">.2</span>) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(sd_tank__Intercept),</span>
+<span id="cb893-11"><a href="12.1-example-multilevel-tadpoles.html#cb893-11" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">prior_Half-Normal(0, 1)</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">prior_samples</span>(b13<span class="fl">.2</span>b) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(sd_tank),</span>
+<span id="cb893-12"><a href="12.1-example-multilevel-tadpoles.html#cb893-12" aria-hidden="true" tabindex="-1"></a>       <span class="st">`</span><span class="at">posterior_Half-Normal(0, 1)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">posterior_samples</span>(b13<span class="fl">.2</span>b) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(sd_tank__Intercept)) <span class="sc">%&gt;%</span> </span>
+<span id="cb893-13"><a href="12.1-example-multilevel-tadpoles.html#cb893-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(),</span>
+<span id="cb893-14"><a href="12.1-example-multilevel-tadpoles.html#cb893-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_sep =</span> <span class="st">&quot;_&quot;</span>,</span>
+<span id="cb893-15"><a href="12.1-example-multilevel-tadpoles.html#cb893-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">&quot;distribution&quot;</span>, <span class="st">&quot;prior&quot;</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb893-16"><a href="12.1-example-multilevel-tadpoles.html#cb893-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">distribution =</span> <span class="fu">factor</span>(distribution, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;prior&quot;</span>, <span class="st">&quot;posterior&quot;</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb893-17"><a href="12.1-example-multilevel-tadpoles.html#cb893-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb893-18"><a href="12.1-example-multilevel-tadpoles.html#cb893-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># plot!</span></span>
+<span id="cb893-19"><a href="12.1-example-multilevel-tadpoles.html#cb893-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">fill =</span> distribution)) <span class="sc">+</span></span>
+<span id="cb893-20"><a href="12.1-example-multilevel-tadpoles.html#cb893-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">size =</span> <span class="dv">0</span>, <span class="at">alpha =</span> <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">adjust =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb893-21"><a href="12.1-example-multilevel-tadpoles.html#cb893-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> text,</span>
+<span id="cb893-22"><a href="12.1-example-multilevel-tadpoles.html#cb893-22" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">y =</span> density, <span class="at">label =</span> distribution, <span class="at">color =</span> distribution)) <span class="sc">+</span></span>
+<span id="cb893-23"><a href="12.1-example-multilevel-tadpoles.html#cb893-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="cn">NULL</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;orange4&quot;</span>, <span class="st">&quot;orange2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb893-24"><a href="12.1-example-multilevel-tadpoles.html#cb893-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="cn">NULL</span>, <span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;orange4&quot;</span>, <span class="st">&quot;orange2&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb893-25"><a href="12.1-example-multilevel-tadpoles.html#cb893-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>, <span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb893-26"><a href="12.1-example-multilevel-tadpoles.html#cb893-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="fu">expression</span>(Hierarchical<span class="sc">~</span>sigma<span class="sc">~</span>parameter)) <span class="sc">+</span></span>
+<span id="cb893-27"><a href="12.1-example-multilevel-tadpoles.html#cb893-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">4</span>)) <span class="sc">+</span></span>
+<span id="cb893-28"><a href="12.1-example-multilevel-tadpoles.html#cb893-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="sc">+</span></span>
+<span id="cb893-29"><a href="12.1-example-multilevel-tadpoles.html#cb893-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> prior)</span></code></pre></div>
+</div>
+<p style="text-align: center;">
+<a href="12-models-with-memory.html"><button class="btn btn-default">Previous</button></a>
+<a href="12.2-varying-effects-and-the-underfittingoverfitting-trade-off.html"><button class="btn btn-default">Next</button></a>
+</p>
+</div>
+</div>
+
+
+
+</body>
+</html>
