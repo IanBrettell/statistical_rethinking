@@ -21,7 +21,6 @@ singularity shell --bind /hps/software/users/birney/ian/rstudio_db:/var/lib/rstu
                   --bind /hps/software/users/birney/ian/run:/run \
                   $CONT
 
---bind envs/RStudio_Server/database.conf:/etc/rstudio/database.conf \
 # Then run rserver, setting path of config file containing library path
 rserver --rsession-config-file /hps/software/users/birney/ian/repos/statistical_rethinking/envs/RStudio_Server/rsession.conf
 

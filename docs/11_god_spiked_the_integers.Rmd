@@ -116,7 +116,7 @@ theme_set(
 Now let’s sample from the prior:
 
 ```{r 11.5}
-brms::prior_draws(b11.1) %>% 
+brms::prior_samples(b11.1) %>% 
   mutate(p = inv_logit_scaled(Intercept)) %>% 
   
   ggplot(aes(x = p)) +
@@ -143,8 +143,8 @@ One step remains. We need to convert the parameter to the outcome scale. This me
 
 ```{r 11.6}
 # wrangle
-bind_rows(brms::prior_draws(b11.1),
-          brms::prior_draws(b11.1b)) %>% 
+bind_rows(brms::prior_samples(b11.1),
+          brms::prior_samples(b11.1b)) %>% 
   mutate(p = brms::inv_logit_scaled(Intercept),
          w = factor(rep(c(10, 1.5), each = n() / 2),
                     levels = c(10, 1.5))) %>% 
@@ -299,7 +299,7 @@ knitr::include_graphics(file.path(slides_dir, '08.png'))
 ```
 
 ```{r 11.12}
-post <- brms::as_draws_df(b11.4)
+post <- brms::posterior_samples(b11.4)
 
 post %>% 
   pivot_longer(contains("actor")) %>%
@@ -525,7 +525,7 @@ knitr::include_graphics(file.path(slides_dir, '16.png'))
 It is more common to see logistic regressions interpreted through RELATIVE EFFECTS. Relative effects are proportional changes in the odds of an outcome. If we change a variable and say the odds of an outcome double, then we are discussing relative effects. You can calculate these PROPORTIONAL ODDS relative effect sizes by simply exponentiating the parameter of interest. For example, to calculate the proportional odds of switching from treatment 2 to treatment 4 (adding a partner):
 
 ```{r 11.23}
-brms::as_draws_df(b11.4) %>% 
+brms::posterior_samples(b11.4) %>% 
   mutate(proportional_odds = exp(b_b_treatment4 - b_b_treatment2)) %>% 
   tidybayes::mean_qi(proportional_odds)
 ```
@@ -576,8 +576,8 @@ text <-
          fit   = c("b11.6", "b11.4"))
 
 # rope in the posterior draws and wrangle
-bind_rows(brms::as_draws_df(b11.4),
-          brms::as_draws_df(b11.6)) %>% 
+bind_rows(brms::posterior_samples(b11.4),
+          brms::posterior_samples(b11.6)) %>% 
   mutate(fit = rep(c("b11.4", "b11.6"), each = n() / 2)) %>% 
   pivot_longer(b_a_actor1:b_b_treatment4) %>% 
   
@@ -662,7 +662,7 @@ knitr::include_graphics(file.path(slides_dir, '20.png'))
 The posterior for male applicants, `a[1]`, is higher than that of female applicants. How much higher? We need to compute the contrast. Let’s calculate the contrast on the logit scale (shark) as well as the contrast on the outcome scale (absolute deer):
 
 ```{r 11.30}
-brms::as_draws_df(b11.7) %>% 
+brms::posterior_samples(b11.7) %>% 
   mutate(diff_a = b_gidmale - b_gidfemale,
          diff_p = inv_logit_scaled(b_gidmale) - inv_logit_scaled(b_gidfemale)) %>% 
   pivot_longer(contains("diff")) %>% 
@@ -749,7 +749,7 @@ knitr::include_graphics(file.path(slides_dir, '26.png'))
 ```
 
 ```{r}
-brms::as_draws_df(b11.8) %>% 
+brms::posterior_samples(b11.8) %>% 
   mutate(diff_a = b_a_gidmale - b_a_gidfemale,
          diff_p = brms::inv_logit_scaled(b_a_gidmale) - brms::inv_logit_scaled(b_a_gidfemale)) %>% 
   pivot_longer(contains("diff")) %>% 
@@ -1208,7 +1208,7 @@ print(b11.12)
 To compute the posterior distributions of λ in each monastery, we sample from the posterior and then just use the linear model, but without the offset now. We don’t use the offset again, when computing predictions, because the parameters are already on the daily scale, for both monasteries.
 
 ```{r 11.54}
-brms::as_draws_df(b11.12) %>%
+brms::posterior_samples(b11.12) %>%
   mutate(lambda_old = exp(b_Intercept),
          lambda_new = exp(b_Intercept + b_monastery)) %>%
   pivot_longer(contains("lambda")) %>% 
@@ -1481,7 +1481,7 @@ Let’s consider just the posterior means, for the sake of simplicity. But keep 
 
 ```{r}
 # extract the samples
-post <- brms::as_draws_df(b11.pois)
+post <- brms::posterior_samples(b11.pois)
 # wrangle
 post %>%
   mutate(admit  = exp(b_admit_Intercept), 

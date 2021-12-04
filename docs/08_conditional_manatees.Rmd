@@ -189,7 +189,7 @@ knitr::include_graphics(file.path(slides_dir, '17.png'))
 Let's look at the prior predictions:
 
 ```{r 8.3}
-prior <- brms::prior_draws(b8.1)
+prior <- brms::prior_samples(b8.1)
 
 set.seed(8)
 
@@ -313,7 +313,7 @@ print(b8.2)
 
 ```{r 8.11}
 post <- 
-  brms::as_draws_df(b8.2) %>% 
+  brms::posterior_samples(b8.2) %>% 
   mutate(diff = b_cid1 - b_cid2)
 
 library(tidybayes)

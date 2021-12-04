@@ -383,7 +383,7 @@ knitr::include_graphics(file.path(slides_dir, '59.png'))
 ```
 
 ```{r}
-post <- brms::as_draws_df(b9.1)
+post <- brms::posterior_samples(b9.1)
 
 post %>% 
   pivot_longer(-lp__) %>% 
@@ -442,7 +442,7 @@ vcov(b9.1b, correlation = T) %>% round(digits = 2)
 ```
 
 ```{r}
-post <- as_draws_df(b9.1b)
+post <- posterior_samples(b9.1b)
 
 glimpse(post)
 ```
@@ -472,7 +472,7 @@ plot(b9.1b)
 ```{r 9.20, eval = F}
 library(bayesplot)
 
-post <- brms::as_draws_df(b9.1b, add_chain = T)
+post <- brms::posterior_samples(b9.1b, add_chain = T)
 
 bayesplot::mcmc_trace(post[, c(1:5, 7)],  # we need to include column 7 because it contains the chain info 
            facet_args = list(ncol = 3), 

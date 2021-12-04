@@ -24,7 +24,10 @@ From: rocker/tidyverse:4.1.0
         patchwork \
         tidybayes \
         ggdag \
-        rcartocolor
+        rcartocolor \
+        flextable \
+        ghibli \
+        santoku
 
     # Install `rethinking`
     R -e 'devtools::install_github("rmcelreath/rethinking")'
@@ -34,3 +37,9 @@ From: rocker/tidyverse:4.1.0
     
     # Install `ggthemes`
     R -e 'devtools::install_github(c("hadley/ggplot2", "jrnold/ggthemes"))'
+
+    # Install `ggpomological`
+    R -e 'devtools::install_github("gadenbuie/ggpomological")'
+
+    # `wesanderson`
+    R -e 'devtools::install_github("karthik/wesanderson")'

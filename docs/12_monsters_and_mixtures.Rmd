@@ -156,7 +156,7 @@ print(b12.1)
 I tagged `theta` with `transpars>` (transformed parameters) so that Stan will return it in the samples. Let’s take a quick look at the posterior means. But let’s also go ahead and compute the constrast between the two genders first:
 
 ```{r 12.3}
-post <- brms::as_draws_df(b12.1)
+post <- brms::posterior_samples(b12.1)
 head(post)
 ```
 
@@ -215,7 +215,7 @@ To get a sense of how the beta distribution of probabilities of admission influe
 
 First write helper functions:
 
-```{r}
+```{r, results="hide"}
 brms::expose_functions(b12.1, vectorize = TRUE)
 
 # required to use `predict()`
@@ -244,8 +244,41 @@ posterior_epred_beta_binomial2 <- function(prep) {
 ```
 
 
-```{r 12.5}
-postcheck( m12.1 )
+```{r, fig.cap = "Figure 12.1b"}
+# the prediction intervals
+predict(b12.1) %>%
+  data.frame() %>% 
+  transmute(ll = Q2.5,
+            ul = Q97.5) %>%
+  bind_cols(
+    # the fitted intervals
+    fitted(b12.1) %>% data.frame(),
+    # the original data used to fit the model) %>% 
+    b12.1$data
+    ) %>% 
+  mutate(case = 1:12) %>% 
+  
+  # plot!
+  ggplot(aes(x = case)) +
+  geom_linerange(aes(ymin = ll / applications, 
+                     ymax = ul / applications),
+                 color = canva_pal("Green fields")(4)[1], 
+                 size = 2.5, alpha = 1/4) +
+  geom_pointrange(aes(ymin = Q2.5  / applications, 
+                      ymax = Q97.5 / applications, 
+                      y = Estimate/applications),
+                  color = canva_pal("Green fields")(4)[4],
+                  size = 1/2, shape = 1) +
+  geom_point(aes(y = admit/applications),
+             color = canva_pal("Green fields")(4)[2],
+             size = 2) +
+  scale_x_continuous(breaks = 1:12) +
+  scale_y_continuous(breaks = 0:5 / 5, limits = c(0, 1)) +
+  labs(subtitle = "Posterior validation check",
+       caption = expression(italic(Note.)*" A = admittance probability"),
+       y = "A") +
+  theme(axis.ticks.x = element_blank(),
+        legend.position = "none")
 ```
 
 The blue points show the empirical proportion admitted on each row of the data.
@@ -259,33 +292,296 @@ Let’s see how this works with the Oceanic tools example from the previous chap
 There was a highly influential point, Hawaii, that will become much less influential in the equivalent gamma-Poisson model. Why? Because gamma-Poisson expects more variation around the mean rate. As a result, Hawaii ends up pulling the regression trend less.
 
 ```{r 12.6}
-library(rethinking)
-data(Kline)
-d <- Kline
-d$P <- standardize( log(d$population) )
-d$contact_id <- ifelse( d$contact=="high" , 2L , 1L )
+data(Kline, package = "rethinking")
+d <- 
+  Kline %>% 
+  mutate(p          = rethinking::standardize(log(population)),
+         contact_id = ifelse(contact == "high", 2L, 1L),
+         cid        = contact)
+rm(Kline)
 
-dat2 <- list(
-  T = d$total_tools,
-  P = d$population,
-  cid = d$contact_id )
-  
-m12.2 <- ulam(
-  alist(
-    T ~ dgampois( lambda , phi ),
-    lambda <- exp(a[cid])*P^b[cid] / g,
-    a[cid] ~ dnorm(1,1),
-    b[cid] ~ dexp(1),
-    g ~ dexp(1),
-    phi ~ dexp(1)
-  ), data=dat2 , chains=4 , log_lik=TRUE )
+print(d)
 ```
+
+Let's warm up with a simple intercept-only model.
+
+```{r}
+brms::get_prior(data = d, 
+                family = negbinomial,
+                total_tools ~ 1)
+```
+
+This is what $Gamma(0.01,0.01)$ looks like
+
+```{r}
+ggplot(data = tibble(x = seq(from = 0, to = 60, by = .1)),
+       aes(x = x, y = dgamma(x, 0.01, 0.01))) +
+  geom_area(color = "transparent", 
+            fill = canva_pal("Green fields")(4)[2]) +
+  scale_x_continuous(NULL) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  coord_cartesian(xlim = c(0, 50)) +
+  ggtitle(expression(brms~default~gamma(0.01*", "*0.01)~shape~prior))
+```
+
+Fit the model:
+
+```{r}
+b12.2a <-
+  brms::brm(data = d, 
+            family = negbinomial,
+            total_tools ~ 1,
+            prior = c(prior(normal(3, 0.5), class = Intercept),  # beta_0
+                      prior(gamma(0.01, 0.01), class = shape)),  # alpha
+            iter = 2000, warmup = 1000, cores = 4, chains = 4,
+            seed = 12,
+            file = "fits/b12.02a")
+```
+
+```{r}
+print(b12.2a)
+```
+
+Predict with random samples form the posterior distribution:
+
+```{r}
+p <-
+  predict(b12.2a,
+          summary = F)
+
+p %>% 
+  str()
+```
+
+Convert to a data frame, wrangle and plot
+```{r}
+p %>% 
+  data.frame() %>% 
+  set_names(d$culture) %>% 
+  pivot_longer(everything(),
+               names_to = "culture",
+               values_to = "lambda") %>% 
+  
+  ggplot(aes(x = lambda)) +
+  geom_density(color = "transparent", fill = canva_pal("Green fields")(4)[2]) +
+  scale_x_continuous(expression(lambda["[culture]"]), breaks = 0:2 * 100) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  coord_cartesian(xlim = c(0, 210)) +
+  facet_wrap(~ culture, nrow = 2)
+```
+
+After exponentiating the intercept parameter ($logμ$), here are the posterior distributions for those two gamma parameters.
+
+```{r}
+post <- posterior_samples(b12.2a)
+
+post %>% 
+  mutate(mu    = exp(b_Intercept),
+         alpha = shape) %>%
+  pivot_longer(mu:alpha, names_to = "parameter") %>% 
+  
+  ggplot(aes(x = value)) +
+  geom_density(color = "transparent", fill = canva_pal("Green fields")(4)[2]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(title = "Behold our gamma parameters!",
+       x = "posterior") +
+  facet_wrap(~ parameter, scales = "free", labeller = label_parsed)
+```
+
+```{r}
+post %>% 
+  mutate(mu    = exp(b_Intercept),
+         alpha = shape) %>%
+  mutate(theta = mu / alpha) %>% 
+  
+  ggplot(aes(x = theta)) +
+  geom_density(color = "transparent", fill = canva_pal("Green fields")(4)[2]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression(We~define~the~scale~as~theta==mu/alpha),
+       x = "posterior") +
+  coord_cartesian(xlim = c(0, 40))
+```
+
+Now we know got to get both $\alpha$ and $\theta$ from the model, we can pump them into `dgamma()` to get a sense of the model-implied gamma distribution, the presumed underlying distribution of $\lambda$ values that generated the `total_tools` data.
+
+```{r}
+set.seed(12)
+
+# wrangle to get 200 draws
+post %>% 
+  mutate(iter  = 1:n(),
+         alpha = shape,
+         theta = exp(b_Intercept) / shape) %>%
+  slice_sample(n = 200) %>% 
+  expand(nesting(iter, alpha, theta),
+         x = 0:250) %>% 
+  mutate(density = dgamma(x, shape = alpha, scale = theta)) %>% 
+  
+  # plot
+  ggplot(aes(x = x, y = density)) +
+  geom_line(aes(group = iter),
+            alpha = .1, color = canva_pal("Green fields")(4)[4]) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression("200 credible gamma densities for "*lambda),
+       x = expression(lambda)) +
+  coord_cartesian(xlim = c(0, 170),
+                  ylim = c(0, 0.045))
+```
+
+Now let's to a **brms** version of `m12.2`. 
+
+```{r}
+b12.2b <-
+  brm(data = d, 
+      family = negbinomial(link = "identity"),
+      bf(total_tools ~ exp(b0) * population^b1 / g,
+         b0 + b1 ~ 0 + cid,
+         g ~ 1,
+         nl = TRUE),
+      prior = c(prior(normal(1, 1), nlpar = b0),
+                prior(exponential(1), nlpar = b1, lb = 0),
+                prior(exponential(1), nlpar = g, lb = 0),
+                prior(exponential(1), class = shape)),
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 12,
+      control = list(adapt_delta = .95),
+      file = "fits/b12.02b") 
+```
+
+```{r}
+print(b12.2b)
+```
+
+Check PSIS-LOO estimates and Pareto $k$ values:
+
+```{r}
+b12.2b <- brms::add_criterion(b12.2b, "loo")
+brms::loo(b12.2b)
+```
+
+One of these Pareto $k$ values is still high. Which one?
+```{r}
+d %>% 
+  dplyr::mutate(k = b12.2b$criteria$loo$diagnostics$pareto_k) %>% 
+  dplyr::filter(k > .7) %>% 
+  dplyr::select(culture, k)
+```
+
+Reload `b11.11` from the last chapter
+
+```{r}
+b11.11 <- readRDS("fits/b11.11.rds")
+b11.11 <- brms::add_criterion(b11.11, "loo")
+brms::loo(b11.11)
+```
+
+Left panel
+```{r}
+# the new data
+nd <-
+  distinct(d, cid) %>% 
+  expand(cid, 
+         population = seq(from = 0, to = 300000, length.out = 100))
+
+p1 <-
+  # compute the expected trajectories
+  fitted(b11.11,
+         newdata = nd,
+         probs = c(.055, .945)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>%
+  
+  # plot
+  ggplot(aes(x = population, group = cid, color = cid)) +
+  geom_smooth(aes(y = Estimate, ymin = Q5.5, ymax = Q94.5, fill = cid),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_point(data = bind_cols(d, b11.11$criteria$loo$diagnostics),
+             aes(y = total_tools, size = pareto_k),
+             alpha = 4/5) +
+  labs(subtitle = "pure Poisson model",
+       y = "total tools")
+```
+
+Right panel
+```{r}
+# for the annotation
+text <-
+  distinct(d, cid) %>% 
+  mutate(population  = c(150000, 110000),
+         total_tools = c(57, 69),
+         label       = str_c(cid, " contact"))
+
+p2 <-
+  fitted(b12.2b,
+         newdata = nd,
+         probs = c(.055, .945)) %>%
+  data.frame() %>%
+  bind_cols(nd) %>%
+  
+  ggplot(aes(x = population, group = cid, color = cid)) +
+  geom_smooth(aes(y = Estimate, ymin = Q5.5, ymax = Q94.5, fill = cid),
+              stat = "identity",
+              alpha = 1/4, size = 1/2) +
+  geom_point(data = bind_cols(d, b12.2b$criteria$loo$diagnostics),
+             aes(y = total_tools, size = pareto_k),
+             alpha = 4/5) +
+  geom_text(data = text,
+            aes(y = total_tools, label = label)) +
+  scale_y_continuous(NULL, labels = NULL) +
+  labs(subtitle = "gamma-Poisson model")
+```
+
+```{r, fig.cap = "Figure 12.2"}
+library(patchwork)
+
+(p1 | p2) &
+  scale_fill_manual(values = canva_pal("Green fields")(4)[c(4, 1)]) &
+  scale_color_manual(values = canva_pal("Green fields")(4)[c(4, 1)]) &
+  scale_size(range = c(2, 5)) &
+  scale_x_continuous("population", breaks = c(0, 50000, 150000, 250000)) &
+  coord_cartesian(xlim = range(d$population),
+                  ylim = range(d$total_tools)) &
+  theme(axis.ticks = element_blank(),
+        legend.position = "none")
+```
+
+>Recall that Hawaii was a highly influential point in the pure Poisson model. It does all the work of pulling the low-contact trend down. In this new model, Hawaii is still influential, but it exerts a lot less influence on the trends. Now the high and low contact trends are much more similar, very hard to reliably distinguish. This is because the gamma-Poisson model expects rate variation, and the estimated amount of variation is quite large. Population is still strongly related to the total tools, but the influence of contact rate has greatly diminished. (p. 374)
 
 In this new model, Hawaii is still influential, but it exerts a lot less influence on the trends.
 
 ***12.1.3. Over-dispersion, entropy, and information criteria***
 
 You should not use WAIC and PSIS with these models, however, unless you are very sure of what you are doing. The reason is that while ordinary binomial and Poisson models can be aggregated and disaggregated across rows in the data, without changing any causal assumptions, the same is not true of beta-binomial and gamma-Poisson models. 
+
+Before we move on, let's use `predict()` to generate posterior predictive distributions for each of the 10 cultures:
+```{r}
+predict(b12.2b,
+        summary = F) %>% 
+  data.frame() %>% 
+  set_names(d$culture) %>% 
+  pivot_longer(everything(),
+               names_to = "culture",
+               values_to = "lambda") %>% 
+  left_join(d) %>% 
+  
+  ggplot(aes(x = lambda, y = 0)) +
+  stat_halfeye(point_interval = mean_qi, .width = .5,
+               fill = canva_pal("Green fields")(4)[2],
+               color = canva_pal("Green fields")(4)[1]) +
+  geom_vline(aes(xintercept = total_tools),
+             color = canva_pal("Green fields")(4)[3]) +
+  scale_x_continuous(expression(lambda["[culture]"]), breaks = 0:2 * 100) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  coord_cartesian(xlim = c(0, 210)) +
+  facet_wrap(~ culture, nrow = 2)
+```
+
+***12.1.3 Over-dispersion, entropy, and information critera***
+
+>You should not use WAIC and PSIS with these models, however, unless you are very sure of what you are doing. The reason is that while ordinary binomial and Poisson models can be aggregated and disaggregated across rows in the data, without changing any causal assumptions, the same is not true of beta-binomial and gamma-Poisson models. The reason is that a beta-binomial or gamma-Poisson likelihood applies an unobserved parameter to each row in the data. When we then go to calculate log-likelihoods, how the data are structured will determine how the beta-distributed or gamma-distributed variation enters the model. (pp. 374–375)
+
+---
 
 ## Zero-inflated outcomes
 
@@ -354,28 +650,34 @@ knitr::include_graphics(file.path(slides_dir, '34.png'))
 
 ```{r 12.7}
 # define parameters
-prob_drink <- 0.2 # 20% of days
-rate_work <- 1 # average 1 manuscript per day
+prob_drink <- 0.2  # 20% of days
+rate_work  <- 1    # average 1 manuscript per day
 
 # sample one year of production
-N <- 365
+n <- 365
 
 # simulate days monks drink
 set.seed(365)
-drink <- rbinom( N , 1 , prob_drink )
+drink <- rbinom(n, size = 1, prob = prob_drink)
 
 # simulate manuscripts completed
-y <- (1-drink)*rpois( N , rate_work )
+y <- (1 - drink) * rpois(n, lambda = rate_work)
 ```
 
 The outcome variable we get to observe is `y`, which is just a list of counts of completed manuscripts, one count for each day of the year. Take a look at the outcome variable:
 
 ```{r 12.8}
-simplehist( y , xlab="manuscripts completed" , lwd=4 )
-zeros_drink <- sum(drink)
-zeros_work <- sum(y==0 & drink==0)
-zeros_total <- sum(y==0)
-lines( c(0,0) , c(zeros_work,zeros_total) , lwd=4 , col=rangi2 )
+d <-
+  tibble(drink = factor(drink, levels = 1:0), 
+         y     = y)
+  
+d %>% 
+  ggplot(aes(x = y)) +
+  geom_histogram(aes(fill = drink),
+                 binwidth = 1, size = 1/10, color = "grey92") +
+  scale_fill_manual(values = canva_pal("Green fields")(4)[1:2]) +
+  xlab("Manuscripts completed") +
+  theme(legend.position = "none")
 ```
 
 
@@ -384,41 +686,52 @@ knitr::include_graphics(file.path(slides_dir, '35.png'))
 ```
 
 ```{r 12.9}
-m12.3 <- ulam(
-  alist(
-    y ~ dzipois( p , lambda ),
-    logit(p) <- ap,
-    log(lambda) <- al,
-    ap ~ dnorm( -1.5 , 1 ),
-    al ~ dnorm( 1 , 0.5 )
-  ) , data=list(y=y) , chains=4 )
-precis( m12.3 )
+b12.3 <- 
+  brm(data = d, 
+      family = zero_inflated_poisson,
+      y ~ 1,
+      prior = c(prior(normal(1, 0.5), class = Intercept),
+                prior(beta(2, 6), class = zi)),  # the brms default is beta(1, 1)
+      iter = 2000, warmup = 1000, chains = 4, cores = 4,
+      seed = 12,
+      file = "fits/b12.03") 
 ```
 
-On the natural scale, those posterior means are:
+```{r}
+print(b12.3)
+```
+
+Plot the beta distributions
+
+```{r}
+priors <-
+  c(prior(beta(1, 1), class = zi),
+    prior(beta(2, 6), class = zi))
+
+priors %>% 
+  parse_dist(prior)
+```
+
+```{r}
+priors %>% 
+  parse_dist(prior) %>%
+  ggplot(aes(y = prior, dist = .dist, args = .args, fill = prior)) +
+  stat_dist_halfeye(.width = .95) +
+  scale_fill_manual(values = canva_pal("Green fields")(4)[c(4, 1)]) +
+  scale_x_continuous("zi", breaks = c(0, .5, 1)) +
+  ylab(NULL) +
+  theme(legend.position = "none")
+```
 
 ```{r 12.10}
-post <- extract.samples( m12.3 )
-mean( inv_logit( post$ap ) ) # probability drink
-mean( exp( post$al ) ) # rate finish manuscripts, when not drinking
+fixef(b12.3)[1, ] %>%
+  exp()
 ```
 
 Notice that we can get an accurate estimate of the proportion of days the monks drink, even though we can’t say for any particular day whether or not they drank.
 
 ```{r, echo = F, out.width='80%', fig.cap="The overthiking box shows how to code this without the helper functions. This is the same `ulam` model. All `dzpois` does is replace the two lines at the top. "}
 knitr::include_graphics(file.path(slides_dir, '36.png'))
-```
-
-```{r 12.11}
-m12.3_alt <- ulam(
-  alist(
-    y|y>0 ~ custom( log1m(p) + poisson_lpmf(y|lambda) ),
-    y|y==0 ~ custom( log_mix( p , 0 , poisson_lpmf(0|lambda) ) ),
-    logit(p) <- ap,
-    log(lambda) <- al,
-    ap ~ dnorm(-1.5,1),
-    al ~ dnorm(1,0.5)
-  ) , data=list(y=as.integer(y)) , chains=4 )
 ```
 
 
@@ -428,7 +741,9 @@ knitr::include_graphics(file.path(slides_dir, '37.png'))
 
 ## Ordered categorical outcomes
 
-The conventional solution is to use a **CUMULATIVE LINK** function. The cumulative probability of a value is the probability of that value *or any smaller value*.
+>It is very common in the social sciences, and occasional in the natural sciences, to have an outcome variable that is discrete, like a count, but in which the values merely indicate different ordered levels along some dimension. For example, if I were to ask you how much you like to eat fish,on a scale from 1 to 7, you might say 5. If I were to ask 100 people the same question, I’d end up with 100 values between 1 and 7. In modeling each outcome value, I’d have to keep in mind that these values are ordered, because 7 is greater than 6, which is greater than 5, and so on. The result is a set of ordered categories. Unlike a count, the differences in value are not necessarily equal….
+In principle, an ordered categorical variable is just a multinomial prediction problem (page 359). But the constraint that the categories be ordered demands special treatment….
+The conventional solution is to use a cumulative link function. The cumulative probability of a value is the probability of that value or any smaller value. In the context of ordered categories, the cumulative probability of 3 is the sum of the probabilities of 3, 2, and 1. Ordered categories by convention begin at 1, so a result less than 1 has no probability at all. By linking a linear model to cumulative probability, it is possible to guarantee the ordering of the outcomes. (p. 380, emphasis in the original)
 
 ```{r, echo = F, out.width='80%', fig.cap=""}
 knitr::include_graphics(file.path(slides_dir, '38.png'))
@@ -539,16 +854,43 @@ knitr::include_graphics(file.path(slides_dir, '24.png'))
 ```
 
 ```{r 12.12}
-library(rethinking)
-data(Trolley)
+data(Trolley, package = "rethinking")
 d <- Trolley
+rm(Trolley)
 ```
+
+```{r}
+glimpse(d)
+```
+
+How many unique individuals?
+
+```{r}
+d %>% 
+  distinct(id) %>% 
+  count()
+```
+
 
 ***12.3.2 Describing an ordered distribution with intercepts***
 
 ```{r 12.3}
-simplehist( d$response , xlim=c(1,7) , xlab="response" )
+p1 <-
+  d %>% 
+  ggplot(aes(x = response, fill = ..x..)) +
+  geom_histogram(binwidth = 1/4, size = 0) +
+  scale_fill_gradient(low = canva_pal("Green fields")(4)[4],
+                      high = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous(breaks = 1:7) +
+  theme(axis.ticks = element_blank(),
+        axis.title.y = element_text(angle = 90),
+        legend.position = "none")
+p1
 ```
+
+
+
+To re-describe the histogram as log-cumulative odds, we'll need a series of intercept parameters.
 
 
 ```{r, echo = F, out.width='80%', fig.cap="Can break this down. Action is different in that the mass has shifted a little to above. Intention has more 1s. Contact has a lot of 1s. "}
@@ -568,15 +910,26 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 First compute cumulative probabilities:
 
 ```{r 12.14}
-# discrete proportion of each response value
-pr_k <- table( d$response ) / nrow(d)
-
-# cumsum converts to cumulative proportions
-cum_pr_k <- cumsum( pr_k )
-
-# plot
-plot( 1:7 , cum_pr_k , type="b" , xlab="response" ,
-ylab="cumulative proportion" , ylim=c(0,1) )
+p2 <-
+  d %>%
+  count(response) %>%
+  mutate(pr_k     = n / nrow(d),
+         cum_pr_k = cumsum(pr_k)) %>% 
+  
+  ggplot(aes(x = response, y = cum_pr_k, 
+             fill = response)) +
+  geom_line(color = canva_pal("Green fields")(4)[2]) +
+  geom_point(shape = 21, color = "grey92", 
+             size = 2.5, stroke = 1) +
+  scale_fill_gradient(low = canva_pal("Green fields")(4)[4],
+                      high = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous(breaks = 1:7) +
+  scale_y_continuous("cumulative proportion", 
+                     breaks = c(0, .5, 1), limits = c(0, 1)) +
+  theme(axis.ticks = element_blank(),
+        axis.title.y = element_text(angle = 90),
+        legend.position = "none")
+p2
 ```
 
 
@@ -584,12 +937,43 @@ ylab="cumulative proportion" , ylim=c(0,1) )
 knitr::include_graphics(file.path(slides_dir, '28.png'))
 ```
 
-```{r 12.15 }
-logit <- function(x) log(x/(1-x)) # convenience function
-round( lco <- logit( cum_pr_k ) , 2 )
+We can compute the $\alpha_k$ estimates directly with help from McElreath's custom `logit()` function:
 
-plot( 1:7 , round( lco <- logit( cum_pr_k ) , 2 ), type="b" , xlab="response" ,
-ylab="log-cumulative-odds" , ylim=c(-2,2) )
+```{r 12.15 }
+logit <- function(x) log(x / (1 - x)) # convenience function
+
+d %>%
+  count(response) %>%
+  mutate(pr_k     = n / nrow(d),
+         cum_pr_k = cumsum(n / nrow(d))) %>% 
+  mutate(alpha = logit(cum_pr_k) %>% round(digits = 2))
+```
+
+```{r}
+p3 <-
+  d %>%
+  count(response) %>%
+  mutate(cum_pr_k = cumsum(n / nrow(d))) %>% 
+  filter(response < 7) %>% 
+  
+  # we can do the `logit()` conversion right in `ggplot() 
+  ggplot(aes(x = response, y = logit(cum_pr_k), fill = response)) +
+  geom_line(color = canva_pal("Green fields")(4)[2]) +
+  geom_point(shape = 21, colour = "grey92", 
+             size = 2.5, stroke = 1) +
+  scale_fill_gradient(low = canva_pal("Green fields")(4)[4],
+                      high = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous(breaks = 1:7, limits = c(1, 7)) +
+  ylab("log-cumulative-odds") +
+  theme(axis.ticks = element_blank(),
+        axis.title.y = element_text(angle = 90),
+        legend.position = "none")
+p3
+```
+
+```{r}
+(p1 | p2 | p3) + 
+  plot_annotation(title = "Re-describing a discrete distribution using log-cumulative-odds.")
 ```
 
 
@@ -637,32 +1021,84 @@ knitr::include_graphics(file.path(slides_dir, '38.png'))
 knitr::include_graphics(file.path(slides_dir, '39.png'))
 ```
 
+```{r, fig.cap = "Figure 12.5"}
+# primary data
+d_plot <-
+  d %>%
+  count(response) %>%
+  mutate(pr_k     = n / nrow(d),
+         cum_pr_k = cumsum(n / nrow(d))) %>% 
+  mutate(discrete_probability = ifelse(response == 1, cum_pr_k, cum_pr_k - pr_k))
+
+# annotation
+text <-
+  tibble(text     = 1:7,
+         response = seq(from = 1.25, to = 7.25, by = 1),
+         cum_pr_k = d_plot$cum_pr_k - .065)
+
+d_plot %>% 
+  ggplot(aes(x = response, y = cum_pr_k,
+             color = cum_pr_k, fill = cum_pr_k)) +
+  geom_line(color = canva_pal("Green fields")(4)[1]) +
+  geom_point(shape = 21, colour = "grey92", 
+             size = 2.5, stroke = 1) +
+  geom_linerange(aes(ymin = 0, ymax = cum_pr_k),
+                 alpha = 1/2, color = canva_pal("Green fields")(4)[1]) +
+  geom_linerange(aes(x = response + .025,
+                     ymin = ifelse(response == 1, 0, discrete_probability), 
+                     ymax = cum_pr_k),
+                 color = "black") +
+  # number annotation
+  geom_text(data = text, 
+            aes(label = text),
+            size = 4) +
+  scale_fill_gradient(low = canva_pal("Green fields")(4)[4],
+                      high = canva_pal("Green fields")(4)[1]) +
+  scale_color_gradient(low = canva_pal("Green fields")(4)[4],
+                       high = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous(breaks = 1:7) +
+  scale_y_continuous("cumulative proportion", breaks = c(0, .5, 1), limits = c(0, 1)) +
+  theme(axis.ticks = element_blank(),
+        axis.title.y = element_text(angle = 90),
+        legend.position = "none")
+```
+
+
 ```{r 12.16}
-m12.4 <- ulam(
-  alist(
-    R ~ dordlogit( 0 , cutpoints ),
-    cutpoints ~ dnorm( 0 , 1.5 )
-  ) , data=list( R=d$response ), chains=4 , cores=4 )
+# define the start values
+inits <- list(`Intercept[1]` = -2,
+              `Intercept[2]` = -1,
+              `Intercept[3]` = 0,
+              `Intercept[4]` = 1,
+              `Intercept[5]` = 2,
+              `Intercept[6]` = 2.5)
+
+inits_list <- list(inits, inits, inits, inits)
+
+b12.4 <- 
+  brm(data = d, 
+      family = cumulative,
+      response ~ 1,
+      prior(normal(0, 1.5), class = Intercept),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      inits = inits_list,  # here we add our start values
+      file = "fits/b12.04")  
 ```
 
-That zero in the `dordlogit` is a placeholder for the linear model that we’ll construct later.
-
-If you want to use `quap`: 
-
-```{r 12.17}
-m12.4q <- quap(
-  alist(
-    response ~ dordlogit( 0 , c(a1,a2,a3,a4,a5,a6) ),
-    c(a1,a2,a3,a4,a5,a6) ~ dnorm( 0 , 1.5 )
-  ) , data=d , start=list(a1=-2,a2=-1,a3=0,a4=1,a5=2,a6=2.5) )
+```{r}
+print(b12.4)
 ```
+
 
 ```{r, echo = F, out.width='80%', fig.cap="4 means always, -4 means never. Run this model and spit out the cutpoints. 6 of them. Totally uninterpretable. These are log-cumulative probabilities. Can interpret them by converting back."}
 knitr::include_graphics(file.path(slides_dir, '40.png'))
 ```
 
 ```{r 12.18}
-precis( m12.4 , depth=2 )
+b12.4 %>% 
+  brms::fixef() %>% 
+  brms::inv_logit_scaled() %>% 
+  round(digits = 3)
 ```
 
 
@@ -674,11 +1110,38 @@ knitr::include_graphics(file.path(slides_dir, '41.png'))
 knitr::include_graphics(file.path(slides_dir, '42.png'))
 ```
 
-```{r 12.19}
-round( inv_logit(coef(m12.4)) , 3 )
+```{r}
+d_plot %>% 
+  dplyr::select(response, cum_pr_k)
 ```
 
+
+
 And of course those are the same as the values in `cum_pr_k` that we computed earlier. But now we also have a posterior distribution around these values, which provides a measure of uncertainty. And we’re ready to add predictor variables in the next section.
+
+```{r}
+fixef(b12.4) %>% 
+  data.frame() %>% 
+  rownames_to_column("intercept") %>% 
+  mutate(response = str_extract(intercept, "\\d") %>% as.double()) %>% 
+  
+  ggplot(aes(x = response, y = Estimate,
+             ymin = Q2.5, ymax = Q97.5,
+             fill = response)) +
+  geom_line(color = canva_pal("Green fields")(4)[2]) +
+  geom_point(shape = 21, colour = "grey92", 
+             size = 1.5, stroke = 1) +
+  geom_linerange(color = canva_pal("Green fields")(4)[2]) +
+  scale_fill_gradient(low = canva_pal("Green fields")(4)[4],
+                      high = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous(breaks = 1:7, limits = c(1, 7)) +
+  ylab("log-cumulative-odds") +
+  theme(axis.ticks = element_blank(),
+        axis.title.y = element_text(angle = 90),
+        legend.position = "none")
+```
+
+Now the dots are posterior means and the vertical lines layered on top of them are their 95% posterior intervals.
 
 ***12.3.3. Adding predictor variables***
 
@@ -687,23 +1150,69 @@ This flurry of computation has gotten us very little so far, aside from a Bayesi
 For example, suppose we take the posterior means from m12.4 and subtract 0.5 from each. The function `dordlogit` makes the calculation of the probabilities straightforward:
 
 ```{r 12.20}
-round( pk <- dordlogit( 1:7 , 0 , coef(m12.4) ) , 2 )
+logistic <- function(x) {
+  
+  p <- 1 / (1 + exp(-x))
+  p <- ifelse(x == Inf, 1, p)
+  p
+  
+}
+# now we get down to it
+dordlogit <- 
+  function(x, phi, a, log = FALSE) {
+    
+    a  <- c(as.numeric(a), Inf)
+    p  <- logistic(a[x] - phi)
+    na <- c(-Inf, a)
+    np <- logistic(na[x] - phi)
+    p  <- p - np
+    if (log == TRUE) p <- log(p)
+    p
+    
+  }
+
+pk <- dordlogit(1:7, 0, fixef(b12.4)[, 1])
+
+pk %>% 
+  round(digits = 2)
 ```
 
 ```{r 12.21}
-sum( pk*(1:7) )
+sum(pk * (1:7))
 ```
+
+More explicit example:
+
+```{r}
+(
+  explicit_example <-
+  tibble(probability_of_a_response = pk) %>%
+  mutate(the_response = 1:7) %>%
+  mutate(their_product = probability_of_a_response * the_response)
+)
+```
+
+```{r}
+explicit_example %>%
+  summarise(average_outcome_value = sum(their_product))
+```
+
 
 And now subtracting 0.5 from each:
 
 ```{r 12.22}
-round( pk <- dordlogit( 1:7 , 0 , coef(m12.4)-0.5 ) , 2 )
+# the probabilities of a given response
+pk <- dordlogit(1:7, 0, fixef(b12.4)[, 1] - .5)
+
+pk %>% 
+  round(digits = 2)
 ```
 
 The expected value is now:
 
 ```{r 12.23}
-sum( pk*(1:7) )
+# the average rating
+sum(pk * (1:7))
 ```
 
 And that’s why we subtract $\phi$, the linear model $\beta x_i$, from each intercept, rather than add it. This way, a positive $\beta$ value indicates that an increase in the predictor variable $x$ results in an increase in the average response.
@@ -718,20 +1227,19 @@ knitr::include_graphics(file.path(slides_dir, '44.png'))
 ```
 
 ```{r 12.24}
-dat <- list(
-  R = d$response,
-  A = d$action,
-  I = d$intention,
-  C = d$contact )
-m12.5 <- ulam(
-  alist(
-    R ~ dordlogit( phi , cutpoints ),
-    phi <- bA*A + bC*C + BI*I ,
-    BI <- bI + bIA*A + bIC*C ,
-    c(bA,bI,bC,bIA,bIC) ~ dnorm( 0 , 0.5 ),
-    cutpoints ~ dnorm( 0 , 1.5 )
-  ) , data=dat , chains=4 , cores=4 )
-precis( m12.5 )
+b12.5 <- 
+  brm(data = d, 
+      family = cumulative,
+      response ~ 1 + action + contact + intention + intention:action + intention:contact,
+      prior = c(prior(normal(0, 1.5), class = Intercept),
+                prior(normal(0, 0.5), class = b)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 12,
+      file = "fits/b12.05")
+```
+
+```{r}
+print(b12.5)
 ```
 
 
@@ -742,8 +1250,25 @@ knitr::include_graphics(file.path(slides_dir, '45.png'))
 I’ve suppressed the cutpoints. They aren’t of much interest at the moment. But look at the posterior distributions of the slopes. They are all reliably negative. Each of these story features reduces the rating—the acceptability of the story. Plotting the marginal posterior distributions makes the relative effect sizes much clearer:
 
 ```{r 12.25}
-plot( precis(m12.5) , xlim=c(-1.4,0) )
+labs <- str_c("beta[", 1:5, "]")
+
+brms::posterior_samples(b12.5) %>% 
+  dplyr::select(b_action:`b_contact:intention`) %>% 
+  set_names(labs) %>% 
+  pivot_longer(everything()) %>% 
+  
+  ggplot(aes(x = value, y = name)) +
+  geom_vline(xintercept = 0, alpha = 1/5, linetype = 3) +
+  tidybayes::stat_gradientinterval(.width = .5, size = 1, point_size = 3/2, shape = 21,
+                                   point_fill = canva_pal("Green fields")(4)[3], 
+                                   fill = canva_pal("Green fields")(4)[1], 
+                                   color = canva_pal("Green fields")(4)[2]) +
+  scale_x_continuous("marginal posterior", breaks = -5:0 / 4) +
+  scale_y_discrete(NULL, labels = parse(text = labs)) +
+  coord_cartesian(xlim = c(-1.4, 0))
 ```
+
+>As always, this will all be easier to see if we plot the posterior predictions. There is no perfect way to plot the predictions of these log-cumulative-odds models. Why? Because each prediction is really a vector of probabilities, one for each possible outcome value. So as a predictor variable changes value, the entire vector changes. This kind of thing can be visualized in several different ways. (p. 388)
 
 The combination of intention and contact is the worst. This is curious, because it seems that neither intention nor contact by itself has a large impact on ratings.
 
@@ -761,63 +1286,159 @@ knitr::include_graphics(file.path(slides_dir, '48.png'))
 
 One common and useful way is to use the horizontal axis for a predictor variable and the vertical axis for cumulative probability. Then you can plot a curve for each response value, as it changes across values of the predictor variable. After plotting a curve for each response value, you’ll end up mapping the distribution of responses, as it changes across values of the predictor variable.
 
-```{r 12.26}
-plot( NULL , type="n" , xlab="intention" , ylab="probability" ,
-  xlim=c(0,1) , ylim=c(0,1) , xaxp=c(0,1,1) , yaxp=c(0,1,2) )
-```
-
 Now we’ll set up a data list that contains the different combinations of predictor values. Then we pass it to link to get phi samples for each combination: Now loop over the first 100 samples in post and plot their predictions, across values of intention:
 
 ```{r 12.27}
-kA <- 0 # value for action
-kC <- 0 # value for contact
-kI <- 0:1 # values of intention to calculate over
-pdat <- data.frame(A=kA,C=kC,I=kI)
-phi <- link( m12.5 , data=pdat )$phi
+nd <- 
+  d %>% 
+  distinct(action, contact, intention) %>% 
+  mutate(combination = str_c(action, contact, intention, sep = "_"))
+
+f <-
+  fitted(b12.5,
+         newdata = nd,
+         summary = F)
+
+# what have we done?
+f %>% str()
 ```
 
 Finally loop over the first 50 samples in and plot their predictions, across values of intention. The trick here is to use `pordlogit` to compute the cumulative probability for each possible outcome value, from 1 to 7, using the samples in `phi` and the `cutpoints`.
 
 ```{r 12.28}
-plot( NULL , type="n" , xlab="intention" , ylab="probability" ,
-  xlim=c(0,1) , ylim=c(0,1) , xaxp=c(0,1,1) , yaxp=c(0,1,2) )
-post <- extract.samples( m12.5 )
-for ( s in 1:50 ) {
-  pk <- pordlogit( 1:6 , phi[s,] , post$cutpoints[s,] )
-  for ( i in 1:6 ) lines( kI , pk[,i] , col=grau(0.1) )
-}
+f <-
+  rbind(f[, , 1],
+        f[, , 2],
+        f[, , 3],
+        f[, , 4],
+        f[, , 5],
+        f[, , 6],
+        f[, , 7]) %>% 
+  data.frame() %>% 
+  set_names(pull(nd, combination)) %>% 
+  mutate(response = rep(1:7, each = n() / 7),
+         iter     = rep(1:4000, times = 7)) %>% 
+  pivot_longer(-c(iter, response),
+               names_to = c("action", "contact", "intention"),
+               names_sep = "_",
+               values_to = "pk") %>% 
+  mutate(intention = intention %>% as.integer())
+
+# how do the data look, now?
+glimpse(f)
 ```
 
-Another plotting option is to show the implied historgram of outcomes:
+```{r}
+# to order our factor levels for `facet`
+levels <- c("action=0, contact=0", "action=1, contact=0", "action=0, contact=1")
 
-```{r 12.29}
-kA <- 0 # value for action
-kC <- 1 # value for contact
-kI <- 0:1 # values of intention to calculate over
-pdat <- data.frame(A=kA,C=kC,I=kI)
-s <- sim( m12.5 , data=pdat )
-simplehist( s , xlab="response" )
+p1 <-
+  f %>% 
+  # unnecessary for these plots
+  filter(response < 7) %>% 
+  # this will help us define the three panels of the triptych
+  mutate(facet = factor(str_c("action=", action, ", contact=", contact),
+                        levels = levels)) %>% 
+  # these next three lines allow us to compute the cumulative probabilities
+  group_by(iter, facet, intention) %>% 
+  arrange(iter, facet, intention, response) %>% 
+  mutate(probability = cumsum(pk)) %>% 
+  ungroup() %>% 
+  # these next three lines are how we randomly selected 50 posterior draws
+  nest(data = -iter) %>% 
+  slice_sample(n = 50) %>%
+  unnest(data) %>% 
+  
+  # plot!
+  ggplot(aes(x = intention, y = probability)) +
+  geom_line(aes(group = interaction(iter, response), color = probability),
+            alpha = 1/10) +
+  geom_point(data = d %>%  # wrangle the original data to make the dots
+               group_by(intention, contact, action) %>% 
+               count(response) %>% 
+               mutate(probability = cumsum(n / sum(n)),
+                      facet = factor(str_c("action=", action, ", contact=", contact),
+                                     levels = levels)) %>% 
+               filter(response < 7),
+             color = canva_pal("Green fields")(4)[2]) +
+  scale_color_gradient(low = canva_pal("Green fields")(4)[4],
+                       high = canva_pal("Green fields")(4)[1]) +
+  scale_x_continuous("intention", breaks = 0:1) +
+  scale_y_continuous(breaks = c(0, .5, 1), limits = 0:1) +
+  theme(legend.position = "none") +
+  facet_wrap(~ facet)
+```
+
+```{r}
+p <-
+  predict(b12.5,
+          newdata = nd,
+          nsamples = 1000,
+          scale = "response",
+          summary = F)
+
+p %>% str()
+```
+
+```{r}
+p2 <-
+  p %>% 
+  data.frame() %>% 
+  set_names(pull(nd, combination)) %>% 
+  pivot_longer(everything(),
+               names_to = c("action", "contact", "intention"),
+               names_sep = "_",
+               values_to = "response") %>% 
+  mutate(facet = factor(str_c("action=", action, ", contact=", contact),
+                        levels = levels)) %>% 
+  
+  ggplot(aes(x = response, fill = intention)) +
+  geom_bar(width = 1/3, position = position_dodge(width = .4)) +
+  scale_fill_manual(values = canva_pal("Green fields")(4)[2:1]) +
+  scale_x_continuous("response", breaks = 1:7) +
+  theme(legend.position = "none") +
+  facet_wrap(~ facet)
+```
+
+
+```{r, fig.cap = "Figure 12.6"}
+(p1 / p2) & theme(panel.background = element_rect(fill = "grey94"))
 ```
 
 
 ## Ordered categorical predictors
+
+>We can handle ordered outcome variables using a categorical model with a cumulative link. That was the previous section. What about ordered predictor variables? We could just include them as continuous predictors like in any linear model. But this isn’t ideal. Just like with ordered outcomes, we don’t really want to assume that the distance between each ordinal value is the same. Luckily, we don’t have to. (p. 391)
 
 ```{r, echo = F, out.width='80%', fig.cap="Try to summarise this. We're going through all of this fuss because the spaces are different. We can luckily do that. Going to use same dataset, but we're going to add another variable, `edu`, indicating completed education. An important category here is `Some College`. "}
 knitr::include_graphics(file.path(slides_dir, '49.png'))
 ```
 
 ```{r 12.30}
-library(rethinking)
-data(Trolley)
-d <- Trolley
-levels(d$edu)
+distinct(d, edu)
 ```
 
 Code them in order:
 
 ```{r 12.31}
-edu_levels <- c( 6 , 1 , 8 , 4 , 7 , 2 , 5 , 3 )
-d$edu_new <- edu_levels[ d$edu ]
+d <-
+  d %>% 
+  mutate(edu_new = 
+           recode(edu,
+                  "Elementary School" = 1,
+                  "Middle School" = 2,
+                  "Some High School" = 3,
+                  "High School Graduate" = 4,
+                  "Some College" = 5, 
+                  "Bachelor's Degree" = 6,
+                  "Master's Degree" = 7,
+                  "Graduate Degree" = 8) %>% 
+           as.integer())
+
+# what did we do?
+d %>% 
+  distinct(edu, edu_new) %>% 
+  arrange(edu_new)
 ```
 
 ```{r, echo = F, out.width='80%', fig.cap="There's an ordering here. A cumulative, monotonic idea. If we treated this as a metric, you could maybe get away with that, but ignores the discreate category, because it assumes that each level contributes the same amount of effect on your response. The trick here is if you want to assign a prior and not go insance, you want to code it in a particular way. "}
@@ -855,17 +1476,55 @@ knitr::include_graphics(file.path(slides_dir, '57.png'))
 ```{r 12.32}
 library(gtools)
 set.seed(1805)
-delta <- gtools::rdirichlet( 10 , alpha=rep(2,7) )
+delta <- rdirichlet(10, alpha = rep(2, 7)) 
+
 str(delta)
 ```
 
 ```{r 12.33}
-h <- 3
-plot( NULL , xlim=c(1,7) , ylim=c(0,0.4) , xlab="index" , ylab="probability" )
-for ( i in 1:nrow(delta) ) lines( 1:7 , delta[i,] , type="b" ,
-  pch=ifelse(i==h,16,1) , lwd=ifelse(i==h,4,1.5) ,
-  col=ifelse(i==h,"black",col.alpha("black",0.7)) )
+delta %>% 
+  data.frame() %>%
+  set_names(1:7) %>% 
+  mutate(row = 1:n()) %>% 
+  pivot_longer(-row, names_to = "index") %>% 
+  
+  ggplot(aes(x = index, y = value, group = row,
+             alpha = row == 3, color = row == 3)) +
+  geom_line() +
+  geom_point() +
+  scale_alpha_manual(values = c(1/3, 1)) +
+  scale_color_manual(values = canva_pal("Green fields")(4)[1:2]) +
+  ylab("probability") +
+  theme(legend.position = "none")
 ```
+
+**brms** has a `rdirichlet()` function too. Here we use that to make an alternative version of the plot. 
+
+```{r}
+set.seed(12)
+
+brms::rdirichlet(n = 1e4,
+                 alpha = rep(2, 7)) %>% 
+  data.frame() %>% 
+  set_names(1:7) %>% 
+  pivot_longer(everything()) %>% 
+  mutate(name  = name %>% as.double(),
+         alpha = str_c("alpha[", name, "]")) %>% 
+  
+  ggplot(aes(x = value, color = name, group = name, fill= name)) + 
+  geom_density(alpha = .8) + 
+  scale_fill_gradient(low = canva_pal("Green fields")(4)[2],
+                      high = canva_pal("Green fields")(4)[3]) +
+  scale_color_gradient(low = canva_pal("Green fields")(4)[2],
+                       high = canva_pal("Green fields")(4)[3]) +
+  scale_x_continuous("probability", limits = c(0, 1),
+                     breaks = c(0, .5, 1), labels = c("0", ".5", "1"), ) +
+  scale_y_continuous(NULL, breaks = NULL) +
+  labs(subtitle = expression("Dirichlet"*(2*", "*2*", "*2*", "*2*", "*2*", "*2*", "*2))) +
+  theme(legend.position = "none") +
+  facet_wrap(~ alpha, labeller = label_parsed, nrow = 2)
+```
+
 
 This prior doesn’t expect all the probabilities to be equal. Instead it expects that any of the probabilities could be bigger or smaller than the others.
 
@@ -876,25 +1535,19 @@ knitr::include_graphics(file.path(slides_dir, '58.png'))
 In coding this model, we need some variable fiddling to handle the $\delta_0 = 0$ bit. Let me show you the model code and then explain.
 
 ```{r 12.34}
-dat <- list(
-  R = d$response ,
-  action = d$action,
-  intention = d$intention,
-  contact = d$contact,
-  E = as.integer( d$edu_new ), # edu_new as an index
-  alpha = rep( 2 , 7 ) ) # delta prior
-  
-m12.6 <- ulam(
-  alist(
-    R ~ ordered_logistic( phi , kappa ),
-    phi <- bE*sum( delta_j[1:E] ) + bA*action + bI*intention + bC*contact,
-    kappa ~ normal( 0 , 1.5 ),
-    c(bA,bI,bC,bE) ~ normal( 0 , 1 ),
-    vector[8]: delta_j <<- append_row( 0 , delta ),
-    simplex[7]: delta ~ dirichlet( alpha )
-  ), data=dat , chains=4 , cores=4 )
+b12.6 <- 
+  brm(data = d, 
+      family = cumulative,
+      response ~ 1 + action + contact + intention + mo(edu_new),  # note the `mo()` syntax
+      prior = c(prior(normal(0, 1.5), class = Intercept),
+                prior(normal(0, 1), class = b),
+                # note the new kinds of prior statements
+                prior(normal(0, 0.143), class = b, coef = moedu_new),
+                prior(dirichlet(2, 2, 2, 2, 2, 2, 2), class = simo, coef = moedu_new1)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 12,
+      file = "fits/b12.06")
 ```
-
 
 ```{r, echo = F, out.width='80%', fig.cap="So if you want to do this with `ulam`. This is what your computer is doing. "}
 knitr::include_graphics(file.path(slides_dir, '59.png'))
@@ -905,14 +1558,79 @@ knitr::include_graphics(file.path(slides_dir, '60.png'))
 ```
 
 ```{r 12.35}
-precis( m12.6 , depth=2 , omit="kappa" )
+print(b12.6)
 ```
+
+```{r}
+posterior_samples(b12.6) %>% 
+  transmute(bE = bsp_moedu_new * 7) %>% 
+  median_qi(.width = .89) %>% 
+  mutate_if(is.double, round, digits = 2)
+```
+
+```{r}
+ my_lower <- function(data, mapping, ...) {
+  
+  # get the x and y data to use the other code
+  x <- eval_data_col(data, mapping$x)
+  y <- eval_data_col(data, mapping$y)
+  
+  # compute the correlations
+  corr <- cor(x, y, method = "p", use = "pairwise")
+  abs_corr <- abs(corr)
+  
+  # plot the cor value
+  ggally_text(
+    label = formatC(corr, digits = 2, format = "f") %>% str_replace(., "0.", "."),
+    mapping = aes(),
+    size = 4,
+    color = canva_pal("Green fields")(4)[2]) +
+    scale_x_continuous(NULL, breaks = NULL) +
+    scale_y_continuous(NULL, breaks = NULL)
+}
+
+my_diag <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) + 
+    geom_density(fill = canva_pal("Green fields")(4)[1], size = 0) +
+    scale_x_continuous(NULL, breaks = NULL) +
+    scale_y_continuous(NULL, breaks = NULL)
+}
+
+my_upper <- function(data, mapping, ...) {
+  ggplot(data = data, mapping = mapping) + 
+    geom_hex(bins = 18) +
+    scale_fill_gradient(low = canva_pal("Green fields")(4)[4],
+                        high = canva_pal("Green fields")(4)[3]) +
+    scale_x_continuous(NULL, breaks = NULL) +
+    scale_y_continuous(NULL, breaks = NULL) +
+    theme(panel.background = element_rect(fill = canva_pal("Green fields")(4)[2]))
+}
+```
+
 
 ```{r 12.36}
-delta_labels <- c("Elem","MidSch","SHS","HSG","SCol","Bach","Mast","Grad")
-pairs( m12.6 , pars="delta" , labels=delta_labels )
+delta_labels <- c("Elem", "MidSch", "SHS", "HSG", "SCol", "Bach", "Mast", "Grad")
+
+posterior_samples(b12.6) %>% 
+  dplyr::select(contains("simo_moedu_new1")) %>% 
+  set_names(str_c(delta_labels[2:8], "~(delta[", 1:7, "])")) %>% 
+  ggpairs(upper = list(continuous = my_upper),
+          diag = list(continuous = my_diag),
+          lower = list(continuous = my_lower),
+          labeller = label_parsed) +
+  theme(strip.text = element_text(size = 8))
 ```
 
+```{r}
+d <-
+  d %>% 
+  mutate(edu_norm = (edu_new - 1) / 7)
+
+# what does this look like?
+d %>% 
+  distinct(edu, edu_new, edu_norm) %>% 
+  arrange(edu_new)
+```
 
 
 ```{r, echo = F, out.width='80%', fig.cap="If you run the model with education as a metric effect, we run it as an ordinary regression, and it overlaps 0. Why? Because of the some college effect. A linear treatment of it get dampened out. "}
@@ -922,16 +1640,136 @@ knitr::include_graphics(file.path(slides_dir, '61.png'))
 It’ll be instructive to compare the posterior above to the inference we get from a more conventional model with education entered as an ordinary continuous variable. We’ll normalize education level first, so that it ranges from 0 to 1. This will make the resulting parameter comparable to the one in the model above.
 
 ```{r 12.37}
-dat$edu_norm <- normalize( d$edu_new )
-m12.7 <- ulam(
-  alist(
-    R ~ ordered_logistic( mu , cutpoints ),
-    mu <- bE*edu_norm + bA*action + bI*intention + bC*contact,
-    c(bA,bI,bC,bE) ~ normal( 0 , 1 ),
-    cutpoints ~ normal( 0 , 1.5 )),
-    data=dat , chains=4 , cores=4 )
-precis( m12.7 )
+b12.7 <- 
+  brm(data = d, 
+      family = cumulative,
+      response ~ 1 + action + contact + intention + edu_norm,
+      prior = c(prior(normal(0, 1.5), class = Intercept),
+                prior(normal(0, 1), class = b)),
+      iter = 2000, warmup = 1000, cores = 4, chains = 4,
+      seed = 12,
+      file = "fits/b12.07")
 ```
+
+```{r}
+fixef(b12.7)[7:10, ]
+```
+
+```{r}
+nd <-
+  tibble(edu_new   = 1:8,
+         action    = 0,
+         contact   = 0,
+         intention = 0)
+
+f <-
+  fitted(b12.6, 
+         newdata = nd) 
+
+f %>% str()
+```
+
+The rows correspond to th eight educational levels.
+
+Wrangle before plotting:
+
+```{r}
+# b12.6
+f12.6 <-
+  rbind(f[, , 1],
+        f[, , 2],
+        f[, , 3],
+        f[, , 4],
+        f[, , 5],
+        f[, , 6],
+        f[, , 7]) %>% 
+  data.frame() %>% 
+  mutate(edu      = factor(rep(1:8, times = 7)),
+         response = rep(1:7, each = 8))
+
+# b12.7
+nd <-
+  nd %>% 
+  mutate(edu_norm  = 1:8)
+
+f <-
+  fitted(b12.7, 
+         newdata = nd) 
+
+f12.7 <-
+  rbind(f[, , 1],
+        f[, , 2],
+        f[, , 3],
+        f[, , 4],
+        f[, , 5],
+        f[, , 6],
+        f[, , 7]) %>% 
+  data.frame() %>% 
+  mutate(edu      = factor(rep(1:8, times = 7)),
+         response = rep(1:7, each = 8))
+```
+
+```{r}
+# this will help with `scale_color_manual()`
+colors <- 
+  scales::seq_gradient_pal(canva_pal("Green fields")(4)[4], 
+                           canva_pal("Green fields")(4)[3])(seq(0, 1, length.out = 8))
+
+bind_rows(f12.6, f12.7) %>% 
+  mutate(fit = rep(c("b12.6 with `mo()` syntax", "b12.7 with conventional syntax"), 
+                   each = n() / 2)) %>% 
+  
+  ggplot(aes(x = response, y = Estimate,
+             ymin = Q2.5, ymax = Q97.5,
+             color = edu, group = edu)) +
+  geom_pointrange(fatten = 3/2, position = position_dodge(width = 3/4)) + 
+  scale_color_manual("education", values = colors, labels = delta_labels) +
+  scale_x_continuous(breaks = 1:7) +
+  scale_y_continuous("probability", limits = c(0, .43)) +
+  theme(legend.background = element_blank(),
+        legend.position = "right") +
+  facet_wrap(~ fit)  
+```
+
+```{r}
+b12.6 <- add_criterion(b12.6, "loo")
+b12.7 <- add_criterion(b12.7, "loo")
+
+loo_compare(b12.6, b12.7, criterion = "loo") %>% print(simplify = F)
+```
+
+```{r}
+model_weights(b12.6, b12.7, weights = "loo") %>% round(digits = 2)
+```
+
+```{r}
+posterior_samples(b12.6) %>% 
+  dplyr::select(contains("new1")) %>% 
+  set_names(1:7) %>% 
+  mutate(iter = 1:n(), 
+         `0`  = 0) %>% 
+  pivot_longer(-iter, names_to = "delta") %>% 
+  arrange(delta) %>% 
+  group_by(iter) %>% 
+  mutate(cum_sum = cumsum(value)) %>% 
+  
+  ggplot(aes(x = delta, y = cum_sum)) +
+  stat_pointinterval(.width = .95, size = 1,
+                     color = canva_pal("Green fields")(4)[1]) +
+  stat_pointinterval(.width = .5,
+                     color = canva_pal("Green fields")(4)[4],
+                     point_color = canva_pal("Green fields")(4)[2]) +
+  scale_x_discrete(NULL, labels = parse(text = str_c("delta[", 0:7 , "]"))) +
+  ylab("cumulative sum")
+```
+
+```{r}
+d %>% 
+  distinct(edu, edu_new) %>% 
+  arrange(edu_new) %>% 
+  mutate(`delta[j]` = edu_new - 1)
+```
+
 
 This model seems to think that education is much more weakly associated with rating.
 
