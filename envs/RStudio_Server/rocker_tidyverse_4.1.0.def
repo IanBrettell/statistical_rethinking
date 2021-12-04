@@ -3,7 +3,8 @@ From: rocker/tidyverse:4.1.0
 
 %post
     apt update
-    apt install -y nodejs npm libmagick++-dev libglpk40 libudunits2-0 libproj15 libgdal26
+    add-apt-repository -y ppa:cran/poppler
+    apt install -y nodejs npm libmagick++-dev libglpk40 libudunits2-0 libproj15 libgdal26 libpoppler-cpp-dev
 
     # Install cmdstanr
     # we recommend running this is a fresh R session or restarting your current session
@@ -30,7 +31,8 @@ From: rocker/tidyverse:4.1.0
         ghibli \
         santoku \
         invgamma \
-        ggdark
+        ggdark \
+        pdftools
 
     # Install `rethinking`
     R -e 'devtools::install_github("rmcelreath/rethinking")'

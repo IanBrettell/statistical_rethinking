@@ -343,7 +343,7 @@ knitr::include_graphics(file.path(slides_dir, '27.png'))
 
 **Overthinking: prior for variance components**
 
-```{r, eval = F}
+```{r}
 # Error in unserialize(socklist[[n]]) : error reading from connection
 b13.2b <- 
   update(b13.2,
@@ -359,7 +359,7 @@ print(b13.2b)
 
 Then compare:
 
-```{r, eval = F}
+```{r}
 # for annotation
 text <-
   tibble(value        = c(0.5, 2.4),
