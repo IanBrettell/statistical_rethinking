@@ -10,7 +10,7 @@ output:
     link-citations: yes
 ---
 
-# Index {-}
+# Intro {-}
 
 Consolidated slides, notes, homework, code and output from the *Statistical Rethinking* book and course by Richard McElreath.
 
@@ -19,6 +19,8 @@ Repo with slides and homework here: <https://github.com/rmcelreath/stat_rethinki
 Buy the book here: <https://xcelab.net/rm/statistical-rethinking/>
 
 McElreath's GitHub here: <https://github.com/rmcelreath>
+
+Code copied from Solomon Kurz's `tidyverse` and `brms` translation: <https://bookdown.org/content/4857/>
 
 Slides downloaded manually via links on GitHub page and split into separate directories.
 
@@ -79,5 +81,24 @@ lapply(slides, function(x){
 })
 
 
+```
+
+**Convert homework pdfs into pngs**
+
+```{r, eval = F}
+homework_files = list.files(here::here("homework"), pattern = ".pdf", full.names = T, recursive = T)
+
+lapply(homework_files[1], function(FILE){
+  # set new path
+  new_path = FILE %>% 
+    stringr::str_replace(".pdf", ".png")
+  
+  # read in pdf
+  pdf = magick::image_read_pdf(FILE)
+  # convert to png
+  out = magick::image_convert(pdf)
+  # save to file
+  magick::image_write(out, new_path)
+})
 ```
 

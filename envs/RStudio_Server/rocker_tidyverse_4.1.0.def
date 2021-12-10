@@ -3,9 +3,13 @@ From: rocker/tidyverse:4.1.0
 
 %post
     apt update
-    add-apt-repository -y ppa:cran/poppler
+    #apt install -y software-properties-common
+    #apt update
+    #apt-add-repository -y ppa:cran/poppler
     apt install -y nodejs npm libmagick++-dev libglpk40 libudunits2-0 libproj15 libgdal26 libpoppler-cpp-dev
+    #libpoppler-cpp-dev
 
+    install2.r --error pdftools
     # Install cmdstanr
     # we recommend running this is a fresh R session or restarting your current session
     R -e 'install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))'
@@ -31,8 +35,8 @@ From: rocker/tidyverse:4.1.0
         ghibli \
         santoku \
         invgamma \
-        ggdark \
-        pdftools
+        ggdark 
+        
 
     # Install `rethinking`
     R -e 'devtools::install_github("rmcelreath/rethinking")'
